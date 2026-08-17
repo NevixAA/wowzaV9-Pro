@@ -1,0 +1,95 @@
+name: Pro Collect
+
+# Snapshots v9's current state into the canonical season store.
+#
+# NO TELEGRAM SECRET IS REFERENCED HERE, AND NONE EXISTS IN THIS REPO.
+# Pro never notifies (Prompt 2 sections 11-12 keep notifications on v9, the baseline). The
+# absence of the credential is the enforcement mechanism: a coding mistake cannot send a
+# message that has no token to send it with.
+#
+# NO API-FOOTBALL OR ODDSAPI SECRET EITHER. Pro reads v9's committed public output over HTTP,
+# the same unauthenticated pattern wowza-v11 uses. Adding those keys would let Pro re-fetch
+# data v9 already captures and double-spend the quota.
+#
+# Two cadences, because v9's artifacts differ in kind:
+#   every 2h  -> predictions.csv only. It is a CURRENT-STATE file that predict overwrites
+#                every 5 minutes, so each capture is one point on the model's path to
+#                kickoff. Miss it and the T-7d/T-3d/T-1h horizons never exist.
+#   daily     -> everything. Ledgers and prop rows get UPDATED as results settle, so a
+#                daily re-capture records settlement state over time without the volume of
+#                re-reading them 12x a day.
+
+on:
+  schedule:
+    - cron: '40 */2 * * *'    # model/market snapshot — offset :40 to avoid v9's runners
+    - cron: '15 6 * * *'      # full sweep
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Comma-separated importers (blank = all)'
+        required: false
+        default: ''
+
+concurrency:
+  group: pro-collect          # never shares a group with v9's predict
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install pandas pyarrow requests
+
+      - name: Collect
+        id: collect
+        run: |
+          # The 2-hourly run captures only the current-state snapshot; the daily run and any
+          # manual dispatch sweep everything.
+          ONLY="${{ github.event.inputs.only }}"
+          if [ -z "$ONLY" ] && [ "${{ github.event.schedule }}" = '40 */2 * * *' ]; then
+            ONLY="predictions"
+          fi
+          if [ -n "$ONLY" ]; then
+            python -m src.pipelines.pro_collect --only "$ONLY"
+          else
+            python -m src.pipelines.pro_collect
+          fi
+
+      - name: Commit the season store
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A data output/collect_health.json output/import_watermarks.json 2>/dev/null || true
+          git diff --staged --quiet || \
+            git commit -m "pro: collect $(date -u '+%Y-%m-%d %H:%M UTC')"
+          # Retry on push races. There is no -X ours here: the store is run-partitioned so two
+          # runs cannot touch the same file, and a real conflict must surface rather than be
+          # silently resolved away (WORKFLOW_MAP.md section 2).
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main && git push && exit 0
+            echo "push race - retry $i"; sleep $((RANDOM % 5 + 3))
+          done
+          echo "push failed after 5 retries"; exit 1
+
+      # The collect step is NOT continue-on-error, so a failure already fails the job. This
+      # step exists to make the reason visible in the run summary rather than only in a log.
+      - name: Surface collector failure
+        if: failure()
+        run: |
+          echo "::error title=Pro collect failed::The season store did not advance. \
+          A collector that produces zero rows exits non-zero by design — see output/collect_health.json."
+          cat output/collect_health.json 2>/dev/null || true

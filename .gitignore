@@ -53,6 +53,15 @@ output/**
 !output/.gitkeep
 !output/system_registry.json
 !output/pro_readiness.json
+!output/collect_health.json
+
+# The season store IS the deliverable and must survive across CI runs, so it is committed.
+# Safe to commit because writes are run-partitioned (one small file per table per run) and
+# the append-only histories are watermarked — a repeat run adds nothing.
+!data/season_*/
+!data/season_*/**
+# Watermarks must persist or every run re-imports v9's full odds history (~40k rows).
+!output/import_watermarks.json
 !registry/**
 !experiments/**/manifest.json
 !experiments/**/metrics.json
