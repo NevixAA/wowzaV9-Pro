@@ -47,6 +47,18 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      # Read v9 from a CHECKOUT, not raw.githubusercontent.com. Unauthenticated raw fetches
+      # are rate-limited: Pro's first live run (gh32040766347) died on
+      # `HTTP 429 for .../output/predictions.csv`. A shallow public clone cannot be throttled
+      # and costs nothing. Pro still only READS v9 and never writes to it.
+      - name: Check out v9 baseline (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: main
+          path: _v9
+          fetch-depth: 1
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -55,6 +67,8 @@ jobs:
 
       - name: Collect
         id: collect
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
         run: |
           # The 2-hourly run captures only the current-state snapshot; the daily run and any
           # manual dispatch sweep everything.

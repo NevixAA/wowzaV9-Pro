@@ -53,22 +53,38 @@ def fetch_csv(rel_path: str, *, required: bool = True) -> pd.DataFrame:
                 raise SourceUnavailable(f"local read failed for {rel_path}: {e}") from e
             return pd.DataFrame()
 
+    # Last-resort fallback. raw.githubusercontent.com rate-limits unauthenticated requests and
+    # Pro's first live CI run died on HTTP 429, so a 429 is retried with backoff rather than
+    # treated as fatal. CI should supply V9_LOCAL and never reach this path at all.
+    import time
     url = f"{cfg.V9_RAW_BASE}/{rel_path}"
-    try:
-        import requests
-        r = requests.get(url, timeout=60)
-        if r.status_code != 200:
-            raise SourceUnavailable(f"HTTP {r.status_code} for {url}")
-        return pd.read_csv(io.StringIO(r.text), dtype=str,
-                           keep_default_na=False, na_values=[""])
-    except SourceUnavailable:
-        if required:
-            raise
-        return pd.DataFrame()
-    except Exception as e:
-        if required:
-            raise SourceUnavailable(f"fetch failed for {url}: {e}") from e
-        return pd.DataFrame()
+    last: Exception | None = None
+    for attempt in range(4):
+        try:
+            import requests
+            r = requests.get(url, timeout=60)
+            if r.status_code == 429:
+                wait = 5 * (attempt + 1)
+                print(f"[v9_source] 429 for {rel_path}; retry {attempt + 1}/3 in {wait}s")
+                last = SourceUnavailable(f"HTTP 429 for {url}")
+                time.sleep(wait)
+                continue
+            if r.status_code != 200:
+                raise SourceUnavailable(f"HTTP {r.status_code} for {url}")
+            return pd.read_csv(io.StringIO(r.text), dtype=str,
+                               keep_default_na=False, na_values=[""])
+        except SourceUnavailable as e:
+            last = e
+            break
+        except Exception as e:
+            last = e
+            time.sleep(3 * (attempt + 1))
+    if required:
+        raise SourceUnavailable(
+            f"could not read v9 {rel_path} ({last}). Set V9_LOCAL to a wowza-betting "
+            f"checkout to avoid raw-HTTP rate limits."
+        ) from last
+    return pd.DataFrame()
 
 
 def num(s: pd.Series) -> pd.Series:

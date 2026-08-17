@@ -21,8 +21,15 @@ REGISTRY_DIR = BASE_DIR / "registry"
 # no credential: wowza-betting's output is public.
 V9_REPO = "NevixAA/wowza-betting"
 V9_RAW_BASE = f"https://raw.githubusercontent.com/{V9_REPO}/main"
-# Local clone, used in preference to HTTP when present (faster, and works offline).
-V9_LOCAL = BASE_DIR.parent / "v9"
+
+# Local checkout, strongly preferred over HTTP.
+#
+# raw.githubusercontent.com RATE-LIMITS unauthenticated requests. Pro's first live CI run
+# (2026-08-17, run gh32040766347) died on `HTTP 429 for .../output/predictions.csv` — the same
+# failure that had already been diagnosed and fixed in wowza-v11 and should have been applied
+# here at the same time. CI now checks out wowza-betting and points V9_LOCAL at it, so the
+# hot path never touches raw HTTP; HTTP remains only as a last-resort fallback with backoff.
+V9_LOCAL = Path(os.getenv("V9_LOCAL") or (BASE_DIR.parent / "v9"))
 
 
 # ── season derivation ─────────────────────────────────────────────────────────
