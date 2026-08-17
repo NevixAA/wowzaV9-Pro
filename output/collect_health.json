@@ -1,49 +1,58 @@
 {
-  "checked_at": "2026-08-17T14:57:18Z",
+  "checked_at": "2026-08-17T16:58:51Z",
   "watermarks_advanced": {},
   "season": "season_2026_27",
-  "run_id": "gh32040766347-1",
-  "v9_sha": "unknown",
-  "pro_git_sha": "838b5b92274e",
+  "run_id": "gh32048167443-1",
+  "v9_sha": "567dd49279a6",
+  "pro_git_sha": "4f863ec21c91",
   "dry_run": false,
-  "total_rows": 0,
-  "per_importer": {},
-  "failures": [
-    "predictions: SourceUnavailable: HTTP 429 for https://raw.githubusercontent.com/NevixAA/wowza-betting/main/output/predictions.csv"
-  ],
+  "total_rows": 1696,
+  "per_importer": {
+    "predictions": {
+      "rows": 1696,
+      "tables": {
+        "fixtures": 170,
+        "model_snapshots": 796,
+        "market_snapshots": 390,
+        "feature_snapshots": 170,
+        "signals": 170
+      }
+    }
+  },
+  "failures": [],
   "store": {
     "fixtures": {
-      "rows": 0,
-      "partitions": 2,
-      "runs": 2,
-      "first_dt": "2026-08-17",
-      "last_dt": "2026-08-17"
-    },
-    "model_snapshots": {
-      "rows": 0,
-      "partitions": 2,
-      "runs": 2,
-      "first_dt": "2026-08-17",
-      "last_dt": "2026-08-17"
-    },
-    "market_snapshots": {
       "rows": 0,
       "partitions": 3,
       "runs": 3,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-17"
     },
+    "model_snapshots": {
+      "rows": 0,
+      "partitions": 3,
+      "runs": 3,
+      "first_dt": "2026-08-17",
+      "last_dt": "2026-08-17"
+    },
+    "market_snapshots": {
+      "rows": 0,
+      "partitions": 4,
+      "runs": 4,
+      "first_dt": "2026-08-17",
+      "last_dt": "2026-08-17"
+    },
     "feature_snapshots": {
       "rows": 0,
-      "partitions": 2,
-      "runs": 2,
+      "partitions": 3,
+      "runs": 3,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-17"
     },
     "signals": {
       "rows": 0,
-      "partitions": 2,
-      "runs": 2,
+      "partitions": 3,
+      "runs": 3,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-17"
     },
