@@ -120,7 +120,14 @@ def append(
     rid = rid or cfg.run_id()
     now = cfg.utc_now_iso()
     out["ingested_at"] = now
-    out["observed_at"] = observed_at or now
+    # A PER-ROW observed_at already set by the importer wins: since 2026-08-17 v9 stamps
+    # `generated_at` into predictions.csv, so a snapshot can carry the moment the board was
+    # actually produced rather than the moment Pro happened to read it. Falls back to the
+    # caller's value (git-history backfill) and finally to now.
+    if "observed_at" in out.columns and out["observed_at"].notna().any():
+        out["observed_at"] = out["observed_at"].fillna(observed_at or now)
+    else:
+        out["observed_at"] = observed_at or now
     out["run_id"] = rid
     out["source"] = source
     out["source_sha"] = source_sha or ""

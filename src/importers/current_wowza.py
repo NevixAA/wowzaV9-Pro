@@ -104,13 +104,21 @@ def from_predictions() -> list[tuple[str, pd.DataFrame]]:
         blk["market"] = market
         blk["model_prob"] = num(d[pcol])
         blk["model_id"] = "v9_baseline"
-        blk["model_sha"] = ""              # v9 does not stamp its model version — see below
+        # v9 stamps generated_at / git_sha / model_sha into predictions.csv as of
+        # 2026-08-17 (v9 src/provenance.py). Where present, use it: the snapshot then
+        # carries the moment the board was PRODUCED rather than the moment Pro read it,
+        # and MODEL_VERSION_UNKNOWN no longer applies. Rows predating that change keep
+        # the flag, so old and new data stay distinguishable.
+        blk["model_sha"] = d["model_sha"] if "model_sha" in d.columns else ""
+        blk["git_sha"] = d["git_sha"] if "git_sha" in d.columns else ""
+        if "generated_at" in d.columns:
+            blk["observed_at"] = d["generated_at"].replace("", pd.NA)
         blk["quality_flags"] = d["entity_unresolved"].map(
             lambda u: "ENTITY_UNRESOLVED" if u else "")
-        # v9 writes no model identity into its outputs, so provenance is genuinely unknown
-        # rather than assumed. Prompt 1 section 12 wants that visible, not papered over.
-        blk.loc[:, "quality_flags"] = (blk["quality_flags"] + "|MODEL_VERSION_UNKNOWN"
-                                       ).str.strip("|")
+        _no_version = (blk["model_sha"].astype(str).str.strip()
+                       .isin(("", "unknown", "nan", "<NA>")))
+        blk.loc[_no_version, "quality_flags"] = (
+            blk.loc[_no_version, "quality_flags"] + "|MODEL_VERSION_UNKNOWN").str.strip("|")
         ms.append(blk[blk["model_prob"].notna()])
     if ms:
         out.append(("model_snapshots", pd.concat(ms, ignore_index=True)))
