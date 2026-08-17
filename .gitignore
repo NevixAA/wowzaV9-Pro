@@ -1,0 +1,73 @@
+# wowzaV9-Pro
+# ============
+# This repo is a REBUILD, not a fork.
+#
+# The folder it lives in was previously v10 (v9's staging sandbox) and still holds a stale
+# copy of v9 at commit 12a3dc8 on disk. Prompt 2 section 3 says never delete those research
+# assets, so they stay exactly where they are — but they are NOT committed here. Code is
+# ported into src/ deliberately, module by module, each with an OLD / NEW / WHY / RISK note.
+# Inheriting a stale clone wholesale would reintroduce bugs v9 has since fixed.
+#
+# Strategy: ignore every root entry, then re-admit only the Pro tree.
+
+/*
+
+!/.gitignore
+!/.github/
+!/README.md
+!/docs/
+!/config/
+!/src/
+!/registry/
+!/experiments/
+!/tests/
+!/data/
+!/models/
+!/output/
+
+# ── Secrets: never, by any path ───────────────────────────────────────────────
+# v10's .env carries live API-Football, Google and GitHub credentials. They must reach CI as
+# repository secrets, never as a committed file.
+.env
+.env.*
+.api_keys
+**/secrets.toml
+**/bot_config.json
+*.pem
+*.key
+
+# ── Large or regenerable data ────────────────────────────────────────────────
+# The Pro season store is built by importers from v9's committed output (the pattern v11
+# already uses: read the baseline's public data over HTTP). Committing 187MB of legacy
+# parquet and backtest CSVs would tax every clone forever for data we can rebuild.
+*.parquet
+*.xlsx
+*.zip
+data/**
+models/**
+output/**
+
+# ...but keep the empty scaffolding and the small machine-readable truth files.
+!data/.gitkeep
+!models/.gitkeep
+!output/.gitkeep
+!output/system_registry.json
+!output/pro_readiness.json
+!registry/**
+!experiments/**/manifest.json
+!experiments/**/metrics.json
+!experiments/**/by_league.csv
+!experiments/**/calibration.csv
+
+# ── Caches ────────────────────────────────────────────────────────────────────
+**/__pycache__/
+*.py[cod]
+*.pyo
+**/*_cache/
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
