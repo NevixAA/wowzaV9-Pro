@@ -1,24 +1,86 @@
 {
-  "checked_at": "2026-08-17T15:02:37Z",
+  "checked_at": "2026-08-17T14:57:18Z",
   "watermarks_advanced": {},
   "season": "season_2026_27",
-  "run_id": "local20260817T150236Z",
-  "v9_sha": "7f1aa56b518b",
+  "run_id": "gh32040766347-1",
+  "v9_sha": "unknown",
   "pro_git_sha": "838b5b92274e",
-  "dry_run": true,
-  "total_rows": 1706,
-  "per_importer": {
-    "predictions": {
-      "rows": 1706,
-      "tables": {
-        "fixtures": 171,
-        "model_snapshots": 800,
-        "market_snapshots": 393,
-        "feature_snapshots": 171,
-        "signals": 171
-      }
+  "dry_run": false,
+  "total_rows": 0,
+  "per_importer": {},
+  "failures": [
+    "predictions: SourceUnavailable: HTTP 429 for https://raw.githubusercontent.com/NevixAA/wowza-betting/main/output/predictions.csv"
+  ],
+  "store": {
+    "fixtures": {
+      "rows": 0,
+      "partitions": 2,
+      "runs": 2,
+      "first_dt": "2026-08-17",
+      "last_dt": "2026-08-17"
+    },
+    "model_snapshots": {
+      "rows": 0,
+      "partitions": 2,
+      "runs": 2,
+      "first_dt": "2026-08-17",
+      "last_dt": "2026-08-17"
+    },
+    "market_snapshots": {
+      "rows": 0,
+      "partitions": 3,
+      "runs": 3,
+      "first_dt": "2026-08-17",
+      "last_dt": "2026-08-17"
+    },
+    "feature_snapshots": {
+      "rows": 0,
+      "partitions": 2,
+      "runs": 2,
+      "first_dt": "2026-08-17",
+      "last_dt": "2026-08-17"
+    },
+    "signals": {
+      "rows": 0,
+      "partitions": 2,
+      "runs": 2,
+      "first_dt": "2026-08-17",
+      "last_dt": "2026-08-17"
+    },
+    "settlements": {
+      "rows": 0,
+      "partitions": 4,
+      "runs": 4,
+      "first_dt": "2026-08-17",
+      "last_dt": "2026-08-17"
+    },
+    "clv": {
+      "rows": 0,
+      "partitions": 2,
+      "runs": 2,
+      "first_dt": "2026-08-17",
+      "last_dt": "2026-08-17"
+    },
+    "player_props": {
+      "rows": 0,
+      "partitions": 2,
+      "runs": 2,
+      "first_dt": "2026-08-17",
+      "last_dt": "2026-08-17"
+    },
+    "live_signals": {
+      "rows": 0,
+      "partitions": 2,
+      "runs": 2,
+      "first_dt": "2026-08-17",
+      "last_dt": "2026-08-17"
+    },
+    "data_quality": {
+      "rows": 0,
+      "partitions": 0,
+      "runs": 0,
+      "first_dt": null,
+      "last_dt": null
     }
-  },
-  "failures": [],
-  "store": {}
+  }
 }
