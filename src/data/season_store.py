@@ -177,10 +177,19 @@ def stats(season: str | None = None) -> dict[str, dict]:
         dts = sorted({f.parent.name.split("=", 1)[1] for f in files})
         rows = 0
         for f in files:
+            # Read row count from parquet FOOTER METADATA — exact and O(1) per file.
+            # This used to be len(pd.read_parquet(f, columns=[])), which returns a frame with
+            # no columns AND no rows: every table reported 0 rows while the store actually
+            # held 68,625. A health check that under-reports to zero is worse than none,
+            # because it makes a working collector look broken.
             try:
-                rows += len(pd.read_parquet(f, columns=[]))
+                import pyarrow.parquet as _pq
+                rows += _pq.ParquetFile(f).metadata.num_rows
             except Exception:
-                rows += len(pd.read_parquet(f))
+                try:
+                    rows += len(pd.read_parquet(f))
+                except Exception:
+                    pass
         out[t] = {
             "rows": rows,
             "partitions": len(files),
