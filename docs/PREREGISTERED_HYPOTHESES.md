@@ -174,3 +174,78 @@ visible.
 curve for every model and market — opening -> moving -> closing with the close **locked 60s before
 kick-off**, 7 days of history, and in-play rows returned separately for their own table. v11 already
 guarded this on its own snapshots; this makes it explicit and reusable.
+
+---
+
+## F2 — FINDING: the goal O/U line barely moves, so CLV is a weak yardstick here
+
+**Found:** 2026-08-19 · **Status:** OPEN — directionally clear, needs a week of data to settle
+
+Asked directly whether odds actually move, per model and per market. They do — but not on the market
+we bet.
+
+### What holds
+
+**1X2 moves; goal O/U mostly does not.** Last 7 days, per fixture-market:
+
+| model | market | pts/fixture-mkt | % moved | median range |
+|---|---|---|---|---|
+| new_format | h2h_home | 2.23 | 58% | **3.3%** |
+| new_format | h2h_away | 2.29 | 56% | **2.9%** |
+| standard | h2h_away | 2.01 | 71% | **4.9%** |
+| new_format | over25 / under25 | 1.72 | 42% | **0.0%** |
+| standard | over25 / under25 | 1.55 | 45% | **0.0%** |
+| new_format | btts | 1.45 | 31% | **0.0%** |
+
+The decisive part is that this is NOT a sampling artifact. 1X2 and goal O/U arrive in the SAME
+API-Football `/odds` response at the same timestamps, so polling opportunity is identical. Among 187
+fixtures carrying both: **44 where 1X2 moved and O/U did not, versus 14 the other way** — a 3:1
+asymmetry on matched sampling.
+
+Movement rate on the market we bet, with matched denominators (both sources store
+consecutive-distinct prices, so "rows per key" is comparable):
+
+| source | keys | snapshot-minutes | % that moved |
+|---|---|---|---|
+| OddsAPI, per book+side | 3,052 | 14 | **21%** |
+| API-Football Bet365, new_format | 138 | 10 | **13%** |
+
+Incidental but worth knowing: **bet365 is absent from the OddsAPI feed** (17 books, none of them
+Bet365), so the two odds sources never overlap on a single bookmaker and cannot be compared
+book-to-book.
+
+### Three numbers retracted on the way here
+
+Recorded because each looked convincing and each would have supported a wrong decision:
+
+1. **"98% of book-side O/U series moved"** — CIRCULAR. `book_odds_snapshots.csv` is
+   consecutive-distinct deduped (`_bn["odds"].ne(_prev)` in `src/predict.py`), so filtering to
+   series with more than one row guarantees "it moved" by construction.
+2. **"the API-Football Bet365 feed is stale"** — not supported. Adjusted for sampling opportunity
+   Bet365 is only modestly stickier than other books (13% vs 21%), not anomalous.
+3. **"consensus view moved on 97%"** — my own keying artifact: pooling 17 books under one key makes
+   rows accumulate from DIFFERENT BOOKS, not from movement over time.
+
+### Why it matters
+
+It explains a clean CLV of **-0.015%** (see H2/F1) without the model needing to be wrong. If the O/U
+line does not move on roughly 80% of fixture-sides, CLV is **structurally near zero** for most bets —
+there was no line movement in which to have captured value.
+
+Consequence for v11's design: `clv_ok` requires mean CLV > 0 with n >= `MIN_CLV_N` (150) per segment.
+In a market this sticky, CLV will sit near zero for a long time **regardless of model quality**, so
+the gate can stay shut for reasons that have nothing to do with whether the model is right. Read a
+closed gate as "insufficient evidence", never as "the model has no edge".
+
+This argues the **residual test** — Brier/log-loss across ALL fixtures, bet and declined — is the
+load-bearing measurement for this market, and CLV is the weaker one. That is the reverse of the usual
+ordering and the reverse of what the architecture currently assumes.
+
+### What would change the picture
+
+- A week of `book_odds_snapshots.csv` rather than 14 snapshot minutes on one day.
+- `kickoff_utc` (added 2026-08-19) making lead-time measurable: if movement concentrates inside T-1h
+  and our samples mostly sit further out, the 13-21% is an artifact of WHEN we sample, not of the
+  market. That is the single most important follow-up and it is now measurable.
+- If the goal line really is this sticky, the honest options are to accept a much longer CLV horizon,
+  or to judge on the residual test alone.
