@@ -1,0 +1,58 @@
+{
+  "generated_at": "2026-08-19T12:55:20Z",
+  "n_fixtures": 564,
+  "h1": {
+    "holdout_after": "2026-08-18",
+    "n_holdout": 0,
+    "weight": 0.2,
+    "cuts": [
+      0.031,
+      0.065,
+      0.123
+    ],
+    "high_cut": 0.123,
+    "verdict": "INSUFFICIENT",
+    "note": "no fixtures after the registration cut-off yet"
+  },
+  "h2_clv": {
+    "min_clv_n": 150,
+    "segments": [
+      {
+        "segment": "new_format",
+        "n_clean": 143,
+        "n_present": 317,
+        "n_rejected": 174,
+        "mean_clv_pct": -0.0154,
+        "mean_clv_unfiltered": 26.2623,
+        "ready": false
+      },
+      {
+        "segment": "standard",
+        "n_clean": 46,
+        "n_present": 46,
+        "n_rejected": 0,
+        "mean_clv_pct": 1.375,
+        "mean_clv_unfiltered": 1.375,
+        "ready": false
+      },
+      {
+        "segment": "unknown",
+        "n_clean": 3,
+        "n_present": 3,
+        "n_rejected": 0,
+        "mean_clv_pct": -1.42,
+        "mean_clv_unfiltered": -1.42,
+        "ready": false
+      }
+    ],
+    "plausible_abs_limit": 25.0,
+    "total_rows": 4795,
+    "clv_present": 366,
+    "clv_clean": 192,
+    "clv_rejected_implausible": 174,
+    "coverage_clean": 0.04,
+    "mean_clv_raw": 22.9075,
+    "median_clv_raw": 2.45,
+    "mean_clv_clean": 0.2958
+  }
+}

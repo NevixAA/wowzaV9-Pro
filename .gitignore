@@ -57,6 +57,9 @@ output/**
 # The weekly audit record. Committed so the history of "was the pipeline persisting" is itself
 # persisted — a check whose result is thrown away cannot show a slow decline.
 !output/weekly_audit.json
+# The monthly out-of-sample evaluation record. Committed for the same reason: a hypothesis test
+# whose result is discarded cannot show whether an effect held up over time.
+!output/monthly_eval.json
 
 # The season store IS the deliverable and must survive across CI runs, so it is committed.
 # Safe to commit because writes are run-partitioned (one small file per table per run) and
