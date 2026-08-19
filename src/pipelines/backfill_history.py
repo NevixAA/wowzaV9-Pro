@@ -239,7 +239,10 @@ def run(*, do_extract: bool, do_results: bool, write: bool = True) -> pd.DataFra
         j2["market"] = "OU25"
         store.append("settlements_backfill" if "settlements_backfill" in cfg.TABLES
                      else "settlements", j2, source="v9:git_backfill",
-                     rid=f"backfill-{pd.Timestamp.utcnow():%Y%m%dT%H%M%S}")
+                     # Timestamp.now("UTC"), not utcnow(): the runner installs whatever pandas is
+                     # current (3.0.5 today) and utcnow() already emits a Pandas4Warning saying it
+                     # will be removed. Fixing it now rather than when it becomes an error.
+                     rid=f"backfill-{pd.Timestamp.now('UTC'):%Y%m%dT%H%M%S}")
         # Joined artifact, which doubles as the DONE marker for the scheduled workflow. A
         # marker derived from the real output cannot drift out of step with it, unlike a
         # separate flag file.
