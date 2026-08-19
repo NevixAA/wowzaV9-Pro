@@ -85,7 +85,88 @@ def _two_sided_prices(mk: pd.DataFrame) -> pd.DataFrame:
                                "OVER_n": "over_quotes", "UNDER_n": "under_quotes"})
 
 
+def _backfill_dataset() -> pd.DataFrame:
+    """The UNBIASED sample: match outcomes for fixtures v9 evaluated, INCLUDING the declined ones.
+
+    This is the table the whole backfill exists to produce, and it is self-contained — one row
+    carries the outcome, both sides of the price and v9's own probability — so unlike the ledger
+    path it needs no join against market_snapshots/model_snapshots and cannot lose rows to a
+    failed join.
+
+    Why it must be a SEPARATE source rather than more rows in `settlements`: a settlement answers
+    "did the bet win" and only exists where a bet was placed. 176 of these 264 fixtures were
+    DECLINED, so they have no side, no result, and no settlement — but they do have an outcome.
+    They are the controls, and without them the market is being scored only on the fixtures v9
+    picked for maximum model-market disagreement, which is precisely where a real market looks
+    worst. That is what the selection-bias warning below has been reporting.
+    """
+    b = store.read("settlements_backfill")
+    if b.empty:
+        return pd.DataFrame()
+    b = b[b["market"].astype(str).str.upper() == "OU25"].copy()
+    b["y"] = pd.to_numeric(b["y"], errors="coerce")
+    b = b[b["y"].isin([0, 1])]
+    for c in ("odds_over25", "odds_under25", "p_over25"):
+        b[c] = pd.to_numeric(b.get(c), errors="coerce")
+    # No imputation: a fixture missing a price or a model probability cannot be scored, and
+    # inventing either would fabricate the very number under test (invariant 9).
+    b = b[b["odds_over25"].notna() & b["odds_under25"].notna() & b["p_over25"].notna()]
+    if b.empty:
+        return pd.DataFrame()
+    dv = b.apply(lambda r: devig(r["odds_over25"], r["odds_under25"]), axis=1)
+    b["p_market"] = [d.prob for d in dv]
+    b["overround"] = [d.overround for d in dv]
+    b["devig_reason"] = [d.reason for d in dv]
+    b["over_odds"] = b["odds_over25"]
+    b["under_odds"] = b["odds_under25"]
+    b["over_quotes"] = 1
+    b["under_quotes"] = 1
+    b["p_model"] = b["p_over25"]
+    b["p_model_source"] = "backfill_predictions_csv"
+    b["was_bet"] = b["bet"].astype(str).str.upper().isin(["OVER", "UNDER"])
+    b["sample_source"] = "backfill"
+    b = b[b["p_market"].notna()]
+    return b.sort_values("observed_at").drop_duplicates("fixture_key", keep="last")
+
+
 def build_dataset(*, min_quotes: int = 1) -> pd.DataFrame:
+    """Union of the two settled-outcome sources, deduplicated per fixture.
+
+    The BACKFILL row wins where a fixture appears in both, because it records what the match did
+    (`y` straight from the score) whereas the ledger row records what a bet did and has to be
+    un-inverted through side+WIN/LOSS. Same fact, but one derivation has fewer ways to be wrong.
+    """
+    ledger = _ledger_dataset(min_quotes=min_quotes)
+    back = _backfill_dataset()
+    if ledger.empty and back.empty:
+        return pd.DataFrame()
+    if not ledger.empty:
+        ledger = ledger.copy()
+        ledger["sample_source"] = "ledger"
+        if "was_bet" not in ledger.columns:
+            # Every ledger row IS a bet by construction — it only exists because a side was taken.
+            ledger["was_bet"] = True
+    keep = ["fixture_key", "y", "league", "match_date", "model_type", "p_market", "p_model",
+            "p_model_source", "overround", "devig_reason", "over_odds", "under_odds",
+            "over_quotes", "under_quotes", "was_bet", "sample_source", "signal_tier"]
+    frames = []
+    for f in (back, ledger):                      # backfill FIRST so keep='first' prefers it
+        if f is None or f.empty:
+            continue
+        g = f.copy()
+        for c in keep:
+            if c not in g.columns:
+                g[c] = np.nan
+        frames.append(g[keep])
+    df = pd.concat(frames, ignore_index=True)
+    df = df.drop_duplicates("fixture_key", keep="first")
+    df["p_model"] = pd.to_numeric(df["p_model"], errors="coerce").clip(0.001, 0.999)
+    df["p_market"] = pd.to_numeric(df["p_market"], errors="coerce").clip(0.001, 0.999)
+    df = df[df["p_model"].notna() & df["p_market"].notna() & df["y"].notna()]
+    return df.reset_index(drop=True)
+
+
+def _ledger_dataset(*, min_quotes: int = 1) -> pd.DataFrame:
     """Join settled outcomes, two-sided prices and model probabilities on fixture_key."""
     st = store.read("settlements")
     mk = store.read("market_snapshots")
@@ -200,19 +281,39 @@ def run(*, weight: float = 0.20, min_quotes: int = 1, write: bool = True) -> dic
     print("\n=== is this sample trustworthy? ===")
     print(f"  base rate {base:.3f} -> a constant forecast scores logloss {const_ll:.5f}")
     print(f"  market scores {overall['market_logloss']:.5f}")
+    # Composition FIRST, because it decides how to read the line above. "The market is worse than
+    # the base rate" means something completely different on a bet-only sample (expected, the
+    # sample is selected for disagreement) than on a sample containing declined fixtures (a real
+    # anomaly that needs explaining).
+    n_ctrl = int((~df["was_bet"].fillna(True).astype(bool)).sum())
+    n_bet = len(df) - n_ctrl
+    src = df["sample_source"].value_counts().to_dict() if "sample_source" in df else {}
+    print(f"  composition: {n_bet} bet, {n_ctrl} DECLINED controls  sources={src}")
     selection_warning = overall["market_logloss"] > const_ll
-    if selection_warning:
+    has_controls = n_ctrl >= 20
+    if selection_warning and not has_controls:
         print("  *** WARNING: the market is WORSE than predicting the base rate. A real market "
               "is not. ***")
-        print("  These rows are only fixtures v9 CHOSE TO BET, i.e. selected for maximum")
-        print("  model-market disagreement. On such a subset the market looks bad by")
-        print("  construction, so 'the blend beats the market' here is close to circular.")
+        print(f"  Only {n_ctrl} declined control(s) in this sample, so these rows are effectively")
+        print("  just fixtures v9 CHOSE TO BET — selected for maximum model-market disagreement.")
+        print("  On such a subset the market looks bad by construction, so 'the blend beats the")
+        print("  market' is close to circular.")
         print("  Prompt 3 section 17 requires outcomes for BET, PAPER and NO_BET controls.")
         print("  TREAT THE RESULT ABOVE AS A MACHINERY TEST, NOT AS EVIDENCE OF EDGE.")
+    elif selection_warning and has_controls:
+        print(f"  *** the market still scores worse than the base rate WITH {n_ctrl} controls "
+              f"present. ***")
+        print("  Selection bias is no longer a sufficient explanation, so this is now a real")
+        print("  finding to chase rather than a known artefact — candidates: the sample is still")
+        print("  small and league-skewed, these are OPENING prices rather than closing, and the")
+        print("  leagues present are summer/second-tier competitions rather than the deep markets.")
     else:
         print("  market beats the constant baseline — the sample looks sane")
     metrics_extra = {"base_rate": base, "constant_logloss": const_ll,
-                     "selection_bias_warning": bool(selection_warning)}
+                     "selection_bias_warning": bool(selection_warning),
+                     "n_declined_controls": n_ctrl, "n_bet": n_bet,
+                     "has_controls": bool(has_controls),
+                     "sample_sources": src}
 
     # Per-segment p-values need FDR control before any of them is believed.
     seg = res[res.segment != "overall"].copy()
