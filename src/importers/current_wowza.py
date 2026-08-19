@@ -22,6 +22,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -251,7 +252,17 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
             "match_date": d["match_date"],
             "market": "OU25",
             "side": d.get("side", ""),
+            # v9 defines edge = model_prob - 1/odds, so the model's probability AT BET TIME is
+            # recoverable exactly: model_prob = edge + 1/odds. Carried because it is the ONLY
+            # record of what the model thought about a fixture that has since settled.
+            # predictions.csv is pre-match only and is overwritten every 5 minutes, so
+            # model_snapshots can never contain a settled fixture until Pro has been running
+            # long enough for its own snapshots to settle. Without this column the
+            # market-relative test cannot start until then; with it, a year of history is
+            # already usable.
+            "edge_pct": num(d.get("edge_pct", pd.Series(dtype=object))),
             "odds": num(d.get("odds", pd.Series(dtype=object))),
+            "opening_odds": num(d.get("opening_odds", pd.Series(dtype=object))),
             "closing_odds": num(d.get("closing_odds", pd.Series(dtype=object))),
             "clv_pct": num(d.get("clv_pct", pd.Series(dtype=object))),
             "signal_tier": d.get("signal_tier", ""),
@@ -260,6 +271,13 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
             "model_type": d.get("model_type", ""),
             "notes": d.get("notes", ""),
         })
+        # p_model reconstructed from v9's own definition, side-aware: edge_pct is quoted for
+        # the side that was TAKEN, so an UNDER row's edge is about UNDER. Converting both to
+        # "probability that OVER happens" keeps one consistent target.
+        _imp = 1.0 / s["odds"].where(s["odds"] > 1.0)
+        _p_taken = (s["edge_pct"] / 100.0) + _imp
+        s["p_model_over"] = np.where(s["side"].astype(str).str.upper() == "UNDER",
+                                     1.0 - _p_taken, _p_taken)
         # A result we cannot verify is flagged, not assumed correct (section 16).
         s["quality_flags"] = ""
         s.loc[~s["result"].isin(["WIN", "LOSS", "VOID", "PENDING"]),
