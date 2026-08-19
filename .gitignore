@@ -63,10 +63,15 @@ output/**
 # Watermarks must persist or every run re-imports v9's full odds history (~40k rows).
 !output/import_watermarks.json
 
-# The git-history extract (935 fixtures, 71KB). Committed so the results fetch can run in CI
-# WITHOUT cloning v9's 1.3GB history: the extract needs all 678 predictions.csv commits, the
-# results fetch needs none of them. Also means the expensive walk is done once, not per run.
+# The git-history extract (935 fixtures). Committed so the results fetch can run in CI WITHOUT
+# cloning v9's 1.3GB history: the extract needs all 702 predictions.csv commits, the results
+# fetch needs none of them. Also means the expensive walk is done once, not per run.
 !data/_backfill_fixtures.parquet
+
+# The JOINED result — and the gate for pro_backfill_results.yml, which skips when this exists.
+# MUST be committed or the gate can never see it and the hourly schedule would redo the whole
+# fetch forever. Caught before shipping: `data/**` above would otherwise have ignored it.
+!data/_backfill_joined.parquet
 !registry/**
 !experiments/**/manifest.json
 !experiments/**/metrics.json

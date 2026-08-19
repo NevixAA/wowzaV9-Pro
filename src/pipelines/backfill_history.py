@@ -40,6 +40,9 @@ from src.data import season_store as store
 
 V9 = cfg.V9_LOCAL
 PRED = "output/predictions.csv"
+# The joined result. Its EXISTENCE is what tells the scheduled workflow the backfill is
+# already done, so the marker is the artifact itself and cannot drift from it.
+JOINED = cfg.DATA_DIR / "_backfill_joined.parquet"
 
 # league -> (football-data format, code). Only the leagues that actually appear in the
 # snapshots need an entry; anything unmapped is reported rather than silently skipped.
@@ -237,7 +240,11 @@ def run(*, do_extract: bool, do_results: bool, write: bool = True) -> pd.DataFra
         store.append("settlements_backfill" if "settlements_backfill" in cfg.TABLES
                      else "settlements", j2, source="v9:git_backfill",
                      rid=f"backfill-{pd.Timestamp.utcnow():%Y%m%dT%H%M%S}")
-        print("[backfill] written to the season store")
+        # Joined artifact, which doubles as the DONE marker for the scheduled workflow. A
+        # marker derived from the real output cannot drift out of step with it, unlike a
+        # separate flag file.
+        j.to_parquet(JOINED, index=False)
+        print(f"[backfill] written to the season store and to {JOINED.name}")
     return j
 
 

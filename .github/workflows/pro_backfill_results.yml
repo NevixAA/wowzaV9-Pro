@@ -22,6 +22,16 @@ name: Pro Backfill Results
 # comparison falsifiable.
 
 on:
+  # SELF-ACTIVATING, then self-silencing. This is a one-off job, but a workflow_dispatch-only
+  # job needs someone to click it, and the whole point is that it should not wait on a human.
+  #
+  # So it runs hourly and gates on its OWN OUTPUT: if data/_backfill_joined.parquet exists the
+  # job exits immediately, having spent a checkout and nothing else. That makes the marker the
+  # artifact itself, which cannot drift out of step with reality the way a separate flag file
+  # can. The first run does the work; every run after it is a no-op costing no API call, no
+  # quota and no commit.
+  schedule:
+    - cron: '25 * * * *'
   workflow_dispatch:
     inputs:
       write:
@@ -30,6 +40,12 @@ on:
         default: 'true'
         type: choice
         options: ['true', 'false']
+      force:
+        description: 'Re-run even if the join already exists'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
 
 concurrency:
   group: pro-backfill-results
@@ -54,7 +70,22 @@ jobs:
 
       - run: pip install pandas pyarrow requests
 
+      # Gate on the artifact, not on a flag. Once the join exists there is nothing left to do,
+      # so the hourly schedule costs one checkout and stops.
+      - name: Already done?
+        id: gate
+        run: |
+          if [ -f data/_backfill_joined.parquet ] \
+             && [ "${{ github.event.inputs.force }}" != "true" ]; then
+            echo "done=true" >> "$GITHUB_OUTPUT"
+            echo "data/_backfill_joined.parquet exists — backfill already complete, nothing to do."
+            echo "Re-run with force=true to redo it."
+          else
+            echo "done=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Fetch results and join
+        if: steps.gate.outputs.done != 'true'
         run: |
           if [ ! -f data/_backfill_fixtures.parquet ]; then
             echo "::error title=No extract::data/_backfill_fixtures.parquet is missing. Run the"
@@ -66,7 +97,7 @@ jobs:
           python -m src.pipelines.backfill_history --results $FLAG
 
       - name: Re-run the market-relative test on the unbiased sample
-        if: ${{ github.event.inputs.write != 'false' }}
+        if: steps.gate.outputs.done != 'true' && github.event.inputs.write != 'false'
         run: |
           # The sanity check inside this prints whether the market still scores worse than a
           # constant forecast. If the warning DISAPPEARS, the selection bias is gone and the
@@ -75,7 +106,7 @@ jobs:
           python -m src.pipelines.shadow || true
 
       - name: Commit
-        if: always()
+        if: always() && steps.gate.outputs.done != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -84,6 +115,7 @@ jobs:
           for f in output/collect_health.json output/system_registry.json; do
             git add -f "$f" 2>/dev/null || echo "  (skip, not present: $f)"
           done
+          # data/_backfill_joined.parquet MUST be committed — it is the gate.
           git add -A data experiments 2>/dev/null || true
           echo "staged: $(git diff --staged --name-only | wc -l) file(s)"
           git diff --staged --quiet || \
