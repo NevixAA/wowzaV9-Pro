@@ -65,9 +65,15 @@ FD_CODES: dict[str, tuple[str, str]] = {
 STD_URL = "https://www.football-data.co.uk/mmz4281/{season}/{code}.csv"
 NEW_URL = "https://www.football-data.co.uk/new/{code}.csv"
 
-_KEEP = ["league", "date", "kickoff_utc", "home_team", "away_team",
-         "odds_over25", "odds_under25", "p_over25", "model_type",
-         "signal_tier", "bet", "best_edge", "no_form_data", "drift_signal"]
+# Identity and decision columns that must always be present.
+_REQUIRED = ["league", "date", "home_team", "away_team", "p_over25"]
+
+# Everything else in predictions.csv is kept too. The first version of this listed 14 columns
+# and dropped the other ~128 — including every engineered feature — which made the extract
+# useless for TRAINING a model, only for comparing one. Since predictions.csv is pre-match by
+# construction, no column in it can carry post-kickoff information, so keeping all of them
+# cannot leak. Storage is trivial: 935 fixtures x ~142 columns is about 1MB of parquet.
+_DROP = {"Unnamed: 0"}
 
 
 def _git(args: list[str], binary: bool = False):
@@ -102,10 +108,9 @@ def extract() -> pd.DataFrame:
             d = pd.read_csv(io.BytesIO(raw))
         except Exception:
             continue
-        cols = [c for c in _KEEP if c in d.columns]
-        if "p_over25" not in cols or "date" not in cols:
+        if not set(_REQUIRED) <= set(d.columns):
             continue
-        d = d[cols].copy()
+        d = d[[c for c in d.columns if c not in _DROP]].copy()
         d["observed_at"] = when
         d["source_sha"] = sha[:12]
         frames.append(d)
