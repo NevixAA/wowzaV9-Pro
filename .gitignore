@@ -54,6 +54,9 @@ output/**
 !output/system_registry.json
 !output/pro_readiness.json
 !output/collect_health.json
+# The weekly audit record. Committed so the history of "was the pipeline persisting" is itself
+# persisted — a check whose result is thrown away cannot show a slow decline.
+!output/weekly_audit.json
 
 # The season store IS the deliverable and must survive across CI runs, so it is committed.
 # Safe to commit because writes are run-partitioned (one small file per table per run) and

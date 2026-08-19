@@ -1,0 +1,137 @@
+name: Pro Weekly Data Audit
+
+# Weekly check that the whole chain is WIRED and, more importantly, PERSISTING.
+#
+# WHY IT LIVES IN PRO AND NOT v9: v9 is frozen (CLAUDE.md invariant 3). This reads v9 read-only,
+# exactly as pro_collect and wowza-v11 already do, so production gets audited without a single
+# change to it.
+#
+# WHAT IT IS LOOKING FOR. Every incident in this project was "green workflow, no data" — never a
+# crash. `git add` staging nothing for three days; `-X ours` discarding the pushing run's own rows;
+# odds_history_v9.json gitignored so drift_signal was "New" on 100% of rows forever;
+# COLLECT_SEASONS frozen at 2025 while the daily job reported success for six weeks. So the audit
+# checks whether artifacts have MOVED, using write timestamps rather than fixture dates — a board
+# full of future kickoffs looks fresh forever if you measure the wrong column.
+#
+# WEEKLY IS DELIBERATE. GitHub drops high-frequency schedule events (measured: v9's */15 cron
+# delivered every 179 minutes, its */5 predict every 34). A weekly cron is far below the throttling
+# threshold, so it actually fires. It is also the right cadence for the question — "is the pipeline
+# still persisting" changes on the scale of days, not minutes.
+#
+# COST: zero. No API-Football call, no OddsAPI call. It reads committed files only.
+
+on:
+  schedule:
+    # Monday 06:15 UTC. Off the hour, because :00 is the busiest slot on GitHub's shared scheduler.
+    - cron: '15 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'Look-back window in days (blank = 7)'
+        required: false
+        default: ''
+      strict:
+        description: 'Fail the run when a check FAILs'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+concurrency:
+  group: pro-weekly-audit
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # v9 read-only. Needed because the parquet checks (player_history, af_history) cannot be
+      # served over raw HTTP, and because file mtime is the fallback freshness signal for CSVs
+      # that carry no write-timestamp column.
+      - name: Check out v9 baseline (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install pandas pyarrow requests
+
+      - name: Run the audit
+        id: audit
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: |
+          DAYS="${{ github.event.inputs.days }}"
+          [ -n "$DAYS" ] || DAYS=7
+          FLAG=""
+          if [ "${{ github.event.inputs.strict }}" = "true" ]; then FLAG="--strict"; fi
+          python -m src.monitoring.weekly_audit --days "$DAYS" \
+            --json output/weekly_audit.json $FLAG | tee audit.txt
+          echo "worst=$(python -c "
+          import json;print(json.load(open('output/weekly_audit.json'))['worst'])")" \
+            >> "$GITHUB_OUTPUT"
+
+      # Put the result where it can be seen without opening logs — the props/predict failures
+      # earlier were invisible for exactly this reason.
+      - name: Publish to the job summary
+        if: always()
+        run: |
+          {
+            echo "## Weekly data audit"
+            echo ""
+            echo '```'
+            sed -n '1,200p' audit.txt 2>/dev/null || echo "(no output captured)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Annotate WARN/FAIL
+        if: always()
+        run: |
+          python - <<'PY'
+          import json, os
+          try:
+              d = json.load(open("output/weekly_audit.json"))
+          except Exception as e:
+              print(f"::warning title=Audit unreadable::{e}"); raise SystemExit(0)
+          for c in d.get("checks", []):
+              if c["status"] == "FAIL":
+                  print(f"::error title=AUDIT FAIL {c['area']}/{c['name']}::"
+                        f"{c['detail']} | WHY: {c.get('why','')}")
+              elif c["status"] == "WARN":
+                  print(f"::warning title=AUDIT WARN {c['area']}/{c['name']}::{c['detail']}")
+          print(f"worst={d.get('worst')} counts={d.get('counts')}")
+          PY
+
+      - name: Commit the audit record
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Per-file, because `git add a b missing` stages NOTHING when one path is absent —
+          # the defect that silenced v9's player_props for three days.
+          for f in output/weekly_audit.json; do
+            git add -f "$f" 2>/dev/null || echo "  (skip, not present: $f)"
+          done
+          git diff --staged --quiet && { echo "no change"; exit 0; }
+          git commit -m "pro: weekly data audit $(date -u '+%Y-%m-%d')"
+          for i in 1 2 3 4 5; do
+            # No `-X ours`: in a rebase `ours` is UPSTREAM, so it discards this run's own rows.
+            git pull --rebase --autostash origin main && git push && exit 0
+            echo "push race - retry $i"; sleep $((RANDOM % 5 + 3))
+          done
+          echo "::error title=push failed::Audit ran but the record was not persisted."
+          exit 1
