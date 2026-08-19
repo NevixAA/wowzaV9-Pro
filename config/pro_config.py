@@ -72,6 +72,13 @@ TABLES = (
     "feature_snapshots",
     "signals",
     "settlements",
+    # Match OUTCOMES for every fixture v9 evaluated, including the ones it DECLINED —
+    # deliberately separate from `settlements`, which is a bet ledger. A settlement answers
+    # "did the bet win"; these answer "did the match go over 2.5", and 176 of the first 264 rows
+    # are fixtures no bet was ever placed on, so they have no result in the settlement sense.
+    # Collapsing the two would have forced an invented `result` onto a fixture nobody bet, which
+    # is exactly the fabricated-value problem invariant 9 exists to prevent.
+    "settlements_backfill",
     "clv",
     "player_props",
     "live_signals",

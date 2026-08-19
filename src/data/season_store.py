@@ -45,6 +45,9 @@ REQUIRED: dict[str, tuple[str, ...]] = {
     "feature_snapshots": ("fixture_key",),
     "signals":           ("fixture_key", "market", "signal_tier", "deployment_mode"),
     "settlements":       ("fixture_key", "market", "result"),
+    # Outcome, not bet result: `y` is "did OVER 2.5 happen". No `result` column, because most
+    # of these fixtures were never bet and inventing one would be a fabricated value.
+    "settlements_backfill": ("fixture_key", "market", "y"),
     "clv":               ("fixture_key", "market"),
     "player_props":      ("fixture_key", "market", "player_name"),
     "live_signals":      ("fixture_key",),
