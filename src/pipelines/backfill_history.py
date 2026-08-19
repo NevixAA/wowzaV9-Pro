@@ -37,12 +37,34 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from config import pro_config as cfg
 from src.data import entities as ent
 from src.data import season_store as store
+from src.data.club_resolver import build_alias_map
 
 V9 = cfg.V9_LOCAL
 PRED = "output/predictions.csv"
 # The joined result. Its EXISTENCE is what tells the scheduled workflow the backfill is
 # already done, so the marker is the artifact itself and cannot drift from it.
 JOINED = cfg.DATA_DIR / "_backfill_joined.parquet"
+
+# Bump whenever club-name resolution changes in a way that could join MORE fixtures. The
+# scheduled workflow gates on JOINED existing, which correctly made the job self-silencing — but
+# it also meant an improvement to resolution would never be applied, because the artifact from the
+# worse run is still sitting there. The version is written next to the artifact and compared on
+# each run, so a resolver improvement re-activates the job exactly once and then goes quiet again.
+#   1 - exact club_slug match only.       joined 264/935 (28.2%)
+#   2 - league-scoped alias resolution with two-way ambiguity refusal (src/data/club_resolver).
+#       On the subset with local results the join rate went 23.5% -> 50.6% (x2.16).
+RESOLVER_VERSION = 2
+VERSION_FILE = cfg.DATA_DIR / "_backfill_resolver_version"
+
+
+def is_stale() -> bool:
+    """True when the join should be redone: never run, or run by an older resolver."""
+    if not JOINED.exists():
+        return True
+    try:
+        return int(VERSION_FILE.read_text(encoding="utf-8").strip()) < RESOLVER_VERSION
+    except Exception:
+        return True                      # unreadable/absent version = treat as older
 
 # league -> (football-data format, code). Only the leagues that actually appear in the
 # snapshots need an entry; anything unmapped is reported rather than silently skipped.
@@ -147,6 +169,61 @@ def _season_codes(dates: pd.Series) -> set[str]:
     return out
 
 
+def _align_club_names(res: pd.DataFrame, fixtures: pd.DataFrame) -> pd.DataFrame:
+    """Rewrite football-data's club names into v9's, per league, before keying.
+
+    THE JOIN WAS NEVER ABOUT AVAILABILITY. It matched 264 of 935 fixtures (28.2%), and 656 of the
+    671 misses were in leagues where other fixtures joined fine. fixture_key is
+    sha1(league|date|club_slug(home)|club_slug(away)), so one differing token breaks it completely
+    — and v9 (via OddsAPI) writes the long form while football-data writes the short one:
+
+        Birmingham City / Birmingham        Bolton Wanderers / Bolton
+        RB Salzburg / Salzburg              Vasco da Gama / Vasco
+
+    Which is why the leagues football-data covers BEST had the worst join rates — Championship 8%,
+    League One 8%, League Two 12%. A date/timezone explanation was tested first and REFUTED:
+    correlation between join rate and the share of fixtures kicking off 00:00-04:00 UTC was -0.005.
+
+    Direction matters. The rename is applied to the RESULTS, not the fixtures, so every existing
+    fixture_key in the season store stays valid — v9's naming is canonical in Pro, and rewriting
+    the fixtures would silently invalidate rows already joined to other tables.
+
+    Ambiguity is REFUSED, never guessed — see src/data/club_resolver. On this data it learned 89
+    mappings and refused exactly one, `Estudiantes`, which is genuinely undecidable between
+    `Estudiantes L.P.` and `Estudiantes Rio Cuarto`.
+    """
+    if res.empty or fixtures.empty:
+        return res
+    v9_by = {lg: sorted({str(x) for x in
+                         set(g["home_team"].dropna()) | set(g["away_team"].dropna())})
+             for lg, g in fixtures.groupby(fixtures["league"].astype(str))}
+    fd_by = {lg: sorted({str(x) for x in
+                         set(g["home_team"].dropna()) | set(g["away_team"].dropna())})
+             for lg, g in res.groupby(res["league"].astype(str))}
+    alias, reports = build_alias_map(v9_by, fd_by)
+    # Invert to football-data -> v9. Safe because build_alias_map guarantees the pairing is unique
+    # in BOTH directions within a league, so no two v9 names can share one football-data target.
+    inv: dict[tuple[str, str], str] = {}
+    for (lg, v9n), fdn in alias.items():
+        inv[(lg, fdn)] = v9n
+    out = res.copy()
+    lg_s = out["league"].astype(str)
+    for col in ("home_team", "away_team"):
+        out[col] = [inv.get((l, str(n)), str(n)) for l, n in zip(lg_s, out[col])]
+    learned = sum(len(r.resolved) for r in reports.values())
+    refused = sum(len(r.refused) for r in reports.values())
+    unmatched = sum(len(r.unmatched) for r in reports.values())
+    print(f"[backfill] club-name alignment: {learned} name(s) mapped, {refused} refused as "
+          f"ambiguous, {unmatched} with no candidate")
+    for lg in sorted(reports):
+        r = reports[lg]
+        if r.resolved or r.refused:
+            print(f"[backfill]   {lg}: {r.summary()}")
+        for nm, why in sorted(r.refused.items()):
+            print(f"[backfill]     REFUSED {nm!r}: {why}")
+    return out
+
+
 def fetch_results(fixtures: pd.DataFrame) -> pd.DataFrame:
     """Actual goals from football-data.co.uk — free, public, no key."""
     import requests
@@ -195,6 +272,7 @@ def fetch_results(fixtures: pd.DataFrame) -> pd.DataFrame:
     if not rows:
         return pd.DataFrame()
     res = pd.concat(rows, ignore_index=True)
+    res = _align_club_names(res, fixtures)
     res = ent.add_fixture_key(res)
     res["total_goals"] = res["home_goals"] + res["away_goals"]
     res["y_over25"] = (res["total_goals"] > 2.5).astype(int)
@@ -247,7 +325,10 @@ def run(*, do_extract: bool, do_results: bool, write: bool = True) -> pd.DataFra
         # marker derived from the real output cannot drift out of step with it, unlike a
         # separate flag file.
         j.to_parquet(JOINED, index=False)
-        print(f"[backfill] written to the season store and to {JOINED.name}")
+        # Stamp the resolver that produced it, so a later improvement can tell this join is stale.
+        VERSION_FILE.write_text(str(RESOLVER_VERSION), encoding="utf-8")
+        print(f"[backfill] written to the season store and to {JOINED.name} "
+              f"(resolver v{RESOLVER_VERSION})")
     return j
 
 

@@ -72,6 +72,11 @@ output/**
 # MUST be committed or the gate can never see it and the hourly schedule would redo the whole
 # fetch forever. Caught before shipping: `data/**` above would otherwise have ignored it.
 !data/_backfill_joined.parquet
+# The resolver version that produced the join above. MUST be committed alongside it: the workflow
+# gate compares this to RESOLVER_VERSION in the source to decide whether an improvement to
+# club-name resolution needs re-applying. Ignored, it would read as version 0 forever and the job
+# would redo the whole fetch on every schedule.
+!data/_backfill_resolver_version
 !registry/**
 !experiments/**/manifest.json
 !experiments/**/metrics.json

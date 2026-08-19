@@ -75,13 +75,28 @@ jobs:
       - name: Already done?
         id: gate
         run: |
-          if [ -f data/_backfill_joined.parquet ] \
-             && [ "${{ github.event.inputs.force }}" != "true" ]; then
+          # Gate on the artifact AND the resolver version that produced it. Artifact-only was
+          # subtly wrong: it made the job self-silencing (good) but also meant an IMPROVEMENT to
+          # club-name resolution could never be applied, because the file from the worse run is
+          # still there. Resolver v1 joined 264/935 (28.2%); v2 adds league-scoped alias
+          # resolution and more than doubled the rate on the subset that could be measured
+          # locally. A version bump therefore has to re-open the gate exactly once.
+          STALE=1
+          if [ -f data/_backfill_joined.parquet ]; then
+            WANT=$(sed -n 's/^RESOLVER_VERSION = \([0-9]\+\).*/\1/p' \
+                   src/pipelines/backfill_history.py | head -1)
+            HAVE=$(cat data/_backfill_resolver_version 2>/dev/null || echo 0)
+            echo "join exists; resolver have=${HAVE:-0} want=${WANT:-?}"
+            if [ -n "$WANT" ] && [ "${HAVE:-0}" -ge "$WANT" ] 2>/dev/null; then STALE=0; fi
+          else
+            echo "no join artifact yet"
+          fi
+          if [ "$STALE" = "0" ] && [ "${{ github.event.inputs.force }}" != "true" ]; then
             echo "done=true" >> "$GITHUB_OUTPUT"
-            echo "data/_backfill_joined.parquet exists — backfill already complete, nothing to do."
-            echo "Re-run with force=true to redo it."
+            echo "up to date for this resolver version — nothing to do."
           else
             echo "done=false" >> "$GITHUB_OUTPUT"
+            echo "running: either no join yet, an older resolver produced it, or force=true."
           fi
 
       - name: Fetch results and join
