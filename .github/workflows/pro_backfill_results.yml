@@ -1,0 +1,96 @@
+name: Pro Backfill Results
+
+# One-off (re-runnable) job: fetch actual match results for the 935 fixtures extracted from
+# v9's git history, and join them to produce the UNBIASED market-relative dataset.
+#
+# WHY IT RUNS IN CI RATHER THAN LOCALLY: the Apollo corporate network performs TLS
+# interception, so requests to football-data.co.uk fail certificate verification with both the
+# default and an explicit certifi bundle, and there is no proxy variable to point at a CA. A
+# GitHub runner has none of that. v9's own update_results.py already fetches the same host here
+# successfully.
+#
+# WHY IT DOES NOT CLONE v9: the extract needed all 678 predictions.csv commits and is already
+# done, committed as data/_backfill_fixtures.parquet (71KB). The results step needs none of that
+# history, so this job avoids pulling v9's 1.3GB repo.
+#
+# COST: zero. football-data.co.uk CSVs are free and unauthenticated. No API-Football call, no
+# OddsAPI call, no quota consumed.
+#
+# WHAT IT UNLOCKS: 643 of the 935 fixtures are ones v9 DECLINED. Phase 5's first result was
+# significant and worthless because the sample contained only fixtures v9 chose to bet, on which
+# the market scores worse than predicting the base rate. These are the controls that make the
+# comparison falsifiable.
+
+on:
+  workflow_dispatch:
+    inputs:
+      write:
+        description: 'Write results into the season store'
+        required: false
+        default: 'true'
+        type: choice
+        options: ['true', 'false']
+
+concurrency:
+  group: pro-backfill-results
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install pandas pyarrow requests
+
+      - name: Fetch results and join
+        run: |
+          if [ ! -f data/_backfill_fixtures.parquet ]; then
+            echo "::error title=No extract::data/_backfill_fixtures.parquet is missing. Run the"
+            echo "extract locally first (needs v9's git history) and commit it."
+            exit 1
+          fi
+          FLAG=""
+          if [ "${{ github.event.inputs.write }}" = "false" ]; then FLAG="--no-write"; fi
+          python -m src.pipelines.backfill_history --results $FLAG
+
+      - name: Re-run the market-relative test on the unbiased sample
+        if: ${{ github.event.inputs.write != 'false' }}
+        run: |
+          # The sanity check inside this prints whether the market still scores worse than a
+          # constant forecast. If the warning DISAPPEARS, the selection bias is gone and the
+          # number finally means something. If it persists, something else is wrong and we
+          # want to know that too.
+          python -m src.pipelines.shadow || true
+
+      - name: Commit
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Per-file, so one absent path cannot stage nothing (the defect that silenced
+          # v9's player_props for three days).
+          for f in output/collect_health.json output/system_registry.json; do
+            git add -f "$f" 2>/dev/null || echo "  (skip, not present: $f)"
+          done
+          git add -A data experiments 2>/dev/null || true
+          echo "staged: $(git diff --staged --name-only | wc -l) file(s)"
+          git diff --staged --quiet || \
+            git commit -m "pro: backfill results $(date -u '+%Y-%m-%d %H:%M UTC')"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main && git push && exit 0
+            echo "push race - retry $i"; sleep $((RANDOM % 5 + 3))
+          done
+          echo "::error title=push failed::Results fetched but not persisted."
+          exit 1
