@@ -1,92 +1,92 @@
 {
-  "generated_at": "2026-08-19T12:44:45Z",
+  "generated_at": "2026-08-21T15:56:29Z",
   "window_days": 7,
-  "v9_sha": "06c6b41ed2b1",
-  "worst": "WARN",
+  "v9_sha": "36c6abb0e821",
+  "worst": "FAIL",
   "counts": {
-    "PASS": 15,
+    "PASS": 16,
     "INFO": 0,
     "WARN": 1,
-    "FAIL": 0
+    "FAIL": 1
   },
   "checks": [
     {
       "area": "wiring",
       "name": "output/predictions.csv",
       "status": "PASS",
-      "detail": "164 rows, written 1.1h ago per generated_at; 164 future-dated row(s)",
-      "value": 1.1,
+      "detail": "147 rows, written 0.4h ago per generated_at; 147 future-dated row(s)",
+      "value": 0.4,
       "why": "predict is the entry point; stale means no board is being produced"
     },
     {
       "area": "wiring",
       "name": "output/bets.csv",
       "status": "PASS",
-      "detail": "26 rows, written 1.0h ago per file mtime; 26 future-dated row(s)",
-      "value": 1.0,
+      "detail": "26 rows, written 0.4h ago per file mtime; 26 future-dated row(s)",
+      "value": 0.4,
       "why": "the staked board. thin weeks are legitimate, so only WARN"
     },
     {
       "area": "wiring",
       "name": "output/player_tips.csv",
       "status": "PASS",
-      "detail": "413 rows, written 2.6h ago per file mtime; 400 future-dated row(s)",
-      "value": 2.6,
+      "detail": "419 rows, written 0.3h ago per file mtime; 403 future-dated row(s)",
+      "value": 0.3,
       "why": "props are paper-only, so staleness is not money \u2014 but it is a broken collector"
     },
     {
       "area": "wiring",
       "name": "output/side_bets_ledger.csv",
       "status": "PASS",
-      "detail": "34 rows, written 2.7h ago per generated_at; 13 future-dated row(s)",
-      "value": 2.7,
+      "detail": "37 rows, written 1.1h ago per generated_at; 14 future-dated row(s)",
+      "value": 1.1,
       "why": "side markets carry most staked tips right now"
     },
     {
       "area": "wiring",
       "name": "output/bets_ledger.csv",
       "status": "PASS",
-      "detail": "4,795 rows, written 22.8h ago per generated_at; 62 future-dated row(s)",
-      "value": 22.8,
+      "detail": "4,799 rows, written 7.1h ago per generated_at; 52 future-dated row(s)",
+      "value": 7.1,
       "why": "the durable tip record; grading and CLV hang off it"
     },
     {
       "area": "odds_curve",
       "name": "output/standard_sidemarket_odds_history.csv",
       "status": "PASS",
-      "detail": "1,632 rows / 23 distinct snapshot minutes in 7d; 1.59 points per fixture-market",
-      "value": 1.59,
+      "detail": "1,754 rows / 32 distinct snapshot minutes in 7d; 1.85 points per fixture-market",
+      "value": 1.85,
       "why": "1.0 means an ENTRY PRICE, not a curve \u2014 CLV needs several points per fixture"
     },
     {
       "area": "odds_curve",
       "name": "output/newformat_odds_history.csv",
       "status": "PASS",
-      "detail": "3,310 rows / 34 distinct snapshot minutes in 7d; 1.65 points per fixture-market",
-      "value": 1.65,
+      "detail": "2,718 rows / 39 distinct snapshot minutes in 7d; 1.61 points per fixture-market",
+      "value": 1.61,
       "why": "1.0 means an ENTRY PRICE, not a curve \u2014 CLV needs several points per fixture"
     },
     {
       "area": "odds_curve",
       "name": "output/book_odds_snapshots.csv",
       "status": "PASS",
-      "detail": "4,106 rows / 5 distinct snapshot minutes in 7d; 2.26 points per fixture-market",
-      "value": 2.26,
+      "detail": "12,455 rows / 64 distinct snapshot minutes in 7d; 5.95 points per fixture-market",
+      "value": 5.95,
       "why": "1.0 means an ENTRY PRICE, not a curve \u2014 CLV needs several points per fixture"
     },
     {
       "area": "odds_curve",
       "name": "near-kickoff snapshots",
       "status": "PASS",
-      "detail": "58 snapshot(s) within 6h of kickoff in 7d",
-      "value": 58,
+      "detail": "71 snapshot(s) within 6h of kickoff in 7d",
+      "value": 71,
       "why": "T-1h/T-30m is where the closing line forms"
     },
     {
       "area": "odds_curve",
       "name": "drift_signal populated",
       "status": "PASS",
-      "detail": "0.0% of rows are 'New' ({'Neutral': 88, 'Conflicted': 44, 'Confirmed': 32})",
+      "detail": "0.0% of rows are 'New' ({'Neutral': 63, 'Conflicted': 53, 'Confirmed': 31})",
       "value": 0.0,
       "why": "100% 'New' means odds history is not persisting, so tier drift never fires"
     },
@@ -94,49 +94,65 @@
       "area": "tips",
       "name": "staked tips recorded",
       "status": "PASS",
-      "detail": "62 SNIPER/MARKSMAN in 7d (all tiers: {'VALUABLE': 107, 'SNIPER': 44, 'MARKSMAN': 18})",
-      "value": 62,
+      "detail": "59 SNIPER/MARKSMAN in 7d (all tiers: {'VALUABLE': 106, 'SNIPER': 39, 'MARKSMAN': 20})",
+      "value": 59,
       "why": "VALUABLE is recorded but NOT staked"
     },
     {
       "area": "tips",
       "name": "settled tips graded",
       "status": "PASS",
-      "detail": "278/290 (96%) of kicked-off tips have a result",
-      "value": 0.959,
+      "detail": "272/284 (96%) of kicked-off tips have a result",
+      "value": 0.958,
       "why": "ungraded tips cannot produce P&L or CLV"
     },
     {
       "area": "tips",
       "name": "CLV recorded",
       "status": "WARN",
-      "detail": "366/4733 (8%) settled tips carry clv_pct",
-      "value": 0.077,
+      "detail": "377/4747 (8%) settled tips carry clv_pct",
+      "value": 0.079,
       "why": "CLV is the gate that certifies a BET; without it everything stays PAPER"
     },
     {
       "area": "collection",
       "name": "player_history.parquet",
       "status": "PASS",
-      "detail": "newest row 2.5d old (limit 10d)",
-      "value": 2.5,
+      "detail": "newest row 4.7d old (limit 10d)",
+      "value": 4.7,
       "why": "a season-keyed table that stops advancing while the job reports success is the COLLECT_SEASONS failure"
     },
     {
       "area": "collection",
       "name": "output/af_history.parquet",
       "status": "PASS",
-      "detail": "newest row 1.5d old (limit 14d)",
-      "value": 1.5,
+      "detail": "newest row 3.7d old (limit 14d)",
+      "value": 3.7,
       "why": "a season-keyed table that stops advancing while the job reports success is the COLLECT_SEASONS failure"
     },
     {
       "area": "collection",
       "name": "pro season store",
       "status": "PASS",
-      "detail": "118,955 rows across 10/11 tables; empty: ['data_quality']",
-      "value": 118955,
+      "detail": "178,917 rows across 10/11 tables; empty: ['data_quality']",
+      "value": 178917,
       "why": "Pro must keep its own record"
+    },
+    {
+      "area": "config",
+      "name": "every enabled league has a sport key",
+      "status": "FAIL",
+      "detail": "20 enabled, 29 keys (imported v9 config); without a key: ['Romanian Superliga']",
+      "value": 1,
+      "why": "an enabled league with no key can never reach the board, so it silently bets nothing"
+    },
+    {
+      "area": "config",
+      "name": "sport keys valid against OddsAPI",
+      "status": "PASS",
+      "detail": "29 keys checked; invalid: none",
+      "value": 0,
+      "why": "an invalid key 404s inside a try/except, so the league reports no fixtures and looks quiet rather than broken \u2014 this is how Ligue 2 stayed dark for three months"
     }
   ]
 }

@@ -326,6 +326,103 @@ def audit_collection(a: Audit, now, days: int) -> None:
         a.add("collection", "pro season store", WARN, f"unreadable: {str(e)[:60]}", None, "")
 
 
+# ── E. config reachability: can each bet league actually be fetched? ─────────
+def audit_config(a: Audit, now, days: int) -> None:
+    """Every league v9 is willing to BET must have a valid, reachable odds key.
+
+    WHY: on 2026-08-21 three of v9's 29 OddsAPI sport keys were invalid, and one of them was
+    `Ligue 2` — an ENABLED league with a per-league SNIPER threshold and a recorded backtest ROI of
+    +45.2%. `soccer_france_ligue_2` returns HTTP 404 while the real key is
+    `soccer_france_ligue_two`. It had been wrong since the repo's first commit, so Ligue 2 had never
+    produced a live tip in three months.
+
+    The reason it hid so long is the failure mode: a wrong key 404s inside a try/except, so the
+    league simply reports no fixtures. "This competition is quiet today" and "this competition is
+    unreachable forever" look identical from the outside — exactly the green-workflow-no-data shape
+    everything else in this audit is built to catch.
+
+    Two checks, and the first needs no API key at all:
+      1. every ENABLED league has a sport key  (catches Romanian Superliga, enabled with none)
+      2. every configured key exists in OddsAPI's catalogue  (catches the 404 typos)
+    """
+    v9 = cfg.V9_LOCAL
+    cfgpy = v9 / "config.py"
+    if not cfgpy.exists():
+        a.add("config", "v9 config", INFO, "v9 checkout not available", None, "")
+        return
+    # IMPORT v9's config rather than regexing it. A text parse over-matched on the first
+    # attempt — it reported 27 ENABLED_LEAGUES where the module defines 20, because a
+    # non-greedy block match can run past the closing bracket. It still found the right
+    # answer, but a check that miscounts its own denominator cannot be trusted to be
+    # complete, and an over-match could just as easily invent a missing key.
+    keys: dict = {}
+    enabled: list = []
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("_v9cfg", cfgpy)
+        mod = importlib.util.module_from_spec(spec)
+        sys.path.insert(0, str(v9))          # config imports siblings
+        spec.loader.exec_module(mod)
+        keys = dict(getattr(mod, "ODDS_API_SPORT_KEYS", {}) or {})
+        enabled = list(getattr(mod, "ENABLED_LEAGUES", []) or [])
+        how = "imported v9 config"
+    except Exception as e:
+        # Fall back to a TIGHT regex, and say so — silently degrading to a weaker method is how
+        # a check starts passing for the wrong reason.
+        import re
+        src = cfgpy.read_text(encoding="utf-8", errors="ignore")
+        m = re.search(r"^ODDS_API_SPORT_KEYS\s*:?\s*dict?\s*=\s*\{(.*?)^\}",
+                      src, re.S | re.M)
+        keys = dict(re.findall(r'"([^"]+)"\s*:\s*"([^"]+)"', m.group(1))) if m else {}
+        m2 = re.search(r"^ENABLED_LEAGUES\s*:?\s*\w*\s*=\s*[\[\{](.*?)^[\]\}]",
+                       src, re.S | re.M)
+        enabled = re.findall(r'"([^"]+)"', m2.group(1)) if m2 else []
+        how = f"regex fallback ({type(e).__name__})"
+
+    if not keys or not enabled:
+        a.add("config", "parse v9 config", WARN,
+              f"could not parse (keys={len(keys)}, enabled={len(enabled)})", None,
+              "a silent parse failure would make these checks vacuously pass")
+        return
+
+    missing = [l for l in enabled if l not in keys]
+    a.add("config", "every enabled league has a sport key",
+          PASS if not missing else FAIL,
+          f"{len(enabled)} enabled, {len(keys)} keys ({how}); without a key: {missing or 'none'}",
+          len(missing),
+          "an enabled league with no key can never reach the board, so it silently bets nothing")
+
+    import os
+    api_key = os.getenv("ODDS_API_KEY", "")
+    if not api_key:
+        a.add("config", "sport keys valid against OddsAPI", INFO,
+              f"skipped — no ODDS_API_KEY in this environment ({len(keys)} keys unverified)",
+              None, "set ODDS_API_KEY to enable; /sports is free and does not consume quota")
+        return
+    try:
+        import requests
+        r = requests.get("https://api.the-odds-api.com/v4/sports",
+                         params={"apiKey": api_key, "all": "true"}, timeout=30)
+        if r.status_code != 200:
+            a.add("config", "sport keys valid against OddsAPI", WARN,
+                  f"catalogue fetch returned HTTP {r.status_code}", None, "")
+            return
+        have = {s["key"] for s in r.json()}
+    except Exception as e:
+        a.add("config", "sport keys valid against OddsAPI", WARN,
+              f"catalogue unreachable: {str(e)[:60]}", None, "")
+        return
+    bad = {l: k for l, k in keys.items() if k not in have}
+    bad_enabled = {l: k for l, k in bad.items() if l in enabled}
+    a.add("config", "sport keys valid against OddsAPI",
+          FAIL if bad_enabled else (WARN if bad else PASS),
+          f"{len(keys)} keys checked; invalid: {bad or 'none'}"
+          + (f"; OF THOSE ENABLED FOR BETTING: {bad_enabled}" if bad_enabled else ""),
+          len(bad),
+          "an invalid key 404s inside a try/except, so the league reports no fixtures and looks "
+          "quiet rather than broken — this is how Ligue 2 stayed dark for three months")
+
+
 def run(days: int = 7, json_path: str | None = None, strict: bool = False) -> int:
     now = pd.Timestamp.now(tz="UTC")
     a = Audit()
@@ -335,7 +432,8 @@ def run(days: int = 7, json_path: str | None = None, strict: bool = False) -> in
         sha = "unknown"
     print(f"[audit] {now:%Y-%m-%d %H:%M UTC}  window={days}d  v9={sha}")
     print(f"[audit] V9_LOCAL={cfg.V9_LOCAL}  exists={cfg.V9_LOCAL.exists()}\n")
-    for fn in (audit_wiring, audit_odds_curve, audit_tips, audit_collection):
+    for fn in (audit_wiring, audit_odds_curve, audit_tips, audit_collection,
+               audit_config):
         try:
             fn(a, now, days)
         except Exception as e:
