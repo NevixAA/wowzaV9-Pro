@@ -1,12 +1,16 @@
 {
-  "checked_at": "2026-08-21T05:07:59Z",
-  "watermarks_advanced": {},
+  "checked_at": "2026-08-21T07:09:27Z",
+  "watermarks_advanced": {
+    "output/standard_odds_history.csv": "2026-08-21T00:27:47",
+    "output/newformat_odds_dense.csv": "2026-08-21T00:27:47",
+    "output/standard_sidemarket_odds_history.csv": "2026-08-21T06:54:13Z"
+  },
   "season": "season_2026_27",
-  "run_id": "gh32449394790-1",
-  "v9_sha": "0671e7c7614c",
-  "pro_git_sha": "a5b2fb005ed0",
+  "run_id": "gh32457368723-1",
+  "v9_sha": "5c1410cf8a7c",
+  "pro_git_sha": "c70c194ab35b",
   "dry_run": false,
-  "total_rows": 1496,
+  "total_rows": 9979,
   "per_importer": {
     "predictions": {
       "rows": 1496,
@@ -17,51 +21,81 @@
         "feature_snapshots": 149,
         "signals": 149
       }
+    },
+    "odds_histories": {
+      "rows": 710,
+      "tables": {
+        "market_snapshots": 710
+      }
+    },
+    "ledgers": {
+      "rows": 4834,
+      "tables": {
+        "settlements": 4834
+      }
+    },
+    "player_props": {
+      "rows": 2688,
+      "tables": {
+        "player_props": 2688
+      }
+    },
+    "clv": {
+      "rows": 207,
+      "tables": {
+        "clv": 207
+      }
+    },
+    "live_signals": {
+      "rows": 44,
+      "tables": {
+        "live_signals": 44
+      }
     }
   },
   "failures": [],
   "store": {
     "fixtures": {
-      "rows": 7725,
-      "partitions": 48,
-      "runs": 48,
+      "rows": 7874,
+      "partitions": 49,
+      "runs": 49,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-21"
     },
     "model_snapshots": {
-      "rows": 36344,
-      "partitions": 48,
-      "runs": 48,
+      "rows": 37052,
+      "partitions": 49,
+      "runs": 49,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-21"
     },
     "market_snapshots": {
-      "rows": 60122,
-      "partitions": 52,
-      "runs": 52,
+      "rows": 61173,
+      "partitions": 54,
+      "runs": 54,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-21"
     },
     "feature_snapshots": {
-      "rows": 7725,
-      "partitions": 48,
-      "runs": 48,
+      "rows": 7874,
+      "partitions": 49,
+      "runs": 49,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-21"
     },
     "signals": {
-      "rows": 7725,
-      "partitions": 48,
-      "runs": 48,
+      "rows": 7874,
+      "partitions": 49,
+      "runs": 49,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-21"
     },
     "settlements": {
-      "rows": 28945,
-      "partitions": 12,
-      "runs": 12,
+      "rows": 33779,
+      "partitions": 14,
+      "runs": 14,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-08-20"
+      "last_dt": "2026-08-21"
     },
     "settlements_backfill": {
       "rows": 778,
@@ -71,25 +105,25 @@
       "last_dt": "2026-05-21"
     },
     "clv": {
-      "rows": 474,
-      "partitions": 5,
-      "runs": 5,
+      "rows": 681,
+      "partitions": 6,
+      "runs": 6,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-08-20"
+      "last_dt": "2026-08-21"
     },
     "player_props": {
-      "rows": 11453,
-      "partitions": 5,
-      "runs": 5,
+      "rows": 14141,
+      "partitions": 6,
+      "runs": 6,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-08-20"
+      "last_dt": "2026-08-21"
     },
     "live_signals": {
-      "rows": 220,
-      "partitions": 5,
-      "runs": 5,
+      "rows": 264,
+      "partitions": 6,
+      "runs": 6,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-08-20"
+      "last_dt": "2026-08-21"
     },
     "data_quality": {
       "rows": 0,
