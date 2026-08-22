@@ -249,3 +249,67 @@ ordering and the reverse of what the architecture currently assumes.
   market. That is the single most important follow-up and it is now measurable.
 - If the goal line really is this sticky, the honest options are to accept a much longer CLV horizon,
   or to judge on the residual test alone.
+
+---
+
+## F3 — FINDING: only two of v9's market models beat their own base rate
+
+**Found:** 2026-08-22 · **Status:** CLOSED (a measurement, not a hypothesis)
+
+Prompted by "why doesn't BTTS have a model". It has one — 28,369 training samples, chronological
+split, calibrated — it simply has not learned anything. The useful part is what the comparison shows
+about the OTHER models.
+
+Every model scored against **its own market's base rate**, not against 0.50. That distinction is the
+whole finding: comparing a 73%-base-rate market like over-1.5 to a coin flip flatters it enormously
+(+0.140 log-loss "gain" becomes +0.029 once the baseline is right).
+
+| model | AUC | log-loss | base rate | baseline LL | **gain** |
+|---|---|---|---|---|---|
+| over15 | 0.554 | 0.5527 | 0.731 | 0.5821 | **+0.0294** |
+| newformat | 0.598 | 0.6774 | 0.489 | 0.6929 | **+0.0155** |
+| standard (main O/U) | 0.547 | 0.6885 | 0.489 | 0.6929 | **+0.0044** |
+| btts | 0.535 | 0.6874 | 0.528 | 0.6915 | **+0.0042** |
+| over35 | 0.565 | 0.5971 | 0.265 | 0.5778 | **−0.0193** |
+
+Base rates computed from the actual results data (`backtest_results_standard.csv` +
+`backtest_results_newformat.csv`), not assumed.
+
+### The three things that matter
+
+1. **BTTS is no worse than the main standard O/U model.** +0.0042 against +0.0044 —
+   indistinguishable. "BTTS has no model" is true, but so is "standard O/U has no model", and only
+   one of those two stakes real money. This reframes BTTS from uniquely broken to typical.
+
+2. **over35 is WORSE than predicting its own base rate** (−0.0193). Predicting 0.265 for every
+   fixture would beat it. Corroborated independently on the live board: all 27 over-3.5 fixtures
+   carrying a price had NEGATIVE edges, median −22.8%. This model should not be producing signals
+   at all.
+
+3. **over15 and newformat are the only two carrying real information.** over15 is the strongest by
+   a factor of two, which is consistent with over-1.5 being the market where side-market tips
+   actually appear (11 SNIPER on the 2026-08-21 board) and where the only positive measured ROI
+   sits (n=19, +8.0%).
+
+### Why BTTS is intrinsically hard, as a hypothesis for later work
+
+BTTS is a CONJUNCTION — both teams must score. The feature set (`home_attack_str`,
+`away_defense_str`, `combined_sot_ratio`) predicts goal VOLUME, which is what O/U needs. BTTS needs
+the DISTRIBUTION of goals between the sides: 3-0 and 1-1 share a total and have opposite BTTS
+outcomes. Nothing in the features encodes that asymmetry, and the flat importance profile agrees —
+the top feature carries only 6.84%, so nothing dominates.
+
+Testable prediction, not yet tested: adding asymmetry features (per-side scoring probability,
+expected goal difference, P(home clean sheet) x P(away clean sheet)) should improve BTTS materially
+while leaving O/U roughly unchanged.
+
+### Corrections made while producing this
+
+* First version compared every model to a 0.50 constant. Wrong for any market whose base rate is
+  not 50%, and it inflated over15 from +0.029 to +0.140.
+* `ht_over15` was matched to the FULL-TIME over-1.5 base rate by a name collision, making its row
+  meaningless. Excluded rather than reported.
+* Separately, I stated BTTS "will never produce tips" from an edge computed as `p - 1/odds`. The
+  side-market path actually uses `p - (1/odds)/1.08`, and on the live board that yields three
+  fixtures above the 3% VALUABLE gate (max +4.69%). Measured BTTS overround is 7.50% median, so the
+  pipeline's flat 1.08 is slightly conservative — the safe direction.
