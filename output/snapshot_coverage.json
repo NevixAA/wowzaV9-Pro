@@ -1,0 +1,97 @@
+{
+  "generated_at": "2026-08-23T08:05:59Z",
+  "sources": {
+    "output/book_odds_snapshots.csv": {
+      "path": "output/book_odds_snapshots.csv",
+      "rows": 28318,
+      "has_kickoff": true,
+      "series": 364,
+      "fixtures": 126,
+      "median_snapshots": 41.0,
+      "p10_snapshots": 5.0,
+      "coverage": {
+        "T-6h": {
+          "series": 317,
+          "of": 364,
+          "pct": 0.8709
+        },
+        "T-3h": {
+          "series": 295,
+          "of": 364,
+          "pct": 0.8104
+        },
+        "T-1h": {
+          "series": 260,
+          "of": 364,
+          "pct": 0.7143
+        },
+        "T-30m": {
+          "series": 232,
+          "of": 364,
+          "pct": 0.6374
+        },
+        "T-10m": {
+          "series": 129,
+          "of": 364,
+          "pct": 0.3544
+        }
+      },
+      "note": "",
+      "kickoff_parseable": 0.7848,
+      "max_snapshots": 201,
+      "label": "main O/U (per book)"
+    },
+    "output/standard_sidemarket_odds_history.csv": {
+      "path": "output/standard_sidemarket_odds_history.csv",
+      "rows": 16690,
+      "has_kickoff": true,
+      "series": 600,
+      "fixtures": 49,
+      "median_snapshots": 1.0,
+      "p10_snapshots": 1.0,
+      "coverage": {
+        "T-6h": {
+          "series": 248,
+          "of": 600,
+          "pct": 0.4133
+        },
+        "T-3h": {
+          "series": 153,
+          "of": 600,
+          "pct": 0.255
+        },
+        "T-1h": {
+          "series": 88,
+          "of": 600,
+          "pct": 0.1467
+        },
+        "T-30m": {
+          "series": 62,
+          "of": 600,
+          "pct": 0.1033
+        },
+        "T-10m": {
+          "series": 5,
+          "of": 600,
+          "pct": 0.0083
+        }
+      },
+      "note": "",
+      "kickoff_parseable": 0.1152,
+      "max_snapshots": 7,
+      "label": "standard side-markets"
+    },
+    "output/newformat_odds_dense.csv": {
+      "path": "output/newformat_odds_dense.csv",
+      "rows": 2807,
+      "has_kickoff": false,
+      "series": 0,
+      "fixtures": 0,
+      "median_snapshots": null,
+      "p10_snapshots": null,
+      "coverage": {},
+      "note": "no kickoff_utc column; T-minus buckets not computable for this source",
+      "label": "new-format dense"
+    }
+  }
+}

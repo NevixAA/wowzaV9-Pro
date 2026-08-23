@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-08-23T08:03:10Z",
+  "generated_at": "2026-08-23T08:05:59Z",
   "window_days": 7,
   "v9_sha": "10fc62e9dc6b",
   "worst": "WARN",
   "counts": {
-    "PASS": 19,
-    "INFO": 1,
+    "PASS": 20,
+    "INFO": 3,
     "WARN": 2,
     "FAIL": 0
   },
@@ -14,8 +14,8 @@
       "area": "wiring",
       "name": "output/predictions.csv",
       "status": "PASS",
-      "detail": "138 rows, written 8.0h ago per generated_at [active window 08-23h; 8.0h of the 8.0h gap was outside it]; 129 future-dated row(s)",
-      "value": 8.0,
+      "detail": "138 rows, written 8.1h ago per generated_at [active window 08-23h; 8.0h of the 8.1h gap was outside it]; 129 future-dated row(s)",
+      "value": 8.1,
       "why": "predict is the entry point; stale means no board is being produced"
     },
     {
@@ -137,6 +137,30 @@
       "detail": "231,753 rows across 10/11 tables; empty: ['data_quality']",
       "value": 231753,
       "why": "Pro must keep its own record"
+    },
+    {
+      "area": "snapshot coverage",
+      "name": "main O/U (per book): near-kickoff",
+      "status": "PASS",
+      "detail": "364 series over 126 kicked-off fixtures; median 41 snapshots; T-6h 87%  T-3h 81%  T-1h 71%  T-30m 64%  T-10m 35%",
+      "value": 0.6374,
+      "why": "the closing price is what CLV is measured against and /odds cannot be backfilled \u2014 a close missed before kickoff is lost permanently"
+    },
+    {
+      "area": "snapshot coverage",
+      "name": "standard side-markets: near-kickoff",
+      "status": "INFO",
+      "detail": "600 series; median 1 snapshots; T-6h 41%  T-3h 26%  T-1h 15%  T-30m 10%  T-10m 1%",
+      "value": 0.1033,
+      "why": "reported, not gated: side-market density is known-thin, so a floor here would fire every run"
+    },
+    {
+      "area": "snapshot coverage",
+      "name": "new-format dense: bucketing",
+      "status": "INFO",
+      "detail": "no kickoff_utc column; T-minus buckets not computable for this source (rows 2,807)",
+      "value": null,
+      "why": "adding kickoff_utc to this writer would make its close auditable"
     },
     {
       "area": "registry",

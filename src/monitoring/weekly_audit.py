@@ -381,7 +381,67 @@ def audit_collection(a: Audit, now, days: int) -> None:
         a.add("collection", "pro season store", WARN, f"unreadable: {str(e)[:60]}", None, "")
 
 
-# ── E. registry: is the machine-readable statement of "what we have" TRUE? ───
+# ── E. near-kickoff coverage: is the CLOSING line being captured at all? ─────
+def audit_snapshot_coverage(a: Audit, now, days: int) -> None:
+    """Density per fixture-market and coverage of the buckets approaching kickoff.
+
+    Separate from audit_odds_curve, which asks "did the file move recently". A file can advance
+    every hour and still never hold a price inside the final ten minutes — and since `/odds` is
+    pre-match only, a close not captured before kickoff is gone permanently. This is the only
+    check that would notice.
+
+    Only the main market is gated (see snapshot_coverage module docstring): side-market coverage
+    is genuinely poor today, so a threshold there would fire on every run.
+    """
+    try:
+        from src.monitoring import snapshot_coverage as sc
+    except Exception as e:
+        a.add("snapshot coverage", "module import", WARN, f"unimportable: {str(e)[:60]}", None,
+              "cannot audit near-kickoff coverage without it")
+        return
+    try:
+        r = sc.report(now=now)
+    except Exception as e:
+        a.add("snapshot coverage", "report", WARN, f"failed: {str(e)[:70]}", None, "")
+        return
+
+    for path, m in r["sources"].items():
+        label = m["label"]
+        if not m.get("has_kickoff"):
+            a.add("snapshot coverage", f"{label}: bucketing", INFO,
+                  m["note"] + f" (rows {m['rows']:,})", None,
+                  "adding kickoff_utc to this writer would make its close auditable")
+            continue
+        if not m.get("series"):
+            a.add("snapshot coverage", f"{label}: bucketing", INFO, m["note"], None, "")
+            continue
+
+        cov = m["coverage"]
+        line = "  ".join(f"{k} {cov[k]['pct']:.0%}" for k, _ in sc.BUCKETS)
+        is_main = "book_odds_snapshots" in path
+        if is_main:
+            bad = [k for k, floor in sc.MAIN_FLOORS.items() if cov[k]["pct"] < floor]
+            thin = m["median_snapshots"] < sc.MIN_MEDIAN_SNAPSHOTS
+            st = FAIL if (bad or thin) else PASS
+            detail = (f"{m['series']} series over {m['fixtures']} kicked-off fixtures; "
+                      f"median {m['median_snapshots']:.0f} snapshots; {line}")
+            if bad:
+                detail += f"  BELOW FLOOR: {', '.join(bad)}"
+            if thin:
+                detail += f"  median < {sc.MIN_MEDIAN_SNAPSHOTS}"
+            a.add("snapshot coverage", f"{label}: near-kickoff", st, detail,
+                  cov["T-30m"]["pct"],
+                  "the closing price is what CLV is measured against and /odds cannot be "
+                  "backfilled — a close missed before kickoff is lost permanently")
+        else:
+            a.add("snapshot coverage", f"{label}: near-kickoff", INFO,
+                  f"{m['series']} series; median {m['median_snapshots']:.0f} snapshots; {line}",
+                  cov["T-30m"]["pct"],
+                  "reported, not gated: side-market density is known-thin, so a floor here "
+                  "would fire every run")
+
+
+# ── F. registry: is the machine-readable statement of "what we have" TRUE? ───
 def audit_registry(a: Audit, now, days: int) -> None:
     """output/system_registry.json is what any consumer reads to answer "how much data".
 
@@ -603,7 +663,7 @@ def run(days: int = 7, json_path: str | None = None, strict: bool = False) -> in
     print(f"[audit] {now:%Y-%m-%d %H:%M UTC}  window={days}d  v9={sha}")
     print(f"[audit] V9_LOCAL={cfg.V9_LOCAL}  exists={cfg.V9_LOCAL.exists()}\n")
     for fn in (audit_wiring, audit_odds_curve, audit_tips, audit_collection,
-               audit_registry, audit_config):
+               audit_snapshot_coverage, audit_registry, audit_config):
         try:
             fn(a, now, days)
         except Exception as e:
