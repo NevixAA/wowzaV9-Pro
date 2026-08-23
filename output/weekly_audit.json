@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-23T11:44:55Z",
+  "generated_at": "2026-08-23T12:02:03Z",
   "window_days": 7,
   "v9_sha": "822de1932076",
   "worst": "WARN",
@@ -14,40 +14,40 @@
       "area": "wiring",
       "name": "output/predictions.csv",
       "status": "PASS",
-      "detail": "139 rows, written 0.7h ago per generated_at [active window 08-23h, no idle time in gap]; 138 future-dated row(s)",
-      "value": 0.7,
+      "detail": "139 rows, written 0.9h ago per generated_at [active window 08-23h, no idle time in gap]; 131 future-dated row(s)",
+      "value": 0.9,
       "why": "predict is the entry point; stale means no board is being produced"
     },
     {
       "area": "wiring",
       "name": "output/bets.csv",
       "status": "PASS",
-      "detail": "42 rows, written 0.4h ago per file mtime; 41 future-dated row(s)",
-      "value": 0.4,
+      "detail": "42 rows, written 0.7h ago per file mtime; 37 future-dated row(s)",
+      "value": 0.7,
       "why": "the staked board. thin weeks are legitimate, so only WARN"
     },
     {
       "area": "wiring",
       "name": "output/player_tips.csv",
       "status": "PASS",
-      "detail": "412 rows, written 0.4h ago per file mtime; 277 future-dated row(s)",
-      "value": 0.4,
+      "detail": "412 rows, written 0.7h ago per file mtime; 277 future-dated row(s)",
+      "value": 0.7,
       "why": "props are paper-only, so staleness is not money \u2014 but it is a broken collector"
     },
     {
       "area": "wiring",
       "name": "output/side_bets_ledger.csv",
       "status": "PASS",
-      "detail": "70 rows, written 0.7h ago per generated_at; 19 future-dated row(s)",
-      "value": 0.7,
+      "detail": "70 rows, written 1.0h ago per generated_at; 19 future-dated row(s)",
+      "value": 1.0,
       "why": "side markets carry most staked tips right now"
     },
     {
       "area": "wiring",
       "name": "output/bets_ledger.csv",
       "status": "PASS",
-      "detail": "4,867 rows, written 0.7h ago per generated_at; 41 future-dated row(s)",
-      "value": 0.7,
+      "detail": "4,867 rows, written 1.0h ago per generated_at; 41 future-dated row(s)",
+      "value": 1.0,
       "why": "the durable tip record; grading and CLV hang off it"
     },
     {
@@ -134,16 +134,16 @@
       "area": "collection",
       "name": "pro season store",
       "status": "PASS",
-      "detail": "269,371 rows across 12/12 tables; empty: []",
-      "value": 269371,
+      "detail": "269,383 rows across 12/12 tables; empty: []",
+      "value": 269383,
       "why": "Pro must keep its own record"
     },
     {
       "area": "snapshot coverage",
       "name": "main O/U (per book): near-kickoff",
       "status": "PASS",
-      "detail": "378 series over 131 kicked-off fixtures; median 42 snapshots; T-6h 88%  T-3h 82%  T-1h 72%  T-30m 64%  T-10m 34%",
-      "value": 0.6402,
+      "detail": "400 series over 138 kicked-off fixtures; median 41 snapshots; T-6h 88%  T-3h 82%  T-1h 72%  T-30m 60%  T-10m 32%",
+      "value": 0.605,
       "why": "the closing price is what CLV is measured against and /odds cannot be backfilled \u2014 a close missed before kickoff is lost permanently"
     },
     {
@@ -222,8 +222,8 @@
       "area": "movement research",
       "name": "advancing",
       "status": "PASS",
-      "detail": "last ingest 0.8h ago (limit 30h); 34,543 rows over 282 fixtures",
-      "value": 0.8,
+      "detail": "last ingest 1.1h ago (limit 30h); 34,543 rows over 282 fixtures",
+      "value": 1.1,
       "why": "a research archive that stops advancing looks identical to one that is fine"
     },
     {
@@ -262,16 +262,16 @@
       "area": "registry",
       "name": "freshness",
       "status": "PASS",
-      "detail": "generated 0.3h ago (limit 30h)",
-      "value": 0.3,
+      "detail": "generated 0.0h ago (limit 30h)",
+      "value": 0.0,
       "why": "pro_collect refreshes it 2-hourly; 30h means the refresh step itself stopped, which is how the counts drifted 49% unnoticed"
     },
     {
       "area": "registry",
       "name": "reconciliation",
       "status": "PASS",
-      "detail": "all 12 tables match canonical (269,371 rows)",
-      "value": 269371,
+      "detail": "all 12 tables match canonical (269,383 rows)",
+      "value": 269383,
       "why": ""
     },
     {
