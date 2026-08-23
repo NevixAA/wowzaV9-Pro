@@ -130,6 +130,34 @@ def _write_age_h(df: pd.DataFrame, path: str, now) -> tuple[float | None, str]:
     return None, "none"
 
 
+# Artifacts whose producer only runs during part of the day. Without this the check cries wolf
+# every morning: predict's cron is `1-59/5 8-23`, so NOTHING is scheduled between 00:00 and 07:59
+# UTC and predictions.csv is legitimately ~8h old at 07:50. A fixed 6h limit FAILED on that, which
+# is a false alarm on a healthy pipeline — and a check that fails predictably every day is a check
+# people learn to ignore.
+#
+# (path -> first active UTC hour, last active UTC hour inclusive)
+_ACTIVE_HOURS = {
+    "output/predictions.csv": (8, 23),
+}
+
+
+def _allowed_age_h(path: str, base_limit: float, now) -> tuple[float, str]:
+    """Freshness limit, widened by however long the producer's schedule has been idle."""
+    win = _ACTIVE_HOURS.get(path)
+    if not win:
+        return base_limit, ""
+    start, end = win
+    h = now.hour
+    if start <= h <= end:
+        return base_limit, f"active window {start:02d}-{end:02d}h"
+    # Outside the window: allow the base limit PLUS the hours since it closed. At 07:50 with a
+    # window of 08-23 that is 6 + ~8 = ~14h, so an overnight gap passes and a genuine stall inside
+    # the window still fails.
+    idle = (h - end) if h > end else (h + (24 - end))
+    return base_limit + idle, f"outside window {start:02d}-{end:02d}h, idle ~{idle}h"
+
+
 # ── A. wiring: has each artifact MOVED recently ──────────────────────────────
 def audit_wiring(a: Audit, now, days: int) -> None:
     # (path, max write age in hours, severity when stale, why it matters)
@@ -151,6 +179,7 @@ def audit_wiring(a: Audit, now, days: int) -> None:
             a.add("wiring", path, FAIL, "missing or empty", 0, why)
             continue
         age, src = _write_age_h(df, path, now)
+        max_h_eff, sched = _allowed_age_h(path, max_h, now)
         # Does the board still look forward? Reported alongside, never as proof of freshness.
         fwd = ""
         for c in ("kickoff_utc", "match_date", "date"):
@@ -164,13 +193,15 @@ def audit_wiring(a: Audit, now, days: int) -> None:
             a.add("wiring", path, WARN,
                   f"{len(df):,} rows but nothing proves when it was written "
                   f"(no {list(_WRITE_COLS)[:3]}..., no local file){fwd}", len(df), why)
-        elif age > max_h:
+        elif age > max_h_eff:
             a.add("wiring", path, sev,
-                  f"last written {age:.1f}h ago per {src} (limit {max_h}h) — exists but is NOT "
-                  f"advancing{fwd}", round(age, 1), why)
+                  f"last written {age:.1f}h ago per {src} (limit {max_h_eff:.0f}h"
+                  + (f", {sched}" if sched else "") + f") — exists but is NOT advancing{fwd}",
+                  round(age, 1), why)
         else:
             a.add("wiring", path, PASS,
-                  f"{len(df):,} rows, written {age:.1f}h ago per {src}{fwd}",
+                  f"{len(df):,} rows, written {age:.1f}h ago per {src}"
+                  + (f" [{sched}]" if sched else "") + fwd,
                   round(age, 1), why)
 
 
@@ -385,12 +416,47 @@ def audit_config(a: Audit, now, days: int) -> None:
               "a silent parse failure would make these checks vacuously pass")
         return
 
+    # An enabled league with no sport key is TWO different things needing opposite responses:
+    #
+    #   CONFIG_BROKEN         we mapped it wrong or forgot. A BUG -> FAIL.
+    #   PROVIDER_UNSUPPORTED  the provider does not sell this competition -> INFO, nothing to fix.
+    #
+    # Both look identical from outside: the league returns zero fixtures forever. That is exactly
+    # how Ligue 2 stayed dark for three months on an invalid key. Conflating them means either
+    # crying wolf every week or staying silent on a real bug, so v9 now DECLARES the unsupported
+    # set (config.PROVIDER_UNSUPPORTED) with the evidence, and anything missing but NOT declared is
+    # a genuine config break.
+    declared: dict = {}
+    try:
+        declared = dict(getattr(mod, "PROVIDER_UNSUPPORTED", {}) or {})
+    except Exception:
+        declared = {}
+    def _reason(l: str) -> str:
+        v = declared.get(l)
+        return str(v.get("reason", "?")) if isinstance(v, dict) else str(v or "?")
+
+    def _verified(l: str) -> str:
+        v = declared.get(l)
+        return str(v.get("verified", "?")) if isinstance(v, dict) else "?"
+
     missing = [l for l in enabled if l not in keys]
-    a.add("config", "every enabled league has a sport key",
-          PASS if not missing else FAIL,
-          f"{len(enabled)} enabled, {len(keys)} keys ({how}); without a key: {missing or 'none'}",
-          len(missing),
-          "an enabled league with no key can never reach the board, so it silently bets nothing")
+    unsupported = [l for l in missing if l in declared]
+    broken = [l for l in missing if l not in declared]
+    unsup_txt = ", ".join(f"{l}={_reason(l)}" for l in unsupported) or "none"
+    a.add("config", "enabled leagues: sport-key coverage",
+          PASS if not broken else FAIL,
+          f"{len(enabled)} enabled, {len(keys)} keys ({how}); "
+          f"CONFIG_BROKEN: {broken or 'none'}; PROVIDER_UNSUPPORTED: {unsup_txt}",
+          len(broken),
+          "CONFIG_BROKEN means a league we intend to bet can never reach the board. "
+          "PROVIDER_UNSUPPORTED is declared and expected, not a defect")
+    if unsupported:
+        detail = "; ".join(f"{l} -> {_reason(l)} (verified {_verified(l)})" for l in unsupported)
+        a.add("config", "provider-unsupported leagues (declared)", INFO,
+              f"{len(unsupported)} league(s) the provider does not carry: {detail}",
+              len(unsupported),
+              "recorded so an unsupported league never looks like a healthy league with zero "
+              "fixtures")
 
     import os
     api_key = os.getenv("ODDS_API_KEY", "")
