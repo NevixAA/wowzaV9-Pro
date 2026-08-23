@@ -441,7 +441,78 @@ def audit_snapshot_coverage(a: Audit, now, days: int) -> None:
                   "would fire every run")
 
 
-# ── F. registry: is the machine-readable statement of "what we have" TRUE? ───
+# ── F. v11 movement research: is the archive advancing, and is it POOLABLE? ──
+def audit_movement_research(a: Audit, now, days: int) -> None:
+    """The market-movement archive (movement brief section 18 / PHASE 4).
+
+    Three checks, and the third is the one that is easy to miss:
+
+      * ADVANCING — an archive that stops is the ordinary silent failure this whole audit exists
+        for.
+      * ELIGIBILITY — the share of observations that can carry a claim. A sudden drop means
+        something upstream broke (kickoffs stopped resolving, books stopped being counted)
+        rather than that the market changed.
+      * ONE CALCULATION VERSION — observations computed under different definitions must never
+        be pooled. If `calculation_version` holds more than one value, every aggregate over the
+        table silently mixes definitions, and the resulting number is not wrong so much as
+        meaningless. Nothing else would catch it: both versions look like valid rows.
+    """
+    try:
+        from src.data import season_store as store
+        d = store.read("movement_observations")
+    except Exception as e:
+        a.add("movement research", "canonical table", WARN, f"unreadable: {str(e)[:60]}", None,
+              "cannot audit the movement archive without it")
+        return
+    if d is None or d.empty:
+        a.add("movement research", "canonical table", INFO,
+              "no observations archived yet", 0,
+              "v11 must run scripts/v11_market_movement.py and Pro must ingest it")
+        return
+
+    n, n_fix = len(d), int(d["fixture_id"].nunique())
+
+    ing = _dt(d.get("ingested_at"))
+    age_h = _age_h(ing.max(), now) if ing.notna().any() else None
+    LIMIT = 30.0
+    if age_h is None:
+        a.add("movement research", "advancing", WARN, "no parseable ingested_at", None, "")
+    else:
+        a.add("movement research", "advancing", PASS if age_h <= LIMIT else FAIL,
+              f"last ingest {age_h:.1f}h ago (limit {LIMIT:.0f}h); {n:,} rows over "
+              f"{n_fix} fixtures", round(age_h, 1),
+              "a research archive that stops advancing looks identical to one that is fine")
+
+    if "clv_quality" in d.columns:
+        ok = int((d["clv_quality"] == "OK").sum())
+        rate = ok / n
+        flags = dict(d.loc[d["clv_quality"] != "OK", "clv_quality"].value_counts())
+        a.add("movement research", "eligibility", PASS if rate >= 0.60 else WARN,
+              f"{ok:,}/{n:,} ({rate:.1%}) eligible; excluded: {flags or 'none'}",
+              round(rate, 4),
+              "a sharp fall means an upstream field stopped resolving, not that the market "
+              "changed")
+
+    if "calculation_version" in d.columns:
+        vers = sorted(str(v) for v in d["calculation_version"].dropna().unique())
+        many = len(vers) > 1
+        a.add("movement research", "single calculation version",
+              WARN if many else PASS,
+              f"version(s) present: {', '.join(vers) or 'none'}", len(vers),
+              "observations computed under different definitions must never be pooled — an "
+              "aggregate across two versions is meaningless, and both versions look valid")
+
+    # Sample discipline, stated in the audit so the headline can never drift from the evidence.
+    fx_lvl = n_fix
+    status = ("INSUFFICIENT_SAMPLE" if fx_lvl < 50 else "EARLY_SIGNAL" if fx_lvl < 150
+              else "RESEARCH" if fx_lvl < 500 else "VALIDATABLE")
+    a.add("movement research", "sample discipline", INFO,
+          f"{fx_lvl} fixtures -> {status}; graduation needs 500+ clean fixture-level "
+          f"observations", fx_lvl,
+          "RESEARCH ONLY until the graduation criteria in MARKET_MOVEMENT_RESEARCH.md are met")
+
+
+# ── G. registry: is the machine-readable statement of "what we have" TRUE? ───
 def audit_registry(a: Audit, now, days: int) -> None:
     """output/system_registry.json is what any consumer reads to answer "how much data".
 
@@ -663,7 +734,8 @@ def run(days: int = 7, json_path: str | None = None, strict: bool = False) -> in
     print(f"[audit] {now:%Y-%m-%d %H:%M UTC}  window={days}d  v9={sha}")
     print(f"[audit] V9_LOCAL={cfg.V9_LOCAL}  exists={cfg.V9_LOCAL.exists()}\n")
     for fn in (audit_wiring, audit_odds_curve, audit_tips, audit_collection,
-               audit_snapshot_coverage, audit_registry, audit_config):
+               audit_snapshot_coverage, audit_movement_research, audit_registry,
+               audit_config):
         try:
             fn(a, now, days)
         except Exception as e:

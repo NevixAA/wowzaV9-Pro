@@ -26,7 +26,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from config import pro_config as cfg
 from src.data import season_store as store
 from src.data.v9_source import v9_head_sha
-from src.importers.current_wowza import IMPORTERS, commit_watermarks
+from src.importers.current_wowza import IMPORTERS as _V9_IMPORTERS, commit_watermarks
+from src.importers.v11_research import IMPORTERS as _V11_IMPORTERS
+
+# v11's research observations are archived alongside v9's live outputs. Kept in a separate
+# module because the SOURCE is different (a different repo, with its own sha and its own
+# calculation version) and because Pro must never recompute them — see v11_research.
+IMPORTERS = {**_V9_IMPORTERS, **_V11_IMPORTERS}
 
 
 def main() -> int:

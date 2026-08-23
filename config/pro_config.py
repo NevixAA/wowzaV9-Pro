@@ -31,6 +31,14 @@ V9_RAW_BASE = f"https://raw.githubusercontent.com/{V9_REPO}/main"
 # hot path never touches raw HTTP; HTTP remains only as a last-resort fallback with backoff.
 V9_LOCAL = Path(os.getenv("V9_LOCAL") or (BASE_DIR.parent / "v9"))
 
+# v11 (market-first shadow) is the SOURCE of the market-movement research observations; Pro is
+# their archive and auditor, never a second calculator of them (movement brief section 18).
+# Same local-first-then-raw-HTTP shape as v9 for the same reason: CI checks the repo out, and the
+# unauthenticated raw endpoint rate-limits.
+V11_REPO = os.getenv("V11_REPO", "NevixAA/wowza_v11")
+V11_RAW_BASE = f"https://raw.githubusercontent.com/{V11_REPO}/main"
+V11_LOCAL = Path(os.getenv("V11_LOCAL") or (BASE_DIR.parent / "wowza-v11"))
+
 
 # ── season derivation ─────────────────────────────────────────────────────────
 def season_start_year(today: date | None = None) -> int:
@@ -83,6 +91,8 @@ TABLES = (
     "player_props",
     "live_signals",
     "data_quality",
+    # v11-computed market-movement research observations, archived verbatim with provenance.
+    "movement_observations",
 )
 
 # Columns every row carries, added by the store itself — never by an importer.

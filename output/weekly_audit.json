@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-08-23T08:05:59Z",
+  "generated_at": "2026-08-23T09:01:34Z",
   "window_days": 7,
-  "v9_sha": "10fc62e9dc6b",
+  "v9_sha": "d61fbaf099dd",
   "worst": "WARN",
   "counts": {
-    "PASS": 20,
-    "INFO": 3,
+    "PASS": 23,
+    "INFO": 4,
     "WARN": 2,
     "FAIL": 0
   },
@@ -14,40 +14,40 @@
       "area": "wiring",
       "name": "output/predictions.csv",
       "status": "PASS",
-      "detail": "138 rows, written 8.1h ago per generated_at [active window 08-23h; 8.0h of the 8.1h gap was outside it]; 129 future-dated row(s)",
-      "value": 8.1,
+      "detail": "138 rows, written 9.0h ago per generated_at [active window 08-23h; 8.0h of the 9.0h gap was outside it]; 129 future-dated row(s)",
+      "value": 9.0,
       "why": "predict is the entry point; stale means no board is being produced"
     },
     {
       "area": "wiring",
       "name": "output/bets.csv",
       "status": "PASS",
-      "detail": "37 rows, written 0.5h ago per file mtime; 35 future-dated row(s)",
-      "value": 0.5,
+      "detail": "37 rows, written 1.5h ago per file mtime; 35 future-dated row(s)",
+      "value": 1.5,
       "why": "the staked board. thin weeks are legitimate, so only WARN"
     },
     {
       "area": "wiring",
       "name": "output/player_tips.csv",
       "status": "PASS",
-      "detail": "394 rows, written 0.4h ago per file mtime; 295 future-dated row(s)",
-      "value": 0.4,
+      "detail": "394 rows, written 1.4h ago per file mtime; 295 future-dated row(s)",
+      "value": 1.4,
       "why": "props are paper-only, so staleness is not money \u2014 but it is a broken collector"
     },
     {
       "area": "wiring",
       "name": "output/side_bets_ledger.csv",
       "status": "PASS",
-      "detail": "64 rows, written 9.6h ago per generated_at; 15 future-dated row(s)",
-      "value": 9.6,
+      "detail": "64 rows, written 10.6h ago per generated_at; 15 future-dated row(s)",
+      "value": 10.6,
       "why": "side markets carry most staked tips right now"
     },
     {
       "area": "wiring",
       "name": "output/bets_ledger.csv",
       "status": "PASS",
-      "detail": "4,854 rows, written 8.1h ago per generated_at; 30 future-dated row(s)",
-      "value": 8.1,
+      "detail": "4,854 rows, written 9.0h ago per generated_at; 30 future-dated row(s)",
+      "value": 9.0,
       "why": "the durable tip record; grading and CLV hang off it"
     },
     {
@@ -62,8 +62,8 @@
       "area": "odds_curve",
       "name": "output/newformat_odds_history.csv",
       "status": "PASS",
-      "detail": "3,606 rows / 117 distinct snapshot minutes in 7d; 2.04 points per fixture-market",
-      "value": 2.04,
+      "detail": "3,667 rows / 120 distinct snapshot minutes in 7d; 2.07 points per fixture-market",
+      "value": 2.07,
       "why": "1.0 means an ENTRY PRICE, not a curve \u2014 CLV needs several points per fixture"
     },
     {
@@ -118,24 +118,24 @@
       "area": "collection",
       "name": "player_history.parquet",
       "status": "PASS",
-      "detail": "newest row 6.3d old (limit 10d)",
-      "value": 6.3,
+      "detail": "newest row 6.4d old (limit 10d)",
+      "value": 6.4,
       "why": "a season-keyed table that stops advancing while the job reports success is the COLLECT_SEASONS failure"
     },
     {
       "area": "collection",
       "name": "output/af_history.parquet",
       "status": "PASS",
-      "detail": "newest row 5.3d old (limit 14d)",
-      "value": 5.3,
+      "detail": "newest row 5.4d old (limit 14d)",
+      "value": 5.4,
       "why": "a season-keyed table that stops advancing while the job reports success is the COLLECT_SEASONS failure"
     },
     {
       "area": "collection",
       "name": "pro season store",
       "status": "PASS",
-      "detail": "231,753 rows across 10/11 tables; empty: ['data_quality']",
-      "value": 231753,
+      "detail": "241,244 rows across 11/12 tables; empty: ['data_quality']",
+      "value": 241244,
       "why": "Pro must keep its own record"
     },
     {
@@ -163,26 +163,58 @@
       "why": "adding kickoff_utc to this writer would make its close auditable"
     },
     {
+      "area": "movement research",
+      "name": "advancing",
+      "status": "PASS",
+      "detail": "last ingest 0.0h ago (limit 30h); 9,491 rows over 181 fixtures",
+      "value": 0.0,
+      "why": "a research archive that stops advancing looks identical to one that is fine"
+    },
+    {
+      "area": "movement research",
+      "name": "eligibility",
+      "status": "PASS",
+      "detail": "9,265/9,491 (97.6%) eligible; excluded: {'MISSING_KICKOFF': np.int64(182), 'INSUFFICIENT_BOOKS': np.int64(44)}",
+      "value": 0.9762,
+      "why": "a sharp fall means an upstream field stopped resolving, not that the market changed"
+    },
+    {
+      "area": "movement research",
+      "name": "single calculation version",
+      "status": "PASS",
+      "detail": "version(s) present: 1.0.0",
+      "value": 1,
+      "why": "observations computed under different definitions must never be pooled \u2014 an aggregate across two versions is meaningless, and both versions look valid"
+    },
+    {
+      "area": "movement research",
+      "name": "sample discipline",
+      "status": "INFO",
+      "detail": "181 fixtures -> RESEARCH; graduation needs 500+ clean fixture-level observations",
+      "value": 181,
+      "why": "RESEARCH ONLY until the graduation criteria in MARKET_MOVEMENT_RESEARCH.md are met"
+    },
+    {
       "area": "registry",
       "name": "freshness",
       "status": "PASS",
-      "detail": "generated 0.1h ago (limit 30h)",
-      "value": 0.1,
+      "detail": "generated 0.0h ago (limit 30h)",
+      "value": 0.0,
       "why": "pro_collect refreshes it 2-hourly; 30h means the refresh step itself stopped, which is how the counts drifted 49% unnoticed"
     },
     {
       "area": "registry",
       "name": "reconciliation",
       "status": "PASS",
-      "detail": "all 11 tables match canonical (231,753 rows)",
-      "value": 231753,
+      "detail": "all 12 tables match canonical (241,244 rows)",
+      "value": 241244,
       "why": ""
     },
     {
       "area": "registry",
       "name": "populated tables",
       "status": "WARN",
-      "detail": "10/11 tables hold rows; EMPTY: data_quality",
+      "detail": "11/12 tables hold rows; EMPTY: data_quality",
       "value": 1,
       "why": "an always-empty canonical table usually means nothing writes to it, which no row count can distinguish from 'nothing happened yet'"
     },
