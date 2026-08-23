@@ -175,36 +175,24 @@ def write_system_registry(
     collect_health: dict | None = None,
     path: Path | None = None,
 ) -> Path:
-    """output/system_registry.json — Prompt 1 section 20.
+    """output/system_registry.json — Prompt 1 section 20. Thin wrapper; see src.pipelines.registry.
 
     The point is that there is ONE answer to "what is live, on what data, how healthy". v9 has
     the same question answered separately by the dashboard, the notifier and the summaries, and
     they have disagreed. Consumers should read this rather than re-deriving.
-    """
-    p = path or (cfg.OUTPUT_DIR / "system_registry.json")
-    live = []
-    if registry_table is not None and not registry_table.empty and "status" in registry_table:
-        live = (registry_table.loc[registry_table["status"] == "LIVE"]
-                .to_dict("records"))
 
-    payload = {
-        "generated_at": _now(),
-        "git_sha": git_sha(),
-        "season": cfg.season_label(),
-        "pro_may_notify": cfg.PRO_MAY_NOTIFY,
-        "pro_may_stake": False,
-        "live_models": live,
-        "n_live_models": len(live),
-        "season_store": store_stats or {},
-        "feature_health": drift_health or {},
-        "collect_health": collect_health or {},
-        # Stated explicitly so no consumer has to infer it from the absence of something.
-        "deployment_note": (
-            "Season 2026/27 is a data-collection and shadow season. Pro does not stake and "
-            "does not notify. Signal tier and deployment mode are independent: a SNIPER may be "
-            "PAPER."
-        ),
-    }
-    p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(payload, indent=2, sort_keys=True, default=str), encoding="utf-8")
+    THE WRITE ITSELF LIVES IN `src.pipelines.registry.refresh`. This used to be the only writer
+    and it ran only from the tail of shadow.py, so the counts froze for four days and understated
+    the store by 49% with nothing reporting it. Rather than add a second writer for collect (two
+    writers of one file is the defect class that produced the disagreement above), this function
+    now delegates.
+
+    `store_stats` is accepted for signature compatibility and DELIBERATELY IGNORED: refresh()
+    measures the store itself, so a caller cannot pass a stale snapshot. Reading parquet footer
+    metadata is O(1) per file, so measuring twice costs nothing worth protecting.
+    """
+    from src.pipelines import registry as _registry
+    p = path or (cfg.OUTPUT_DIR / "system_registry.json")
+    _registry.refresh(path=p, drift_health=drift_health, collect_health=collect_health,
+                      registry_table=registry_table, quiet=True)
     return p

@@ -142,20 +142,44 @@ _ACTIVE_HOURS = {
 }
 
 
-def _allowed_age_h(path: str, base_limit: float, now) -> tuple[float, str]:
-    """Freshness limit, widened by however long the producer's schedule has been idle."""
+def _idle_hours_in_span(age_h: float, now, start: int, end: int) -> float:
+    """Hours inside the last `age_h` that were OUTSIDE the producer's active window.
+
+    Sampled in 10-minute steps rather than solved arithmetically: the closed form has to special-
+    case spans shorter than an hour, spans crossing midnight, and spans covering several whole
+    days, and each of those is a place to get it silently wrong. 144 cheap comparisons per day of
+    age is not worth optimising.
+    """
+    steps = max(1, int(age_h * 6))
+    idle = sum(1 for i in range(steps)
+               if not (start <= (now - pd.Timedelta(minutes=10 * (i + 1))).hour <= end))
+    return idle / 6.0
+
+
+def _allowed_age_h(path: str, base_limit: float, now, age_h: float | None = None) -> tuple[float, str]:
+    """Freshness limit, widened by the idle time actually CONTAINED IN THE GAP.
+
+    The first version keyed off the hour it happened to be called at: inside the window it
+    returned the base limit, outside it added the hours since the window closed. That is wrong at
+    the boundary and it FAILED at 08:01 UTC on a completely healthy pipeline — predict's window
+    had been open for one minute, its last legitimate commit was 00:00 (the previous window's
+    close), so the measured age was 8.0h against a limit that had just snapped back to 6h. The
+    check then self-healed a few minutes later when the 08:01 run committed, which is the worst
+    possible behaviour: a daily red flash that always clears by the time anyone looks.
+
+    Counting the idle hours WITHIN the gap has no boundary case. Only active time counts against
+    the limit, so an overnight gap is free whenever it is measured, and a real stall inside the
+    window still accumulates active hours and still fails.
+    """
     win = _ACTIVE_HOURS.get(path)
-    if not win:
+    if not win or age_h is None:
         return base_limit, ""
     start, end = win
-    h = now.hour
-    if start <= h <= end:
-        return base_limit, f"active window {start:02d}-{end:02d}h"
-    # Outside the window: allow the base limit PLUS the hours since it closed. At 07:50 with a
-    # window of 08-23 that is 6 + ~8 = ~14h, so an overnight gap passes and a genuine stall inside
-    # the window still fails.
-    idle = (h - end) if h > end else (h + (24 - end))
-    return base_limit + idle, f"outside window {start:02d}-{end:02d}h, idle ~{idle}h"
+    idle = _idle_hours_in_span(age_h, now, start, end)
+    if idle < 0.2:
+        return base_limit, f"active window {start:02d}-{end:02d}h, no idle time in gap"
+    return base_limit + idle, (f"active window {start:02d}-{end:02d}h; {idle:.1f}h of the "
+                               f"{age_h:.1f}h gap was outside it")
 
 
 # ── A. wiring: has each artifact MOVED recently ──────────────────────────────
@@ -179,7 +203,7 @@ def audit_wiring(a: Audit, now, days: int) -> None:
             a.add("wiring", path, FAIL, "missing or empty", 0, why)
             continue
         age, src = _write_age_h(df, path, now)
-        max_h_eff, sched = _allowed_age_h(path, max_h, now)
+        max_h_eff, sched = _allowed_age_h(path, max_h, now, age)
         # Does the board still look forward? Reported alongside, never as proof of freshness.
         fwd = ""
         for c in ("kickoff_utc", "match_date", "date"):
@@ -357,7 +381,87 @@ def audit_collection(a: Audit, now, days: int) -> None:
         a.add("collection", "pro season store", WARN, f"unreadable: {str(e)[:60]}", None, "")
 
 
-# ── E. config reachability: can each bet league actually be fetched? ─────────
+# ── E. registry: is the machine-readable statement of "what we have" TRUE? ───
+def audit_registry(a: Audit, now, days: int) -> None:
+    """output/system_registry.json is what any consumer reads to answer "how much data".
+
+    Both checks exist because of the same 2026-08-23 finding: the registry was written only by
+    the tail of shadow.py, so it aged four days and understated the store by 49% (market
+    snapshots -31%, model snapshots -64%, settlements -45%). Nothing reported it, because every
+    number in it was internally consistent and its own `generated_at` was honest. So freshness
+    and truthfulness are tested SEPARATELY:
+
+      * FRESHNESS catches "the refresh stopped running" — the file can be perfectly accurate for
+        the day it was written and still be useless.
+      * RECONCILIATION catches "the refresh ran but wrote the wrong thing", which freshness
+        alone cannot see. It re-measures the canonical store and diffs table by table, so the
+        assertion does not depend on the registry's own arithmetic.
+
+    Limit is 30h, not 24h: pro_collect runs 2-hourly, so 30h means roughly 15 consecutive
+    refreshes were missed and it cannot fire on one skipped run or a slow day.
+    """
+    try:
+        from src.pipelines import registry as reg
+    except Exception as e:
+        a.add("registry", "module import", WARN, f"unimportable: {str(e)[:60]}", None,
+              "cannot audit the registry without it")
+        return
+
+    p = cfg.OUTPUT_DIR / "system_registry.json"
+    if not p.exists():
+        a.add("registry", "system_registry.json", FAIL, "absent", None,
+              "consumers asking 'how much data do we have' have no answer at all")
+        return
+
+    age = reg.age_hours(p)
+    LIMIT = 30.0
+    if age is None:
+        a.add("registry", "freshness", FAIL, "no parseable generated_at", None,
+              "an undateable registry cannot be told from a stale one")
+    else:
+        st = PASS if age <= LIMIT else FAIL
+        a.add("registry", "freshness", st, f"generated {age:.1f}h ago (limit {LIMIT:.0f}h)",
+              round(age, 1),
+              "pro_collect refreshes it 2-hourly; 30h means the refresh step itself stopped, "
+              "which is how the counts drifted 49% unnoticed")
+
+    r = reg.reconcile(p)
+    if r.get("error"):
+        a.add("registry", "reconciliation", WARN, r["error"], None,
+              "cannot verify the registry against the store")
+        return
+    n = len(r["mismatches"])
+    if r["ok"]:
+        a.add("registry", "reconciliation", PASS,
+              f"all {r['n_tables']} tables match canonical ({r['canonical_total']:,} rows)",
+              r["canonical_total"], "")
+    else:
+        worst = max(r["mismatches"],
+                    key=lambda m: abs((m["canonical"] or 0) - (m["registry"] or 0)))
+        drift = r["canonical_total"] - r["registry_total"]
+        a.add("registry", "reconciliation", FAIL,
+              f"{n}/{r['n_tables']} tables disagree; registry {r['registry_total']:,} vs "
+              f"canonical {r['canonical_total']:,} ({drift:+,} rows). Worst: "
+              f"{worst['table']} {worst['registry']} vs {worst['canonical']:,}",
+              drift,
+              "a registry that states counts it did not measure is worse than no registry: the "
+              "numbers look plausible so a reader has no way to notice they are wrong. Fix with "
+              "`python -m src.pipelines.registry`, then find out why the collect step skipped it")
+
+    # A table that has NEVER received a row is a wiring gap, not a volume problem — it is how
+    # `data_quality` sat empty without anyone noticing it had no writer at all.
+    stated = (reg._read_previous(p).get("season_store") or {})
+    empty = sorted(k for k, v in stated.items()
+                   if int((v.get("rows") if isinstance(v, dict) else v) or 0) == 0)
+    a.add("registry", "populated tables", PASS if not empty else WARN,
+          f"{len(stated) - len(empty)}/{len(stated)} tables hold rows"
+          + (f"; EMPTY: {', '.join(empty)}" if empty else ""),
+          len(empty),
+          "an always-empty canonical table usually means nothing writes to it, which no row "
+          "count can distinguish from 'nothing happened yet'")
+
+
+# ── F. config reachability: can each bet league actually be fetched? ─────────
 def audit_config(a: Audit, now, days: int) -> None:
     """Every league v9 is willing to BET must have a valid, reachable odds key.
 
@@ -499,7 +603,7 @@ def run(days: int = 7, json_path: str | None = None, strict: bool = False) -> in
     print(f"[audit] {now:%Y-%m-%d %H:%M UTC}  window={days}d  v9={sha}")
     print(f"[audit] V9_LOCAL={cfg.V9_LOCAL}  exists={cfg.V9_LOCAL.exists()}\n")
     for fn in (audit_wiring, audit_odds_curve, audit_tips, audit_collection,
-               audit_config):
+               audit_registry, audit_config):
         try:
             fn(a, now, days)
         except Exception as e:

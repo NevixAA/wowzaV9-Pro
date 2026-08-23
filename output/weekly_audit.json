@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-08-23T07:51:33Z",
+  "generated_at": "2026-08-23T08:03:10Z",
   "window_days": 7,
-  "v9_sha": "c9516bba1f77",
+  "v9_sha": "10fc62e9dc6b",
   "worst": "WARN",
   "counts": {
-    "PASS": 17,
+    "PASS": 19,
     "INFO": 1,
-    "WARN": 1,
+    "WARN": 2,
     "FAIL": 0
   },
   "checks": [
@@ -14,40 +14,40 @@
       "area": "wiring",
       "name": "output/predictions.csv",
       "status": "PASS",
-      "detail": "138 rows, written 7.8h ago per generated_at [outside window 08-23h, idle ~8h]; 129 future-dated row(s)",
-      "value": 7.8,
+      "detail": "138 rows, written 8.0h ago per generated_at [active window 08-23h; 8.0h of the 8.0h gap was outside it]; 129 future-dated row(s)",
+      "value": 8.0,
       "why": "predict is the entry point; stale means no board is being produced"
     },
     {
       "area": "wiring",
       "name": "output/bets.csv",
       "status": "PASS",
-      "detail": "37 rows, written 0.3h ago per file mtime; 35 future-dated row(s)",
-      "value": 0.3,
+      "detail": "37 rows, written 0.5h ago per file mtime; 35 future-dated row(s)",
+      "value": 0.5,
       "why": "the staked board. thin weeks are legitimate, so only WARN"
     },
     {
       "area": "wiring",
       "name": "output/player_tips.csv",
       "status": "PASS",
-      "detail": "394 rows, written 0.2h ago per file mtime; 295 future-dated row(s)",
-      "value": 0.2,
+      "detail": "394 rows, written 0.4h ago per file mtime; 295 future-dated row(s)",
+      "value": 0.4,
       "why": "props are paper-only, so staleness is not money \u2014 but it is a broken collector"
     },
     {
       "area": "wiring",
       "name": "output/side_bets_ledger.csv",
       "status": "PASS",
-      "detail": "64 rows, written 9.4h ago per generated_at; 15 future-dated row(s)",
-      "value": 9.4,
+      "detail": "64 rows, written 9.6h ago per generated_at; 15 future-dated row(s)",
+      "value": 9.6,
       "why": "side markets carry most staked tips right now"
     },
     {
       "area": "wiring",
       "name": "output/bets_ledger.csv",
       "status": "PASS",
-      "detail": "4,854 rows, written 7.9h ago per generated_at; 30 future-dated row(s)",
-      "value": 7.9,
+      "detail": "4,854 rows, written 8.1h ago per generated_at; 30 future-dated row(s)",
+      "value": 8.1,
       "why": "the durable tip record; grading and CLV hang off it"
     },
     {
@@ -134,9 +134,33 @@
       "area": "collection",
       "name": "pro season store",
       "status": "PASS",
-      "detail": "203,539 rows across 10/11 tables; empty: ['data_quality']",
-      "value": 203539,
+      "detail": "231,753 rows across 10/11 tables; empty: ['data_quality']",
+      "value": 231753,
       "why": "Pro must keep its own record"
+    },
+    {
+      "area": "registry",
+      "name": "freshness",
+      "status": "PASS",
+      "detail": "generated 0.1h ago (limit 30h)",
+      "value": 0.1,
+      "why": "pro_collect refreshes it 2-hourly; 30h means the refresh step itself stopped, which is how the counts drifted 49% unnoticed"
+    },
+    {
+      "area": "registry",
+      "name": "reconciliation",
+      "status": "PASS",
+      "detail": "all 11 tables match canonical (231,753 rows)",
+      "value": 231753,
+      "why": ""
+    },
+    {
+      "area": "registry",
+      "name": "populated tables",
+      "status": "WARN",
+      "detail": "10/11 tables hold rows; EMPTY: data_quality",
+      "value": 1,
+      "why": "an always-empty canonical table usually means nothing writes to it, which no row count can distinguish from 'nothing happened yet'"
     },
     {
       "area": "config",
