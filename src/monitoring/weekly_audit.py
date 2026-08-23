@@ -502,6 +502,22 @@ def audit_movement_research(a: Audit, now, days: int) -> None:
               "observations computed under different definitions must never be pooled — an "
               "aggregate across two versions is meaningless, and both versions look valid")
 
+    # RE-INGEST OVERLAP. v11 recomputes its detail file over a GROWING snapshot history, so each
+    # ingest is a superset of the last: run 1 archived 9,491 rows, run 2 archived 25,052 which
+    # include them. Keeping both is correct for an immutable archive — but the table then holds
+    # 34,543 rows describing 25,052 observations, and any aggregate that does not dedupe by
+    # snapshot_id inflates every count and every n. Reported rather than deduped, because
+    # silently collapsing an archive is not this check's job; a reader needs to know the ratio.
+    if "snapshot_id" in d.columns:
+        uniq = int(d["snapshot_id"].nunique())
+        dup = n - uniq
+        a.add("movement research", "re-ingest overlap", INFO if dup else PASS,
+              f"{n:,} rows describe {uniq:,} distinct observations"
+              + (f" ({dup:,} superseded by a later ingest)" if dup else ""),
+              dup,
+              "dedupe by snapshot_id keeping the latest ingested_at before aggregating; raw "
+              "row counts over this table are NOT observation counts")
+
     # Sample discipline, stated in the audit so the headline can never drift from the evidence.
     fx_lvl = n_fix
     status = ("INSUFFICIENT_SAMPLE" if fx_lvl < 50 else "EARLY_SIGNAL" if fx_lvl < 150

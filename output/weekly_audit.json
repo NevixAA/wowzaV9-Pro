@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-08-23T09:01:34Z",
+  "generated_at": "2026-08-23T11:00:27Z",
   "window_days": 7,
   "v9_sha": "d61fbaf099dd",
   "worst": "WARN",
   "counts": {
     "PASS": 23,
-    "INFO": 4,
+    "INFO": 5,
     "WARN": 2,
     "FAIL": 0
   },
@@ -14,40 +14,40 @@
       "area": "wiring",
       "name": "output/predictions.csv",
       "status": "PASS",
-      "detail": "138 rows, written 9.0h ago per generated_at [active window 08-23h; 8.0h of the 9.0h gap was outside it]; 129 future-dated row(s)",
-      "value": 9.0,
+      "detail": "138 rows, written 11.0h ago per generated_at [active window 08-23h; 7.8h of the 11.0h gap was outside it]; 125 future-dated row(s)",
+      "value": 11.0,
       "why": "predict is the entry point; stale means no board is being produced"
     },
     {
       "area": "wiring",
       "name": "output/bets.csv",
       "status": "PASS",
-      "detail": "37 rows, written 1.5h ago per file mtime; 35 future-dated row(s)",
-      "value": 1.5,
+      "detail": "37 rows, written 3.4h ago per file mtime; 33 future-dated row(s)",
+      "value": 3.4,
       "why": "the staked board. thin weeks are legitimate, so only WARN"
     },
     {
       "area": "wiring",
       "name": "output/player_tips.csv",
       "status": "PASS",
-      "detail": "394 rows, written 1.4h ago per file mtime; 295 future-dated row(s)",
-      "value": 1.4,
+      "detail": "394 rows, written 3.3h ago per file mtime; 282 future-dated row(s)",
+      "value": 3.3,
       "why": "props are paper-only, so staleness is not money \u2014 but it is a broken collector"
     },
     {
       "area": "wiring",
       "name": "output/side_bets_ledger.csv",
       "status": "PASS",
-      "detail": "64 rows, written 10.6h ago per generated_at; 15 future-dated row(s)",
-      "value": 10.6,
+      "detail": "64 rows, written 12.6h ago per generated_at; 15 future-dated row(s)",
+      "value": 12.6,
       "why": "side markets carry most staked tips right now"
     },
     {
       "area": "wiring",
       "name": "output/bets_ledger.csv",
       "status": "PASS",
-      "detail": "4,854 rows, written 9.0h ago per generated_at; 30 future-dated row(s)",
-      "value": 9.0,
+      "detail": "4,854 rows, written 11.0h ago per generated_at; 30 future-dated row(s)",
+      "value": 11.0,
       "why": "the durable tip record; grading and CLV hang off it"
     },
     {
@@ -118,40 +118,40 @@
       "area": "collection",
       "name": "player_history.parquet",
       "status": "PASS",
-      "detail": "newest row 6.4d old (limit 10d)",
-      "value": 6.4,
+      "detail": "newest row 6.5d old (limit 10d)",
+      "value": 6.5,
       "why": "a season-keyed table that stops advancing while the job reports success is the COLLECT_SEASONS failure"
     },
     {
       "area": "collection",
       "name": "output/af_history.parquet",
       "status": "PASS",
-      "detail": "newest row 5.4d old (limit 14d)",
-      "value": 5.4,
+      "detail": "newest row 5.5d old (limit 14d)",
+      "value": 5.5,
       "why": "a season-keyed table that stops advancing while the job reports success is the COLLECT_SEASONS failure"
     },
     {
       "area": "collection",
       "name": "pro season store",
       "status": "PASS",
-      "detail": "241,244 rows across 11/12 tables; empty: ['data_quality']",
-      "value": 241244,
+      "detail": "267,842 rows across 11/12 tables; empty: ['data_quality']",
+      "value": 267842,
       "why": "Pro must keep its own record"
     },
     {
       "area": "snapshot coverage",
       "name": "main O/U (per book): near-kickoff",
       "status": "PASS",
-      "detail": "364 series over 126 kicked-off fixtures; median 41 snapshots; T-6h 87%  T-3h 81%  T-1h 71%  T-30m 64%  T-10m 35%",
-      "value": 0.6374,
+      "detail": "374 series over 130 kicked-off fixtures; median 41 snapshots; T-6h 85%  T-3h 79%  T-1h 70%  T-30m 62%  T-10m 34%",
+      "value": 0.6203,
       "why": "the closing price is what CLV is measured against and /odds cannot be backfilled \u2014 a close missed before kickoff is lost permanently"
     },
     {
       "area": "snapshot coverage",
       "name": "standard side-markets: near-kickoff",
       "status": "INFO",
-      "detail": "600 series; median 1 snapshots; T-6h 41%  T-3h 26%  T-1h 15%  T-30m 10%  T-10m 1%",
-      "value": 0.1033,
+      "detail": "613 series; median 1 snapshots; T-6h 41%  T-3h 25%  T-1h 14%  T-30m 10%  T-10m 1%",
+      "value": 0.1011,
       "why": "reported, not gated: side-market density is known-thin, so a floor here would fire every run"
     },
     {
@@ -166,16 +166,16 @@
       "area": "movement research",
       "name": "advancing",
       "status": "PASS",
-      "detail": "last ingest 0.0h ago (limit 30h); 9,491 rows over 181 fixtures",
-      "value": 0.0,
+      "detail": "last ingest 0.1h ago (limit 30h); 34,543 rows over 282 fixtures",
+      "value": 0.1,
       "why": "a research archive that stops advancing looks identical to one that is fine"
     },
     {
       "area": "movement research",
       "name": "eligibility",
       "status": "PASS",
-      "detail": "9,265/9,491 (97.6%) eligible; excluded: {'MISSING_KICKOFF': np.int64(182), 'INSUFFICIENT_BOOKS': np.int64(44)}",
-      "value": 0.9762,
+      "detail": "33,447/34,543 (96.8%) eligible; excluded: {'INSUFFICIENT_BOOKS': np.int64(731), 'MISSING_KICKOFF': np.int64(365)}",
+      "value": 0.9683,
       "why": "a sharp fall means an upstream field stopped resolving, not that the market changed"
     },
     {
@@ -188,26 +188,34 @@
     },
     {
       "area": "movement research",
+      "name": "re-ingest overlap",
+      "status": "INFO",
+      "detail": "34,543 rows describe 25,052 distinct observations (9,491 superseded by a later ingest)",
+      "value": 9491,
+      "why": "dedupe by snapshot_id keeping the latest ingested_at before aggregating; raw row counts over this table are NOT observation counts"
+    },
+    {
+      "area": "movement research",
       "name": "sample discipline",
       "status": "INFO",
-      "detail": "181 fixtures -> RESEARCH; graduation needs 500+ clean fixture-level observations",
-      "value": 181,
+      "detail": "282 fixtures -> RESEARCH; graduation needs 500+ clean fixture-level observations",
+      "value": 282,
       "why": "RESEARCH ONLY until the graduation criteria in MARKET_MOVEMENT_RESEARCH.md are met"
     },
     {
       "area": "registry",
       "name": "freshness",
       "status": "PASS",
-      "detail": "generated 0.0h ago (limit 30h)",
-      "value": 0.0,
+      "detail": "generated 0.1h ago (limit 30h)",
+      "value": 0.1,
       "why": "pro_collect refreshes it 2-hourly; 30h means the refresh step itself stopped, which is how the counts drifted 49% unnoticed"
     },
     {
       "area": "registry",
       "name": "reconciliation",
       "status": "PASS",
-      "detail": "all 12 tables match canonical (241,244 rows)",
-      "value": 241244,
+      "detail": "all 12 tables match canonical (267,842 rows)",
+      "value": 267842,
       "why": ""
     },
     {
