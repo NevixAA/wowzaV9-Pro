@@ -229,9 +229,17 @@ def from_odds_histories() -> list[tuple[str, pd.DataFrame]]:
         })
         blk = ent.add_fixture_key(blk)
         blk["odds_band"] = blk["odds"].map(lambda v: cfg.band_label(v, cfg.ODDS_BANDS))
+        # Flags ACCUMULATE via quality.add_flag. The two lines here were previously bare
+        # assignments, so a row that was both entity-unresolved AND market-invalid reported only
+        # whichever check ran last — the second overwrote the first.
         blk["quality_flags"] = ""
-        blk.loc[blk["odds"].isna(), "quality_flags"] = "MARKET_MAPPING_INVALID"
-        blk.loc[blk["away_team"] == "", "quality_flags"] = "ENTITY_UNRESOLVED"
+        blk["quality_flags"] = q.add_flag(blk["quality_flags"], blk["odds"].isna(),
+                                          "MARKET_MAPPING_INVALID")
+        blk["quality_flags"] = q.add_flag(blk["quality_flags"], blk["away_team"] == "",
+                                          "ENTITY_UNRESOLVED")
+        # First-half BTTS captured as full-match (parser fixed 2026-08-23; 271 historical rows).
+        # FLAGGED, not dropped — Pro stores dirty rows and lets the reader choose a level.
+        blk = q.flag_btts_first_half(blk)
         frames.append(blk)
     if not frames:
         return []
