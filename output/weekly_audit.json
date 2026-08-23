@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-08-23T11:26:30Z",
+  "generated_at": "2026-08-23T11:34:45Z",
   "window_days": 7,
   "v9_sha": "822de1932076",
   "worst": "WARN",
   "counts": {
-    "PASS": 24,
-    "INFO": 5,
+    "PASS": 25,
+    "INFO": 7,
     "WARN": 1,
     "FAIL": 0
   },
@@ -14,40 +14,40 @@
       "area": "wiring",
       "name": "output/predictions.csv",
       "status": "PASS",
-      "detail": "139 rows, written 0.4h ago per generated_at [active window 08-23h, no idle time in gap]; 139 future-dated row(s)",
-      "value": 0.4,
+      "detail": "139 rows, written 0.5h ago per generated_at [active window 08-23h, no idle time in gap]; 139 future-dated row(s)",
+      "value": 0.5,
       "why": "predict is the entry point; stale means no board is being produced"
     },
     {
       "area": "wiring",
       "name": "output/bets.csv",
       "status": "PASS",
-      "detail": "42 rows, written 0.1h ago per file mtime; 42 future-dated row(s)",
-      "value": 0.1,
+      "detail": "42 rows, written 0.2h ago per file mtime; 42 future-dated row(s)",
+      "value": 0.2,
       "why": "the staked board. thin weeks are legitimate, so only WARN"
     },
     {
       "area": "wiring",
       "name": "output/player_tips.csv",
       "status": "PASS",
-      "detail": "412 rows, written 0.1h ago per file mtime; 277 future-dated row(s)",
-      "value": 0.1,
+      "detail": "412 rows, written 0.2h ago per file mtime; 277 future-dated row(s)",
+      "value": 0.2,
       "why": "props are paper-only, so staleness is not money \u2014 but it is a broken collector"
     },
     {
       "area": "wiring",
       "name": "output/side_bets_ledger.csv",
       "status": "PASS",
-      "detail": "70 rows, written 0.4h ago per generated_at; 19 future-dated row(s)",
-      "value": 0.4,
+      "detail": "70 rows, written 0.5h ago per generated_at; 19 future-dated row(s)",
+      "value": 0.5,
       "why": "side markets carry most staked tips right now"
     },
     {
       "area": "wiring",
       "name": "output/bets_ledger.csv",
       "status": "PASS",
-      "detail": "4,867 rows, written 0.4h ago per generated_at; 41 future-dated row(s)",
-      "value": 0.4,
+      "detail": "4,867 rows, written 0.5h ago per generated_at; 41 future-dated row(s)",
+      "value": 0.5,
       "why": "the durable tip record; grading and CLV hang off it"
     },
     {
@@ -163,11 +163,35 @@
       "why": "adding kickoff_utc to this writer would make its close auditable"
     },
     {
+      "area": "clv schema",
+      "name": "coverage by level",
+      "status": "PASS",
+      "detail": "RAW 583 | CLEAN 936 (73.0%) | STRICT 341 (26.6%) of 1,283 rows",
+      "value": 0.7295,
+      "why": "CLEAN is what to average; STRICT is what a headline or a graduation decision needs"
+    },
+    {
+      "area": "clv schema",
+      "name": "why rows are not strict",
+      "status": "INFO",
+      "detail": "CLOSE_NOT_PROVEN_PRE_KICKOFF=430; OK=341; NO_CLOSE=270; CLOSE_EQUALS_ENTRY=165; CLV_IMPLAUSIBLE=77",
+      "value": null,
+      "why": "NO_CLOSE and CLOSE_EQUALS_ENTRY are absent measurements, not zero CLV"
+    },
+    {
+      "area": "clv schema",
+      "name": "clv_pct units",
+      "status": "INFO",
+      "detail": "stored clv_pct is a FRACTION (median residual vs entry/close-1: 0.00001 as fraction, 6.45654 as percent, n=583)",
+      "value": null,
+      "why": "clv_records.csv stores a FRACTION and bets_ledger.csv stores a PERCENT under the same column name. CLV_PLAUSIBLE_ABS=25 is therefore inert against clv_records \u2014 it means 2500% there. Derived numbers use clv_pct_normalised, which is always percent"
+    },
+    {
       "area": "movement research",
       "name": "advancing",
       "status": "PASS",
-      "detail": "last ingest 0.5h ago (limit 30h); 34,543 rows over 282 fixtures",
-      "value": 0.5,
+      "detail": "last ingest 0.7h ago (limit 30h); 34,543 rows over 282 fixtures",
+      "value": 0.7,
       "why": "a research archive that stops advancing looks identical to one that is fine"
     },
     {
@@ -206,8 +230,8 @@
       "area": "registry",
       "name": "freshness",
       "status": "PASS",
-      "detail": "generated 0.0h ago (limit 30h)",
-      "value": 0.0,
+      "detail": "generated 0.1h ago (limit 30h)",
+      "value": 0.1,
       "why": "pro_collect refreshes it 2-hourly; 30h means the refresh step itself stopped, which is how the counts drifted 49% unnoticed"
     },
     {

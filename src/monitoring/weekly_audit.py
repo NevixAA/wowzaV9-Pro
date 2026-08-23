@@ -441,7 +441,67 @@ def audit_snapshot_coverage(a: Audit, now, days: int) -> None:
                   "would fire every run")
 
 
-# ── F. v11 movement research: is the archive advancing, and is it POOLABLE? ──
+# ── F. CLV schema: is the close EVIDENCED, and is raw kept apart from clean? ─
+def audit_clv_schema(a: Audit, now, days: int) -> None:
+    """CLV coverage at each level, and the two traps found building it.
+
+    Reports RAW / CLEAN / STRICT_CLEAN separately because they answer different questions and
+    the gap between them IS the finding: a close that equals the entry price is not a
+    measurement, and 165 of 583 v9-sourced rows sit at exactly equal odds.
+    """
+    try:
+        from src.market import clv_schema as cs
+        d = cs.build(quiet=True)
+    except Exception as e:                                        # noqa: BLE001
+        a.add("clv schema", "build", WARN, f"failed: {str(e)[:70]}", None, "")
+        return
+    if d is None or d.empty:
+        a.add("clv schema", "build", INFO, "no clv rows yet", 0, "")
+        return
+
+    n = len(d)
+    clean = int(d["clean_clv_pct"].notna().sum())
+    strict = int((d["clean_clv_pct"].notna() & d["clv_quality"].eq(cs.Q_OK)).sum())
+    a.add("clv schema", "coverage by level", PASS if clean / n >= 0.50 else WARN,
+          f"RAW {int(d['clv_pct'].notna().sum()):,} | CLEAN {clean:,} ({clean / n:.1%}) | "
+          f"STRICT {strict:,} ({strict / n:.1%}) of {n:,} rows",
+          round(clean / n, 4),
+          "CLEAN is what to average; STRICT is what a headline or a graduation decision needs")
+
+    vc = dict(d["clv_quality"].value_counts())
+    a.add("clv schema", "why rows are not strict", INFO,
+          "; ".join(f"{k}={v:,}" for k, v in vc.items()), None,
+          "NO_CLOSE and CLOSE_EQUALS_ENTRY are absent measurements, not zero CLV")
+
+    # The unit trap. v9 stores clv_pct as a FRACTION in clv_records.csv and as a PERCENT in
+    # bets_ledger.csv, so a threshold written for one is inert against the other. Asserted here
+    # because it is invisible to every other check and cost a 100x error while building this.
+    # DERIVED, NOT GUESSED FROM MAGNITUDE. The first version of this check tested
+    # `max|clv_pct| <= 1.5` and concluded "percent" — wrong, because 77 outlier rows push the max
+    # to 4.4455 while the body of the column is plainly fractional (0.125, -0.053, -0.045...).
+    # A magnitude heuristic on a column with outliers is not evidence. Recomputing the ratio from
+    # the odds pair and comparing is deterministic and cannot be fooled.
+    m = d[d["entry_odds"].notna() & d["close_odds"].notna() & d["close_odds"].gt(0)
+          & d["clv_pct"].notna()].copy()
+    if len(m) < 10:
+        a.add("clv schema", "clv_pct units", INFO, f"too few paired rows ({len(m)}) to derive",
+              None, "")
+        return
+    frac = (pd.to_numeric(m["entry_odds"]) / pd.to_numeric(m["close_odds"]) - 1.0)
+    stored = pd.to_numeric(m["clv_pct"])
+    as_fraction = float((stored - frac).abs().median())
+    as_percent = float((stored - frac * 100.0).abs().median())
+    unit = "FRACTION" if as_fraction < as_percent else "percent"
+    a.add("clv schema", "clv_pct units", INFO,
+          f"stored clv_pct is a {unit} (median residual vs entry/close-1: "
+          f"{as_fraction:.5f} as fraction, {as_percent:.5f} as percent, n={len(m):,})",
+          None,
+          "clv_records.csv stores a FRACTION and bets_ledger.csv stores a PERCENT under the same "
+          "column name. CLV_PLAUSIBLE_ABS=25 is therefore inert against clv_records — it means "
+          "2500% there. Derived numbers use clv_pct_normalised, which is always percent")
+
+
+# ── G. v11 movement research: is the archive advancing, and is it POOLABLE? ──
 def audit_movement_research(a: Audit, now, days: int) -> None:
     """The market-movement archive (movement brief section 18 / PHASE 4).
 
@@ -750,7 +810,7 @@ def run(days: int = 7, json_path: str | None = None, strict: bool = False) -> in
     print(f"[audit] {now:%Y-%m-%d %H:%M UTC}  window={days}d  v9={sha}")
     print(f"[audit] V9_LOCAL={cfg.V9_LOCAL}  exists={cfg.V9_LOCAL.exists()}\n")
     for fn in (audit_wiring, audit_odds_curve, audit_tips, audit_collection,
-               audit_snapshot_coverage, audit_movement_research, audit_registry,
+               audit_snapshot_coverage, audit_clv_schema, audit_movement_research, audit_registry,
                audit_config):
         try:
             fn(a, now, days)

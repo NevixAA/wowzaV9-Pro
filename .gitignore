@@ -58,6 +58,7 @@ output/**
 # persisted — a check whose result is thrown away cannot show a slow decline.
 !output/weekly_audit.json
 !output/snapshot_coverage.json
+!output/clv_enriched.csv
 # The monthly out-of-sample evaluation record. Committed for the same reason: a hypothesis test
 # whose result is discarded cannot show whether an effect held up over time.
 !output/monthly_eval.json
