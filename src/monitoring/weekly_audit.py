@@ -441,7 +441,82 @@ def audit_snapshot_coverage(a: Audit, now, days: int) -> None:
                   "would fire every run")
 
 
-# ── F. CLV schema: is the close EVIDENCED, and is raw kept apart from clean? ─
+# ── F. cross-repo contract: does v9 still supply what we declared we need? ───
+def audit_contract(a: Audit, now, days: int) -> None:
+    """Verify every declared v9 dependency (src/contract.py).
+
+    Columns are checked BY NAME and a missing one is FAIL, not WARN. pandas returns NaN for an
+    absent column and the consumer carries on computing with nothing — which is how three
+    separate silent failures happened: the audit looking for player_history under output/, v11
+    grading from a tip-only ledger, and from_clv keying on columns clv_records does not have.
+    Severity follows recoverability: a gap in an odds snapshot is PERMANENT (/odds is pre-match
+    only), a stale board is a delay.
+    """
+    try:
+        from src import contract as ct
+    except Exception as e:
+        a.add("contract", "module import", WARN, f"unimportable: {str(e)[:60]}", None, "")
+        return
+
+    missing_files, missing_cols, stale = [], [], []
+    for art in ct.CONTRACT:
+        if art.parquet:
+            p = cfg.V9_LOCAL / art.path
+            if not p.exists():
+                a.add("contract", art.path, INFO,
+                      "parquet not in this checkout (not fetched over HTTP)", None,
+                      "run with V9_LOCAL for this check")
+                continue
+            try:
+                df = pd.read_parquet(p, columns=list(art.required_cols) or None)
+            except Exception as e:
+                missing_cols.append(f"{art.path}: {str(e)[:50]}")
+                continue
+        elif art.path.endswith(".json"):
+            p = cfg.V9_LOCAL / art.path
+            if not p.exists():
+                missing_files.append(art.path)
+            continue
+        else:
+            df = _read(art.path)
+            if df.empty:
+                missing_files.append(art.path)
+                continue
+
+        absent = [c for c in art.required_cols if c not in df.columns]
+        if absent:
+            missing_cols.append(f"{art.path}: {', '.join(absent)}")
+        if art.max_age_h is not None and not art.parquet:
+            age, _ = _write_age_h(df, art.path, now)
+            lim, _ = _allowed_age_h(art.path, art.max_age_h, now, age)
+            if age is not None and age > lim:
+                stale.append(f"{art.path} ({age:.1f}h > {lim:.1f}h)")
+
+    n = len(ct.CONTRACT)
+    a.add("contract", "declared artifacts present",
+          FAIL if missing_files else PASS,
+          f"{n - len(missing_files)}/{n} present"
+          + (f"; MISSING: {', '.join(missing_files)}" if missing_files else ""),
+          len(missing_files),
+          "a consumer of a missing artifact produces nothing and reports success")
+    a.add("contract", "required columns", FAIL if missing_cols else PASS,
+          f"all required columns present" if not missing_cols
+          else f"MISSING: {'; '.join(missing_cols)}",
+          len(missing_cols),
+          "pandas returns NaN for an absent column, so the consumer computes with nothing "
+          "rather than failing")
+    a.add("contract", "freshness", WARN if stale else PASS,
+          "all within declared limits" if not stale else f"STALE: {', '.join(stale)}",
+          len(stale), "")
+    unrec = ct.unrecoverable()
+    a.add("contract", "unrecoverable artifacts", INFO,
+          f"{len(unrec)} artifact(s) whose gaps can never be backfilled: "
+          + ", ".join(x.path.split('/')[-1] for x in unrec), len(unrec),
+          "/odds is pre-match only — a missed snapshot is permanent loss, which is why these "
+          "carry FAIL severity elsewhere while a stale board is only a delay")
+
+
+# ── G. CLV schema: is the close EVIDENCED, and is raw kept apart from clean? ─
 def audit_clv_schema(a: Audit, now, days: int) -> None:
     """CLV coverage at each level, and the two traps found building it.
 
@@ -810,7 +885,8 @@ def run(days: int = 7, json_path: str | None = None, strict: bool = False) -> in
     print(f"[audit] {now:%Y-%m-%d %H:%M UTC}  window={days}d  v9={sha}")
     print(f"[audit] V9_LOCAL={cfg.V9_LOCAL}  exists={cfg.V9_LOCAL.exists()}\n")
     for fn in (audit_wiring, audit_odds_curve, audit_tips, audit_collection,
-               audit_snapshot_coverage, audit_clv_schema, audit_movement_research, audit_registry,
+               audit_snapshot_coverage, audit_contract, audit_clv_schema,
+               audit_movement_research, audit_registry,
                audit_config):
         try:
             fn(a, now, days)
