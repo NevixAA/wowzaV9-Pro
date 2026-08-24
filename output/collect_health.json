@@ -1,12 +1,12 @@
 {
-  "checked_at": "2026-08-24T05:22:15Z",
+  "checked_at": "2026-08-24T07:30:27Z",
   "watermarks_advanced": {},
   "season": "season_2026_27",
-  "run_id": "gh32693259433-1",
-  "v9_sha": "70d3b6428a88",
-  "pro_git_sha": "163fbcb6b660",
+  "run_id": "gh32701766518-1",
+  "v9_sha": "335a4104f018",
+  "pro_git_sha": "7ae7d1d4f285",
   "dry_run": false,
-  "total_rows": 1612,
+  "total_rows": 35672,
   "per_importer": {
     "predictions": {
       "rows": 1612,
@@ -17,51 +17,83 @@
         "feature_snapshots": 148,
         "signals": 148
       }
+    },
+    "ledgers": {
+      "rows": 4974,
+      "tables": {
+        "settlements": 4974
+      }
+    },
+    "player_props": {
+      "rows": 3587,
+      "tables": {
+        "player_props": 3587
+      }
+    },
+    "clv": {
+      "rows": 400,
+      "tables": {
+        "clv": 400
+      }
+    },
+    "live_signals": {
+      "rows": 47,
+      "tables": {
+        "live_signals": 47
+      }
+    },
+    "movement_observations": {
+      "rows": 25052,
+      "tables": {
+        "movement_observations": 25052
+      }
     }
   },
-  "failures": [],
+  "failures": [
+    "odds_histories: NameError: name 'q' is not defined"
+  ],
   "store": {
     "fixtures": {
-      "rows": 13363,
-      "partitions": 87,
-      "runs": 87,
+      "rows": 13511,
+      "partitions": 88,
+      "runs": 88,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-24"
     },
     "model_snapshots": {
-      "rows": 63340,
-      "partitions": 87,
-      "runs": 87,
+      "rows": 64042,
+      "partitions": 88,
+      "runs": 88,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-24"
     },
     "market_snapshots": {
-      "rows": 79712,
-      "partitions": 94,
-      "runs": 94,
+      "rows": 80178,
+      "partitions": 95,
+      "runs": 95,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-24"
     },
     "feature_snapshots": {
-      "rows": 13363,
-      "partitions": 87,
-      "runs": 87,
+      "rows": 13511,
+      "partitions": 88,
+      "runs": 88,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-24"
     },
     "signals": {
-      "rows": 13363,
-      "partitions": 87,
-      "runs": 87,
+      "rows": 13511,
+      "partitions": 88,
+      "runs": 88,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-24"
     },
     "settlements": {
-      "rows": 43555,
-      "partitions": 18,
-      "runs": 18,
+      "rows": 48529,
+      "partitions": 20,
+      "runs": 20,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-08-23"
+      "last_dt": "2026-08-24"
     },
     "settlements_backfill": {
       "rows": 778,
@@ -71,25 +103,25 @@
       "last_dt": "2026-05-21"
     },
     "clv": {
-      "rows": 1283,
-      "partitions": 8,
-      "runs": 8,
+      "rows": 1683,
+      "partitions": 9,
+      "runs": 9,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-08-23"
+      "last_dt": "2026-08-24"
     },
     "player_props": {
-      "rows": 20116,
-      "partitions": 8,
-      "runs": 8,
+      "rows": 23703,
+      "partitions": 9,
+      "runs": 9,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-08-23"
+      "last_dt": "2026-08-24"
     },
     "live_signals": {
-      "rows": 352,
-      "partitions": 8,
-      "runs": 8,
+      "rows": 399,
+      "partitions": 9,
+      "runs": 9,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-08-23"
+      "last_dt": "2026-08-24"
     },
     "data_quality": {
       "rows": 24,
@@ -99,11 +131,11 @@
       "last_dt": "2026-08-23"
     },
     "movement_observations": {
-      "rows": 34543,
-      "partitions": 2,
-      "runs": 2,
+      "rows": 59595,
+      "partitions": 3,
+      "runs": 3,
       "first_dt": "2026-08-23",
-      "last_dt": "2026-08-23"
+      "last_dt": "2026-08-24"
     }
   }
 }
