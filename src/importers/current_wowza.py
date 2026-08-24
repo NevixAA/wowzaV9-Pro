@@ -27,6 +27,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from config import pro_config as cfg
+from src import quality as q
 from src.data import entities as ent
 from src.data import watermarks as wm
 from src.data.v9_source import fetch_csv, num
