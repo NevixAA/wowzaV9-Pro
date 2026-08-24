@@ -86,6 +86,14 @@ jobs:
       # refreshing it after a failed collect would stamp a fresh `generated_at` on counts that
       # may be mid-write. A skipped refresh ages the file, which weekly_audit reports — the
       # failure stays visible instead of being papered over with a new timestamp.
+      # data_quality had NO workflow step at all, so CI had never written a single row to it —
+      # every one of its 24 rows came from me running it on a laptop. Runs before the registry
+      # so the registry's count includes this run's findings.
+      - name: Scan data quality
+        if: steps.collect.outcome == 'success'
+        run: python -m src.pipelines.data_quality
+        continue-on-error: true
+
       - name: Refresh system registry from the canonical store
         if: steps.collect.outcome == 'success'
         run: python -m src.pipelines.registry

@@ -55,6 +55,19 @@ REQUIRED: dict[str, tuple[str, ...]] = {
 }
 
 
+class LocalWriteRefused(RuntimeError):
+    """Raised when a local run tries to append to the canonical store. See `append`."""
+
+
+def _in_ci() -> bool:
+    """True on GitHub Actions. GITHUB_ACTIONS is set to 'true' by the runner itself.
+
+    Deliberately does NOT accept a generic CI=true: a local tool that happens to export CI would
+    then be able to write to the season of record, which is the whole thing being prevented.
+    """
+    return os.getenv("GITHUB_ACTIONS", "").lower() == "true"
+
+
 def _pro_git_sha() -> str:
     """Pro's own code version, so any row can be traced to the logic that made it."""
     env = os.getenv("GITHUB_SHA")
@@ -96,8 +109,31 @@ def append(
     source_sha: str | None = None,
     rid: str | None = None,
     partition_on: str | None = None,
+    allow_local: bool = False,
 ) -> list[Path]:
     """Append `df` to `table`, one parquet per (date partition, run).
+
+    ONLY CI MAY WRITE. A local run raises unless `allow_local=True` (or PRO_ALLOW_LOCAL_WRITE=1).
+    ============================================================================================
+    Pro's collectors run exclusively on GitHub Actions. Running them locally to "check the change
+    works" appends a full duplicate of whatever CI already collected, and because the store is
+    append-only and run-partitioned nothing complains — the rows are valid, the schema passes, and
+    the table simply gets bigger.
+
+    Measured 2026-08-24, after a day of me doing exactly that:
+
+        movement_observations   59,595 / 84,647 rows (70%) written by LOCAL runs
+        market_snapshots        42,250 / 82,443 (51%)
+        settlements             19,399 / 53,466 (36%)
+        player_props             7,382 / 26,965 (27%)
+        clv                        469 /  2,054 (23%)
+
+    Those duplicates inflate every `n` the research depends on, and `n` is what gates whether a
+    signal graduates. A guard is the only reliable fix: remembering not to is what failed.
+
+    Verification of a change therefore means CALLING the code path and inspecting what it WOULD
+    write — `--dry-run`, or `allow_local=True` against a scratch season — never letting a laptop
+    write to the season of record.
 
     `observed_at` is when the fact was true in the world — the v9 commit timestamp when
     backfilling from git history, or now for a live capture. It is NOT the ingest time; both
@@ -114,6 +150,16 @@ def append(
     """
     if df is None or df.empty:
         return []
+
+    # Checked BEFORE the schema test, so a local run is refused on its intent rather than
+    # incidentally passing or failing validation first.
+    if not allow_local and not _in_ci() and os.getenv("PRO_ALLOW_LOCAL_WRITE") != "1":
+        raise LocalWriteRefused(
+            f"refusing to append {len(df):,} row(s) to '{table}' from a LOCAL run. Pro collects "
+            f"only on GitHub Actions; a local append duplicates what CI already wrote and "
+            f"inflates every n. Use --dry-run to inspect, or set PRO_ALLOW_LOCAL_WRITE=1 if you "
+            f"genuinely intend to write to the season of record."
+        )
 
     missing = [c for c in REQUIRED.get(table, ()) if c not in df.columns]
     if missing:

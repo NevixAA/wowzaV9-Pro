@@ -258,8 +258,15 @@ def main() -> int:
     if a.dry_run:
         print("[data_quality] dry run — nothing written")
         return 0
-    store.append("data_quality", d, source="pro:data_quality",
-                 source_sha=store.pro_git_sha(), rid=f"{cfg.run_id()}-dq")
+    try:
+        store.append("data_quality", d, source="pro:data_quality",
+                     source_sha=store.pro_git_sha(), rid=f"{cfg.run_id()}-dq")
+    except store.LocalWriteRefused as e:
+        # A local run has still done something useful — the scan above printed every finding.
+        # Reported as a normal outcome rather than a traceback, and exit 0, because refusing to
+        # write locally is the DESIGNED behaviour, not a failure of this pipeline.
+        print(f"[data_quality] scan complete; NOT written — {e}")
+        return 0
     print(f"[data_quality] {len(d)} finding(s) appended to the canonical store")
     return 0
 

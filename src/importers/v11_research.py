@@ -76,15 +76,44 @@ def _v11_sha() -> str:
 
 
 def _calc_version() -> str:
-    """v11's declared movement calculation version, or 'unversioned'."""
+    """v11's declared movement calculation version, or 'unversioned'.
+
+    LOCAL CLONE FIRST, THEN RAW HTTP — the same fallback chain `_fetch` uses.
+    ==================================================================
+    This read `cfg.V11_LOCAL` ONLY, and Pro's workflow does not check out v11. So in CI the path
+    did not exist, the read raised, and every row was stamped `unversioned` — while the
+    observations themselves arrived fine, because `_fetch` right below DOES fall back to HTTP.
+
+    The effect was invisible until the archive held rows from both environments:
+
+        gh32701766518-1   25,052 rows   calculation_version = 'unversioned'   <- CI
+        local...          59,595 rows   calculation_version = '1.0.0'         <- local runs
+
+    `calculation_version` is the field that decides whether rows may be POOLED, so a mixed
+    archive silently invalidates every aggregate over it — and the audit's
+    "single calculation version" check fires on exactly this, which is how it surfaced.
+    """
+    for line in _read_v11_text("src/movement.py").splitlines():
+        if line.startswith("CALC_VERSION"):
+            return line.split("=", 1)[1].strip().strip('"').strip("'")
+    return "unversioned"
+
+
+def _read_v11_text(rel: str) -> str:
+    """v11 source file, local clone first then raw HTTP. Empty string if neither works."""
+    p = cfg.V11_LOCAL / rel.replace("/", "\\") if "\\" in str(cfg.V11_LOCAL) else \
+        cfg.V11_LOCAL / rel
     try:
-        p = cfg.V11_LOCAL / "src" / "movement.py"
-        for line in p.read_text(encoding="utf-8").splitlines():
-            if line.startswith("CALC_VERSION"):
-                return line.split("=", 1)[1].strip().strip('"').strip("'")
+        if p.exists():
+            return p.read_text(encoding="utf-8")
     except Exception:
         pass
-    return "unversioned"
+    try:
+        import urllib.request
+        with urllib.request.urlopen(f"{cfg.V11_RAW_BASE}/{rel}", timeout=20) as r:
+            return r.read().decode("utf-8", errors="replace")
+    except Exception:
+        return ""
 
 
 def _fetch() -> pd.DataFrame:
