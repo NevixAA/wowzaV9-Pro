@@ -99,6 +99,28 @@ def _calc_version() -> str:
     return "unversioned"
 
 
+def _read_v11_json(rel: str) -> dict:
+    """A v11 JSON artifact, local clone first then raw HTTP. {} if unavailable.
+
+    Same fallback chain as _read_v11_text, for the same reason: Pro's workflow does not check out
+    v11, so a local-only read silently returns nothing in CI — which is exactly how
+    calculation_version ended up stamped 'unversioned' on 25,052 rows.
+    """
+    import json
+    p = cfg.V11_LOCAL / rel
+    try:
+        if p.exists():
+            return json.loads(p.read_text(encoding="utf-8"))
+    except Exception:
+        pass
+    try:
+        import urllib.request
+        with urllib.request.urlopen(f"{cfg.V11_RAW_BASE}/{rel}", timeout=20) as r:
+            return json.loads(r.read().decode("utf-8", errors="replace"))
+    except Exception:
+        return {}
+
+
 def _read_v11_text(rel: str) -> str:
     """v11 source file, local clone first then raw HTTP. Empty string if neither works."""
     p = cfg.V11_LOCAL / rel.replace("/", "\\") if "\\" in str(cfg.V11_LOCAL) else \
@@ -164,6 +186,37 @@ def from_v11_movement() -> list[tuple[str, pd.DataFrame]]:
         print("[v11_research] skipped: v11 detail file is empty")
         return []
 
+    # ── STALENESS GATE (brief section 14) ────────────────────────────────────────────────
+    #
+    # Pro must not present an old v11 summary as current merely because the file exists. On
+    # 2026-08-25 v11's six movement files were TWO DAYS behind their own source — CI recomputed
+    # them every 30 minutes and never staged them — while the raw archive was current to the
+    # minute. Pro ingested them all the way through without a murmur, because "the file is there
+    # and it parses" was the entire check.
+    #
+    # The rows are still ARCHIVED when stale: they are a real observation of what v11 published,
+    # and dropping them would lose history. They are TAGGED instead, so any aggregate can exclude
+    # them and no reader can mistake a stale ingest for a current one.
+    stale_reason = ""
+    health = _read_v11_json("output/v11_research_health.json")
+    if not health:
+        stale_reason = "V11_RESEARCH_HEALTH_MISSING"
+    else:
+        verdict = str(health.get("overall", "")).upper()
+        mv = health.get("movement") or {}
+        if verdict == "FAIL":
+            stale_reason = "V11_RESEARCH_STALE"
+        elif str(mv.get("freshness_status", "")).upper() in ("WARN", "FAIL"):
+            stale_reason = "V11_MOVEMENT_STALE"
+        cv = str(health.get("calculation_version", ""))
+        if cv and cv != _calc_version():
+            stale_reason = stale_reason or "V11_CALC_VERSION_MISMATCH"
+    if stale_reason:
+        lag = ((health.get("movement") or {}).get("lag_hours") if health else None)
+        print(f"[v11_research] WARNING {stale_reason}"
+              f"{f' (movement lag {lag}h)' if lag is not None else ''} — rows are archived but "
+              f"TAGGED; exclude them from any current-state aggregate")
+
     d = pd.DataFrame({c: raw[c] if c in raw.columns else pd.NA for c in DETAIL_COLS})
     for c in _NUMERIC:
         d[c] = pd.to_numeric(d[c], errors="coerce")
@@ -178,6 +231,9 @@ def from_v11_movement() -> list[tuple[str, pd.DataFrame]]:
     d["generated_at"] = (pd.Timestamp(src.stat().st_mtime, unit="s", tz="UTC")
                          .strftime("%Y-%m-%dT%H:%M:%SZ") if src.exists() else pd.NA)
     d["ingested_at"] = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    # Tag every row of a stale ingest. Empty string when fresh, so a filter is trivial
+    # and the column is self-describing without a lookup.
+    d["research_staleness"] = stale_reason
 
     missing = [c for c in DETAIL_COLS if c not in raw.columns]
     print(f"[v11_research] {len(d):,} observations over {d['fixture_id'].nunique()} fixtures | "

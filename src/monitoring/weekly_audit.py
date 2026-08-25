@@ -114,6 +114,36 @@ _WRITE_COLS = ("generated_at", "snapshot_ts", "added_at", "signal_date", "captur
                "ingested_at", "observed_at")
 
 
+def _in_ci() -> bool:
+    import os
+    return os.getenv("GITHUB_ACTIONS", "").lower() == "true"
+
+
+def _v9_checkout_age_h(now) -> float | None:
+    """Hours since the local v9 clone's HEAD commit, or None if not a clone / in CI.
+
+    THE POINT. This audit reads v9 from `V9_LOCAL`. In CI that is a fresh shallow clone, so file
+    ages are production's ages. On a laptop it is whatever was last pulled — and a v9 freshness
+    FAIL then measures MY clone, not production.
+
+    That misfired twice in one session: `predictions.csv` reported as "NOT advancing" at 20.9h and
+    again at 36.8h while v9 was in fact committing every few minutes. Both times the correct
+    conclusion was "pull your checkout", and both times the check said "production is down".
+    A monitor that cries wolf about the wrong machine is worse than no monitor, so v9 freshness
+    verdicts are DOWNGRADED outside CI and labelled with the clone's age.
+    """
+    if _in_ci():
+        return None
+    try:
+        import subprocess
+        r = subprocess.run(["git", "log", "-1", "--format=%cI"], cwd=cfg.V9_LOCAL,
+                           capture_output=True, text=True, timeout=20)
+        t = _dt(pd.Series([r.stdout.strip()])).iloc[0]
+        return None if pd.isna(t) else round((now - t).total_seconds() / 3600.0, 1)
+    except Exception:
+        return None
+
+
 def _write_age_h(df: pd.DataFrame, path: str, now) -> tuple[float | None, str]:
     """Hours since this artifact was last written, and how we know."""
     for c in _WRITE_COLS:
@@ -218,10 +248,21 @@ def audit_wiring(a: Audit, now, days: int) -> None:
                   f"{len(df):,} rows but nothing proves when it was written "
                   f"(no {list(_WRITE_COLS)[:3]}..., no local file){fwd}", len(df), why)
         elif age > max_h_eff:
-            a.add("wiring", path, sev,
-                  f"last written {age:.1f}h ago per {src} (limit {max_h_eff:.0f}h"
-                  + (f", {sched}" if sched else "") + f") — exists but is NOT advancing{fwd}",
-                  round(age, 1), why)
+            # Outside CI, a stale v9 file may simply be a stale CLONE. Downgraded and labelled
+            # rather than reported as production down — see _v9_checkout_age_h.
+            clone_age = _v9_checkout_age_h(now)
+            if clone_age is not None and clone_age >= max_h_eff * 0.5:
+                a.add("wiring", path, INFO,
+                      f"last written {age:.1f}h ago, but the LOCAL v9 clone is itself "
+                      f"{clone_age:.1f}h old — this measures the checkout, not production. "
+                      f"`git -C {cfg.V9_LOCAL.name} pull` then re-run, or trust the CI run.",
+                      round(age, 1),
+                      "v9 freshness is only authoritative from CI, where the clone is fresh")
+            else:
+                a.add("wiring", path, sev,
+                      f"last written {age:.1f}h ago per {src} (limit {max_h_eff:.0f}h"
+                      + (f", {sched}" if sched else "") + f") — exists but is NOT advancing{fwd}",
+                      round(age, 1), why)
         else:
             a.add("wiring", path, PASS,
                   f"{len(df):,} rows, written {age:.1f}h ago per {src}"
@@ -441,7 +482,82 @@ def audit_snapshot_coverage(a: Audit, now, days: int) -> None:
                   "would fire every run")
 
 
-# ── F. cross-repo contract: does v9 still supply what we declared we need? ───
+# ── F. v11 research freshness: is DERIVED evidence keeping up with raw? ──────
+def audit_v11_freshness(a: Audit, now, days: int) -> None:
+    """Does v11's derived research advance when its raw archive does?
+
+    A separate question from "is v11 collecting", and the one nothing was asking. On 2026-08-25
+    v11's raw snapshots were current to the minute while all six movement summaries were TWO DAYS
+    behind: the movement script had been rewritten to emit six files instead of one and the
+    workflow's commit list was never updated, so CI recomputed them every 30 minutes and threw
+    them away. Every workflow ran green. Pro ingested the stale files without comment.
+
+    Read from v11's own published health artifact rather than recomputed here — v11 owns the
+    calculation (movement brief section 18) and a second implementation would eventually disagree
+    with it.
+    """
+    try:
+        from src.importers.v11_research import _read_v11_json
+    except Exception as e:
+        a.add("v11 freshness", "module import", WARN, f"unimportable: {str(e)[:60]}", None, "")
+        return
+    h = _read_v11_json("output/v11_research_health.json")
+    if not h:
+        a.add("v11 freshness", "health artifact", FAIL,
+              "output/v11_research_health.json not readable from clone or raw HTTP", None,
+              "without it Pro cannot tell a fresh v11 summary from a two-day-old one")
+        return
+
+    verdict = str(h.get("overall", "?")).upper()
+    a.add("v11 freshness", "v11 self-reported verdict",
+          {"PASS": PASS, "WARN": WARN, "FAIL": FAIL}.get(verdict, WARN),
+          f"v11 research health = {verdict} (calc v{h.get('calculation_version')}, "
+          f"generated {h.get('generated_at')})", None,
+          "v11 compares each derived artifact's generated_at against its source's newest "
+          "observation, so this distinguishes 'no new data' from 'analysis did not refresh'")
+
+    raw = h.get("raw") or {}
+    mv = h.get("movement") or {}
+    rs = h.get("residual") or {}
+
+    # The lag IS the finding. Thresholds match v11's own (12h warn / 30h fail) so the two
+    # repositories cannot disagree about whether the same artifact is stale.
+    for label, blk in (("movement summary", mv), ("residual analysis", rs)):
+        lag = blk.get("lag_hours")
+        st = blk.get("freshness_status", "?")
+        status = {"PASS": PASS, "WARN": WARN, "FAIL": FAIL}.get(str(st).upper(), WARN)
+        a.add("v11 freshness", f"{label} lag", status,
+              f"{'n/a' if lag is None else f'{lag:+.1f}h'} behind its source "
+              f"(v11 verdict {st})", lag,
+              "raw advancing while this stays frozen is the exact failure this check exists for")
+
+    a.add("v11 freshness", "sample sizes", INFO,
+          f"raw {raw.get('snapshots_rows')} snapshot rows | movement "
+          f"{mv.get('n_distinct_observations')} distinct obs over {mv.get('n_fixtures')} "
+          f"fixtures (published n={mv.get('published_fixture_n')}) | residual n="
+          f"{rs.get('n_fixtures')} | clean CLV n={mv.get('clv_n')}",
+          mv.get("n_fixtures"),
+          "distinct observations, NOT the warehouse row count — the archive holds supersets from "
+          "repeated ingests and the raw count overstates n by ~38%")
+
+    deltas = {"movement fixtures": mv.get("delta_fixtures_since_previous"),
+              "residual n": rs.get("delta_n_since_previous")}
+    shrunk = {k: v for k, v in deltas.items() if isinstance(v, (int, float)) and v < 0}
+    a.add("v11 freshness", "monotonicity", WARN if shrunk else PASS,
+          (f"SAMPLE SHRANK: {shrunk}" if shrunk else
+           f"non-decreasing ({', '.join(f'{k} {v:+}' for k, v in deltas.items() if v is not None) or 'no prior state'})"),
+          None,
+          "a decrease is legitimate after a methodology or quality-rule change, but it must be "
+          "visible and explained rather than absorbed silently")
+
+    mono = h.get("monotonicity_warnings") or []
+    if mono:
+        a.add("v11 freshness", "v11-reported shrinkage", WARN,
+              "; ".join(f"{m['metric']} {m['previous']}->{m['current']}" for m in mono),
+              len(mono), "")
+
+
+# ── G. cross-repo contract: does v9 still supply what we declared we need? ───
 def audit_contract(a: Audit, now, days: int) -> None:
     """Verify every declared v9 dependency (src/contract.py).
 
@@ -885,7 +1001,7 @@ def run(days: int = 7, json_path: str | None = None, strict: bool = False) -> in
     print(f"[audit] {now:%Y-%m-%d %H:%M UTC}  window={days}d  v9={sha}")
     print(f"[audit] V9_LOCAL={cfg.V9_LOCAL}  exists={cfg.V9_LOCAL.exists()}\n")
     for fn in (audit_wiring, audit_odds_curve, audit_tips, audit_collection,
-               audit_snapshot_coverage, audit_contract, audit_clv_schema,
+               audit_snapshot_coverage, audit_v11_freshness, audit_contract, audit_clv_schema,
                audit_movement_research, audit_registry,
                audit_config):
         try:
