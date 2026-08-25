@@ -52,6 +52,10 @@ REQUIRED: dict[str, tuple[str, ...]] = {
     "player_props":      ("fixture_key", "market", "player_name"),
     "live_signals":      ("fixture_key",),
     "data_quality":      ("check", "status"),
+    # One row per FIXTURE with home_/away_ columns, matching how feature_engineering
+    # consumes it (_team_recent reads a home_xg / away_xg pair). A per-team grain would be
+    # more normalised and would force every consumer to pivot.
+    "team_match_stats":  ("fixture_key", "league", "match_date", "home_team", "away_team"),
 }
 
 

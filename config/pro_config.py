@@ -91,6 +91,20 @@ TABLES = (
     "player_props",
     "live_signals",
     "data_quality",
+    # Per-fixture TEAM MATCH STATISTICS from API-Football /fixtures/statistics.
+    #
+    # Fills the largest measured gap in the whole system. On the live board, home_xg_last5,
+    # away_xg_last5, home_insidebox_last5 and home_possession_last5 are ALL 0% populated, and
+    # missing features are median-imputed — so the model receives the league average for its
+    # per-team inputs. v9 already has the parser (api_football_ou.py extracts expected_goals,
+    # Shots insidebox, Ball Possession) and the feature code (feature_engineering computes
+    # home_xg_last5 from a home_xg column); what never existed was a HISTORY holding those
+    # columns. af_history.parquet carries only football-data fields (FTHG, HS, HST, HC, ...).
+    #
+    # Cost measured 2026-08-25: 2,298 calls to backfill the season to date (3.1% of one day of
+    # the 75k quota), ~47/day ongoing. Unlike previous "use the spare quota" ideas this one has a
+    # real consumer, which is the test that matters.
+    "team_match_stats",
     # v11-computed market-movement research observations, archived verbatim with provenance.
     "movement_observations",
 )

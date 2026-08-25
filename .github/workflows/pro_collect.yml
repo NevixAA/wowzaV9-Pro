@@ -86,6 +86,20 @@ jobs:
       # refreshing it after a failed collect would stamp a fresh `generated_at` on counts that
       # may be mid-write. A skipped refresh ages the file, which weekly_audit reports — the
       # failure stays visible instead of being papered over with a new timestamp.
+      # Per-fixture team statistics (xG / possession / inside-box shots). Only the daily sweep,
+      # not the 2-hourly snapshot run: ~47 finished fixtures a day means one pass is enough, and
+      # the 2-hourly job must stay fast. Resumable and cached, so a repeat costs no API calls.
+      #
+      # This fills the largest measured gap in the system — home_xg_last5, insidebox and
+      # possession were ALL 0% populated on the live board, and missing features are
+      # median-imputed, so the model was being handed the league average for its per-team inputs.
+      - name: Collect team match statistics
+        if: steps.collect.outcome == 'success' && github.event.schedule != '40 */2 * * *'
+        env:
+          APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
+        run: python -m src.pipelines.team_stats --seasons 2026
+        continue-on-error: true
+
       # data_quality had NO workflow step at all, so CI had never written a single row to it —
       # every one of its 24 rows came from me running it on a laptop. Runs before the registry
       # so the registry's count includes this run's findings.
