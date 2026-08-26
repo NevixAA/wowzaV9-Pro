@@ -176,3 +176,96 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+# ── THIRD ATTEMPT: real per-team lambdas from team_match_stats ────────────────
+#
+# The first two attempts were both wrong, in different ways, and both looked finished:
+#
+#   1. v9's stored features. p_btts_dc scored AUC 0.5032 and lam_min 0.4898 (below chance), and
+#      I concluded distribution features cannot help. But home_xg_last5, insidebox and possession
+#      were ALL 0% populated on the live board and missing features are median-imputed, so the
+#      lambdas were built from league averages. Wrong diagnosis: absent inputs, not a dead end.
+#   2. My own rolling-form code. A pandas index scatter set corr(prior scoring rate, goals next)
+#      to -0.0009 — an exact zero. Had I trusted it I would have reported that form carries no
+#      information about goals, which is false.
+#
+# So this attempt states its guards up front:
+#   * lambdas come from team_form, whose leakage and alignment are unit-tested against a
+#     three-team interleaved case that fails on the specific defects above;
+#   * scored against the BTTS BASE RATE, never 0.50 (that mistake once turned over15's +0.029
+#     into +0.140);
+#   * chronological split, never random;
+#   * CONDITIONED ON xg_source, because xG and goals are different estimators and pooling them
+#     measures a mixture — xG is measurably better (+0.0323 correlation, CI [+0.0103, +0.0548]);
+#   * bootstrap CI on the DIFFERENCE between models, not two separate intervals.
+
+def run_from_stats(min_season: str | None = None, quiet: bool = False) -> dict:
+    """BTTS evaluation on real per-team lambdas. Returns a dict of results."""
+    import numpy as np
+    from src.features import btts as bf
+    from src.features import team_form as tf
+
+    stats = store.read("team_match_stats")
+    if stats is None or stats.empty:
+        print("[btts_eval] team_match_stats is empty")
+        return {}
+    if min_season:
+        stats = stats[stats["season"].astype(str) >= str(min_season)]
+    lam = tf.fixture_lambdas(stats)
+    res = stats[["fixture_id", "home_goals", "away_goals", "match_date", "league"]].copy()
+    d = lam.merge(res, on="fixture_id", how="inner", suffixes=("", "_r"))
+    d["hg"] = pd.to_numeric(d["home_goals"], errors="coerce")
+    d["ag"] = pd.to_numeric(d["away_goals"], errors="coerce")
+    d = d.dropna(subset=["hg", "ag", "lam_home", "lam_away"])
+    if d.empty:
+        print("[btts_eval] no fixtures with both lambdas and a result")
+        return {}
+    d["y"] = ((d["hg"] >= 1) & (d["ag"] >= 1)).astype(float)
+    d["p_btts_dc"] = [bf.dixon_coles_p_btts(h, a) for h, a in zip(d["lam_home"], d["lam_away"])]
+    d["_dt"] = pd.to_datetime(d["match_date"], errors="coerce")
+    d = d.dropna(subset=["_dt"]).sort_values("_dt")
+
+    out = {}
+    for label, sub in (("all", d), ("xg only", d[d["xg_source"] == "xg"]),
+                       ("goals only", d[d["xg_source"] == "goals"])):
+        if len(sub) < 200:
+            if not quiet:
+                print(f"\n  {label}: n={len(sub)} — too few for a chronological split")
+            out[label] = {"n": int(len(sub)), "verdict": "INSUFFICIENT"}
+            continue
+        cut = int(len(sub) * 0.8)
+        tr, te = sub.iloc[:cut], sub.iloc[cut:]
+        base = float(tr["y"].mean())
+        p_const = np.full(len(te), base)
+        p_dc = te["p_btts_dc"].to_numpy(dtype=float)
+        y = te["y"].to_numpy(dtype=float)
+        b_const, b_dc = _brier(y, p_const), _brier(y, p_dc)
+        lo, hi = _boot_diff(y, p_const, p_dc)
+        auc_min = auc_sum = float("nan")
+        try:
+            from sklearn.metrics import roc_auc_score
+            auc_min = roc_auc_score(y, te["lam_min"])
+            auc_sum = roc_auc_score(y, te["lam_sum"])
+        except Exception:
+            pass
+        out[label] = {"n": int(len(sub)), "n_test": int(len(te)),
+                      "base_rate_train": round(base, 4),
+                      "base_rate_test": round(float(te["y"].mean()), 4),
+                      "brier_base_rate": round(b_const, 5), "brier_dc": round(b_dc, 5),
+                      "gain": round(b_const - b_dc, 5),
+                      "diff_ci_lo": round(lo, 5), "diff_ci_hi": round(hi, 5),
+                      "auc_lam_min": round(auc_min, 4), "auc_lam_sum": round(auc_sum, 4),
+                      "verdict": ("DC BEATS BASE RATE" if lo > 0 else
+                                  "DC WORSE" if hi < 0 else "INCONCLUSIVE")}
+        if not quiet:
+            r = out[label]
+            print(f"\n  {label}: n={r['n']:,} (test {r['n_test']:,})  "
+                  f"base rate {r['base_rate_train']:.4f} -> test {r['base_rate_test']:.4f}")
+            print(f"    Brier  base-rate constant {r['brier_base_rate']:.5f}   "
+                  f"Dixon-Coles {r['brier_dc']:.5f}   gain {r['gain']:+.5f}")
+            print(f"    95% CI on the difference [{r['diff_ci_lo']:+.5f}, {r['diff_ci_hi']:+.5f}]"
+                  f"  -> {r['verdict']}")
+            print(f"    AUC lam_min {r['auc_lam_min']:.4f}   lam_sum {r['auc_lam_sum']:.4f}"
+                  f"   (the original hypothesis needs lam_min > lam_sum)")
+    return out
