@@ -1,12 +1,17 @@
 {
-  "checked_at": "2026-08-26T05:08:31Z",
-  "watermarks_advanced": {},
+  "checked_at": "2026-08-26T07:10:41Z",
+  "watermarks_advanced": {
+    "output/standard_odds_history.csv": "2026-08-25T23:45:27",
+    "output/newformat_odds_dense.csv": "2026-08-26T00:04:49",
+    "output/newformat_odds_history.csv": "2026-08-26T06:37:19Z",
+    "output/standard_sidemarket_odds_history.csv": "2026-08-26T06:55:55Z"
+  },
   "season": "season_2026_27",
-  "run_id": "gh32932863428-1",
-  "v9_sha": "3edbf40db65a",
-  "pro_git_sha": "c5b8b4c0e746",
+  "run_id": "gh32941456581-1",
+  "v9_sha": "bbeadd98ea4e",
+  "pro_git_sha": "7b99f81fee43",
   "dry_run": false,
-  "total_rows": 1910,
+  "total_rows": 49884,
   "per_importer": {
     "predictions": {
       "rows": 1910,
@@ -17,51 +22,87 @@
         "feature_snapshots": 175,
         "signals": 175
       }
+    },
+    "odds_histories": {
+      "rows": 1297,
+      "tables": {
+        "market_snapshots": 1297
+      }
+    },
+    "ledgers": {
+      "rows": 5010,
+      "tables": {
+        "settlements": 5010
+      }
+    },
+    "player_props": {
+      "rows": 4070,
+      "tables": {
+        "player_props": 4070
+      }
+    },
+    "clv": {
+      "rows": 607,
+      "tables": {
+        "clv": 607
+      }
+    },
+    "live_signals": {
+      "rows": 48,
+      "tables": {
+        "live_signals": 48
+      }
+    },
+    "movement_observations": {
+      "rows": 36942,
+      "tables": {
+        "movement_observations": 36942
+      }
     }
   },
   "failures": [],
   "store": {
     "fixtures": {
-      "rows": 17782,
-      "partitions": 113,
-      "runs": 113,
+      "rows": 17957,
+      "partitions": 114,
+      "runs": 114,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-26"
     },
     "model_snapshots": {
-      "rows": 84670,
-      "partitions": 113,
-      "runs": 113,
+      "rows": 85518,
+      "partitions": 114,
+      "runs": 114,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-26"
     },
     "market_snapshots": {
-      "rows": 97122,
-      "partitions": 121,
-      "runs": 121,
+      "rows": 98956,
+      "partitions": 123,
+      "runs": 123,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-26"
     },
     "feature_snapshots": {
-      "rows": 17782,
-      "partitions": 113,
-      "runs": 113,
+      "rows": 17957,
+      "partitions": 114,
+      "runs": 114,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-26"
     },
     "signals": {
-      "rows": 17782,
-      "partitions": 113,
-      "runs": 113,
+      "rows": 17957,
+      "partitions": 114,
+      "runs": 114,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-26"
     },
     "settlements": {
-      "rows": 53537,
-      "partitions": 22,
-      "runs": 22,
+      "rows": 58547,
+      "partitions": 24,
+      "runs": 24,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-08-25"
+      "last_dt": "2026-08-26"
     },
     "settlements_backfill": {
       "rows": 778,
@@ -71,30 +112,30 @@
       "last_dt": "2026-05-21"
     },
     "clv": {
-      "rows": 2284,
-      "partitions": 10,
-      "runs": 10,
+      "rows": 2891,
+      "partitions": 11,
+      "runs": 11,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-08-25"
+      "last_dt": "2026-08-26"
     },
     "player_props": {
-      "rows": 27754,
-      "partitions": 10,
-      "runs": 10,
+      "rows": 31824,
+      "partitions": 11,
+      "runs": 11,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-08-25"
+      "last_dt": "2026-08-26"
     },
     "live_signals": {
-      "rows": 447,
-      "partitions": 10,
-      "runs": 10,
+      "rows": 495,
+      "partitions": 11,
+      "runs": 11,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-08-25"
+      "last_dt": "2026-08-26"
     },
     "data_quality": {
-      "rows": 300,
-      "partitions": 25,
-      "runs": 25,
+      "rows": 312,
+      "partitions": 26,
+      "runs": 26,
       "first_dt": "2026-08-23",
       "last_dt": "2026-08-26"
     },
@@ -105,12 +146,19 @@
       "first_dt": null,
       "last_dt": null
     },
+    "team_news": {
+      "rows": 0,
+      "partitions": 0,
+      "runs": 0,
+      "first_dt": null,
+      "last_dt": null
+    },
     "movement_observations": {
-      "rows": 84647,
-      "partitions": 4,
-      "runs": 4,
+      "rows": 121589,
+      "partitions": 5,
+      "runs": 5,
       "first_dt": "2026-08-23",
-      "last_dt": "2026-08-25"
+      "last_dt": "2026-08-26"
     }
   }
 }
