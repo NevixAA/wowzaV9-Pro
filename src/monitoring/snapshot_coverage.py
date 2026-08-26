@@ -34,7 +34,38 @@ Baseline measured 2026-08-23 over kicked-off fixtures:
 
 The side-market row is the finding: a median of one snapshot per series and 0.8% reaching the
 final ten minutes means we effectively never hold a true closing price for BTTS/over15/over35,
-which is the most likely reason CLV coverage sits at 9% of settled tips. Thresholds below are
+which is the most likely reason CLV coverage sits at 9% of settled tips.
+
+WHAT THAT 0.8% DOES AND DOES NOT PROVE (added 2026-08-25 after nearly mis-attributing it twice).
+
+These files are consecutive-distinct deduped, so "no row inside T-10m" means EITHER we did not
+sample in that window OR we sampled and no price had moved. On its own the number cannot separate
+those, and the difference matters: the first is a collection gap worth fixing, the second is a
+quiet market and nothing to fix.
+
+The sound argument is the COMPARISON. `book_odds_snapshots.csv` (main market) and
+`standard_sidemarket_odds_history.csv` (side markets) are deduped the same way, and reach T-10m on
+35.4% and 0.8% of series respectively — a 44x gap. Dedup applies to both, so it cannot explain a
+difference between them. Side-market near-kickoff sampling really is far thinner.
+
+WHY it is thinner is NOT established. The capture already has a NEAR run (`*/15` cron, a 25-minute
+loop of 5-minute passes, fixtures within 12h), so the design is right and something is not
+delivering. Two candidate explanations — GitHub dropping high-frequency cron events, or the loop
+not completing its passes — both need the Actions run history to distinguish, and that is not
+readable from the repository. Attempts to infer it locally failed twice:
+
+  * counting distinct `snapshot_ts` values measures PRICE MOVEMENT, not sampling, for the dedup
+    reason above;
+  * `api_usage_log.csv` looked like the answer at a median 33.3-minute gap, but every row carries
+    `label='poll'`, which `scripts/af_usage_log.py` writes from `af_usage_monitor.yml` — the
+    30-minute quota monitor, not the capture. The 33.3 minutes was the monitor's own cadence.
+
+So the actionable statement is narrow: whatever the firing rate, LENGTHENING THE LOOP PER FIRING
+strictly increases wall-clock coverage, and that is true without knowing which explanation holds.
+It is a one-line change to `LOOP_MIN` in the capture workflow, and its known risk is the
+concurrency behaviour measured on 2026-08-19 — a 100-minute loop cancelled its own firings,
+because the group holds only ONE pending run. Left for a human decision rather than changed
+unattended, since it touches frozen v9. Thresholds below are
 therefore set from the MEASURED main-market baseline to catch regression, while the side-market
 figures are reported as INFO — a threshold set at an aspiration fires every single run and
 teaches people to ignore the check.

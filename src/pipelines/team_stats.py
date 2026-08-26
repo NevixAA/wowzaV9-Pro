@@ -136,17 +136,42 @@ def _get(endpoint: str, params: dict, session, cache_hours: float = 24 * 365):
             return json.loads(cf.read_text(encoding="utf-8")), True
         except Exception:
             pass
-    r = session.get(f"{_BASE}{endpoint}", headers=_headers(), params=params, timeout=25)
-    if r.status_code != 200:
-        print(f"[team_stats] {endpoint} HTTP {r.status_code}")
-        return None, False
-    body = r.json()
-    errs = body.get("errors")
-    if errs:
-        print(f"[team_stats] {endpoint} returned errors={errs}")
-        return None, False
-    cf.write_text(json.dumps(body), encoding="utf-8")
-    return body, False
+    # RETRY WITH BACKOFF. Without this the backfill died at 26.1% (6,404 of 24,505 fixtures) on a
+    # single `RemoteDisconnected` — one dropped TCP connection ended a three-hour job. Resumability
+    # meant nothing was lost, but a long collection must survive ordinary network noise rather than
+    # relying on being restarted by hand.
+    #
+    # Retries only TRANSPORT failures and 5xx/429. A 4xx or an `errors` payload is a permanent
+    # answer to this request and retrying it just burns quota against a wall.
+    last = None
+    for attempt in range(5):
+        try:
+            r = session.get(f"{_BASE}{endpoint}", headers=_headers(), params=params, timeout=25)
+        except Exception as e:                                    # noqa: BLE001
+            last = f"{type(e).__name__}: {str(e)[:70]}"
+            time.sleep(min(30, 2 ** attempt))
+            continue
+        if r.status_code in (429, 500, 502, 503, 504):
+            last = f"HTTP {r.status_code}"
+            time.sleep(min(60, 5 * 2 ** attempt))
+            continue
+        if r.status_code != 200:
+            print(f"[team_stats] {endpoint} HTTP {r.status_code} (not retried)")
+            return None, False
+        try:
+            body = r.json()
+        except Exception as e:                                    # noqa: BLE001
+            last = f"unparseable body: {str(e)[:50]}"
+            time.sleep(min(30, 2 ** attempt))
+            continue
+        errs = body.get("errors")
+        if errs:
+            print(f"[team_stats] {endpoint} returned errors={errs}")
+            return None, False
+        cf.write_text(json.dumps(body), encoding="utf-8")
+        return body, False
+    print(f"[team_stats] {endpoint} failed after 5 attempts ({last})")
+    return None, False
 
 
 def _league_ids() -> dict:
