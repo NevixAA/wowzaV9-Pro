@@ -90,6 +90,75 @@ def _quality() -> None:
           b["quality_flags"].iloc[0] == "")
 
 
+def _team_form() -> None:
+    """Rolling form: leakage, cross-team contamination, and index alignment.
+
+    Every check here exists because the first implementation failed it. `g[col].shift(1)
+    .rolling(w).mean().reset_index(level=0, drop=True)` rolled across team boundaries AND
+    replaced the index with a RangeIndex, scattering values onto unrelated rows. The symptom was
+    corr(prior scoring rate, goals scored next) = -0.0009 — an exact zero, which is what
+    misalignment looks like and what absence of signal does not.
+
+    My original leakage test PASSED on that broken code, because it used a single team and a clean
+    index so neither defect could show. These use THREE interleaved teams with disjoint value
+    ranges, so a cross-team leak or a scatter changes the numbers visibly.
+    """
+    from src.features import team_form as tf
+    print("\n== team form: leakage and alignment ==")
+
+    def _fx(team, rnd, val, day):
+        return {"fixture_id": f"{team}{rnd}", "league": "L", "season": "2026",
+                "match_date": f"2026-01-{day:02d}", "home_team": team, "away_team": "OPP",
+                "home_goals": val, "away_goals": 0, "home_xg": val, "away_xg": 0.0,
+                "home_shots": 1, "away_shots": 1, "home_sot": 1, "away_sot": 1,
+                "home_insidebox": 1, "away_insidebox": 1,
+                "home_possession": 50, "away_possession": 50}
+
+    # Disjoint ranges per team: any bleed between teams lands far outside the expected value.
+    rows, day = [], 1
+    for rnd in range(6):
+        for team, base in (("A", 0.0), ("B", 100.0), ("C", 1000.0)):
+            rows.append(_fx(team, rnd, base + rnd, day)); day += 1
+    f = tf.rolling_form(pd.DataFrame(rows), window=3, min_prior=2)
+
+    bad = []
+    for team, base in (("A", 0.0), ("B", 100.0), ("C", 1000.0)):
+        g = f[f["team"] == team].sort_values("match_date")
+        for _, r in g.iterrows():
+            n = int(r["n_prior"])
+            if n < 2:
+                if pd.notna(r["roll_for_goals"]):
+                    bad.append(f"{team} n_prior={n} should be NaN")
+                continue
+            exp = sum(base + k for k in range(max(0, n - 3), n)) / len(
+                range(max(0, n - 3), n))
+            if abs(float(r["roll_for_goals"]) - exp) > 1e-9:
+                bad.append(f"{team} n_prior={n}: {r['roll_for_goals']} != {exp}")
+    check("rolling form is leakage-free and per-team correct (3 interleaved teams)",
+          not bad, "; ".join(bad[:3]))
+    check("below min_prior the value is NaN, not a noisy 1-game mean",
+          f[f["n_prior"] < 2]["roll_for_goals"].isna().all())
+    check("no cross-team contamination (disjoint ranges stay disjoint)",
+          f[f["team"] == "A"]["roll_for_goals"].dropna().max() < 50
+          and f[f["team"] == "C"]["roll_for_goals"].dropna().min() > 900)
+    # The alignment bug specifically: values must sit on their OWN rows.
+    a = f[f["team"] == "A"].sort_values("match_date")
+    check("values land on the correct rows (index alignment)",
+          a["roll_for_goals"].tolist()[2:4] == [0.5, 1.0],
+          str(a["roll_for_goals"].tolist()[:4]))
+
+    print("\n== team form: lambda construction ==")
+    lam = tf.fixture_lambdas(pd.DataFrame(rows))
+    check("returns one row per fixture", len(lam) <= len(rows))
+    for c in ("lam_home", "lam_away", "lam_min", "lam_sum", "lam_asymmetry", "xg_source"):
+        check(f"{c} present", c in lam.columns)
+    check("xg_source records the estimator, so a pooled evaluation can condition on it",
+          set(lam["xg_source"].unique()) <= {"xg", "goals"})
+    check("league mean is PER SIDE, not per match",
+          "per_side" in Path("src/features/team_form.py").read_text(encoding="utf-8"),
+          "confusing the two doubles every lambda and pushes BTTS toward 1")
+
+
 def _config_and_contract() -> None:
     print("\n== config: league coverage and provider support ==")
     try:
@@ -288,7 +357,7 @@ def _raises(fn) -> bool:
 
 def main() -> int:
     print("Pro deterministic tests (hardening brief section 12)")
-    for fn in (_quality, _config_and_contract, _registry, _data_quality, _clv):
+    for fn in (_quality, _team_form, _config_and_contract, _registry, _data_quality, _clv):
         try:
             fn()
         except Exception as e:                                     # noqa: BLE001
