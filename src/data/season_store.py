@@ -56,6 +56,9 @@ REQUIRED: dict[str, tuple[str, ...]] = {
     # consumes it (_team_recent reads a home_xg / away_xg pair). A per-team grain would be
     # more normalised and would force every consumer to pivot.
     "team_match_stats":  ("fixture_key", "league", "match_date", "home_team", "away_team"),
+    # first_seen_ts is REQUIRED: without it a row is just a lineup, and the entire reason this
+    # table exists is the timing.
+    "team_news":         ("fixture_key", "league", "team", "first_seen_ts"),
 }
 
 

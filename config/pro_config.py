@@ -105,6 +105,11 @@ TABLES = (
     # the 75k quota), ~47/day ongoing. Unlike previous "use the spare quota" ideas this one has a
     # real consumer, which is the test that matters.
     "team_match_stats",
+    # TEAM NEWS WITH AN OBSERVATION CLOCK. The only slow-information candidate we can build:
+    # neither /fixtures/lineups nor /injuries carries a publication timestamp, so `first_seen_ts`
+    # is OUR first observation and the resolution is the poll interval, no better. Forward-only —
+    # a historical lineup has no publication time, so the timing question cannot be backfilled.
+    "team_news",
     # v11-computed market-movement research observations, archived verbatim with provenance.
     "movement_observations",
 )

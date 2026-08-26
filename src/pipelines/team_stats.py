@@ -166,7 +166,17 @@ def _get(endpoint: str, params: dict, session, cache_hours: float = 24 * 365):
             continue
         errs = body.get("errors")
         if errs:
-            print(f"[team_stats] {endpoint} returned errors={errs}")
+            # Rate limits arrive as HTTP 200 with errors.rateLimit, NOT as 429 — so they must be
+            # retried here rather than treated as a permanent answer. Found while running the
+            # team_news collector against the same key during this backfill: 24 calls all came
+            # back "rateLimit" and were silently discarded as failures.
+            if isinstance(errs, dict) and "rateLimit" in errs:
+                wait = min(70, 20 * (attempt + 1))
+                print(f"[team_stats] rate-limited; waiting {wait}s (attempt {attempt + 1})")
+                time.sleep(wait)
+                last = "rateLimit"
+                continue
+            print(f"[team_stats] {endpoint} returned errors={errs} (permanent)")
             return None, False
         cf.write_text(json.dumps(body), encoding="utf-8")
         return body, False

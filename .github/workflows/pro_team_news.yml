@@ -1,0 +1,90 @@
+name: Pro Team News
+
+# Captures LINEUPS with an observation clock, so "did the market move after the team news was
+# public?" becomes answerable. Pro-only: reads API-Football, writes the canonical store, never
+# touches v9.
+#
+# WHY A DEDICATED WORKFLOW rather than a step in pro_collect: pro_collect runs 2-hourly, and
+# lineups publish roughly an hour before kickoff. A 2-hourly poll would record first_seen_ts with
+# a two-hour error bar, which is larger than the entire window being measured — the timestamp
+# would be worthless for its only purpose.
+#
+# FORWARD-ONLY AND UNRECOVERABLE. Neither /fixtures/lineups nor /injuries carries a publication
+# timestamp, so first_seen_ts can only ever be OUR observation, and a fixture that has already
+# kicked off can never be measured. Every day not collected is permanently unavailable — the same
+# asymmetry as closing odds.
+
+on:
+  schedule:
+    # Every 30 minutes. GitHub delivers high-frequency crons unreliably (a */15 has been observed
+    # arriving every ~179 min on this account), so the run LOOPS internally rather than relying on
+    # the cron for resolution — the same conclusion the side-market capture reached.
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+    inputs:
+      max_hours:
+        description: 'only fixtures kicking off within N hours (default 3)'
+        required: false
+      loop_minutes:
+        description: 'keep polling for N minutes (default 20)'
+        required: false
+
+concurrency:
+  # Its own group, and cancel-in-progress: false. A cancelled run loses the observation window it
+  # was in the middle of measuring, and that window cannot be revisited.
+  group: pro-team-news
+  cancel-in-progress: false
+
+jobs:
+  news:
+    runs-on: ubuntu-latest
+    # Must exceed loop_minutes plus checkout/pip/commit. 20-minute loop -> 35 leaves real margin,
+    # and stays well inside the 30-minute cron so runs cannot pile up in the concurrency group.
+    timeout-minutes: 35
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out v9 baseline (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: main
+          path: _v9
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: pip install pandas numpy pyarrow requests
+
+      - name: Collect team news
+        id: news
+        env:
+          APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: |
+          MH="${{ github.event.inputs.max_hours }}"; [ -n "$MH" ] || MH=3
+          LM="${{ github.event.inputs.loop_minutes }}"; [ -n "$LM" ] || LM=20
+          python -m src.pipelines.team_news --max-hours "$MH" --loop-minutes "$LM"
+
+      - name: Commit the season store
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A data 2>/dev/null || true
+          echo "staged: $(git diff --staged --name-only | wc -l) file(s)"
+          git diff --staged --quiet || \
+            git commit -m "pro: team news $(date -u '+%Y-%m-%d %H:%M UTC')"
+          # No -X ours: during a rebase `ours` is UPSTREAM, so it discards THIS run's rows — and
+          # an observation of when a lineup appeared cannot be re-made.
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main && git push && exit 0
+            echo "push race - retry $i"; sleep $((RANDOM % 5 + 3))
+          done
+          echo "::error title=Pro team news push failed::Observations were collected but not persisted."
+          exit 1
