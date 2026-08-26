@@ -51,6 +51,40 @@ measured at 0% coverage on the live board.
 
 That does not make it a betting edge. It makes it a better lambda, which is the prerequisite for
 any distribution model (BTTS, correct score, Asian lines) being testable at all.
+
+────────────────────────────────────────────────────────────────────────────────
+THE MARKET-RELATIVE ANSWER (2026-08-26) — the one that settles what this is worth.
+
+Fixing the inputs did NOT change the market-relative result. On 2,177 fixtures carrying real
+lambdas, a result, and a CLEAN two-sided BTTS price (first-half contamination removed via the
+quality flag), test n=436:
+
+    base-rate constant          Brier 0.25068
+    our calibrated model              ~0.2487    (+0.002 vs the constant)
+    THE MARKET                        0.24749    (+0.0032 vs the constant)
+    market + our model                0.24750
+    gain from adding our model       -0.00001    95% CI [-0.00005, +0.00002]
+
+Three facts that fit together:
+
+  1. our model carries REAL information — it beats a constant;
+  2. the market carries slightly MORE;
+  3. ours adds NOTHING on top of the market, so our information is a SUBSET of theirs.
+
+Calibration says the same from another angle: market bias +0.15pp (near-perfect), ours -6.44pp.
+And the market's own edge over a constant is only +0.0032 Brier, so BTTS is close to
+unpredictable and the book prices it accordingly.
+
+WHY THIS MATTERS BEYOND BTTS. It is the same answer the O/U 2.5 residual test gives
+(market+Wowza == market to four decimal places), now reproduced on a different market with
+materially better inputs. So the market-relative null is NOT an input-quality problem. That was
+the obvious hypothesis, it was worth testing, and fixing the inputs moved the STANDALONE result
+while leaving the market-relative result at zero.
+
+The implication for Pro is narrow and useful: better features computed from the same information
+will not produce an edge, because the market already holds that information. The only remaining
+direction is information the market does not yet have — which is exactly what
+src/pipelines/team_news.py exists to test.
 """
 from __future__ import annotations
 
