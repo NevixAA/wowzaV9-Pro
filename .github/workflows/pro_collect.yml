@@ -100,6 +100,21 @@ jobs:
         run: python -m src.pipelines.team_stats --seasons 2026
         continue-on-error: true
 
+      # DERIVED RESEARCH, on the daily sweep. Both of these persisted a result but were scheduled
+      # NOWHERE until 2026-08-26, so their output only ever refreshed when a human ran them — the
+      # exact failure this repo spent that day fixing in v11, where six movement files were
+      # recomputed every 30 minutes and discarded. An analysis nobody schedules cannot be seen to
+      # go stale.
+      - name: Rebuild the CLV schema
+        if: steps.collect.outcome == 'success' && github.event.schedule != '40 */2 * * *'
+        run: python -m src.market.clv_schema --write
+        continue-on-error: true
+
+      - name: News-impact test (did the price move after the team news?)
+        if: steps.collect.outcome == 'success' && github.event.schedule != '40 */2 * * *'
+        run: python -m src.pipelines.news_impact
+        continue-on-error: true
+
       # data_quality had NO workflow step at all, so CI had never written a single row to it —
       # every one of its 24 rows came from me running it on a laptop. Runs before the registry
       # so the registry's count includes this run's findings.
@@ -118,7 +133,10 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A data output/collect_health.json output/import_watermarks.json 2>/dev/null || true
-          git add -f output/system_registry.json 2>/dev/null || echo "  (skip: no system_registry.json)"
+          # Per-file, because `git add -f a b missing` ABORTS and stages NOTHING.
+          for f in output/system_registry.json output/clv_enriched.csv                    output/news_impact.json; do
+            git add -f "$f" 2>/dev/null || echo "  (skip, not present: $f)"
+          done
           git diff --staged --quiet || \
             git commit -m "pro: collect $(date -u '+%Y-%m-%d %H:%M UTC')"
           # Retry on push races. There is no -X ours here: the store is run-partitioned so two

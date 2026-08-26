@@ -226,11 +226,35 @@ def run(window_min: float = DEFAULT_WINDOW_MIN, quiet: bool = False) -> dict:
     return out
 
 
+def _write(out: dict) -> None:
+    """Persist to output/news_impact.json, atomically.
+
+    An analysis whose result exists only when someone runs it by hand cannot be seen to go stale —
+    which is precisely the failure this repository spent 2026-08-26 fixing in v11, where six
+    derived files were recomputed every 30 minutes and discarded. Writing the verdict means the
+    freshness contract applies to it too.
+    """
+    import json
+    import os
+    p = cfg.OUTPUT_DIR / "news_impact.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    payload = {"generated_at": pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%dT%H:%M:%SZ"),
+               **out}
+    tmp = p.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+    json.loads(tmp.read_text(encoding="utf-8"))
+    os.replace(tmp, p)
+    print(f"[news_impact] written -> {p.name}")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description="Did the price move after the team news?")
     ap.add_argument("--window", type=float, default=DEFAULT_WINDOW_MIN)
+    ap.add_argument("--no-write", action="store_true")
     a = ap.parse_args()
-    run(window_min=a.window)
+    out = run(window_min=a.window)
+    if not a.no_write:
+        _write(out)
     return 0
 
 

@@ -60,7 +60,11 @@ from src.data import season_store as store
 # collector lands, it belongs in this tuple in the SAME commit.
 SCAN_TABLES = ("market_snapshots", "model_snapshots", "signals", "settlements", "clv",
                "player_props", "live_signals", "movement_observations", "fixtures",
-               "feature_snapshots", "team_match_stats", "team_news")
+               "feature_snapshots", "team_match_stats", "team_news",
+               # 778 rows written and scheduled but UNMONITORED until 2026-08-26. Found by
+               # an explicit table -> writer -> workflow -> monitoring audit rather than by
+               # noticing, which is the only way this class of gap surfaces.
+               "settlements_backfill")
 
 _KEY_COLS = ("fixture_key", "fixture_id", "match", "snapshot_id")
 
