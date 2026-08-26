@@ -54,9 +54,13 @@ from src.data import season_store as store
 
 # Tables worth scanning: those that carry a quality_flags column or a CLV value. Adding a table
 # here is all that is needed for it to appear in the record.
+# Adding a table to cfg.TABLES does NOT put it here. That is a real gap and it bit immediately:
+# team_match_stats and team_news were created, populated and pushed while appearing in ZERO
+# monitoring — the same shape as the six movement files being computed and never committed. When a
+# collector lands, it belongs in this tuple in the SAME commit.
 SCAN_TABLES = ("market_snapshots", "model_snapshots", "signals", "settlements", "clv",
                "player_props", "live_signals", "movement_observations", "fixtures",
-               "feature_snapshots")
+               "feature_snapshots", "team_match_stats", "team_news")
 
 _KEY_COLS = ("fixture_key", "fixture_id", "match", "snapshot_id")
 
@@ -87,6 +91,26 @@ def _span(d: pd.DataFrame, mask) -> tuple[str, str, str]:
             if len(t):
                 return (t.min().strftime("%Y-%m-%d"), t.max().strftime("%Y-%m-%d"), c)
     return ("", "", "")
+
+
+def _derive_xg_flag(d: pd.DataFrame) -> pd.DataFrame:
+    """XG_UNAVAILABLE, derived at scan time.
+
+    Makes "how much of our data has real xG" a MONITORED number instead of something re-measured
+    by hand each time. It is derived rather than written by the collector because coverage is a
+    property of what the provider returned, not a defect in the row — and deriving it means
+    historical rows are covered without a re-import.
+    """
+    if "home_xg" not in d.columns:
+        return d
+    out = d.copy()
+    if "quality_flags" not in out.columns:
+        out["quality_flags"] = ""
+    h = pd.to_numeric(out["home_xg"], errors="coerce")
+    a = pd.to_numeric(out.get("away_xg"), errors="coerce")
+    out["quality_flags"] = q.add_flag(out["quality_flags"], h.isna() | a.isna(),
+                                      "XG_UNAVAILABLE")
+    return out
 
 
 def _derive_clv_flags(d: pd.DataFrame) -> pd.DataFrame:
@@ -179,6 +203,8 @@ def scan(season: str | None = None, *, quiet: bool = False) -> pd.DataFrame:
             d = q.flag_btts_first_half(d)
         elif table == "movement_observations":
             d = _adopt_v11_vocabulary(d)
+        elif table == "team_match_stats":
+            d = _derive_xg_flag(d)
 
         s = q.summarise(d)
         base = {"observed_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "table": table,

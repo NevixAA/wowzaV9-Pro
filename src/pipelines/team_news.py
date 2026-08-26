@@ -146,11 +146,15 @@ def _already_seen() -> set:
 
 
 def _league_ids() -> dict:
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("_v9cfg_news", cfg.V9_LOCAL / "config.py")
-    m = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(m)
-    return dict(m.API_FOOTBALL_IDS)
+    """v9's league-id mapping, via the shared loader that stubs v9's optional imports.
+
+    Loaded through src.data.v9_config rather than executing v9/config.py directly: that file does
+    `from dotenv import load_dotenv`, which Pro's workflows do not install, so a direct exec works
+    on a laptop and raises ModuleNotFoundError in CI. That is exactly how the Pro Team News
+    workflow failed on its first run.
+    """
+    from src.data import v9_config
+    return v9_config.league_ids()
 
 
 _FWD = {"F", "A"}   # API-Football position codes: G/D/M/F

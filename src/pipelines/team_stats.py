@@ -185,17 +185,15 @@ def _get(endpoint: str, params: dict, session, cache_hours: float = 24 * 365):
 
 
 def _league_ids() -> dict:
-    """v9's league-id mapping, loaded by explicit file spec.
+    """v9's league-id mapping, via the shared loader that stubs v9's optional imports.
 
-    Imported rather than duplicated so a second copy cannot drift. By file spec rather than
-    sys.path because inserting v9's directory shadows Pro's own `config` PACKAGE for the rest of
-    the process — that broke three test groups when I did it in pro_tests.
+    Loaded through src.data.v9_config rather than executing v9/config.py directly: that file does
+    `from dotenv import load_dotenv`, which Pro's workflows do not install, so a direct exec works
+    on a laptop and raises ModuleNotFoundError in CI. That is exactly how the Pro Team News
+    workflow failed on its first run.
     """
-    import importlib.util
-    spec = importlib.util.spec_from_file_location("_v9cfg_stats", cfg.V9_LOCAL / "config.py")
-    m = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(m)
-    return dict(m.API_FOOTBALL_IDS)
+    from src.data import v9_config
+    return v9_config.league_ids()
 
 
 def _already_collected() -> set:

@@ -99,6 +99,14 @@ FLAGS: dict[str, Flag] = {f.name: f for f in (
          "substituted inputs"),
     Flag("PROVENANCE_UNKNOWN", False,
          "source commit or calculation version not recorded"),
+    Flag("XG_UNAVAILABLE", False,
+         "the fixture carries no expected_goals, so any lambda built from it falls back to GOALS. "
+         "Not wrong — the fallback is documented and honest — but a DIFFERENT estimator, and xG "
+         "is measurably better (+0.0323 correlation with next-match scoring, CI [+0.0103, "
+         "+0.0548]). Coverage is league- and season-dependent: 32.4% in 2023, 43.7% in 2024, "
+         "74.6% in 2025, and 0% for Bundesliga 2 / La Liga 2 / Japan / China / Ireland / Romania. "
+         "Any evaluation pooling xG and goals rows measures a mixture, so this flag is what lets "
+         "a reader condition on the estimator"),
     Flag("STALE_PRICE_UNASSESSED", False,
          "staleness could not be evaluated — no per-book quote timestamp exists. Deliberately "
          "NOT called stale: calling an unchanged price stale would misclassify a settled market"),

@@ -891,11 +891,18 @@ def audit_config(a: Audit, now, days: int) -> None:
     keys: dict = {}
     enabled: list = []
     try:
-        import importlib.util
-        spec = importlib.util.spec_from_file_location("_v9cfg", cfgpy)
-        mod = importlib.util.module_from_spec(spec)
-        sys.path.insert(0, str(v9))          # config imports siblings
-        spec.loader.exec_module(mod)
+        # VIA THE SHARED LOADER, which stubs v9's optional imports. Executing v9/config.py
+        # directly raises ModuleNotFoundError('dotenv') in Pro's CI, where only
+        # `pandas pyarrow requests` are installed — and because this block is wrapped in
+        # try/except, that showed up as a silently DEGRADED config check (falling back to the
+        # regex path) rather than as a failure. A monitor quietly running on its fallback is the
+        # worst of the three outcomes, and it took the Pro Team News workflow failing loudly on
+        # the same import to surface it.
+        #
+        # It also no longer touches sys.path: inserting v9's directory shadows Pro's own `config`
+        # PACKAGE for the rest of the process, which broke three test groups in pro_tests.
+        from src.data import v9_config as _v9c
+        mod = _v9c.load()
         keys = dict(getattr(mod, "ODDS_API_SPORT_KEYS", {}) or {})
         enabled = list(getattr(mod, "ENABLED_LEAGUES", []) or [])
         how = "imported v9 config"

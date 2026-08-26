@@ -167,11 +167,10 @@ def _config_and_contract() -> None:
         # exactly what happened on the first run: three subsequent test groups died with
         # "cannot import name 'pro_config' from 'config'" pointing at v9/config.py. importlib
         # keeps the module out of the normal resolution order entirely.
-        import importlib.util
-        _p = Path(__file__).resolve().parents[2] / "v9" / "config.py"
-        _spec = importlib.util.spec_from_file_location("_v9_config_isolated", _p)
-        v9cfg = importlib.util.module_from_spec(_spec)
-        _spec.loader.exec_module(v9cfg)
+        # Shared loader: stubs v9's optional imports so this behaves the same on a
+        # laptop and in CI, where python-dotenv is not installed.
+        from src.data import v9_config as _v9c
+        v9cfg = _v9c.load()
     except Exception as e:
         check("v9 config importable", False, str(e)[:60])
         return
