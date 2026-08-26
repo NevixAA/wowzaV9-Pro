@@ -31,6 +31,26 @@ CLAUDE.md invariant 9: write NaN, never an invented number.
 The fallback is honest but not equivalent — goals are a noisier estimate of scoring rate than xG,
 which is the entire reason xG is worth collecting. Any evaluation that pools the two must
 condition on `xg_source`, or it measures a mixture and attributes the result to the wrong input.
+
+────────────────────────────────────────────────────────────────────────────────
+xG IS MEASURABLY THE BETTER ESTIMATOR (2026-08-26). This is the result that justifies collecting
+it, and it is a PAIRED comparison — 5,789 team-fixtures where both a prior xG rate and a prior
+goals rate exist, so the two estimators are judged on identical rows:
+
+    predicting goals SCORED next match      prior goals rate  +0.1174
+                                            prior xG rate     +0.1497
+    predicting goals CONCEDED next match    prior goals rate  +0.0930
+                                            prior xG rate     +0.1171
+
+    difference in correlation  +0.0323   95% CI [+0.0103, +0.0548]
+
+The interval is bootstrapped on the DIFFERENCE, not computed for each estimator separately: two
+correlations that look apart can easily have overlapping intervals, and the gap is the question.
+It excludes zero, so xG is better by roughly 27% in correlation terms — on the input that was
+measured at 0% coverage on the live board.
+
+That does not make it a betting edge. It makes it a better lambda, which is the prerequisite for
+any distribution model (BTTS, correct score, Asian lines) being testable at all.
 """
 from __future__ import annotations
 
