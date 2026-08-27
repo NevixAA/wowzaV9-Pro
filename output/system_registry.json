@@ -5,7 +5,7 @@
     "live_models",
     "n_live_models"
   ],
-  "carried_from": "2026-08-26T21:08:47Z",
+  "carried_from": "2026-08-27T03:32:01Z",
   "collect_health": {
     "shadow_last_run": "2026-08-19T12:31:48Z",
     "shadow_n": 564,
@@ -13,11 +13,12 @@
   },
   "deployment_note": "Season 2026/27 is a data-collection and shadow season. Pro does not stake and does not notify. Signal tier and deployment mode are independent: a SNIPER may be PAPER.",
   "feature_health": {},
-  "generated_at": "2026-08-27T03:32:01Z",
-  "git_sha": "4b94c3d939c6",
+  "generated_at": "2026-08-27T15:26:57Z",
+  "git_sha": "52047c2b8358",
   "live_models": [],
   "n_live_models": 0,
   "n_tables": 14,
+  "n_tables_accounted": 13,
   "n_tables_populated": 12,
   "pro_may_notify": false,
   "pro_may_stake": false,
@@ -27,6 +28,7 @@
     "clv": {
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-26",
+      "lifecycle": "ACTIVE",
       "partitions": 11,
       "rows": 2891,
       "runs": 11,
@@ -35,30 +37,34 @@
     "data_quality": {
       "first_dt": "2026-08-23",
       "last_dt": "2026-08-27",
-      "partitions": 35,
-      "rows": 427,
-      "runs": 35,
+      "lifecycle": "ACTIVE",
+      "partitions": 36,
+      "rows": 440,
+      "runs": 36,
       "table": "data_quality"
     },
     "feature_snapshots": {
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-27",
-      "partitions": 122,
-      "rows": 19365,
-      "runs": 122,
+      "lifecycle": "ACTIVE",
+      "partitions": 123,
+      "rows": 19544,
+      "runs": 123,
       "table": "feature_snapshots"
     },
     "fixtures": {
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-27",
-      "partitions": 122,
-      "rows": 19365,
-      "runs": 122,
+      "lifecycle": "ACTIVE",
+      "partitions": 123,
+      "rows": 19544,
+      "runs": 123,
       "table": "fixtures"
     },
     "live_signals": {
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-26",
+      "lifecycle": "ACTIVE",
       "partitions": 11,
       "rows": 495,
       "runs": 11,
@@ -67,22 +73,25 @@
     "market_snapshots": {
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-27",
-      "partitions": 131,
-      "rows": 103386,
-      "runs": 131,
+      "lifecycle": "ACTIVE",
+      "partitions": 132,
+      "rows": 103966,
+      "runs": 132,
       "table": "market_snapshots"
     },
     "model_snapshots": {
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-27",
-      "partitions": 122,
-      "rows": 92334,
-      "runs": 122,
+      "lifecycle": "ACTIVE",
+      "partitions": 123,
+      "rows": 93198,
+      "runs": 123,
       "table": "model_snapshots"
     },
     "movement_observations": {
       "first_dt": "2026-08-23",
       "last_dt": "2026-08-26",
+      "lifecycle": "ACTIVE",
       "partitions": 5,
       "rows": 121589,
       "runs": 5,
@@ -91,6 +100,7 @@
     "player_props": {
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-26",
+      "lifecycle": "ACTIVE",
       "partitions": 11,
       "rows": 31824,
       "runs": 11,
@@ -99,6 +109,7 @@
     "settlements": {
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-26",
+      "lifecycle": "ACTIVE",
       "partitions": 24,
       "rows": 58547,
       "runs": 24,
@@ -107,6 +118,7 @@
     "settlements_backfill": {
       "first_dt": "2026-05-21",
       "last_dt": "2026-05-21",
+      "lifecycle": "ACTIVE",
       "partitions": 2,
       "rows": 778,
       "runs": 2,
@@ -115,14 +127,16 @@
     "signals": {
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-27",
-      "partitions": 122,
-      "rows": 19365,
-      "runs": 122,
+      "lifecycle": "ACTIVE",
+      "partitions": 123,
+      "rows": 19544,
+      "runs": 123,
       "table": "signals"
     },
     "team_match_stats": {
       "first_dt": null,
       "last_dt": null,
+      "lifecycle": "ACTIVE",
       "partitions": 0,
       "rows": 0,
       "runs": 0,
@@ -131,12 +145,19 @@
     "team_news": {
       "first_dt": null,
       "last_dt": null,
+      "lifecycle": "PLANNED_OPTIONAL",
       "partitions": 0,
       "rows": 0,
       "runs": 0,
       "table": "team_news"
     }
   },
-  "source_commit_sha": "4b94c3d939c6",
-  "total_rows": 470366
+  "source_commit_sha": "52047c2b8358",
+  "tables_expected_empty": [
+    "team_news"
+  ],
+  "tables_unexpected_empty": [
+    "team_match_stats"
+  ],
+  "total_rows": 472360
 }
