@@ -196,6 +196,76 @@ a score distribution from expected goals, giving coherent P(Home)/P(Draw)/P(Away
 **Do not** build a home/draw/away tipster. The question is whether Wowza knows something the 1X2
 market has not priced — and today we cannot ask it, because there is no Wowza 1X2 opinion.
 
+---
+
+# UPDATE — candidates generated, and a 1X2 model now exists
+
+## Same-match builder candidates (Phase 4) — DONE
+
+`output/bet_builder_candidates.csv`: **8,471 candidates over 161 upcoming fixtures.**
+4,426 priced EXACTLY from a fitted score distribution; 4,045 player/card legs carrying Fréchet
+bounds only. 0 rejected for monotonicity violation.
+
+The joint engine (`src/combo/score_model.py`) fits a Dixon-Coles distribution to **v9's own**
+O1.5/O2.5/O3.5/BTTS probabilities, so it inherits Wowza's opinion rather than replacing it
+(§4, §60), and then reads every joint off the score matrix exactly — no independence anywhere.
+
+**Validated against the empirical matrix before use:**
+
+| pair | empirical (n=23,604) | score model | independence |
+|---|---|---|---|
+| O2.5 ∧ BTTS | 0.4098 | **0.4160** (+0.006) | 0.2662 (−0.144) |
+| O3.5 ∧ BTTS | 0.2440 | **0.2536** (+0.010) | 0.1493 (−0.095) |
+| U2.5 ∧ BTTS_NO | 0.3748 | **0.3837** (+0.009) | 0.2339 (−0.141) |
+| U2.5 ∧ DRAW | 0.1978 | **0.1805** (−0.017) | 0.1226 (−0.075) |
+
+Model error 0.006–0.017; independence error 0.075–0.144. **Roughly 10–20× more accurate.**
+
+Worked example from the live output — Boca Juniors vs Lanus, **Over 3.5 + BTTS**:
+joint **0.1676**, fair odds **5.97**. Independence says 0.0870 → **11.49**. Pricing by
+multiplication would demand nearly double the true fair price.
+
+`builder_odds` is empty and `executable` is False on every row: no same-game-builder prices are
+collected anywhere, and §21 forbids reconstructing them from singles. EV is NULL, not invented.
+
+## Player and card legs — bounded, not faked
+
+Props carry a model probability and a price and **nothing linking a player's shots to the match
+goal environment**. So per §5 they are priced with Fréchet bounds and flagged
+`JOINT_PLAYER_DEPENDENCE_UNMODELED`. Independence is *not* used, because the true dependence is
+known to be positive and independence would understate it by an unknown amount.
+
+## 1X2 model (§43–§72, §49) — BUILT
+
+`src/combo/dixon_coles.py`. Per-league attack/defence ratings, home advantage, and the
+Dixon-Coles low-score correction, fitted by weighted MLE with a 180-day half-life. Chosen over a
+multiclass classifier because it yields a score distribution, which is what makes 1X2, totals,
+BTTS and the builder joints mutually consistent (§59–60) — and because §50 rules out optimising
+accuracy.
+
+**Out-of-time evaluation** — trained strictly before 2026-02-01, scored strictly after.
+22 leagues, **3,498 fixtures**:
+
+| | LogLoss | Brier | RPS |
+|---|---|---|---|
+| Base rate (no model) | 1.0690 | 0.6462 | 0.2274 |
+| **Dixon-Coles** | **1.0427** | **0.6270** | **0.2180** |
+
+**Beats the base rate by 0.0263 LogLoss.** Calibration: HOME 43.6% predicted vs 44.8% actual,
+**DRAW 25.5% vs 25.8%**, AWAY 31.0% vs 29.4%. Draws — the outcome §57 flags as fragile — are the
+best-calibrated of the three.
+
+**Against the market (§51), the honest answer is: unknown.** Only **41 fixtures** were
+comparable, which is below §66's 100-fixture `DATA_COLLECTION` floor. On those 41 the market
+scored 1.0855 and the model 1.1112, so the model did not beat it — but **41 fixtures cannot
+answer this question** and the number is recorded, not concluded.
+
+Two reasons the sample collapsed, both already named as blockers: the 8-day price window, and
+the fixture-key mismatch. The 86-fixture join behind those 41 used a **loose** name matcher that
+strips City/Town/United — which could collide Manchester City with Manchester United. It was
+adequate for a feasibility probe and is **not safe for production**; `team_names.resolve` is
+required before any of this is trusted.
+
 ## Phase status
 
 | Phase | State |
