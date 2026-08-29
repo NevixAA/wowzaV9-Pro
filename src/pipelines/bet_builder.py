@@ -193,12 +193,61 @@ def generate(days: int = DEFAULT_DAYS, *, now: dt.datetime | None = None) -> pd.
     return d
 
 
+def _recover_fixture_keys(d: pd.DataFrame) -> pd.DataFrame:
+    """Attach `fixture_key` to rows that predate it, so they can settle by key.
+
+    Candidates written before the key existed can only be joined to a scoreline by club name,
+    which is the join that fails across sources (invariant 11) and is why 1,956 combos were once
+    reported UNKNOWN when they were merely unjoined. But those rows were BUILT from Pro's own
+    fixtures table, so `date|home|away` matches it exactly -- no fuzzy matching, no resolver, and
+    nothing invented: a row that does not match is left alone rather than guessed at.
+    """
+    if "fixture_key" in d.columns and d["fixture_key"].notna().all():
+        return d
+    fx = _read("fixtures")
+    if fx.empty or not {"fixture_key", "match_date", "home_team", "away_team"} <= set(fx.columns):
+        return d
+    fx = fx.drop_duplicates("fixture_key")
+    m = dict(zip(fx["match_date"].astype(str).str[:10] + "|"
+                 + fx["home_team"].astype(str) + "|" + fx["away_team"].astype(str),
+                 fx["fixture_key"]))
+    out = d.copy()
+    if "fixture_key" not in out.columns:
+        out["fixture_key"] = pd.NA
+    miss = out["fixture_key"].isna()
+    if not miss.any():
+        return out
+    k = (out.loc[miss, "match_date"].astype(str).str[:10] + "|"
+         + out.loc[miss, "match"].astype(str).str.replace(" vs ", "|", regex=False))
+    out.loc[miss, "fixture_key"] = k.map(m)
+    got = int(out.loc[miss, "fixture_key"].notna().sum())
+    if got:
+        print(f"[builder] recovered fixture_key for {got:,} of {int(miss.sum()):,} older row(s) "
+              f"— they can now settle by key instead of by club name")
+    return out
+
+
 def settle_finished() -> pd.DataFrame:
     """Grade every candidate whose fixture has a final score, merging into the standing record."""
     cand = pd.read_csv(CAND_FILE, low_memory=False) if CAND_FILE.exists() else pd.DataFrame()
+
+    # RETRY EVERYTHING STILL UNDECIDED, not just today's candidates. A combo goes UNKNOWN for
+    # reasons that expire: the fixture had not kicked off, the scoreline had not been collected
+    # yet (team_match_stats runs on a lag), or the row predated fixture_key and could only be
+    # joined by club name. All three become decidable later, and a settler that only ever looks
+    # at the current candidate file would leave them UNKNOWN permanently.
+    if SETTLED_FILE.exists():
+        prev = pd.read_csv(SETTLED_FILE, low_memory=False)
+        retry = prev[prev.get("combo_result").eq("UNKNOWN")] if "combo_result" in prev else prev
+        if len(retry):
+            drop = [c for c in ("combo_result", "leg_results", "settle_note", "final_score",
+                                "settle_version") if c in retry.columns]
+            cand = pd.concat([cand, retry.drop(columns=drop)], ignore_index=True)
+            print(f"[builder] retrying {len(retry):,} previously-undecided combo(s)")
     if cand.empty:
         print("[builder] no candidates to settle")
         return pd.DataFrame()
+    cand = _recover_fixture_keys(cand)
 
     # `settlements` carries a `result`, not a SCORELINE, and a builder cannot be graded from a
     # result: "Over 3.5 + BTTS + home over 1.5" needs the actual goals on each side. The tables
@@ -228,17 +277,27 @@ def settle_finished() -> pd.DataFrame:
         # because the historical file predated combo_id. The record survived only because it was
         # already committed. Old rows are now concatenated unconditionally; the identity is used
         # to deduplicate, never to decide whether to keep history at all.
-        key = ("combo_id" if {"combo_id"} <= set(old.columns) & set(fresh.columns)
-               else None)
-        if key is None:
-            for c in ("match", "match_date", "legs"):
-                if c not in old.columns or c not in fresh.columns:
-                    break
-            else:
-                key = "_merge_key"
-                for f in (old, fresh):
-                    f[key] = (f["match"].astype(str) + "|" + f["match_date"].astype(str)
-                              + "|" + f["legs"].astype(str))
+        # THE DEDUP KEY MUST NEVER CONTAIN NULLS. Choosing `combo_id` merely because the column
+        # exists on both sides destroyed the record a second time: 2,532 historical rows predate
+        # combo_id and carry NaN, and drop_duplicates treats every NaN as the SAME value, so all
+        # 2,532 collapsed into one and 576 graded results became 1. The key is therefore resolved
+        # PER ROW -- combo_id where it is actually populated, the composite everywhere else -- and
+        # a row that can be identified no other way is never deduplicated at all.
+        key = None
+        have = set(old.columns) & set(fresh.columns)
+        if {"match", "match_date", "legs"} <= have or "combo_id" in have:
+            key = "_merge_key"
+            for f in (old, fresh):
+                cid = (f["combo_id"].astype("string") if "combo_id" in f.columns
+                       else pd.Series(pd.NA, index=f.index, dtype="string"))
+                comp = pd.Series(pd.NA, index=f.index, dtype="string")
+                if {"match", "match_date", "legs"} <= set(f.columns):
+                    comp = (f["match"].astype(str) + "|" + f["match_date"].astype(str)
+                            + "|" + f["legs"].astype(str)).astype("string")
+                # Row index as the last resort: distinct for every row, so an unidentifiable row
+                # survives instead of colliding with every other unidentifiable row.
+                f[key] = cid.fillna(comp).fillna(
+                    pd.Series([f"__row{i}" for i in range(len(f))], index=f.index, dtype="string"))
         merged = pd.concat([old, fresh], ignore_index=True)
         if key:
             # `old` comes first and keep="first", so a combo already graded WON never reverts to
@@ -247,9 +306,18 @@ def settle_finished() -> pd.DataFrame:
             merged = (merged.sort_values("_decided", ascending=False, kind="stable")
                             .drop_duplicates(subset=[key], keep="first")
                             .drop(columns=["_decided"] + ([key] if key == "_merge_key" else [])))
+        # A merge must never be able to LOSE a graded result. Cheap to assert, and it is exactly
+        # the invariant that broke twice.
+        was = int(old["combo_result"].isin(["WON", "LOST", "VOID"]).sum()) if \
+            "combo_result" in old.columns else 0
+        now_ = int(merged["combo_result"].isin(["WON", "LOST", "VOID"]).sum())
+        if now_ < was:
+            raise RuntimeError(
+                f"merge would drop graded results ({was} -> {now_}); refusing to write. "
+                f"This means the dedup key collided rows that are not the same combo.")
         fresh = merged
         print(f"[builder] merged with {len(old):,} existing row(s) "
-              f"-> {len(fresh):,} (key: {key or 'none — appended without dedup'})")
+              f"-> {len(fresh):,} (graded {was} -> {now_})")
     perf = cs.performance(fresh)
     print(f"[builder] settled record: {perf}")
     return fresh
