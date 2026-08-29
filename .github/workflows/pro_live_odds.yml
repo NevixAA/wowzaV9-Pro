@@ -1,0 +1,125 @@
+name: Pro Live Odds
+
+# Collect LIVE prices for matches in play, into the canonical `live_odds_snapshots` table.
+#
+# WHY THIS IS URGENT AND THE REST IS NOT. A live price exists for seconds. Unlike pre-match odds,
+# which can be re-fetched until kickoff, a minute of in-play pricing that is not captured is gone
+# permanently — there is no backfill at any price, exactly as with historical /odds. So this
+# collects first and models later, deliberately: the dataset cannot be created retroactively once
+# a consumer for it exists.
+#
+# WHAT WAS MISSING. v9's live scanner has run for weeks and stores match STATE only — minute,
+# goals, shots on target — because when it was written no live odds endpoint was available. One
+# is now: /odds/live returns 266 bet types including the dynamic Over/Under line, BTTS and
+# handicaps, each with a suspended flag and an update timestamp. Without prices there is no live
+# market probability to compare a live model against and no way to know whether a price was
+# stale, so this is the precondition for every live question.
+#
+# The collector itself was written and tested and then never wired to anything: `live_odds_snapshots`
+# had ZERO files. An engine with no entrypoint is not a feature.
+#
+# ONE FIRING THAT LOOPS, NOT MANY FIRINGS. GitHub delivered ~4% of v9's scheduled events when
+# that repo asked for 696 a day, and drops queued jobs under load with no delivery guarantee. For
+# live odds a dropped run is a permanently missing observation, so this asks for 13 firings a day
+# and each samples internally for ~55 minutes — the pattern std_odds_capture already proves.
+# Spacing inside the loop adapts: ~5 min while matches are in play, ~15 when nothing is.
+#
+# IT DOES NOT NOTIFY AND DOES NOT BET. Collection only. v9 is untouched: this reads v9's
+# API-Football client and writes only Pro's own season store.
+
+on:
+  schedule:
+    # 11:00-23:00 UTC covers the hours matches are actually in play across our leagues; each
+    # firing loops ~55 min, so the window is continuous rather than sampled. :09 to stay off the
+    # hour, which GitHub names as its most contended scheduling slot.
+    - cron: '9 11-23 * * *'
+  workflow_dispatch:
+    inputs:
+      loop_minutes:
+        description: 'Sample for N minutes (blank = 55)'
+        required: false
+        default: ''
+      dry_run:
+        description: 'Fetch and report, write nothing'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+concurrency:
+  group: pro-live-odds
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    # Must exceed the loop plus checkout, pip and commit, or the timeout kills the collection it
+    # is there to protect.
+    timeout-minutes: 75
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # v9 read-only, for its API-Football client. Pro writes nothing back — the same borrowing
+      # pro_weekly_audit already does.
+      - name: Check out v9 (read-only, for the API client)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install pandas pyarrow requests
+
+      - name: Collect live odds
+        env:
+          APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: |
+          # `cmd | tee` reports TEE's exit code, so without pipefail a crashed collector would
+          # report success having stored nothing.
+          set -o pipefail
+          MINS="${{ github.event.inputs.loop_minutes }}"
+          [ -n "$MINS" ] || MINS=55
+          FLAG=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then FLAG="--dry-run"; fi
+          python -m src.pipelines.live_odds --loop-minutes "$MINS" $FLAG | tee live.txt
+
+      - name: Publish to the job summary
+        if: always()
+        run: |
+          {
+            echo "## Live odds"
+            echo ""
+            echo '```'
+            tail -n 60 live.txt 2>/dev/null || echo "(no output captured)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit the snapshots
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # The season store writes partitioned parquet under data/; add the directory rather than
+          # named files because the partition names contain the run id and are not known here.
+          git add -f data/season_*/live_odds_snapshots 2>/dev/null || echo "  (nothing written)"
+          git diff --staged --quiet && { echo "no new snapshots"; exit 0; }
+          git commit -m "pro: live odds $(date -u '+%Y-%m-%d %H:%M')"
+          for i in 1 2 3 4 5; do
+            # No `-X ours`: in a rebase `ours` is UPSTREAM, so it discards this run's own rows.
+            git pull --rebase --autostash origin main && git push && exit 0
+            echo "push race - retry $i"; sleep $((RANDOM % 5 + 3))
+          done
+          echo "::error title=push failed::Live odds collected but NOT persisted — and live "
+          echo "prices cannot be refetched, so this data is lost."
+          exit 1

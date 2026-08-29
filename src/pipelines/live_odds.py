@@ -54,11 +54,26 @@ DEFAULT_LOOP_MINUTES = 55      # just under an hourly firing, leaving room for c
 
 
 def _get_fn():
-    """v9's API-Football client. Imported lazily and with Pro's path FIRST, because v9 also has
-    a `src` package and prepending its path would shadow Pro's own modules."""
-    sys.path.append(str(__import__("pathlib").Path(__file__).resolve().parents[2].parent / "v9"))
-    from player_model.api_football import _get
-    return _get
+    """v9's API-Football client. Imported lazily and APPENDED to sys.path, never prepended,
+    because v9 also has a `src` package and putting it first would shadow Pro's own modules.
+
+    THE SIBLING PATH ONLY EXISTS LOCALLY. This looked only at `../v9`, which is the local layout;
+    in CI `actions/checkout` can place a second repo only INSIDE the workspace, so the import
+    would have failed on every scheduled run. Candidates are tried in order and the one that
+    exists wins, so the same code works locally and in Actions.
+    """
+    import os
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    for cand in (os.getenv("V9_LOCAL", ""), str(root / "_v9"), str(root.parent / "v9")):
+        if cand and (Path(cand) / "player_model" / "api_football.py").exists():
+            sys.path.append(cand)
+            from player_model.api_football import _get
+            print(f"[live_odds] API-Football client from {cand}")
+            return _get
+    raise RuntimeError(
+        "v9 checkout not found — need player_model/api_football.py. Set V9_LOCAL, or check v9 "
+        "out to _v9 alongside Pro. Live prices cannot be collected without it.")
 
 
 def sweep(get_fn, *, dry_run: bool) -> tuple[pd.DataFrame, dict]:
