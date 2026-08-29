@@ -274,6 +274,30 @@ def main() -> int:
     check("a 4-leg builder at 9% joint IS sendable", ok4, why4)
     check("...and its message lists all four legs", "4️⃣" in nt.format_combo(four))
 
+    # == one tip per match ==
+    #
+    # MAX_PER_RUN capped the total but nothing capped the spread, and ranking by correlation edge
+    # concentrates on whichever fixture has the most legs available — so one Bundesliga 2 match
+    # with four priced players took all six slots and the board went out as six variations of the
+    # same game.
+    import pathlib as _pl, tempfile as _tf
+    _real_send, _real_state = nt.send, nt.STATE_FILE
+    _sent: list[str] = []
+    nt.send = lambda text, **k: (_sent.append(text) or (True, "sent"))
+    nt.STATE_FILE = _pl.Path(_tf.mkdtemp()) / "s.json"
+    try:
+        many = pd.concat([
+            four.to_frame().T.assign(combo_id=f"same{i}", fixture_key="FX1",
+                                     leg2_p=0.59 - i * 0.01)
+            for i in range(10)], ignore_index=True)
+        res = nt.run(many, dry_run=False)
+        check("ten combos on ONE fixture send exactly one tip", res["sent"] == 1, str(res["sent"]))
+        check("...and the rest are attributed to the per-match cap",
+              res["reasons"].get("ANOTHER_TIP_ALREADY_SENT_FOR_THIS_MATCH", 0) == 9,
+              str(res["reasons"]))
+    finally:
+        nt.send, nt.STATE_FILE = _real_send, _real_state
+
     print(f"\n{'FAILED: ' + ', '.join(FAILS) if FAILS else 'all checks passed'}")
     return 1 if FAILS else 0
 

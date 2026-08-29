@@ -372,6 +372,7 @@ def run(candidates: pd.DataFrame, *, dry_run: bool = True,
     # Ranked by the mispricing we can point at, not by how likely the combo is.
     d["_edge"] = d.apply(independence_edge, axis=1)
     d = d.sort_values(["_edge", pcol], ascending=[False, False])
+    sent_fixtures: set[str] = set()
 
     for _, row in d.iterrows():
         out["evaluated"] += 1
@@ -382,6 +383,19 @@ def run(candidates: pd.DataFrame, *, dry_run: bool = True,
             continue
         out["eligible"] += 1
         if out["sent"] >= max_per_run:
+            continue
+        # ONE TIP PER FIXTURE PER RUN. MAX_PER_RUN capped the total but nothing capped the
+        # spread, and ranking by correlation edge concentrates on whichever fixture has the most
+        # legs available — so a single Bundesliga 2 match with four priced players took all six
+        # slots and the board went out as six variations of one game. Six near-identical tips are
+        # not six tips; they are one opinion with the reader left to pick. The best combo per
+        # fixture goes; the rest wait for the next run, and `d` is already sorted so the first one
+        # seen for a fixture IS its best.
+        fx = str(row.get("fixture_key") or row.get("match") or "")
+        if fx and fx in sent_fixtures:
+            out["suppressed"] += 1
+            out["reasons"]["ANOTHER_TIP_ALREADY_SENT_FOR_THIS_MATCH"] = \
+                out["reasons"].get("ANOTHER_TIP_ALREADY_SENT_FOR_THIS_MATCH", 0) + 1
             continue
         if dry_run or not cfg.PRO_MAY_NOTIFY:
             continue
@@ -404,6 +418,8 @@ def run(candidates: pd.DataFrame, *, dry_run: bool = True,
                 break
             continue
         out["sent"] += 1
+        if fx:
+            sent_fixtures.add(fx)
         fid = fingerprint(row)
         prev = state.get(fid, {})
         state[fid] = {
