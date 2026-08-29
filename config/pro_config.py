@@ -170,6 +170,22 @@ def band_label(value: float | None, bands) -> str:
 SIGNAL_TIERS = ("SNIPER", "MARKSMAN", "VALUABLE", "OBSERVE", "AVOID", "NO_BET")
 DEPLOYMENT_MODES = ("LIVE", "PAPER", "RESEARCH", "BLOCKED")
 
-# Pro never bets and never notifies this season.
+# Pro never BETS this season. That has not changed and is not negotiable here.
 DEFAULT_DEPLOYMENT_MODE = "RESEARCH"
-PRO_MAY_NOTIFY = False
+
+# NOTIFICATION ENABLED 2026-08-29 BY EXPLICIT OWNER DECISION, for combo tips only.
+#
+# The original rule was "never notifies this season", and the reasoning behind it still holds
+# for everything it was written about: Pro must not become a second tipster competing with v9's
+# Telegram output. What changed is that the bet-builder work produces candidates that reach
+# nobody, and there is no other home for them -- v9 owns the only existing sender and is frozen,
+# and v11 is forbidden from notifying at all by invariant 4.
+#
+# SCOPE OF THIS FLAG, deliberately narrow:
+#   * src/combo/notify.py is the ONLY sender, and it defaults to dry_run=True.
+#   * Messages are labelled PAPER and state that Pro places no stakes.
+#   * Same-match builders carry a FAIR price and say so -- no bookmaker builder price exists.
+#   * Pro still never bets: DEFAULT_DEPLOYMENT_MODE stays RESEARCH.
+#
+# Anything beyond combo tips needs its own decision, not this flag.
+PRO_MAY_NOTIFY = True

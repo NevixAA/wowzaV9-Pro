@@ -142,6 +142,61 @@ def main() -> int:
     check("...and are NOT in the settleable event set",
           "HT_O05" not in ev.EVENTS and "HT_O15" not in ev.EVENTS)
 
+    print("")
+    print("== notification dedup (sections 83-85) ==")
+    from src.combo import notify as nt
+    base = pd.Series({"combo_id": "abc", "joint_probability": 0.20,
+                      "independence_probability": 0.10, "fair_combo_odds": 5.0})
+    ok, why = nt.should_notify(base, {}, 0.0)
+    check("a new qualifying combo notifies", ok and why == "NEW", why)
+    st = {"abc": {"first_seen_ts": 0.0, "last_notified_ts": 0.0,
+                  "joint_probability": 0.20, "odds": 5.0}}
+    check("the SAME combo immediately after is suppressed",
+          nt.should_notify(base, st, 0.0) == (False, "UNCHANGED"))
+    # The epoch-zero bug: `if last` is False when last_notified_ts == 0, silently disabling
+    # reminders. Real timestamps are large so production would have worked and nobody would
+    # ever have found it. Guarded with `is not None` now.
+    ok, why = nt.should_notify(base, st, nt.RENOTIFY_AFTER_HOURS * 3600 + 1)
+    check("a reminder fires after the window even from timestamp 0", ok and why == "REMINDER", why)
+    up = base.copy(); up["joint_probability"] = 0.20 + nt.MIN_PROB_CHANGE_PP / 100 + 0.001
+    check("a meaningful probability rise re-notifies", nt.should_notify(up, st, 0.0)[0])
+    tiny = base.copy(); tiny["joint_probability"] = 0.205
+    check("a sub-threshold drift does NOT re-notify",
+          nt.should_notify(tiny, st, 0.0) == (False, "UNCHANGED"))
+
+    print("")
+    print("== notification quality gates ==")
+    short = base.copy(); short["fair_combo_odds"] = 1.5
+    check("odds under the floor are refused",
+          nt.should_notify(short, {}, 0.0) == (False, "ODDS_TOO_SHORT"))
+    likely = base.copy(); likely["joint_probability"] = 0.64
+    likely["independence_probability"] = 0.60; likely["fair_combo_odds"] = 1.56
+    check("a near-certainty at short odds is refused", not nt.should_notify(likely, {}, 0.0)[0])
+    indep = base.copy(); indep["independence_probability"] = 0.199
+    check("a combo with no independence edge is refused",
+          nt.should_notify(indep, {}, 0.0) == (False, "NO_INDEPENDENCE_EDGE"))
+    check("independence_edge is +100% when the joint is double the product",
+          abs(nt.independence_edge(pd.Series({"joint_probability": 0.2,
+                                              "independence_probability": 0.1})) - 1.0) < 1e-9)
+    check("independence_edge is None for a cross-match multiple",
+          nt.independence_edge(pd.Series({"conservative_joint_probability": 0.2})) is None)
+
+    print("")
+    print("== the message is honest and leaks nothing ==")
+    msg = nt.format_combo(pd.Series({
+        "match": "A vs B", "league": "L", "match_date": "2026-01-01",
+        "leg1_label": "Over 2.5", "leg1_model_p": 0.5,
+        "leg2_label": "BTTS Yes", "leg2_model_p": 0.5,
+        "joint_probability": 0.41, "independence_probability": 0.25,
+        "dependency_ratio": 1.64, "fair_combo_odds": 2.44,
+        "independence_fair_odds": 4.0}))
+    import os as _os
+    leaked = [k for k in ("TELEGRAM_TOKEN", "TELEGRAM_CHAT_ID", "APIFOOTBALL_KEY",
+                          "ODDS_API_KEY") if (_os.getenv(k) or "__NEVER_MATCHES__") in msg]
+    check("no environment secret appears in the message body", not leaked, str(leaked))
+    check("the message says it is not executable", "not an executable one" in msg)
+    check("the message says PAPER", "PAPER" in msg)
+
     print(f"\n{'FAILED: ' + ', '.join(FAILS) if FAILS else 'all checks passed'}")
     return 1 if FAILS else 0
 
