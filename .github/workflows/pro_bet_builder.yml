@@ -72,6 +72,11 @@ jobs:
       - name: Build candidates
         id: build
         run: |
+          # `cmd | tee` reports TEE's exit code, not the pipeline's — so an exit 1 from a
+          # failed notify was swallowed and the run went GREEN having sent nothing, which
+          # is precisely what the loud-failure code was added to prevent. pipefail makes
+          # the step take the first non-zero code in the pipe.
+          set -o pipefail
           DAYS="${{ github.event.inputs.days }}"
           [ -n "$DAYS" ] || DAYS=3
           python -m src.pipelines.bet_builder --mode generate --days "$DAYS" | tee build.txt
@@ -105,6 +110,7 @@ jobs:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
+          set -o pipefail
           FLAG=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then FLAG="--dry-run"; fi
           python -m src.pipelines.bet_builder --mode notify $FLAG | tee -a build.txt
@@ -113,7 +119,9 @@ jobs:
       # its fixture finishes, and a result recorded late is a result missing from the dashboard.
       - name: Settle what finished
         if: always()
-        run: python -m src.pipelines.bet_builder --mode settle | tee -a build.txt
+        run: |
+          set -o pipefail
+          python -m src.pipelines.bet_builder --mode settle | tee -a build.txt
 
       - name: Publish to the job summary
         if: always()
