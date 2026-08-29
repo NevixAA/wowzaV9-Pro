@@ -333,6 +333,8 @@ def main() -> int:
 
     import config.pro_config as cfg
 
+    failed = False
+
     if args.mode in ("generate", "all"):
         d = generate(args.days)
         if not d.empty:
@@ -353,6 +355,22 @@ def main() -> int:
         else:
             sent = cn.run(cand, dry_run=dry)
             print(f"[builder] notify: {sent}")
+            # FAIL LOUDLY WHEN WE MEANT TO SEND AND COULD NOT. Telegram credentials are
+            # repository secrets and they DO NOT CROSS REPOS — v9 has them, Pro is a different
+            # repository and pro_collect.yml states plainly that none exists here. Without this
+            # check the workflow builds combos, formats messages, fails every send, and exits
+            # green, which is the "green workflow, no data" pattern every incident in this project
+            # has taken. An unsendable notify run is a failed run.
+            if not dry and sent.get("send_failed"):
+                errs = sent.get("send_errors", {})
+                print(f"::error title=Combo tips were NOT delivered::"
+                      f"{sent['send_failed']} send(s) failed — {errs}. "
+                      f"If this says the token/chat id is not set, add those secrets to THIS "
+                      f"repository; secrets from v9 do not apply here.")
+                # Flagged, not returned: settlement still has to run. Grading finished combos is
+                # independent of whether today's tips were delivered, and skipping it would turn
+                # one problem into two.
+                failed = True
 
     if args.mode in ("settle", "all"):
         s = settle_finished()
@@ -360,7 +378,7 @@ def main() -> int:
             s.to_csv(SETTLED_FILE, index=False, encoding="utf-8")
             print(f"[builder] wrote {SETTLED_FILE.name} ({len(s):,} rows)")
 
-    return 0
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":

@@ -78,6 +78,10 @@ MIN_FAIR_ODDS = 2.0
 MIN_INDEPENDENCE_EDGE = 0.15
 
 MAX_PER_RUN = 6              # a burst of messages is itself a form of spam
+# Give up after this many failed sends. Sending is all-or-nothing in practice — a missing token,
+# a bad chat id or a Telegram outage fails every message identically — so retrying thousands of
+# times only risks rate-limiting us for a problem no retry can fix.
+MAX_SEND_FAILURES = 3
 
 
 def _load_state() -> dict:
@@ -304,8 +308,23 @@ def run(candidates: pd.DataFrame, *, dry_run: bool = True,
             continue
         if dry_run or not cfg.PRO_MAY_NOTIFY:
             continue
-        good, _detail = send(format_combo(row))
+        good, detail = send(format_combo(row))
         if not good:
+            # A SWALLOWED SEND FAILURE IS THE WORST OUTCOME AVAILABLE. This was a bare `continue`,
+            # so a run with 2,986 eligible combos and no Telegram credentials reported
+            # `sent: 0` with no reason and exited green — indistinguishable from "nothing met the
+            # bar". Record the count AND the reason so the caller can fail loudly.
+            out["send_failed"] = out.get("send_failed", 0) + 1
+            out.setdefault("send_errors", {})
+            out["send_errors"][detail] = out["send_errors"].get(detail, 0) + 1
+            # CIRCUIT BREAKER. `sent` only increments on success, so MAX_PER_RUN never engages
+            # when sending is broken: a run with 2,986 eligible combos attempted 2,986 sends.
+            # Harmless with no credentials (send returns before any HTTP call) but with a BAD
+            # token that is 2,986 requests at Telegram, which is how an outage becomes a ban.
+            # Whatever is wrong with the first few is wrong with all of them.
+            if out["send_failed"] >= MAX_SEND_FAILURES:
+                out["aborted"] = f"stopped after {MAX_SEND_FAILURES} consecutive send failures"
+                break
             continue
         out["sent"] += 1
         fid = fingerprint(row)

@@ -76,6 +76,30 @@ jobs:
           [ -n "$DAYS" ] || DAYS=3
           python -m src.pipelines.bet_builder --mode generate --days "$DAYS" | tee build.txt
 
+      # PREFLIGHT: are the credentials even present in THIS repository?
+      #
+      # Telegram secrets are per-repository and do not cross repos. v9 has them; Pro is a
+      # different repository and pro_collect.yml states outright that none exists here. Without
+      # this check the run builds combos, formats messages, fails every send and exits green —
+      # the "green workflow, no data" pattern behind every incident in this project. Checked as
+      # a length only; the values are never printed, logged or echoed.
+      - name: Check Telegram credentials are configured
+        if: github.event.inputs.dry_run != 'true'
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          MISSING=""
+          [ -n "$TELEGRAM_TOKEN" ]   || MISSING="$MISSING TELEGRAM_TOKEN"
+          [ -n "$TELEGRAM_CHAT_ID" ] || MISSING="$MISSING TELEGRAM_CHAT_ID"
+          if [ -n "$MISSING" ]; then
+            echo "::error title=Combo tips cannot be sent::Missing repository secret(s):$MISSING. \
+          Add them to NevixAA/wowzaV9-Pro (Settings > Secrets and variables > Actions). \
+          Secrets configured on v9 do NOT apply to this repository."
+            exit 1
+          fi
+          echo "Telegram credentials are configured."
+
       - name: Notify
         env:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
