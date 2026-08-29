@@ -41,6 +41,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import time
 from pathlib import Path
 
@@ -277,11 +278,24 @@ def send(text: str, *, timeout: int = 20) -> tuple[bool, str]:
             #   429 -> rate limited; the circuit breaker above is what keeps this from escalating.
             hint = {404: "TELEGRAM_TOKEN not recognised — check it is the FULL token "
                          "(digits, colon, secret) with no angle brackets",
-                    400: "TELEGRAM_CHAT_ID looks wrong (chat not found) — group ids are "
-                         "negative, usually -100...",
+                    400: "either TELEGRAM_CHAT_ID is wrong (chat not found / minus sign "
+                         "dropped) or the message failed to parse — see the description",
                     403: "bot is blocked or not a member of that chat",
                     429: "rate limited by Telegram"}.get(r.status_code)
-            return False, f"HTTP {r.status_code}" + (f" — {hint}" if hint else "")
+            # TELEGRAM'S OWN `description` IS THE DIAGNOSIS AND SUPPRESSING IT COST TWO ROUND
+            # TRIPS. "HTTP 400" alone cannot distinguish "chat not found" from "can't parse
+            # entities" — opposite fixes — so the run said only that something was wrong. The
+            # token is in the URL PATH, never in the response body, so echoing the description is
+            # safe; it is still length-capped and passed through a redactor in case a future
+            # error quotes the request back at us.
+            desc = ""
+            try:
+                desc = str((r.json() or {}).get("description", ""))[:160]
+                desc = re.sub(r"\d{6,}:[A-Za-z0-9_-]{20,}", "<redacted>", desc)
+            except Exception:                                    # noqa: BLE001
+                pass
+            return False, (f"HTTP {r.status_code}" + (f" — {hint}" if hint else "")
+                           + (f" | Telegram says: {desc}" if desc else ""))
         return True, "sent"
     except Exception as e:                                   # noqa: BLE001
         return False, f"{type(e).__name__}"
