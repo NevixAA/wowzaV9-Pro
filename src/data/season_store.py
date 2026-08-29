@@ -51,6 +51,11 @@ REQUIRED: dict[str, tuple[str, ...]] = {
     "clv":               ("fixture_key", "market"),
     "player_props":      ("fixture_key", "market", "player_name"),
     "live_signals":      ("fixture_key",),
+    # Live ODDS, distinct from live_signals: signals are our opinions, this is the market's.
+    # Keyed on fixture_id (API-Football's id, which is what /odds/live returns) plus the market
+    # coordinates, because one fixture quotes many lines at once -- a live totals market alone
+    # returned 19 distinct lines in a single sweep.
+    "live_odds_snapshots": ("fixture_id", "snapshot_ts", "market_family", "selection"),
     "data_quality":      ("check", "status"),
     # One row per FIXTURE with home_/away_ columns, matching how feature_engineering
     # consumes it (_team_recent reads a home_xg / away_xg pair). A per-team grain would be

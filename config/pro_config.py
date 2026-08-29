@@ -90,6 +90,7 @@ TABLES = (
     "clv",
     "player_props",
     "live_signals",
+    "live_odds_snapshots",
     "data_quality",
     # Per-fixture TEAM MATCH STATISTICS from API-Football /fixtures/statistics.
     #

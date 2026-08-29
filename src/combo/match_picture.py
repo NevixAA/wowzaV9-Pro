@@ -170,7 +170,7 @@ def build(matrix: np.ndarray, *, props: pd.DataFrame | None = None,
             if fair < MIN_FAIR_ODDS:
                 continue
             indep = float(np.prod([l["p"] for l in legs]))
-            rows.append({
+            row = {
                 "n_legs": n_legs,
                 "legs": " + ".join(l["label"] for l in legs),
                 "leg_probs": ", ".join(f'{l["p"]:.0%}' for l in legs),
@@ -181,7 +181,18 @@ def build(matrix: np.ndarray, *, props: pd.DataFrame | None = None,
                 "independence_fair_odds": round(1.0 / indep, 2) if indep > 0 else None,
                 "joint_source": src,
                 "leg_flags": "|".join(flags) if flags else "OK",
-            })
+            }
+            # Machine-readable leg identity alongside the human label. Without it the settler
+            # would have to parse the display string back into markets, which breaks the moment
+            # a label is reworded -- the settlement rules must key on the SAME identifiers the
+            # probabilities were computed from.
+            for i, l in enumerate(legs, start=1):
+                row[f"leg{i}_market"] = (l["key"] if l["kind"] == "goal"
+                                         else f'player_{l["market"]}' if l["kind"] == "player"
+                                         else f'teamcard_{l["market"]}')
+                row[f"leg{i}_label"] = l["label"]
+                row[f"leg{i}_p"] = round(float(l["p"]), 4)
+            rows.append(row)
     out = pd.DataFrame(rows)
     if out.empty:
         return out

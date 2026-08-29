@@ -145,7 +145,35 @@ TEAM_MATCH_STATS: dict[str, dict] = {
 }
 
 
+LIVE_ODDS_SNAPSHOTS: dict[str, dict] = {
+    # PLANNED_OPTIONAL only until the first scheduled run lands. The collector is written and
+    # verified against the live API (216 rows, 5 fixtures, median odds age 25.6s), but nothing
+    # has been persisted yet because local writes to the canonical store are refused by design.
+    "_status": PLANNED_OPTIONAL,
+    "_grain": "one row per (fixture, snapshot, market, selection) — many lines quoted at once",
+    "_why_empty": "Collector verified against the live API but not yet run on a schedule. Flip "
+                  "to ACTIVE once pro_live_odds.yml has completed a match-day window.",
+    "_blocked_on": "nothing — the workflow needs to run",
+    "fields": {
+        "fixture_id": (AVAILABLE, "API-Football fixture id, as /odds/live returns it"),
+        "snapshot_ts": (AVAILABLE, "our fetch time"),
+        "odds_updated_at": (AVAILABLE, "the MARKET's timestamp, from the API's `update` field"),
+        "odds_age_seconds": (DERIVED, "fetch minus market timestamp — section 140's staleness "
+                                      "test, real rather than inferred"),
+        "match_minute": (AVAILABLE, ""), "match_seconds": (AVAILABLE, "e.g. '71:33'"),
+        "home_score / away_score": (AVAILABLE, "from teams.home.goals, NOT a top-level block"),
+        "market_family": (AVAILABLE, "TOTALS_LINE | BTTS | AH | AH_3WAY | HOME_GOALS | AWAY_GOALS"),
+        "line": (AVAILABLE, "from the `handicap` field; the DYNAMIC live line, 1.25-6.25 seen"),
+        "is_main_line": (AVAILABLE, "the book's headline line among several quoted"),
+        "suspended": (AVAILABLE, "kept, not dropped — a suspension is itself a reaction"),
+        "home_team / away_team": (UNAVAILABLE, "names are absent from /odds/live; ids only"),
+        "quality_flags": (DERIVED, "STALE_LIVE_ODDS | SUSPENDED | NO_ODDS_TIMESTAMP | ..."),
+    },
+}
+
+
 TABLES: dict[str, dict] = {
+    "live_odds_snapshots": LIVE_ODDS_SNAPSHOTS,
     "team_news": TEAM_NEWS,
     "team_match_stats": TEAM_MATCH_STATS,
 }

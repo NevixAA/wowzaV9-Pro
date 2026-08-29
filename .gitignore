@@ -66,6 +66,15 @@ output/**
 !output/combo_dependency_matrix.csv
 !output/combo_dependency_stability.csv
 !output/player_combo_dependency.csv
+# The two above were deliberately excluded while nothing read them. v9's dashboard now does
+# (pages/14), and it reads Pro's committed output over a sibling checkout — an ignored file
+# there is not "not shown yet", it is a page that renders empty and reads as "no combos
+# today". The settled record is also the results history the dashboard tracks won/lost from,
+# so it has to accumulate in git the same way the weekly audit record does.
+# Named file by file, never a glob: `git add` on an ignored path aborts the WHOLE add and
+# stages nothing, which is how two earlier commits silently saved no matrices at all.
+!output/bet_builder_settled.csv
+!output/bet_builder_candidates.csv
 # The weekly audit record. Committed so the history of "was the pipeline persisting" is itself
 # persisted — a check whose result is thrown away cannot show a slow decline.
 !output/weekly_audit.json
