@@ -85,18 +85,21 @@ The empirical matrix is ground truth, not a prediction, so it cannot be calibrat
 
 ## 8–11. Candidates and leg quality
 
-**Zero candidates generated.** Phases 4–5 are not implemented, deliberately: generating builder
-candidates before the joint estimator is validated would produce priced output with no basis.
+**8,471 same-match candidates** across 161 upcoming fixtures — 4,426 priced exactly from the
+score distribution, 4,045 player/card legs with Fréchet bounds only. See the UPDATE section below
+for the method, the validation and a worked example.
 
-Executable builder odds: **none collected anywhere in any repo.** Per §9 and §21, without real
-same-game-builder prices we may test joint *calibration* but must never claim builder ROI.
+Executable builder odds: **none collected anywhere in any repo**, so `executable` is False and EV
+is NULL on every row. Per §9 and §21, without real same-game-builder prices we may test joint
+*calibration* but must never claim builder ROI.
 
 ## 12. Player-prop limitations
 
 Unchanged and respected: props are PAPER-only (invariant 2). `player_props` holds 35,086 rows but
-prop legs must not automatically qualify. Per §5, if player-match dependence cannot be estimated
-from existing inputs it must be flagged `JOINT_PLAYER_DEPENDENCE_UNMODELED` and not priced — that
-remains the position, and no player leg has been priced.
+prop legs must not automatically qualify. Per §5 the player-match dependence **cannot** be
+estimated from existing inputs — nothing links a player's shot count to the match goal
+environment — so all 4,045 player/card legs carry Fréchet bounds, are flagged
+`JOINT_PLAYER_DEPENDENCE_UNMODELED`, and have **no point joint probability and no fair odds**.
 
 ## 13. Missing data — the blockers, in order
 
@@ -134,15 +137,19 @@ Pro's existing suite (80 checks) still passes.
 
 ## 15. Files changed
 
-New in Pro: `src/combo/events.py`, `src/combo/dependency.py`, `src/combo/tests.py`,
+New in Pro: `src/combo/events.py`, `src/combo/dependency.py`, `src/combo/score_model.py`,
+`src/combo/builder.py`, `src/combo/dixon_coles.py`, `src/combo/tests.py`,
 `docs/BET_BUILDER_RESEARCH_REPORT.md`.
-New outputs: `output/combo_dependency_matrix.csv`, `output/combo_dependency_stability.csv`.
+New outputs: `output/combo_dependency_matrix.csv`, `output/combo_dependency_stability.csv`,
+`output/bet_builder_candidates.csv`.
 **V9: nothing. V11: nothing.**
 
 ## 16. Ready for live?
 
-**No.** No executable builder prices, no validated joint estimator, no settlement path, no
-calibration. `deployment_mode` would be `PAPER` if candidates existed, and none do.
+**No.** The joint estimator is now validated against 23,604 fixtures and a 1X2 model exists, but
+there are still **no executable builder prices**, **no settlement path** (the key mismatch), and
+**no joint calibration**. Every candidate row carries `deployment_mode = PAPER` and
+`executable = False`.
 
 ---
 
@@ -274,11 +281,14 @@ required before any of this is trusted.
 | 1 Market-event schema | **done** — `src/combo/events.py` |
 | 2 Historical outcome matrix | **done** — 23,604 fixtures |
 | 3 Empirical dependency matrix | **done** — 1,638 rows, stability included |
-| 4–5 Candidate generation | not started — blocked on builder prices |
+| 4 Same-match candidates | **done** — 8,471 rows, PAPER |
+| 5 Cross-match combos | **implemented** (`builder.cross_match`); needs executable single legs |
 | 6 Settlement | not started — blocked on the key mismatch |
-| 7 Calibration | not started — needs 4 and 6 |
-| 8 Player props | not started |
-| 9 Score distribution / Monte Carlo | **recommended next**, serves both briefs |
+| 7 Calibration | not started — needs 6 |
+| 8 Player props | **bounded, not priced** — dependence unmodelled by design |
+| 9 Score distribution | **done** — `score_model.py` + `dixon_coles.py`, validated |
 
-The brief says not to skip to Phase 9. Phases 0–3 are complete and Phase 9's foundation — a
-validated joint layer with ground truth to check against — is exactly what they built.
+Phase 9 was not skipped to: it was reached through 0–3, and its output is checked against the
+ground truth those phases produced. **The one blocker now gating Phases 6 and 7 — and the market
+comparison for 1X2 — is the fixture-key mismatch.** That is the highest-value next fix in either
+brief.
