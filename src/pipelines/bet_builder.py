@@ -103,6 +103,38 @@ def _dependency() -> dict:
         return {}
 
 
+def _card_rates() -> pd.DataFrame:
+    """Per team-match card totals, for the team-card legs.
+
+    Cards were MISSING ENTIRELY from the first live tips — `build()` takes a `cards=` argument
+    and the pipeline never passed one, so "team over 2.5 cards" could not be produced at all,
+    however the gates were tuned. It needs OUTCOMES (yellow/red per player-match), which Pro does
+    not hold: `player_props` stores probabilities and prices, not what happened. v9's
+    `player_history.parquet` does, it is committed, and reading it is the same read-only
+    borrowing pro_weekly_audit already does. Pro still writes nothing to v9.
+    """
+    from src.combo import team_markets as tm
+    import os
+    roots = [os.getenv("V9_LOCAL", ""), str(ROOT.parent / "v9"), str(ROOT.parent / "_v9")]
+    for r in roots:
+        if not r:
+            continue
+        p = Path(r) / "player_history.parquet"
+        if not p.exists():
+            continue
+        try:
+            h = pd.read_parquet(p)
+            rates = tm.team_card_rates(h)
+            print(f"[builder] card rates from {p.name}: {len(rates):,} team-matches")
+            return rates
+        except Exception as e:                                 # noqa: BLE001
+            print(f"[builder] could not read {p}: {type(e).__name__}: {e}")
+    # Said out loud. Silently producing zero card legs is what happened the first time.
+    print("[builder] NO player_history.parquet found — team-card legs will NOT be built. "
+          "Check out v9 alongside Pro, or set V9_LOCAL.")
+    return pd.DataFrame()
+
+
 def generate(days: int = DEFAULT_DAYS, *, now: dt.datetime | None = None) -> pd.DataFrame:
     now = now or dt.datetime.now(dt.timezone.utc)
     fixtures, snaps, props = _read("fixtures"), _read("model_snapshots"), _read("player_props")
@@ -123,6 +155,7 @@ def generate(days: int = DEFAULT_DAYS, *, now: dt.datetime | None = None) -> pd.
 
     probs = _latest_model_probs(snaps)
     dep = _dependency()
+    cards = _card_rates()
     if not dep:
         print("[builder] no measured player dependence available — player legs fall back to "
               "independence (ratio 1.0), which is recorded per row as a flag")
@@ -165,6 +198,7 @@ def generate(days: int = DEFAULT_DAYS, *, now: dt.datetime | None = None) -> pd.
         # shows 200. Twelve of each leg count keeps the interesting tail of every length while
         # the file stays a few hundred KB.
         cand = mp.build(fit["matrix"], props=fp if fp is not None and len(fp) else None,
+                        cards=cards if len(cards) else None,
                         home=str(f.get("home_team", "")), away=str(f.get("away_team", "")),
                         dep=dep, top_n=CANDIDATES_PER_LEG_COUNT)
         if cand.empty:

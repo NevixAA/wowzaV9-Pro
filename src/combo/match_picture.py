@@ -211,9 +211,21 @@ def build(matrix: np.ndarray, *, props: pd.DataFrame | None = None,
     # Ranked by dependency ratio within each leg count: the further a combo sits from what
     # multiplying its legs would imply, the more it is worth showing, since that gap is the only
     # thing this system knows that a naive price does not.
-    return (out.sort_values("dependency_ratio", ascending=False)
+    # MIXED COMBOS WIN THE QUOTA. Ranking on dependency ratio alone hands every slot to
+    # goal-family pairs, because legs that restate one opinion about goals are the most correlated
+    # things on the board — "Over 2.5 + BTTS" scores highest precisely because it is nearly one
+    # bet. The result was 3,744 candidates of which 144 contained a player leg and 124 a card leg,
+    # so the builder people actually want was being crowded out before the notifier ever saw it.
+    # Combos carrying a player prop or a team-card line sort first within each leg count.
+    mkcols = [c for c in out.columns if c.startswith("leg") and c.endswith("_market")]
+    mixed = out[mkcols].apply(
+        lambda r: r.astype(str).str.startswith(("player_", "teamcard")).any(), axis=1)
+    out = out.assign(_mixed=mixed.astype(int))
+    return (out.sort_values(["_mixed", "dependency_ratio"], ascending=[False, False])
                .groupby("n_legs", group_keys=False).head(top_n)
-               .sort_values(["n_legs", "dependency_ratio"], ascending=[True, False]))
+               .sort_values(["n_legs", "_mixed", "dependency_ratio"],
+                            ascending=[True, False, False])
+               .drop(columns=["_mixed"]))
 
 
 def _reject(legs: list[dict]) -> str | None:
@@ -233,6 +245,16 @@ def _reject(legs: list[dict]) -> str | None:
     if len(teams) != len(set(teams)) or len({t for t, _ in teams}) < len(teams):
         return "SAME_TEAM_CARD_LINE_TWICE"  # nested card lines collapse to the strictest
     goal = [l for l in legs if l["kind"] == "goal"]
+    # AT MOST ONE VIEW OF THE SCORELINE. Every goal-family leg -- over/under, BTTS, team goals,
+    # 1X2 -- is read off the SAME fitted score matrix, so two of them are one model's output
+    # combined with itself rather than two opinions. The mask checks below catch pairs that are
+    # nested or impossible, but "Over 3.5 + BTTS + Away over 1.5" is neither: it is merely the
+    # same belief about goals said three times, which is what the first live tips were and what
+    # they were rejected for. Enforced HERE rather than only at notify time, so the per-fixture
+    # quota is spent on shapes that can actually be sent instead of being filled with combos the
+    # notifier will refuse.
+    if len(goal) > 1:
+        return "MORE_THAN_ONE_GOAL_FAMILY_LEG"
     for a, b in itertools.combinations(goal, 2):
         ma, mb = a["mask"], b["mask"]
         if not (ma & mb).any():

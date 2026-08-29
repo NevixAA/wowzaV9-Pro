@@ -145,8 +145,16 @@ def main() -> int:
     print("")
     print("== notification dedup (sections 83-85) ==")
     from src.combo import notify as nt
+    # A VALID SHAPE, not just valid numbers. This fixture used to be two bare probabilities with
+    # no legs at all, which meant every dedup test passed against a combo that could never be
+    # sent — the suite was checking the anti-spam logic on something the quality gates reject.
+    # One scoreline leg plus one player leg is the minimum real builder: goal-family legs all come
+    # off the same score matrix, so at most one may appear.
     base = pd.Series({"combo_id": "abc", "joint_probability": 0.20,
-                      "independence_probability": 0.10, "fair_combo_odds": 5.0})
+                      "independence_probability": 0.10, "fair_combo_odds": 5.0,
+                      "n_legs": 2,
+                      "leg1_market": "O25", "leg1_label": "Over 2.5", "leg1_p": 0.52,
+                      "leg2_market": "player_goals", "leg2_label": "X to score", "leg2_p": 0.40})
     ok, why = nt.should_notify(base, {}, 0.0)
     check("a new qualifying combo notifies", ok and why == "NEW", why)
     st = {"abc": {"first_seen_ts": 0.0, "last_notified_ts": 0.0,
@@ -206,11 +214,13 @@ def main() -> int:
     # ODDS_TOO_SHORT and rendered every leg as `0%`. A test suite that only ever feeds one
     # producer's column names cannot catch a disagreement between two producers.
     mp_row = pd.Series({
-        "combo_id": "fx1|O25+BTTS+player_goals",
+        # O25 + BTTS + a player leg would now be refused, and rightly: two goal-family legs are
+        # one score matrix quoted twice. Swapped the BTTS leg for a team-card line.
+        "combo_id": "fx1|O25+teamcard+player_goals",
         "match": "A vs B", "league": "L", "match_date": "2026-01-01", "n_legs": 3,
-        "leg1_label": "Over 2.5", "leg1_p": 0.52,
-        "leg2_label": "Both teams to score", "leg2_p": 0.55,
-        "leg3_label": "X to score", "leg3_p": 0.40,
+        "leg1_market": "O25", "leg1_label": "Over 2.5", "leg1_p": 0.52,
+        "leg2_market": "teamcard_cards_o1.5", "leg2_label": "A over 1.5 cards", "leg2_p": 0.55,
+        "leg3_market": "player_goals", "leg3_label": "X to score", "leg3_p": 0.40,
         "joint_probability": 0.22, "independence_probability": 0.114,
         "dependency_ratio": 1.93, "fair_odds": 4.55, "independence_fair_odds": 8.75})
     send, why = nt.should_notify(mp_row, {}, 0.0)
@@ -228,6 +238,41 @@ def main() -> int:
                         "fair_combo_odds", "fair_odds") == 3.2)
     check("a genuinely absent value returns None, not 0",
           nt._first_num(pd.Series({"other": 1.0}), "fair_combo_odds", "fair_odds") is None)
+
+    # == a builder must be more than one opinion said twice ==
+    #
+    # The first live tips were "Over 3.5 + Away over 1.5" and "BTTS + Away over 1.5" — every leg
+    # read off the SAME fitted score matrix, so the big correlation adjustment was the symptom,
+    # not the edge. These lock the shape rules in.
+    two_goal = base.copy()
+    two_goal["leg2_market"] = "BTTS"; two_goal["leg2_label"] = "Both teams to score"
+    check("two goal-family legs are refused",
+          nt.should_notify(two_goal, {}, 0.0) == (False, "MULTIPLE_GOAL_LEGS_SAME_OPINION"))
+    three_goal = base.copy()
+    three_goal["leg2_market"] = "BTTS"
+    three_goal["leg3_market"] = "AWAY_O15"; three_goal["leg3_label"] = "Away over 1.5"
+    three_goal["leg3_p"] = 0.33; three_goal["n_legs"] = 3
+    check("...and so are three", not nt.should_notify(three_goal, {}, 0.0)[0])
+    filler = base.copy(); filler["leg2_p"] = 0.86
+    check("a near-certain filler leg is refused",
+          nt.should_notify(filler, {}, 0.0) == (False, "LEG_TOO_CERTAIN_TO_ADD_ANYTHING"))
+    # The floor must fall with leg count or no 4-leg builder can ever be sent: four likely legs
+    # multiply well under a flat 15%, which is what silenced props entirely.
+    check("the joint-probability floor falls as legs are added",
+          nt.MIN_JOINT_PROB_BY_LEGS[4] < nt.MIN_JOINT_PROB_BY_LEGS[3]
+          < nt.MIN_JOINT_PROB_BY_LEGS[2])
+    # `match` must be present: format_combo switches on it to decide same-match vs cross-match,
+    # and without it a same-match builder renders down the multiples branch and prints no legs.
+    four = pd.Series({"combo_id": "f4", "match": "A vs B", "league": "L",
+                      "match_date": "2026-01-01", "n_legs": 4, "joint_probability": 0.09,
+                      "independence_probability": 0.03, "fair_odds": 11.1,
+                      "leg1_market": "O35", "leg1_label": "Over 3.5", "leg1_p": 0.28,
+                      "leg2_market": "player_sot2", "leg2_label": "A 2+ SOT", "leg2_p": 0.59,
+                      "leg3_market": "player_sot", "leg3_label": "B 1+ SOT", "leg3_p": 0.48,
+                      "leg4_market": "player_goals", "leg4_label": "C to score", "leg4_p": 0.40})
+    ok4, why4 = nt.should_notify(four, {}, 0.0)
+    check("a 4-leg builder at 9% joint IS sendable", ok4, why4)
+    check("...and its message lists all four legs", "4️⃣" in nt.format_combo(four))
 
     print(f"\n{'FAILED: ' + ', '.join(FAILS) if FAILS else 'all checks passed'}")
     return 1 if FAILS else 0

@@ -58,6 +58,14 @@ RENOTIFY_AFTER_HOURS = 12.0
 
 # Never send a combo below this. A builder under it is a lottery ticket (section 30).
 MIN_JOINT_PROB = 0.15
+# Per leg count. Four likely legs multiply below any flat floor, so a single number silently
+# banned every builder longer than a pair — the exact product this system exists to find.
+# These are the joint probabilities of a plausible 4-leg builder (~4%) up through a pair (~15%).
+MIN_JOINT_PROB_BY_LEGS = {2: 0.15, 3: 0.07, 4: 0.035, 5: 0.02}
+# A leg above this is filler: it barely moves the joint probability or the price, but it is a
+# real extra way to lose. Deliberately applied at NOTIFY time, not in the builder, so the
+# candidate file keeps them for research.
+MAX_LEG_PROB_FOR_TIP = 0.85
 # ...and never above this either. The first version ranked purely by joint probability and its
 # top pick was Over 1.5 + a 79% shots-on-target leg: 64% joint at 1.56 fair odds. Technically
 # the most likely combo on the board and useless as a tip -- near-certainties at short prices
@@ -142,7 +150,48 @@ def should_notify(row: pd.Series, state: dict, now: float) -> tuple[bool, str]:
     if not fid:
         return False, "NO_FINGERPRINT"
     p = row.get("joint_probability")
-    if p is None or pd.isna(p) or float(p) < MIN_JOINT_PROB:
+    if p is None or pd.isna(p):
+        return False, "BELOW_MIN_PROB"
+
+    legs = [str(row.get(f"leg{i}_market") or "") for i in (1, 2, 3, 4, 5)]
+    legs = [m for m in legs if m and m != "nan"]
+
+    # A BUILDER IS NOT TWO WAYS OF SAYING THE SAME THING. "Over 2.5 goals + Both teams to score"
+    # and "Over 3.5 + Away over 1.5" are restatements of one opinion about goals, and the huge
+    # correlation adjustment they show is the tell, not the edge — it says the legs move together,
+    # which is what makes them a single bet wearing two labels. The first live tips were all of
+    # this shape and that is not what a builder is for.
+    #
+    # So a notifiable combo needs at least one leg from OUTSIDE the goal family: a player prop or
+    # a team-card line. That is the whole point of a same-game builder — combining things a book
+    # prices separately and correlates badly.
+    # AT MOST ONE GOAL-FAMILY LEG. Over/under, BTTS, team goals and 1X2 are all read off the SAME
+    # fitted score matrix, so two of them are not two opinions — they are one model's output
+    # combined with itself, and the large correlation adjustment they produce is the symptom.
+    # Requiring merely "one non-goal leg" was not enough: it still passed
+    # "Over 3.5 + BTTS + Away over 1.5 + a card leg", which is the same objection with a
+    # decoration. One scoreline view, then things the book prices separately.
+    n_goal = sum(1 for m in legs
+                 if not (m.startswith("player_") or m.startswith("teamcard")))
+    if n_goal > 1:
+        return False, "MULTIPLE_GOAL_LEGS_SAME_OPINION"
+    if n_goal == len(legs):
+        return False, "ALL_GOAL_LEGS_SAME_OPINION"
+
+    # NO NEAR-CERTAIN FILLER. An 86% leg adds almost no probability and almost no price; it pads
+    # the leg count and makes a combo look richer than it is, while adding a real way to lose.
+    probs = [_first_num(row, f"leg{i}_p", f"leg{i}_model_p") for i in (1, 2, 3, 4, 5)]
+    if any(v is not None and v > MAX_LEG_PROB_FOR_TIP for v in probs):
+        return False, "LEG_TOO_CERTAIN_TO_ADD_ANYTHING"
+
+    # THE FLOOR HAS TO SCALE WITH LEG COUNT. A flat 15% is right for two legs and impossible for
+    # four: four genuinely likely legs multiply to well under it, so the requested product — a
+    # handful of probable things whose COMBINED odds are worth taking — was being rejected as a
+    # lottery ticket. Measured: combos containing a player leg averaged 6.8% joint against a 15%
+    # floor, so 140 of 144 were refused and 4 survived.
+    n = len(legs) or int(row.get("n_legs") or 2)
+    floor = MIN_JOINT_PROB_BY_LEGS.get(n, MIN_JOINT_PROB_BY_LEGS[max(MIN_JOINT_PROB_BY_LEGS)])
+    if float(p) < floor:
         return False, "BELOW_MIN_PROB"
 
     if float(p) > MAX_JOINT_PROB:
