@@ -266,8 +266,22 @@ def send(text: str, *, timeout: int = 20) -> tuple[bool, str]:
                                 "disable_web_page_preview": True},
                           timeout=timeout)
         if r.status_code != 200:
-            # Response bodies can echo the request; report the code only.
-            return False, f"HTTP {r.status_code}"
+            # Response bodies can echo the request, so the body is never reported -- but the
+            # STATUS CODE alone is diagnostic here and was being wasted. Telegram distinguishes
+            # the two failures precisely, and knowing which one you have is the whole fix:
+            #   404 -> the TOKEN is not recognised (wrong or truncated). A real token is
+            #          "<digits>:<secret>"; pasting only the part after the colon gives exactly
+            #          this, which is what happened on the first live run.
+            #   400 -> token fine, the CHAT_ID is wrong ("chat not found").
+            #   403 -> token and chat fine, but the bot was blocked or removed from the chat.
+            #   429 -> rate limited; the circuit breaker above is what keeps this from escalating.
+            hint = {404: "TELEGRAM_TOKEN not recognised — check it is the FULL token "
+                         "(digits, colon, secret) with no angle brackets",
+                    400: "TELEGRAM_CHAT_ID looks wrong (chat not found) — group ids are "
+                         "negative, usually -100...",
+                    403: "bot is blocked or not a member of that chat",
+                    429: "rate limited by Telegram"}.get(r.status_code)
+            return False, f"HTTP {r.status_code}" + (f" — {hint}" if hint else "")
         return True, "sent"
     except Exception as e:                                   # noqa: BLE001
         return False, f"{type(e).__name__}"
