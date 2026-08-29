@@ -75,6 +75,9 @@ output/**
 # stages nothing, which is how two earlier commits silently saved no matrices at all.
 !output/bet_builder_settled.csv
 !output/bet_builder_candidates.csv
+# The notify dedup state. It MUST persist between runs or every run re-sends the whole board as
+# NEW — the same failure shape as v9's duplicate-tip flood.
+!output/combo_notified.json
 # The weekly audit record. Committed so the history of "was the pipeline persisting" is itself
 # persisted — a check whose result is thrown away cannot show a slow decline.
 !output/weekly_audit.json

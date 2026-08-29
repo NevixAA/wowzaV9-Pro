@@ -197,6 +197,38 @@ def main() -> int:
     check("the message says it is not executable", "not an executable one" in msg)
     check("the message says PAPER", "PAPER" in msg)
 
+    # == both builders' vocabularies, not just same_match's ==
+    #
+    # Everything above this point was written against `builder.same_match`, which names its
+    # columns fair_combo_odds / leg1_model_p. `match_picture.build` -- the N-leg builder that
+    # produces every candidate the pipeline actually generates -- names them fair_odds / leg1_p.
+    # The whole suite passed while notify silently rejected 6,318 of 6,360 real candidates as
+    # ODDS_TOO_SHORT and rendered every leg as `0%`. A test suite that only ever feeds one
+    # producer's column names cannot catch a disagreement between two producers.
+    mp_row = pd.Series({
+        "combo_id": "fx1|O25+BTTS+player_goals",
+        "match": "A vs B", "league": "L", "match_date": "2026-01-01", "n_legs": 3,
+        "leg1_label": "Over 2.5", "leg1_p": 0.52,
+        "leg2_label": "Both teams to score", "leg2_p": 0.55,
+        "leg3_label": "X to score", "leg3_p": 0.40,
+        "joint_probability": 0.22, "independence_probability": 0.114,
+        "dependency_ratio": 1.93, "fair_odds": 4.55, "independence_fair_odds": 8.75})
+    send, why = nt.should_notify(mp_row, {}, 0.0)
+    check("match_picture's fair_odds is accepted by the notify gate", send, why)
+    m2 = nt.format_combo(mp_row)
+    check("match_picture leg probabilities are not rendered as 0%", "`0%`" not in m2, m2)
+    check("a THREE-leg combo prints all three legs", "3️⃣" in m2, m2)
+    check("fair odds render as a number, not None", "Fair odds: *4.55*" in m2, m2)
+    # A leg count is data, not a constant: the two-leg row above must still print exactly two.
+    check("a two-leg combo does not invent a third leg", "3️⃣" not in msg, msg)
+    # _first_num must fall through a null first name rather than returning NaN, which is the
+    # precise failure that made a name mismatch look like a strict filter doing its job.
+    check("a null preferred column falls through to the next name",
+          nt._first_num(pd.Series({"fair_combo_odds": float("nan"), "fair_odds": 3.2}),
+                        "fair_combo_odds", "fair_odds") == 3.2)
+    check("a genuinely absent value returns None, not 0",
+          nt._first_num(pd.Series({"other": 1.0}), "fair_combo_odds", "fair_odds") is None)
+
     print(f"\n{'FAILED: ' + ', '.join(FAILS) if FAILS else 'all checks passed'}")
     return 1 if FAILS else 0
 

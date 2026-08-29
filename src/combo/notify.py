@@ -101,6 +101,22 @@ def fingerprint(row: pd.Series) -> str:
     return str(row.get("combo_id") or "")
 
 
+def _first_num(row: pd.Series, *names: str) -> float | None:
+    """First of `names` present on the row as a real number.
+
+    Deliberately NOT `row.get(a) or row.get(b)`: that chain treats a legitimate 0.0 as missing,
+    and it returns NaN rather than falling through when the first name exists but is null --
+    which is how a column-name mismatch turns into a silent universal rejection instead of an
+    error anyone would see.
+    """
+    for n in names:
+        if n in row.index:
+            v = pd.to_numeric(pd.Series([row.get(n)]), errors="coerce").iloc[0]
+            if pd.notna(v):
+                return float(v)
+    return None
+
+
 def independence_edge(row: pd.Series) -> float | None:
     """How badly a book pricing this by multiplying marginals would be wrong.
 
@@ -126,7 +142,14 @@ def should_notify(row: pd.Series, state: dict, now: float) -> tuple[bool, str]:
 
     if float(p) > MAX_JOINT_PROB:
         return False, "TOO_PROBABLE_TO_BE_A_TIP"
-    fair = row.get("fair_combo_odds") or row.get("combined_odds")
+    # THE TWO BUILDERS SPEAK DIFFERENT VOCABULARIES and this gate silently arbitrated between
+    # them. `builder.same_match` writes `fair_combo_odds`; `match_picture.build` -- the N-leg
+    # builder that produces everything the pipeline actually generates -- writes `fair_odds`.
+    # Reading only the first name meant every match_picture row resolved to NaN and was rejected
+    # as ODDS_TOO_SHORT: 6,318 of 6,360 candidates suppressed for having no price, while their
+    # fair odds ranged 1.8-4.51. Nothing errored and the summary read like a strict filter doing
+    # its job. Accept every name a builder emits, exactly as the odds layer normalises sources.
+    fair = _first_num(row, "fair_combo_odds", "fair_odds", "combined_odds")
     if fair is None or pd.isna(fair) or float(fair) < MIN_FAIR_ODDS:
         return False, "ODDS_TOO_SHORT"
     edge = independence_edge(row)
@@ -147,7 +170,7 @@ def should_notify(row: pd.Series, state: dict, now: float) -> tuple[bool, str]:
             # A materially WORSE combo is worth one message: it invalidates the earlier tip.
             return True, f"PROB_DOWN_{dpp:+.1f}pp"
 
-    odds = row.get("builder_odds") or row.get("combined_odds")
+    odds = _first_num(row, "builder_odds", "fair_combo_odds", "fair_odds", "combined_odds")
     prev_odds = prev.get("odds")
     if odds and prev_odds:
         imp = 100.0 * (float(odds) / float(prev_odds) - 1.0)
@@ -172,8 +195,21 @@ def format_combo(row: pd.Series) -> str:
         lines.append(f"*{row.get('match')}*")
         lines.append(f"_{row.get('league')} · {row.get('match_date')}_")
         lines.append("")
-        lines.append(f"1️⃣ {row.get('leg1_label')}   `{float(row.get('leg1_model_p', 0)):.0%}`")
-        lines.append(f"2️⃣ {row.get('leg2_label')}   `{float(row.get('leg2_model_p', 0)):.0%}`")
+        # EVERY leg, not the first two. This was hardcoded to legs 1 and 2 because the original
+        # builder only ever made pairs; `match_picture` builds up to five, so a four-leg builder
+        # displayed its first two legs beside the four-leg joint probability -- a message that
+        # misrepresents which bet it is describing. The count comes from the data, not a constant.
+        #
+        # `leg{i}_p` is match_picture's name and `leg{i}_model_p` is same_match's. Reading only
+        # the latter is why every leg printed `0%`: .get returned the default 0 for a name that
+        # was never there, so a real 47% leg rendered as 0% and nothing raised.
+        for i in (1, 2, 3, 4, 5):
+            label = row.get(f"leg{i}_label")
+            if label is None or (isinstance(label, float) and pd.isna(label)):
+                continue
+            lp = _first_num(row, f"leg{i}_p", f"leg{i}_model_p")
+            pct = f"{lp:.0%}" if lp is not None else "—"
+            lines.append(f"{i}️⃣ {label}   `{pct}`")
     else:
         for i in (1, 2, 3):
             if row.get(f"fixture_{i}"):
@@ -199,7 +235,8 @@ def format_combo(row: pd.Series) -> str:
         lines.append("")
         lines.append("_Legs are individually executable._")
     else:
-        lines.append(f"Fair odds: *{row.get('fair_combo_odds')}*")
+        fair = _first_num(row, "fair_combo_odds", "fair_odds")
+        lines.append(f"Fair odds: *{fair:.2f}*" if fair is not None else "Fair odds: _unavailable_")
         lines.append("")
         # Stated every time. A fair price is not a price you can bet.
         lines.append("⚠️ _No bookmaker builder price is collected, so this is a FAIR estimate, "

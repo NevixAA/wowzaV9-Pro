@@ -1,0 +1,126 @@
+name: Pro Bet Builder
+
+# Generate same-match builder combos, notify the ones worth sending, and grade the ones that
+# finished.
+#
+# WHY THIS EXISTS. The combo engine was complete and UNREACHABLE. Pro had four workflows and none
+# of them mentioned combos; nothing outside src/combo/ imported the package except the config
+# flag. So PRO_MAY_NOTIFY was on, the notifier worked, and it had never once been invoked — the
+# candidates sitting in git came from a single local run done by hand. An engine with no
+# entrypoint is not a feature.
+#
+# IT DOES NOT TOUCH v9. v9 is frozen (CLAUDE.md invariant 3). This reads Pro's own season store,
+# writes Pro's own output, and pushes to Pro. The only thing that leaves the repo is a Telegram
+# message, which is what PRO_MAY_NOTIFY was turned on for and is scoped to combos alone.
+#
+# PAPER. Pro places no stakes; every message says so in its own body.
+
+on:
+  schedule:
+    # WEEKEND-WEIGHTED, for the same measured reason as v9's predict: Fri-Sun carries 79.0% of
+    # fixtures (327 of 414 measured), 109/day against 22/day Mon-Thu. Off the hour and off :30,
+    # because those are the busiest slots on GitHub's shared scheduler and queued jobs get dropped.
+    #
+    # Cadence is deliberately LOW. A builder is not a price that moves minute to minute -- it is
+    # rebuilt from model probabilities that only change when v9 re-predicts, and notify dedups on
+    # a 12-hour reminder window anyway. Asking for more firings would add drop risk for the other
+    # workflows and produce the same combos.
+    - cron: '17 9,15,20 * * 5,6,0'   # Fri-Sun: three passes across the board
+    - cron: '17 15 * * 1-4'          # Mon-Thu: one pass
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'Look-ahead window in days (blank = 3)'
+        required: false
+        default: ''
+      dry_run:
+        description: 'Build and format but send nothing'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+concurrency:
+  group: pro-bet-builder
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  builder:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install pandas pyarrow numpy scipy requests
+
+      # The gates are pure functions over a row, so they are worth proving before a run that can
+      # send messages. A vocabulary mismatch between the two builders once suppressed 6,318 of
+      # 6,360 candidates silently, and the suite is what now covers that.
+      - name: Prove the combo gates
+        run: python -m src.combo.tests
+
+      - name: Build candidates
+        id: build
+        run: |
+          DAYS="${{ github.event.inputs.days }}"
+          [ -n "$DAYS" ] || DAYS=3
+          python -m src.pipelines.bet_builder --mode generate --days "$DAYS" | tee build.txt
+
+      - name: Notify
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          FLAG=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then FLAG="--dry-run"; fi
+          python -m src.pipelines.bet_builder --mode notify $FLAG | tee -a build.txt
+
+      # Settlement runs every time, not on its own schedule: a combo becomes gradeable the moment
+      # its fixture finishes, and a result recorded late is a result missing from the dashboard.
+      - name: Settle what finished
+        if: always()
+        run: python -m src.pipelines.bet_builder --mode settle | tee -a build.txt
+
+      - name: Publish to the job summary
+        if: always()
+        run: |
+          {
+            echo "## Bet Builder"
+            echo ""
+            echo '```'
+            sed -n '1,120p' build.txt 2>/dev/null || echo "(no output captured)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit candidates and results
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Per-file and force-added: output/** is gitignored with a named allowlist, and
+          # `git add a b missing` stages NOTHING when one path is absent — the defect that
+          # silenced v9's player_props for three days and saved no matrices twice here.
+          for f in output/bet_builder_candidates.csv \
+                   output/bet_builder_settled.csv \
+                   output/combo_notified.json; do
+            git add -f "$f" 2>/dev/null || echo "  (skip, not present: $f)"
+          done
+          git diff --staged --quiet && { echo "no change"; exit 0; }
+          git commit -m "pro: bet builder $(date -u '+%Y-%m-%d %H:%M')"
+          for i in 1 2 3 4 5; do
+            # No `-X ours`: in a rebase `ours` is UPSTREAM, so it discards this run's own rows.
+            git pull --rebase --autostash origin main && git push && exit 0
+            echo "push race - retry $i"; sleep $((RANDOM % 5 + 3))
+          done
+          echo "::error title=push failed::Builder ran but nothing was persisted."
+          exit 1

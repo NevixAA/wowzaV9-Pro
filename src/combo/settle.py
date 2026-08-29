@@ -139,21 +139,65 @@ def settle(candidates: pd.DataFrame, scorelines: pd.DataFrame,
                 + "|" + sc["home_team"].astype(str) + "|" + sc["away_team"].astype(str))
     sc = sc.drop_duplicates("_k").set_index("_k")
 
+    # PREFER THE FIXTURE KEY. The name key above is a last resort: it needs the date to agree to
+    # the day AND both club names to be spelled identically on two sides that come from different
+    # sources -- and club names demonstrably differ between sources (invariant 11: Kaiserslautern,
+    # QPR, Cadiz). On the first settlement pass that cost 1,956 of 2,532 combos, which were then
+    # reported as UNKNOWN. They were not unverifiable; they were unjoined. Both sides carry
+    # `fixture_key`, so when they do, use it and the question does not arise.
+    by_key = {}
+    if "fixture_key" in scorelines.columns:
+        s2 = scorelines.dropna(subset=["fixture_key"]).drop_duplicates("fixture_key")
+        by_key = {str(r["fixture_key"]): r for _, r in s2.iterrows()}
+
+    # TWO WAYS A PLAYER LEG CAN BE SETTLED, and the graded one is preferred.
+    #
+    # (a) GRADED: Pro's `player_props` already carries a settled `result` per (fixture, player,
+    #     market), produced by the same grader that settles single props. Using it means a leg
+    #     cannot be graded here by one rule and there by another -- and it needs no match log.
+    # (b) RAW: a match-level player log with minutes/goals/assists/cards, settled by the rules
+    #     below. Kept because it is the only option when a prop was never graded.
+    #
+    # Anything neither can decide stays UNKNOWN, which `combine` never turns into a loss.
+    graded: dict[tuple, str] = {}
+    _MAP = {"WIN": LEG_WON, "LOSS": LEG_LOST, "VOID": LEG_VOID, "PENDING": LEG_UNKNOWN}
+    if not players.empty and {"fixture_key", "player_name", "market", "result"} <= set(players.columns):
+        g = players.dropna(subset=["fixture_key", "player_name", "market"])
+        if "observed_at" in g.columns:
+            g = g.sort_values("observed_at")
+        for _, r in g.iterrows():
+            graded[(str(r["fixture_key"]), str(r["player_name"]), str(r["market"]))] = \
+                _MAP.get(str(r.get("result")), LEG_UNKNOWN)
+
     pl = players.copy()
-    pl["_k"] = (pd.to_datetime(pl["date"], errors="coerce").dt.strftime("%Y-%m-%d")
-                + "|" + pl["home_team"].astype(str) + "|" + pl["away_team"].astype(str))
+    if {"date", "home_team", "away_team"} <= set(pl.columns):
+        pl["_k"] = (pd.to_datetime(pl["date"], errors="coerce").dt.strftime("%Y-%m-%d")
+                    + "|" + pl["home_team"].astype(str) + "|" + pl["away_team"].astype(str))
+    else:
+        # No raw match log available. Not an error: (a) above covers it, and a missing (b) must
+        # not crash settlement of the goal legs, which need no player data at all.
+        pl["_k"] = ""
 
     out = []
     for _, c in candidates.iterrows():
         key = (str(c.get("match_date"))[:10] + "|"
                + str(c.get("match", "")).replace(" vs ", "|"))
-        if key not in sc.index:
+        fk = str(c.get("fixture_key") or "")
+        s, how = None, ""
+        if fk and fk in by_key:
+            s, how = by_key[fk], "FIXTURE_KEY"
+        elif key in sc.index:
+            s, how = sc.loc[key], "NAME_KEY"
+        if s is None:
             out.append({**c.to_dict(), "combo_result": COMBO_UNKNOWN,
                         "leg_results": "", "settle_note": "NO_SCORELINE"})
             continue
-        s = sc.loc[key]
         hg, ag = s.get("home_goals"), s.get("away_goals")
-        fixture_players = pl[pl["_k"] == key]
+        # Same preference as the scoreline join: key first, names only as a fallback.
+        if fk and "fixture_key" in pl.columns:
+            fixture_players = pl[pl["fixture_key"].astype(str) == fk]
+        else:
+            fixture_players = pl[pl["_k"] == key]
 
         legs, results = [], []
         for i in (1, 2, 3, 4, 5):
@@ -164,9 +208,18 @@ def settle(candidates: pd.DataFrame, scorelines: pd.DataFrame,
             if mk.startswith("player_"):
                 market = mk.replace("player_", "")
                 label = str(c.get(f"leg{i}_label", ""))
-                name = label.rsplit(" ", 1)[0] if " " in label else label
-                row = fixture_players[fixture_players["player_name"] == name]
-                r = settle_player_leg(market, row.iloc[0] if len(row) else None)
+                # The label is "<player> <market phrase>", and the player's name may itself
+                # contain spaces, so rsplit(" ", 1) recovers the wrong name for anyone but a
+                # one-word surname. Match the LONGEST known player name the label starts with.
+                names = ([str(x) for x in fixture_players["player_name"].dropna().unique()]
+                         if len(fixture_players) else [])
+                cands = [n for n in names if label.startswith(n)]
+                name = max(cands, key=len) if cands else (
+                    label.rsplit(" ", 1)[0] if " " in label else label)
+                r = graded.get((fk, name, market))
+                if r is None:
+                    row = fixture_players[fixture_players["player_name"] == name]
+                    r = settle_player_leg(market, row.iloc[0] if len(row) else None)
             else:
                 r = settle_goal_leg(mk, hg, ag)
             legs.append(f"{mk}={r}")
@@ -175,7 +228,9 @@ def settle(candidates: pd.DataFrame, scorelines: pd.DataFrame,
                     "final_score": f"{int(hg)}-{int(ag)}" if pd.notna(hg) and pd.notna(ag) else "",
                     "combo_result": combine(results),
                     "leg_results": " | ".join(legs),
-                    "settle_note": "OK",
+                    # Which join decided it, so a future coverage drop is attributable rather
+                    # than showing up as an unexplained rise in UNKNOWN.
+                    "settle_note": f"OK:{how}",
                     "settle_version": CALC_VERSION})
     return pd.DataFrame(out)
 

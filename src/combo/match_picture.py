@@ -196,7 +196,24 @@ def build(matrix: np.ndarray, *, props: pd.DataFrame | None = None,
     out = pd.DataFrame(rows)
     if out.empty:
         return out
-    return out.sort_values(["n_legs", "fair_odds"]).head(top_n)
+    # `top_n` IS A QUOTA PER LEG COUNT, NOT A GLOBAL HEAD, and the distinction was silently
+    # deciding what this module could produce. The previous line was
+    #
+    #     out.sort_values(["n_legs", "fair_odds"]).head(top_n)
+    #
+    # which sorts leg count ASCENDING and then keeps the first 40 rows -- so two-leg combos
+    # filled the entire quota and no three- or four-leg builder ever survived. Measured on one
+    # fixture with props: 489 two-leg, 2,702 three-leg and 5,276 four-leg combos passed every
+    # filter, and the sort discarded all 7,978 of the longer ones. Across a whole board that
+    # produced 6,360 candidates of which 100% were two-leg, which reads like a modelling limit
+    # and was a line of presentation code.
+    #
+    # Ranked by dependency ratio within each leg count: the further a combo sits from what
+    # multiplying its legs would imply, the more it is worth showing, since that gap is the only
+    # thing this system knows that a naive price does not.
+    return (out.sort_values("dependency_ratio", ascending=False)
+               .groupby("n_legs", group_keys=False).head(top_n)
+               .sort_values(["n_legs", "dependency_ratio"], ascending=[True, False]))
 
 
 def _reject(legs: list[dict]) -> str | None:
