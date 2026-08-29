@@ -42,8 +42,21 @@ def main() -> int:
     ap.add_argument("--only", default="", help="comma-separated importer names")
     args = ap.parse_args()
 
-    if cfg.PRO_MAY_NOTIFY:
-        print("[pro_collect] FATAL: PRO_MAY_NOTIFY is set. Pro must never notify.")
+    # THIS GUARD USED TO READ `if cfg.PRO_MAY_NOTIFY: return 2`, and it broke collect the moment
+    # that flag was turned on for combo tips on 2026-08-29 — every scheduled run exited 2 with
+    # "Pro must never notify" while collecting nothing. The flag no longer means what the guard
+    # assumed: it now authorises ONE narrow thing, bet-builder tips from their own pipeline, and
+    # says so where it is defined.
+    #
+    # The invariant worth enforcing here was never "the repo may not notify" but "COLLECT may not
+    # notify", so it is enforced as a property of this process instead of a global switch: collect
+    # is run by pro_collect.yml, which passes no Telegram credentials, so their absence is the
+    # real guarantee. If they ever appear here, something has wired collect into a notifying path
+    # and that is worth stopping for. Existence is tested; values are never read or printed.
+    import os
+    if os.getenv("TELEGRAM_TOKEN") or os.getenv("TELEGRAM_CHAT_ID"):
+        print("[pro_collect] FATAL: Telegram credentials are visible to the collector. "
+              "Collect must never notify — remove them from this workflow's env.")
         return 2
 
     rid = cfg.run_id()
