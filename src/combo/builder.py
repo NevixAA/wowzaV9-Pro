@@ -9,19 +9,22 @@ WHERE THE JOINT PROBABILITY COMES FROM, PER LEG TYPE
     goals / BTTS / 1X2   ->  EXACT, read off the fitted score distribution. Not approximated:
                              P(O2.5 and BTTS) is the mass on scorelines where both hold.
 
-    player props, cards  ->  NOT MODELLED. The brief (section 5) is explicit that if the
-                             player-match dependence cannot be estimated from existing inputs,
-                             it must not be faked. It cannot: `player_props` carries a model
-                             probability and a price, and nothing that ties a player's shot
-                             count to the match goal environment.
+    player props, cards  ->  MEASURED, from src/combo/player_dependency.py. The dependence was
+                             never unmeasurable, only unmeasured: joining 302,456 player-match
+                             rows to their fixture's scoreline gives it directly, the same way
+                             O2.5 x BTTS was measured on 23,604 fixtures.
 
-                             So a player leg is priced with FRECHET BOUNDS -- the widest range
-                             any joint can occupy given the marginals -- and flagged
-                             JOINT_PLAYER_DEPENDENCE_UNMODELED. The lower bound is what a
-                             conservative EV would use. Independence is NOT used, because the
-                             true dependence is known to be positive (a high-scoring match
-                             produces more shots) and independence would understate it in an
-                             unknown direction.
+                                 P(prop and match) = P(prop) * P(match) * ratio
+
+                             clipped into the Frechet band, because no measured ratio may push
+                             an estimate outside what is mathematically possible for those
+                             marginals. A pair with no measured ratio still falls back to bounds
+                             and JOINT_PLAYER_DEPENDENCE_UNMODELED.
+
+                             The ratios are large enough to matter: a goal is 1.45x more likely
+                             in a match that goes over 2.5, an assist 1.48x, four shots on
+                             target 2.07x given over 3.5. Cards are the exception at 0.99 --
+                             genuinely independent of the goal environment.
 
 WHY NO EV COLUMN IS POPULATED FOR SAME-MATCH BUILDERS
 
@@ -71,6 +74,7 @@ def _fair(p: float) -> float | None:
 
 
 def same_match(fixtures: pd.DataFrame, *, props: pd.DataFrame | None = None,
+               player_dep: dict | None = None,
                max_legs: int = 2, generated_at: str = "") -> pd.DataFrame:
     """Same-match builder candidates.
 
@@ -134,7 +138,13 @@ def same_match(fixtures: pd.DataFrame, *, props: pd.DataFrame | None = None,
 
         # ── Player / card legs paired with a match leg ────────────────────────
         if props is not None and len(props):
+            # ONE ROW PER (player, market). player_props is a SNAPSHOT table -- the same player
+            # and market reappears on every run -- so joining it raw emitted the identical
+            # candidate three times and inflated the count without adding anything.
             pr = props[props["fixture_key"] == fx["fixture_key"]]
+            if "observed_at" in pr.columns:
+                pr = pr.sort_values("observed_at")
+            pr = pr.drop_duplicates(subset=["player_name", "market"], keep="last")
             for _, p in pr.iterrows():
                 pp = pd.to_numeric(pd.Series([p.get("model_prob")]), errors="coerce").iloc[0]
                 if pd.isna(pp) or not (MIN_LEG_PROB <= float(pp) <= MAX_LEG_PROB):
@@ -146,6 +156,21 @@ def same_match(fixtures: pd.DataFrame, *, props: pd.DataFrame | None = None,
                     lo, hi = ev.frechet_bounds(pa, float(pp))
                     if hi < MIN_COMBO_PROB:
                         continue
+                    # MEASURED dependence, when we have it. The ratio comes from 67,052
+                    # starter-matches joined to their scoreline (player_dependency.py), so a
+                    # player leg is no longer a bare interval:
+                    #     P(prop and match) = P(prop) * P(match) * ratio
+                    # clipped into the Frechet band, because no measured ratio may push an
+                    # estimate outside what is mathematically possible for these marginals.
+                    ratio = (player_dep or {}).get((str(p.get("market")), a))
+                    if ratio:
+                        pj_player = float(np.clip(pa * float(pp) * float(ratio), lo, hi))
+                        src = "MEASURED_PLAYER_DEPENDENCE"
+                        dq = "OK"
+                    else:
+                        pj_player = None
+                        src = "FRECHET_BOUNDS_ONLY"
+                        dq = "JOINT_PLAYER_DEPENDENCE_UNMODELED"
                     rows.append({
                         "generated_at": generated_at,
                         "fixture_key": fx["fixture_key"], "league": fx.get("league"),
@@ -163,15 +188,16 @@ def same_match(fixtures: pd.DataFrame, *, props: pd.DataFrame | None = None,
                         "leg2_market_odds": p.get("market_odds"),
                         # NOT a point estimate: the dependence is unknown, so the honest answer
                         # is the interval, and the lower bound is what any EV must use.
-                        "joint_probability": None,
+                        "joint_probability": round(pj_player, 4) if pj_player else None,
                         "independence_probability": round(pa * float(pp), 4),
+                        "dependency_ratio": round(float(ratio), 4) if ratio else None,
                         "frechet_lo": round(lo, 4), "frechet_hi": round(hi, 4),
-                        "fair_combo_odds": None,
+                        "fair_combo_odds": _fair(pj_player) if pj_player else None,
                         "fair_odds_at_frechet_lo": _fair(lo),
                         "builder_odds": None, "executable": False,
                         "raw_ev": None, "conservative_ev": None,
-                        "joint_source": "FRECHET_BOUNDS_ONLY",
-                        "data_quality": "JOINT_PLAYER_DEPENDENCE_UNMODELED",
+                        "joint_source": src,
+                        "data_quality": dq,
                         "deployment_mode": "PAPER",
                         "calc_version": CALC_VERSION,
                     })

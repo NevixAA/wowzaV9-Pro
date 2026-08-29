@@ -54,6 +54,18 @@ output/**
 !output/system_registry.json
 !output/pro_readiness.json
 !output/collect_health.json
+# Combo research artifacts. Named INDIVIDUALLY rather than with an output/combo*.csv glob: a
+# glob here is a repo-wide rule whose blast radius is every file anyone adds later matching it,
+# and this file's whole design is deny-all plus a short explicit allowlist. These three are the
+# durable measured evidence the bet-builder work rests on -- dependency ratios over 23,604
+# fixtures and 67,052 player-matches -- and they are small (310 KB, 4 KB, 19 KB).
+#
+# bet_builder_candidates.csv is DELIBERATELY NOT allowlisted: it is 1.7 MB, regenerated on every
+# run from these inputs plus current fixtures, and it would churn the repo daily for no
+# evidential gain. The matrices are the finding; the candidates are a rendering of it.
+!output/combo_dependency_matrix.csv
+!output/combo_dependency_stability.csv
+!output/player_combo_dependency.csv
 # The weekly audit record. Committed so the history of "was the pipeline persisting" is itself
 # persisted — a check whose result is thrown away cannot show a slow decline.
 !output/weekly_audit.json
