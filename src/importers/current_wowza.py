@@ -30,7 +30,7 @@ from config import pro_config as cfg
 from src import quality as q
 from src.data import entities as ent
 from src.data import watermarks as wm
-from src.data.v9_source import fetch_csv, num
+from src.data.v9_source import fetch_csv, num, v9_model_version
 
 # Watermarks are only committed AFTER the caller has written the rows, so a crash between
 # read and write re-imports a little rather than skipping data permanently.
@@ -91,6 +91,15 @@ def from_predictions() -> list[tuple[str, pd.DataFrame]]:
         return []
     d = _base(raw)
     out: list[tuple[str, pd.DataFrame]] = []
+    # Resolved once per import, not per market: it reads 12 MB off disk and the answer is
+    # identical for every row of this run.
+    _mv = v9_model_version()
+    if not _mv:
+        print("[import] v9 model version UNAVAILABLE — model_snapshots will carry "
+              "MODEL_VERSION_UNKNOWN. Set V9_LOCAL to a wowza-betting checkout.")
+    else:
+        print(f"[import] frozen v9 model version {_mv['model_content_sha']} "
+              f"({_mv['n_model_files']} files, {_mv['model_bytes']/1024/1024:.1f} MB)")
 
     # fixtures — the board, every fixture evaluated
     out.append(("fixtures", d[[
@@ -113,11 +122,19 @@ def from_predictions() -> list[tuple[str, pd.DataFrame]]:
         # the flag, so old and new data stay distinguishable.
         blk["model_sha"] = d["model_sha"] if "model_sha" in d.columns else ""
         blk["git_sha"] = d["git_sha"] if "git_sha" in d.columns else ""
+        # THE STABLE VERSION, beside v9's own. `model_sha` above is v9's stamp and it is not a
+        # version: it hashes size+mtime, and CI checkout resets mtime, so it changed 95 times
+        # while the models changed 4 times. Kept verbatim for lineage; `model_content_sha` is
+        # what a query should group by. See v9_source.v9_model_version.
+        blk["model_content_sha"] = _mv.get("model_content_sha", "")
         if "generated_at" in d.columns:
             blk["observed_at"] = d["generated_at"].replace("", pd.NA)
         blk["quality_flags"] = d["entity_unresolved"].map(
             lambda u: "ENTITY_UNRESOLVED" if u else "")
-        _no_version = (blk["model_sha"].astype(str).str.strip()
+        # Flagged on the CONTENT sha, not v9's stamp. A row whose v9 stamp is present but whose
+        # content sha is missing still has no usable version, and the old test would have called
+        # it versioned.
+        _no_version = (blk["model_content_sha"].astype(str).str.strip()
                        .isin(("", "unknown", "nan", "<NA>")))
         blk.loc[_no_version, "quality_flags"] = (
             blk.loc[_no_version, "quality_flags"] + "|MODEL_VERSION_UNKNOWN").str.strip("|")

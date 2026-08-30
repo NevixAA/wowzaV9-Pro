@@ -7,6 +7,7 @@ already uses, so no credential is required.
 """
 from __future__ import annotations
 
+import hashlib
 import io
 import subprocess
 import sys
@@ -35,6 +36,67 @@ def v9_head_sha() -> str:
         except Exception:
             pass
     return "unknown"
+
+
+def v9_model_version() -> dict:
+    """A STABLE identity for the frozen v9 models — Prompt 02 section 1.
+
+    WHY THIS EXISTS
+
+    v9 stamps its own `model_sha` into predictions.csv, and it is unusable as a version.
+    `v9/src/provenance.py::_model_sha` hashes each file's **size and mtime**, not its contents,
+    and a CI `git checkout` sets mtime to checkout time — so the stamp changes on every run even
+    when the model bytes are identical. Measured 2026-08-30 over the same two-week window:
+
+        commits that actually changed models/*.pkl      4
+        distinct model_sha values in model_snapshots   95
+
+    A version that changes 24x more often than the thing it versions cannot answer "was this
+    prediction made by the frozen model", which is the question the whole prospective-validation
+    phase rests on. It also makes "increment the version when a fix materially changes
+    probabilities" meaningless, because the version increments constantly on its own.
+
+    The stated reason for hashing size+mtime was that reading the .pkl files would add I/O to the
+    5-minute predict path. Measured: 16 files, 12.2 MB, **46 ms**, once per process because the
+    result is cached — 0.03% of a ~3 minute run. The cost was never the real constraint.
+
+    WHY IT IS FIXED HERE AND NOT IN v9
+
+    v9 is frozen (root CLAUDE.md invariant 3). Prompt 02 section 1 does permit provenance fixes,
+    but it does not require them to be made in v9, and Pro already checks v9 out — so the same
+    answer is available without opening the frozen repository at all. v9's own stamp is preserved
+    untouched alongside this one, so the two remain comparable and nothing is rewritten.
+
+    WHAT IT RETURNS
+
+    A content digest over the committed model files. Content, not mtime: the bytes are identical
+    in every clone, so the digest is the same on a runner, on a laptop, and in a year's time.
+    Returns `{}` when the checkout is unavailable, and the caller flags the rows rather than
+    inventing a version.
+    """
+    root = cfg.V9_LOCAL
+    if not root.exists():
+        return {}
+    try:
+        files = sorted((root / "models").glob("*.pkl"))
+        if not files:
+            return {}
+        h = hashlib.sha1()
+        total = 0
+        for f in files:
+            # The NAME is hashed too, so adding or renaming a model changes the version even if
+            # the bytes of every other file are unchanged.
+            h.update(f.name.encode("utf-8"))
+            with open(f, "rb") as fh:
+                for chunk in iter(lambda fh=fh: fh.read(1024 * 1024), b""):
+                    h.update(chunk)
+            total += f.stat().st_size
+        return {"model_content_sha": h.hexdigest()[:12],
+                "n_model_files": len(files),
+                "model_bytes": total}
+    except Exception:
+        # Never fatal: a missing version is a flagged row, not a failed collection.
+        return {}
 
 
 def fetch_csv(rel_path: str, *, required: bool = True) -> pd.DataFrame:
