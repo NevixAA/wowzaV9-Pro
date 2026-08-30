@@ -42,8 +42,18 @@ on:
     # never persisted a single row, while v9's odds capture is live, unbackfillable, and was
     # measurably degrading. Sampling density here is the cheaper thing to spend.
     #
-    # :04/:19/:34/:49 stays off the hour, which GitHub names as its most contended slot.
-    - cron: '4,19,34,49 11-23 * * *'
+    # CUT AGAIN, same day: 52/day -> 13/day. The four-per-hour figure above was set to preserve
+    # sampling density after removing the loop; measuring the whole estate an hour later showed
+    # that density was unaffordable. The account asks for 398 scheduled runs a day and GitHub
+    # honours 8-38% of anything above 26/day, so a 52/day workflow that has never stored a single
+    # row was bidding against v9's odds capture, whose prices are pre-match only and cannot be
+    # backfilled.
+    #
+    # Hourly across the match window. This collector can earn its density back once it proves it
+    # persists anything at all — but it has to prove that first.
+    #
+    # :09 stays off the hour, which GitHub names as its most contended slot.
+    - cron: '9 11-23 * * *'
   workflow_dispatch:
     inputs:
       loop_minutes:

@@ -37,7 +37,17 @@ on:
     # odds capture, which cannot be backfilled.
     #
     # Restore a loop only with evidence, and never one that holds a runner for most of its period.
-    - cron: '*/30 * * * *'
+    #
+    # CUT 48/day -> 8/day on 2026-08-30, after measuring the whole estate. The account was asking
+    # for 398 scheduled runs a day across v9, Pro and v11, and GitHub was honouring 8-38% of
+    # anything above 26/day while honouring essentially all of anything at or below 8/day. This
+    # workflow was the single largest scheduled consumer in Pro and had produced ZERO rows, because
+    # it needed an APIFOOTBALL_KEY the repository did not hold until 2026-08-30.
+    #
+    # 48 firings a day was never justified by the data either: lineups and team news matter in the
+    # ~1-3 hours before kickoff, and polling every 30 minutes around the clock spends the estate's
+    # scarcest resource — a delivered scheduled run — on hours when nothing is published.
+    - cron: '15 */3 * * *'
   workflow_dispatch:
     inputs:
       max_hours:

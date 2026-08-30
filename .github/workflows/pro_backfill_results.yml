@@ -31,7 +31,16 @@ on:
   # can. The first run does the work; every run after it is a no-op costing no API call, no
   # quota and no commit.
   schedule:
-    - cron: '25 * * * *'
+    # CUT 24/day -> 4/day on 2026-08-30. The reasoning above is sound about API cost — an already
+    # completed backfill exits immediately and spends nothing — but "costs no API call" is not the
+    # same as "costs nothing". Every scheduled run competes for a delivered slot in an estate that
+    # was asking GitHub for 398 runs a day and being honoured 8-38% of the time above 26/day.
+    #
+    # This job has committed nothing since 2026-08-19, which is the correct behaviour for a
+    # completed one-shot backfill: 23 of every 24 firings were a checkout and an early exit. Six-
+    # hourly still catches the case it exists for — new settled results appearing — within hours,
+    # and returns 20 delivered runs a day to workflows that lose data permanently when dropped.
+    - cron: '25 */6 * * *'
   workflow_dispatch:
     inputs:
       write:
