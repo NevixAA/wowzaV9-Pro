@@ -5,7 +5,7 @@
     "live_models",
     "n_live_models"
   ],
-  "carried_from": "2026-08-30T12:11:05Z",
+  "carried_from": "2026-08-30T16:56:25Z",
   "collect_health": {
     "shadow_last_run": "2026-08-19T12:31:48Z",
     "shadow_n": 564,
@@ -13,14 +13,14 @@
   },
   "deployment_note": "Season 2026/27 is a data-collection and shadow season. Pro does not stake and does not notify. Signal tier and deployment mode are independent: a SNIPER may be PAPER.",
   "feature_health": {},
-  "generated_at": "2026-08-30T16:56:25Z",
-  "git_sha": "0261e303b816",
+  "generated_at": "2026-08-30T21:28:56Z",
+  "git_sha": "5fc9b9945413",
   "live_models": [],
   "n_live_models": 0,
   "n_tables": 20,
   "n_tables_accounted": 15,
   "n_tables_declared": 20,
-  "n_tables_populated": 12,
+  "n_tables_populated": 14,
   "pro_may_notify": true,
   "pro_may_stake": false,
   "registry_age_hours": 0.0,
@@ -91,9 +91,9 @@
       "first_dt": "2026-08-23",
       "last_dt": "2026-08-30",
       "lifecycle": "ACTIVE",
-      "partitions": 49,
-      "rows": 609,
-      "runs": 49,
+      "partitions": 50,
+      "rows": 623,
+      "runs": 50,
       "table": "data_quality"
     },
     "feature_snapshots": {
@@ -101,9 +101,9 @@
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-30",
       "lifecycle": "ACTIVE",
-      "partitions": 136,
-      "rows": 21877,
-      "runs": 136,
+      "partitions": 137,
+      "rows": 22042,
+      "runs": 137,
       "table": "feature_snapshots"
     },
     "fixtures": {
@@ -111,19 +111,19 @@
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-30",
       "lifecycle": "ACTIVE",
-      "partitions": 136,
-      "rows": 21877,
-      "runs": 136,
+      "partitions": 137,
+      "rows": 22042,
+      "runs": 137,
       "table": "fixtures"
     },
     "live_odds_snapshots": {
-      "empty_reason": "Collector verified against the live API but not yet run on a schedule. Flip to ACTIVE once pro_live_odds.yml has completed a match-day window.",
-      "first_dt": null,
-      "last_dt": null,
+      "empty_reason": null,
+      "first_dt": "2026-08-30",
+      "last_dt": "2026-08-30",
       "lifecycle": "PLANNED_OPTIONAL",
-      "partitions": 0,
-      "rows": 0,
-      "runs": 0,
+      "partitions": 2,
+      "rows": 2558,
+      "runs": 2,
       "table": "live_odds_snapshots"
     },
     "live_signals": {
@@ -141,9 +141,9 @@
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-30",
       "lifecycle": "ACTIVE",
-      "partitions": 148,
-      "rows": 116903,
-      "runs": 148,
+      "partitions": 149,
+      "rows": 117432,
+      "runs": 149,
       "table": "market_snapshots"
     },
     "model_snapshots": {
@@ -151,9 +151,9 @@
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-30",
       "lifecycle": "ACTIVE",
-      "partitions": 136,
-      "rows": 104530,
-      "runs": 136,
+      "partitions": 137,
+      "rows": 105342,
+      "runs": 137,
       "table": "model_snapshots"
     },
     "movement_observations": {
@@ -201,9 +201,9 @@
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-30",
       "lifecycle": "ACTIVE",
-      "partitions": 136,
-      "rows": 21877,
-      "runs": 136,
+      "partitions": 137,
+      "rows": 22042,
+      "runs": 137,
       "table": "signals"
     },
     "team_match_stats": {
@@ -217,21 +217,19 @@
       "table": "team_match_stats"
     },
     "team_news": {
-      "empty_reason": "No reliable timestamped team-news source is wired. Lineups are obtainable ~1h before kickoff; injury and suspension news with a trustworthy publication time is not, and that timestamp is the whole point.",
-      "first_dt": null,
-      "last_dt": null,
+      "empty_reason": null,
+      "first_dt": "2026-08-30",
+      "last_dt": "2026-08-30",
       "lifecycle": "PLANNED_OPTIONAL",
-      "partitions": 0,
-      "rows": 0,
-      "runs": 0,
+      "partitions": 1,
+      "rows": 8,
+      "runs": 1,
       "table": "team_news"
     }
   },
-  "source_commit_sha": "0261e303b816",
+  "source_commit_sha": "5fc9b9945413",
   "tables_expected_empty": [
-    "combo_price_snapshots",
-    "live_odds_snapshots",
-    "team_news"
+    "combo_price_snapshots"
   ],
   "tables_never_written": [],
   "tables_unexpected_empty": [
@@ -241,5 +239,5 @@
     "combo_settlements",
     "team_match_stats"
   ],
-  "total_rows": 654333
+  "total_rows": 658749
 }
