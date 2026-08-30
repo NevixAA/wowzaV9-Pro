@@ -42,11 +42,13 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
+from src.combo import canonical as cc
 from src.combo import match_picture as mp
 from src.combo import notify as cn
 from src.combo import player_dependency as pdep
@@ -219,9 +221,42 @@ def generate(days: int = DEFAULT_DAYS, *, now: dt.datetime | None = None) -> pd.
 
     d = pd.concat(out, ignore_index=True)
     # A stable identity per (fixture, leg set) so notify can dedup and settle can merge.
-    legcols = [c for c in d.columns if c.endswith("_market") and c.startswith("leg")]
-    d["combo_id"] = (d["fixture_key"].astype(str) + "|"
-                     + d[legcols].fillna("").astype(str).agg("+".join, axis=1))
+    #
+    # THE ID MUST CONTAIN THE SELECTION, NOT ONLY THE MARKET. The previous version hashed
+    # `leg1_market + leg2_market + ...` alone, so every combo on the same fixture with the same
+    # market TYPES shared one id. Measured on the 2026-08-29 build: 475 candidates carried only
+    # 225 distinct ids, and one id — `0a1967b546c57994|BTTS+player_sot++` — covered
+    # "BTTS + R. Karjalainen 1+ SOT" and "BTTS + Julius Körkkö 1+ SOT", two different bets.
+    #
+    # That was not cosmetic. `settle_finished()` deduplicates the merged record on this id with
+    # keep="first", so each settle pass collapsed those 475 rows to 225 and discarded ~250
+    # DISTINCT combos — permanently, and invisibly. The existing "must never drop a graded row"
+    # guard could not see it: the discarded rows are almost all still UNKNOWN at that point, so
+    # the count of decided rows never fell. The settled file looks collision-free today precisely
+    # BECAUSE the collapse already happened upstream of it.
+    #
+    # The label carries the selection ("R. Karjalainen 1+ shot on target"), so market+label is
+    # the identity. Legs are sorted before hashing so leg ORDER cannot produce two ids for one
+    # bet, which is the other half of "stable".
+    legcols = sorted(c for c in d.columns if c.startswith("leg") and c.endswith("_market"))
+    labcols = [c[:-len("_market")] + "_label" for c in legcols]
+
+    def _identity(row) -> str:
+        legs_ = sorted(f"{row.get(m) or ''}:{row.get(lab) or ''}"
+                       for m, lab in zip(legcols, labcols) if row.get(m))
+        return hashlib.sha1("|".join(legs_).encode("utf-8")).hexdigest()[:12]
+
+    # Retained so rows written before 2026-08-30 stay joinable to the record they are part of.
+    # Never used as a dedup key again — it is the broken key, kept only for lineage.
+    d["combo_id_legacy"] = (d["fixture_key"].astype(str) + "|"
+                            + d[legcols].fillna("").astype(str).agg("+".join, axis=1))
+    d["combo_id"] = d["fixture_key"].astype(str) + "|" + d.apply(_identity, axis=1)
+    n_ids = d["combo_id"].nunique()
+    if n_ids < len(d):
+        # Should now be impossible: two rows sharing an id means two identical leg sets on one
+        # fixture, which `build()` does not emit. Said out loud rather than assumed.
+        print(f"[builder] WARNING {len(d) - n_ids} candidate row(s) share a combo_id after the "
+              f"selection-aware fix — inspect before trusting the settled record")
     print(f"[builder] {len(d):,} candidate(s) over {d['fixture_key'].nunique()} fixture(s); "
           f"skipped — no model probs {no_probs}, inconsistent {bad_mono}, unfittable {no_fit}")
     return d
@@ -328,9 +363,21 @@ def settle_finished() -> pd.DataFrame:
                 if {"match", "match_date", "legs"} <= set(f.columns):
                     comp = (f["match"].astype(str) + "|" + f["match_date"].astype(str)
                             + "|" + f["legs"].astype(str)).astype("string")
-                # Row index as the last resort: distinct for every row, so an unidentifiable row
-                # survives instead of colliding with every other unidentifiable row.
-                f[key] = cid.fillna(comp).fillna(
+                # THE COMPOSITE COMES FIRST, and that ordering is the fix for the collapse
+                # described at the combo_id construction in `generate()`. `legs` spells out every
+                # selection, so `match|match_date|legs` distinguishes two combos that differ only
+                # by which player is in them; the old market-only combo_id did not, and putting it
+                # first meant ~250 distinct combos were deduplicated away on every settle pass.
+                #
+                # Measured on the committed record: 5,861 rows carrying a combo_id resolve to
+                # 5,861 distinct composites AND 5,861 distinct ids, so on today's data the two
+                # keys agree exactly and this reordering changes no existing row. It changes what
+                # happens to rows built before the id fix, which is the point.
+                #
+                # combo_id remains the fallback for any row that has an id but no legs text.
+                f[key] = comp.fillna(cid).fillna(
+                    # Row index as the last resort: distinct for every row, so an unidentifiable
+                    # row survives instead of colliding with every other unidentifiable row.
                     pd.Series([f"__row{i}" for i in range(len(f))], index=f.index, dtype="string"))
         merged = pd.concat([old, fresh], ignore_index=True)
         if key:
@@ -342,6 +389,23 @@ def settle_finished() -> pd.DataFrame:
                             .drop(columns=["_decided"] + ([key] if key == "_merge_key" else [])))
         # A merge must never be able to LOSE a graded result. Cheap to assert, and it is exactly
         # the invariant that broke twice.
+        # A DISTINCT COMBO MUST NEVER BE MERGED AWAY EITHER, decided or not. The graded-row guard
+        # below could not see the combo_id collapse because the rows it discarded were still
+        # UNKNOWN, and an UNKNOWN row is a combo awaiting its result — losing it loses the bet,
+        # not just a grade. Counted on the identity that actually distinguishes combos.
+        def _ncombos(f: pd.DataFrame) -> int:
+            if not {"match", "match_date", "legs"} <= set(f.columns):
+                return 0
+            return int((f["match"].astype(str) + "|" + f["match_date"].astype(str)
+                        + "|" + f["legs"].astype(str)).nunique())
+
+        c_was, c_now = _ncombos(old), _ncombos(merged)
+        if c_now < c_was:
+            raise RuntimeError(
+                f"merge would drop {c_was - c_now} distinct combo(s) ({c_was} -> {c_now}); "
+                f"refusing to write. The dedup key is collapsing combos that are not the "
+                f"same bet — see the combo_id note in generate().")
+
         was = int(old["combo_result"].isin(["WON", "LOST", "VOID"]).sum()) if \
             "combo_result" in old.columns else 0
         now_ = int(merged["combo_result"].isin(["WON", "LOST", "VOID"]).sum())
@@ -363,11 +427,14 @@ def main() -> int:
     ap.add_argument("--days", type=int, default=DEFAULT_DAYS)
     ap.add_argument("--dry-run", action="store_true",
                     help="build and format, send nothing")
+    ap.add_argument("--allow-local-write", action="store_true",
+                    help="permit canonical appends from a laptop (scratch seasons only)")
     args = ap.parse_args()
 
     import config.pro_config as cfg
 
     failed = False
+    canon: dict[str, int] = {}
 
     if args.mode in ("generate", "all"):
         d = generate(args.days)
@@ -375,6 +442,13 @@ def main() -> int:
             OUT.mkdir(exist_ok=True)
             d.to_csv(CAND_FILE, index=False, encoding="utf-8")
             print(f"[builder] wrote {CAND_FILE.name} ({len(d):,} rows)")
+            # The CSV above is the current-state view and is overwritten every run; this is the
+            # history beside it. Both, not either: the CSV is what notify and the dashboard read,
+            # the canonical tables are what any question about WHEN an opinion was formed needs.
+            head, legs = cc.candidates(d, run_id=cfg.run_id())
+            canon.update(cc.write(head, legs, None, None,
+                                  source="pro:bet_builder/generate",
+                                  allow_local=args.allow_local_write))
 
     if args.mode in ("notify", "all"):
         cand = pd.read_csv(CAND_FILE, low_memory=False) if CAND_FILE.exists() else pd.DataFrame()
@@ -411,6 +485,29 @@ def main() -> int:
         if not s.empty:
             s.to_csv(SETTLED_FILE, index=False, encoding="utf-8")
             print(f"[builder] wrote {SETTLED_FILE.name} ({len(s):,} rows)")
+            # Dependency estimates ride along with the settle pass rather than generate: they are
+            # re-estimated on the same cadence as results arrive, and versioning them next to the
+            # settlements keeps "what did we assume when we graded this" in one place.
+            deps = cc.dependencies(
+                pd.read_csv(OUT / "combo_dependency_matrix.csv")
+                if (OUT / "combo_dependency_matrix.csv").exists() else pd.DataFrame(),
+                pd.read_csv(OUT / "player_combo_dependency.csv")
+                if (OUT / "player_combo_dependency.csv").exists() else pd.DataFrame(),
+                run_id=cfg.run_id())
+            canon.update(cc.write(None, None, cc.settlements(s, run_id=cfg.run_id()), deps,
+                                  source="pro:bet_builder/settle",
+                                  allow_local=args.allow_local_write))
+
+    if canon:
+        # Printed as a line CI can be read against, and a -1 (append refused) is reported rather
+        # than silently absent — the whole failure mode this repo keeps hitting is a green run
+        # that persisted nothing.
+        print(f"[builder] canonical: " +
+              ", ".join(f"{k}={v:,}" if v >= 0 else f"{k}=FAILED" for k, v in sorted(canon.items())))
+        if any(v < 0 for v in canon.values()):
+            print("::warning title=Builder evidence not fully persisted::"
+                  "one or more canonical combo tables refused the append; the CSVs were still "
+                  "written, so today's tips are unaffected and the HISTORY is what was lost.")
 
     return 1 if failed else 0
 

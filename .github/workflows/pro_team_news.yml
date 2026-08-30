@@ -16,9 +16,27 @@ name: Pro Team News
 
 on:
   schedule:
-    # Every 30 minutes. GitHub delivers high-frequency crons unreliably (a */15 has been observed
-    # arriving every ~179 min on this account), so the run LOOPS internally rather than relying on
-    # the cron for resolution — the same conclusion the side-market capture reached.
+    # Every 30 minutes, SINGLE SWEEP. This used to hold the runner for 20 minutes of every 30 by
+    # looping internally, and the reasoning was sound as far as it went: GitHub delivers
+    # high-frequency crons unreliably (a */15 was observed arriving every ~179 min on this
+    # account), so the run looped rather than trusting the cron for resolution.
+    #
+    # MEASURED 2026-08-30, and it looks like that cure fed the disease. v9's `predict` commit
+    # cadence across the same account:
+    #
+    #     20-23 Aug  1.24 runs/hour   median gap  31 min
+    #     24-26 Aug  0.98 runs/hour   median gap  35 min
+    #     26-29 Aug  0.38 runs/hour   median gap  91 min   <- this workflow went live 26 Aug 09:59
+    #     29-30 Aug  0.38 runs/hour   median gap 135 min   <- pro_live_odds (55-min loop) added
+    #
+    # A 61% collapse in v9's cadence starting the hour this workflow began holding a runner
+    # two-thirds of every hour. Correlation with a plausible mechanism, not proof — queue-wait
+    # times are not visible from here — so this is set up as an EXPERIMENT: cut the hold to a
+    # single sweep, then measure v9 with `src.monitoring.scheduler`. If predict returns toward
+    # 1.0+/hour the loop was the cause, and the density lost here is worth far less than v9's
+    # odds capture, which cannot be backfilled.
+    #
+    # Restore a loop only with evidence, and never one that holds a runner for most of its period.
     - cron: '*/30 * * * *'
   workflow_dispatch:
     inputs:
@@ -26,7 +44,7 @@ on:
         description: 'only fixtures kicking off within N hours (default 3)'
         required: false
       loop_minutes:
-        description: 'keep polling for N minutes (default 20)'
+        description: 'keep polling for N minutes (default 0 = single sweep)'
         required: false
 
 concurrency:
@@ -40,7 +58,10 @@ jobs:
     runs-on: ubuntu-latest
     # Must exceed loop_minutes plus checkout/pip/commit. 20-minute loop -> 35 leaves real margin,
     # and stays well inside the 30-minute cron so runs cannot pile up in the concurrency group.
-    timeout-minutes: 35
+    # Was 35, sized for the 20-minute internal loop. A single sweep needs a fraction of that, and
+    # the timeout is also the ceiling on how long a stuck run can hold a runner — the resource
+    # this change exists to give back.
+    timeout-minutes: 12
     permissions:
       contents: write
     steps:
@@ -68,7 +89,9 @@ jobs:
           V9_LOCAL: ${{ github.workspace }}/_v9
         run: |
           MH="${{ github.event.inputs.max_hours }}"; [ -n "$MH" ] || MH=3
-          LM="${{ github.event.inputs.loop_minutes }}"; [ -n "$LM" ] || LM=20
+          # 0 = single sweep. See the schedule comment: the 20-minute hold is the suspect in v9's
+          # cadence collapse. A dispatch may still pass a value to loop deliberately.
+          LM="${{ github.event.inputs.loop_minutes }}"; [ -n "$LM" ] || LM=0
           python -m src.pipelines.team_news --max-hours "$MH" --loop-minutes "$LM"
 
       - name: Commit the season store

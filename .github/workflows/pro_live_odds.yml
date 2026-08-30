@@ -29,14 +29,25 @@ name: Pro Live Odds
 
 on:
   schedule:
-    # 11:00-23:00 UTC covers the hours matches are actually in play across our leagues; each
-    # firing loops ~55 min, so the window is continuous rather than sampled. :09 to stay off the
-    # hour, which GitHub names as its most contended scheduling slot.
-    - cron: '9 11-23 * * *'
+    # 11:00-23:00 UTC covers the hours matches are actually in play across our leagues.
+    #
+    # WAS `9 11-23 * * *` with a ~55-minute internal loop, which made the window continuous rather
+    # than sampled — and meant a runner was held for essentially the whole of every hour in that
+    # window. Combined with pro_team_news's 20-in-30 hold, that is close to permanent occupancy on
+    # an account whose other repository, v9, runs ~220 scheduled jobs a day and had its predict
+    # cadence fall 61% over the same period (see pro_team_news.yml for the measurement).
+    #
+    # Now four short firings an hour instead of one hour-long one. Live sampling drops from ~11
+    # sweeps/hour (300s apart inside the loop) to 4, which is a real loss — but this table has
+    # never persisted a single row, while v9's odds capture is live, unbackfillable, and was
+    # measurably degrading. Sampling density here is the cheaper thing to spend.
+    #
+    # :04/:19/:34/:49 stays off the hour, which GitHub names as its most contended slot.
+    - cron: '4,19,34,49 11-23 * * *'
   workflow_dispatch:
     inputs:
       loop_minutes:
-        description: 'Sample for N minutes (blank = 55)'
+        description: 'Sample for N minutes (blank = 0, a single sweep)'
         required: false
         default: ''
       dry_run:
@@ -56,9 +67,10 @@ permissions:
 jobs:
   collect:
     runs-on: ubuntu-latest
-    # Must exceed the loop plus checkout, pip and commit, or the timeout kills the collection it
-    # is there to protect.
-    timeout-minutes: 75
+    # Was 75, sized for the 55-minute loop. A single sweep is checkout + pip + one fetch + commit,
+    # so 15 is generous. Lowering it matters: a timeout is also the ceiling on how long a stuck run
+    # can hold a runner, which is the resource this change is trying to give back.
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v4
@@ -89,7 +101,9 @@ jobs:
           # report success having stored nothing.
           set -o pipefail
           MINS="${{ github.event.inputs.loop_minutes }}"
-          [ -n "$MINS" ] || MINS=55
+          # 0 = a single sweep. See the schedule comment: the 55-minute hold is the suspect in
+          # v9's cadence collapse. A dispatch may still pass a value to loop deliberately.
+          [ -n "$MINS" ] || MINS=0
           FLAG=""
           if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then FLAG="--dry-run"; fi
           python -m src.pipelines.live_odds --loop-minutes "$MINS" $FLAG | tee live.txt

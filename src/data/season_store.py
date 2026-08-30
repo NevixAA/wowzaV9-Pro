@@ -64,6 +64,21 @@ REQUIRED: dict[str, tuple[str, ...]] = {
     # first_seen_ts is REQUIRED: without it a row is just a lineup, and the entire reason this
     # table exists is the timing.
     "team_news":         ("fixture_key", "league", "team", "first_seen_ts"),
+    # ── builder evidence ──────────────────────────────────────────────────────
+    # combo_id + snapshot_ts, not combo_id alone: the SAME combo is re-generated on every run as
+    # kickoff approaches, and each generation is a separate observation of what the model thought
+    # at that moment. Keying on combo_id alone would make the history look like duplicates.
+    "combo_candidates":  ("combo_id", "fixture_key", "snapshot_ts", "joint_probability"),
+    # leg_index is part of the key and 1-based, matching the leg1_/leg2_ columns it replaces.
+    "combo_legs":        ("combo_id", "leg_index", "market"),
+    # No combo_id: a dependency estimate is a property of a MARKET PAIR over a sample window and
+    # is reused by every combo that contains that pair. calc_version is required because a
+    # re-estimate must never silently replace the assumption an earlier combo was priced under.
+    "combo_dependencies": ("market_a", "market_b", "calc_version"),
+    "combo_settlements": ("combo_id", "fixture_key", "result"),
+    # price_basis is REQUIRED and is the whole point of the table: it is what stops a
+    # reconstructed component product from ever being read as an executable builder price.
+    "combo_price_snapshots": ("combo_id", "snapshot_ts", "price_basis"),
 }
 
 

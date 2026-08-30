@@ -94,11 +94,29 @@ jobs:
       # possession were ALL 0% populated on the live board, and missing features are
       # median-imputed, so the model was being handed the league average for its per-team inputs.
       - name: Collect team match statistics
+        id: team_stats
         if: steps.collect.outcome == 'success' && github.event.schedule != '40 */2 * * *'
         env:
           APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
         run: python -m src.pipelines.team_stats --seasons 2026
         continue-on-error: true
+
+      # WHY THIS STEP EXISTS. `continue-on-error: true` above is right — a statistics outage must
+      # not stop the season store advancing — but it swallowed a real failure for four days.
+      # team_stats.py RAISES when APIFOOTBALL_KEY is absent, this repository had no such secret
+      # until 2026-08-30, and so every daily sweep from 2026-08-26 skipped the step and reported
+      # success. The registry then showed team_match_stats ACTIVE with 0 rows and nothing said
+      # why; `git ls-files` confirms zero committed partitions while 88 sit untracked on a laptop.
+      #
+      # continue-on-error suppresses the exit code, not the annotation. This turns the swallowed
+      # failure into something visible in the run summary without making it fatal.
+      - name: Report a swallowed team-stats failure
+        if: always() && steps.team_stats.outcome == 'failure'
+        run: |
+          echo "::warning title=team_match_stats did NOT collect::The team-statistics step failed \
+          and was suppressed by continue-on-error. If the log says APIFOOTBALL_KEY is not \
+          available, the secret is missing from THIS repository — v9's secrets do not apply here. \
+          team_match_stats is declared ACTIVE, so an empty table is a real fault, not a design."
 
       # DERIVED RESEARCH, on the daily sweep. Both of these persisted a result but were scheduled
       # NOWHERE until 2026-08-26, so their output only ever refreshed when a human ran them — the
@@ -127,6 +145,21 @@ jobs:
         if: steps.collect.outcome == 'success'
         run: python -m src.pipelines.registry
 
+      # OBSERVED cadence and near-kickoff coverage, measured from the timestamps in the store —
+      # never inferred from a cron expression. Runs on EVERY collect including the 2-hourly one,
+      # because it is the artifact that would have shown this workflow going quiet: it reports
+      # freshness per table, and a store that stopped advancing is exactly what it is for.
+      #
+      # First measurement, 2026-08-30: T-10m market coverage was 8.3% of kicked-off fixtures and
+      # T-1h was 39.7%. Odds are pre-match only and cannot be backfilled, so every uncovered
+      # fixture is a closing price lost for good.
+      - name: Measure scheduler health and high-activity coverage
+        if: steps.collect.outcome == 'success'
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: python -m src.monitoring.scheduler --days 14 --write
+        continue-on-error: true
+
       - name: Commit the season store
         if: always()
         run: |
@@ -134,7 +167,9 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A data output/collect_health.json output/import_watermarks.json 2>/dev/null || true
           # Per-file, because `git add -f a b missing` ABORTS and stages NOTHING.
-          for f in output/system_registry.json output/clv_enriched.csv                    output/news_impact.json; do
+          for f in output/system_registry.json output/clv_enriched.csv \
+                   output/scheduler_health.json output/high_activity_coverage.json \
+                   output/news_impact.json; do
             git add -f "$f" 2>/dev/null || echo "  (skip, not present: $f)"
           done
           git diff --staged --quiet || \

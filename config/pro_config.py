@@ -113,6 +113,32 @@ TABLES = (
     "team_news",
     # v11-computed market-movement research observations, archived verbatim with provenance.
     "movement_observations",
+    # ── BET BUILDER EVIDENCE (Prompt 01 sections 4-5) ─────────────────────────
+    #
+    # The builder already produced good research, and it produced it into two CSVs that are
+    # REWRITTEN IN PLACE on every run: `bet_builder_candidates.csv` (476 rows) and
+    # `bet_builder_settled.csv` (8,394 rows). That is a current-state view, not evidence. A combo
+    # generated at T-3d and re-generated at T-6h with a different joint probability leaves no
+    # trace of the first opinion, so the one question the season exists to answer — what did
+    # Wowza think, and WHEN — cannot be asked of it. The CSVs stay (section 3 says preserve what
+    # works); these tables are the append-only history beside them.
+    #
+    # Five tables rather than one wide one, because the grains genuinely differ: a candidate is
+    # per (combo, snapshot), a leg is per (combo, leg_index), a dependency estimate is per
+    # (market pair, sample window) and outlives any individual combo, and a settlement arrives
+    # days later. Flattening them is what produced `leg1_market ... leg4_market` — a schema that
+    # cannot express a five-leg combo and cannot be grouped by market without unpivoting.
+    "combo_candidates",
+    "combo_legs",
+    "combo_dependencies",
+    "combo_settlements",
+    # Repeated price observations for a combo as kickoff approaches. Declared and EMPTY on
+    # purpose: no bookmaker builder price is collected in any repo, so for SAME_MATCH combos
+    # there is nothing real to store, and section 14 forbids calling a reconstructed price
+    # executable. CROSS_MATCH multiples are the exception — their legs are separately bettable,
+    # so the product of real single prices is a real (if not builder-quoted) price. price_basis
+    # records which case a row is, and it is never allowed to be blank.
+    "combo_price_snapshots",
 )
 
 # Columns every row carries, added by the store itself — never by an importer.

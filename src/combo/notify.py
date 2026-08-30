@@ -108,9 +108,27 @@ def _save_state(s: dict) -> None:
 
 
 def fingerprint(row: pd.Series) -> str:
-    """Stable identity for a combo (section 84). `combo_id` is already a hash of
-    (fixture, legs), so it IS the fingerprint -- deliberately not re-derived here, or the two
-    could drift apart and the same combo would notify twice under different identities."""
+    """Stable identity for a combo (section 84). `combo_id` is a hash of (fixture, sorted legs),
+    so it IS the fingerprint -- deliberately not re-derived here, or the two could drift apart and
+    the same combo would notify twice under different identities.
+
+    THIS ONLY HOLDS BECAUSE combo_id WAS FIXED ON 2026-08-30, and duplicate tips are what the old
+    one caused. It was built by joining `leg1_market + leg2_market + ...` in COLUMN ORDER with no
+    selection in it, which broke identity in both directions at once:
+
+      order    {O35, player_goals, player_goals, player_sot} on fixture a4994e7cab7f01e4 appeared
+               in the live state file as three different keys, differing only in leg order. Each
+               one missed the dedup and sent.
+      identity one key, `a4994e7cab7f01e4|O35+player_goals+player_goals+player_sot`, covered EIGHT
+               distinct combos. They shared a single state entry, so whichever was processed last
+               overwrote `joint_probability`; on the next run the other seven differed from that
+               stored value by more than MIN_PROB_CHANGE_PP and re-sent as PROB_UP / PROB_DOWN.
+
+    Board-wide that was 475 candidate rows collapsing onto 225 identities. `generate()` now sorts
+    `market:label` pairs before hashing, which makes the id independent of leg order and sensitive
+    to WHICH player is in the combo. If this function is ever changed to re-derive the id, both
+    properties have to be preserved or the duplicates come straight back.
+    """
     return str(row.get("combo_id") or "")
 
 
@@ -367,6 +385,28 @@ def run(candidates: pd.DataFrame, *, dry_run: bool = True,
         return out
 
     d = candidates.copy()
+    # ---- carry state across the combo_id fix (2026-08-30) ------------------------------
+    # combo_id changed shape when it became selection-aware and order-independent, so every
+    # entry recorded under the old key would otherwise miss and each already-notified combo
+    # would go out once more as NEW. `combo_id_legacy` is written alongside the new id purely
+    # so this lookup is possible.
+    #
+    # A legacy key can map to SEVERAL new ids — that was the defect. All of them inherit the one
+    # old entry, which means a combo that was never individually notified may be treated as
+    # already seen. That is the safe direction to be wrong in: it can delay a tip by one run, and
+    # it cannot produce the message storm the fix exists to stop. Migration entries are marked so
+    # the transition is visible rather than assumed.
+    if "combo_id_legacy" in d.columns:
+        migrated = 0
+        for cid, legacy in zip(d.get("combo_id", []), d.get("combo_id_legacy", [])):
+            cid, legacy = str(cid or ""), str(legacy or "")
+            if cid and legacy and cid not in state and legacy in state:
+                state[cid] = {**state[legacy], "migrated_from": legacy}
+                migrated += 1
+        if migrated:
+            print(f"[notify] migrated {migrated} notify-state entr(ies) from the legacy combo_id")
+            out["state_migrated"] = migrated
+
     pcol = "joint_probability" if "joint_probability" in d.columns else "conservative_joint_probability"
     d = d[pd.to_numeric(d[pcol], errors="coerce").notna()]
     # Ranked by the mispricing we can point at, not by how likely the combo is.

@@ -117,20 +117,34 @@ def refresh(*, season: str | None = None, path: Path | None = None,
             "runs": int(s.get("runs") or 0),
             "first_dt": s.get("first_dt"),
             "last_dt": s.get("last_dt"),
-            # Lifecycle status, so an EXPECTED empty table stops reading as an outage. Two
-            # canonical tables (team_news, team_match_stats) are declared PLANNED_OPTIONAL in
-            # src/schemas.py: their schemas are agreed, their collectors are not built, and
-            # empty is the correct state. Without this the "N/M tables populated" line reports a
-            # permanent two-table shortfall, and a health signal that is always slightly red is
-            # one nobody reads — which is exactly how the genuinely-empty data_quality table went
-            # unnoticed for months.
+            # Lifecycle status, so an EXPECTED empty table stops reading as an outage. Without
+            # this the "N/M tables populated" line reports a permanent shortfall, and a health
+            # signal that is always slightly red is one nobody reads — which is exactly how the
+            # genuinely-empty data_quality table went unnoticed for months.
+            #
+            # Which tables those are is NOT listed here any more. It used to name
+            # "team_news, team_match_stats" and both had since changed status, so the comment
+            # asserted the opposite of what the code did. src/schemas.py is the one place that
+            # decides; this reads it.
             "lifecycle": schemas.status(table),
+            # WHY it is allowed to be empty, carried next to the count so a reader does not have
+            # to open another file to tell an outage from a settled fact about the world.
+            "empty_reason": (schemas.TABLES.get(table, {}).get("_why_empty")
+                             if int(s.get("rows") or 0) == 0 else None),
         }
     total = sum(t["rows"] for t in tables.values())
+    # is_expected_empty, not is_planned: SOURCE_REQUIRED tables (combo_price_snapshots — no
+    # bookmaker builder price exists anywhere to collect) are also correctly empty, and were
+    # being reported as unexpected.
     _expected_empty = sorted(t for t, v in tables.items()
-                             if v["rows"] == 0 and schemas.is_planned(t))
+                             if v["rows"] == 0 and schemas.is_expected_empty(t))
     _unexpected_empty = sorted(t for t, v in tables.items()
-                               if v["rows"] == 0 and not schemas.is_planned(t))
+                               if v["rows"] == 0 and not schemas.is_expected_empty(t))
+    # Declared in config.TABLES but with no directory in the store at all. `store.stats()` reports
+    # what it FINDS, so a table that has never been written once is silently absent from the
+    # registry rather than present with rows=0 — and "not mentioned" reads as "fine". Section 15
+    # requires that all canonical tables be accounted for, so the gap is named.
+    _never_written = sorted(set(cfg.TABLES) - set(tables))
 
     # ---- non-count blocks: inherit, and say so ----------------------------------------
     carried = []
@@ -143,12 +157,17 @@ def refresh(*, season: str | None = None, path: Path | None = None,
         "total_rows": total,
         "n_tables": len(tables),
         "n_tables_populated": sum(1 for t in tables.values() if t["rows"] > 0),
-        # Populated OR legitimately planned-empty. This is the number to alarm on; the raw
-        # populated count is kept because existing consumers read it.
+        # Populated OR legitimately empty. This is the number to alarm on; the raw populated
+        # count is kept because existing consumers read it.
         "n_tables_accounted": sum(1 for t, v in tables.items()
-                                  if v["rows"] > 0 or schemas.is_planned(t)),
+                                  if v["rows"] > 0 or schemas.is_expected_empty(t)),
+        # Every table config declares, whether or not it has ever been written. n_tables above
+        # counts only what exists on disk, so the two differ exactly when a table has never
+        # been written — which is the case worth seeing.
+        "n_tables_declared": len(cfg.TABLES),
         "tables_expected_empty": _expected_empty,
         "tables_unexpected_empty": _unexpected_empty,
+        "tables_never_written": _never_written,
         "registry_age_hours": 0.0,     # true at write time only; consumers use age_hours()
         "pro_may_notify": cfg.PRO_MAY_NOTIFY,
         "pro_may_stake": False,
@@ -193,10 +212,16 @@ def refresh(*, season: str | None = None, path: Path | None = None,
               f"{payload['n_tables_accounted']}/{len(tables)} accounted, "
               f"{total:,} rows, sha {payload['source_commit_sha']})")
         if _expected_empty:
-            print(f"[registry]   empty BY DESIGN (PLANNED_OPTIONAL): {', '.join(_expected_empty)}")
+            # Status printed per table: PLANNED_OPTIONAL and SOURCE_REQUIRED are both "empty is
+            # correct" but only the first is something a person can go and fix.
+            desc = ", ".join(f"{t} ({schemas.status(t)})" for t in _expected_empty)
+            print(f"[registry]   empty BY DESIGN: {desc}")
         if _unexpected_empty:
             print(f"[registry]   empty UNEXPECTEDLY: {', '.join(_unexpected_empty)}  <- "
                   f"these are the ones worth looking at")
+        if _never_written:
+            print(f"[registry]   NEVER WRITTEN (declared, no partition ever): "
+                  f"{', '.join(_never_written)}")
         for k, v in sorted(tables.items(), key=lambda kv: -kv[1]["rows"]):
             before = (prev.get("season_store") or {}).get(k)
             was = before.get("rows") if isinstance(before, dict) else before
