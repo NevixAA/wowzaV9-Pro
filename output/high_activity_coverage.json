@@ -1,0 +1,147 @@
+{
+  "by_weekday": {
+    "Fri": {
+      "first": "2026-08-21T02:10:42Z",
+      "fixtures_kicking_off": 41,
+      "last": "2026-08-28T23:39:16Z",
+      "max_gap_min": 8770.5,
+      "median_gap_min": 119.0,
+      "missed_windows": 1114,
+      "n_observations": 17,
+      "p90_gap_min": 551.2
+    },
+    "Mon": {
+      "first": "2026-08-17T13:56:24Z",
+      "fixtures_kicking_off": 39,
+      "last": "2026-08-24T22:57:30Z",
+      "max_gap_min": 8835.2,
+      "median_gap_min": 109.2,
+      "missed_windows": 1035,
+      "n_observations": 20,
+      "p90_gap_min": 155.4
+    },
+    "Sat": {
+      "first": "2026-08-22T02:02:56Z",
+      "fixtures_kicking_off": 224,
+      "last": "2026-08-29T21:09:00Z",
+      "max_gap_min": 9146.0,
+      "median_gap_min": 116.3,
+      "missed_windows": 1100,
+      "n_observations": 17,
+      "p90_gap_min": 414.7
+    },
+    "Sun": {
+      "first": "2026-08-23T02:11:25Z",
+      "fixtures_kicking_off": 119,
+      "last": "2026-08-30T16:56:18Z",
+      "max_gap_min": 8745.2,
+      "median_gap_min": 117.5,
+      "missed_windows": 1072,
+      "n_observations": 18,
+      "p90_gap_min": 333.0
+    },
+    "Thu": {
+      "first": "2026-08-20T02:04:19Z",
+      "fixtures_kicking_off": 10,
+      "last": "2026-08-27T17:39:50Z",
+      "max_gap_min": 8913.0,
+      "median_gap_min": 112.2,
+      "missed_windows": 1079,
+      "n_observations": 18,
+      "p90_gap_min": 375.7
+    },
+    "Tue": {
+      "first": "2026-08-18T02:03:10Z",
+      "fixtures_kicking_off": 36,
+      "last": "2026-08-25T22:59:41Z",
+      "max_gap_min": 8830.4,
+      "median_gap_min": 110.0,
+      "missed_windows": 1097,
+      "n_observations": 26,
+      "p90_gap_min": 139.5
+    },
+    "Wed": {
+      "first": "2026-08-19T02:05:16Z",
+      "fixtures_kicking_off": 31,
+      "last": "2026-08-26T21:08:42Z",
+      "max_gap_min": 8836.6,
+      "median_gap_min": 112.7,
+      "missed_windows": 1088,
+      "n_observations": 24,
+      "p90_gap_min": 152.1
+    }
+  },
+  "fixtures": {
+    "in_store": 500,
+    "kicked_off": 335,
+    "with_market_snapshot": 10205,
+    "with_model_snapshot": 500,
+    "with_player_props": 322
+  },
+  "generated_at": "2026-08-30T16:56:26Z",
+  "live": {
+    "live_odds_fixtures": 0,
+    "live_odds_rows": 0,
+    "live_signal_fixtures": 46
+  },
+  "near_kickoff_market": {
+    "T-10m": {
+      "fixtures_covered": 30,
+      "pct_of_kicked_off": 9.0
+    },
+    "T-1h": {
+      "fixtures_covered": 135,
+      "pct_of_kicked_off": 40.3
+    },
+    "T-30m": {
+      "fixtures_covered": 50,
+      "pct_of_kicked_off": 14.9
+    },
+    "T-3h": {
+      "fixtures_covered": 250,
+      "pct_of_kicked_off": 74.6
+    },
+    "T-6h": {
+      "fixtures_covered": 291,
+      "pct_of_kicked_off": 86.9
+    },
+    "fixtures_with_any_prematch_obs": 335,
+    "kicked_off_fixtures": 335,
+    "status": "OK"
+  },
+  "near_kickoff_model": {
+    "T-10m": {
+      "fixtures_covered": 22,
+      "pct_of_kicked_off": 6.6
+    },
+    "T-1h": {
+      "fixtures_covered": 124,
+      "pct_of_kicked_off": 37.0
+    },
+    "T-30m": {
+      "fixtures_covered": 74,
+      "pct_of_kicked_off": 22.1
+    },
+    "T-3h": {
+      "fixtures_covered": 252,
+      "pct_of_kicked_off": 75.2
+    },
+    "T-6h": {
+      "fixtures_covered": 290,
+      "pct_of_kicked_off": 86.6
+    },
+    "fixtures_with_any_prematch_obs": 335,
+    "kicked_off_fixtures": 335,
+    "status": "OK"
+  },
+  "recommendations": [
+    "T-10m market coverage is 9.0% of kicked-off fixtures. Closing price cannot be backfilled, so this is a permanent loss per uncovered fixture.",
+    "T-1h market coverage is 40.3%. The final hour is where the sharp money moves; a capture window inside it is worth more than an extra one three days out.",
+    "market_snapshots p90 gap is 197 min against a 10 min target (1688 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
+    "model_snapshots p90 gap is 527 min against a 10 min target (1731 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
+    "live_odds_snapshots is empty: no in-play market price has ever been stored. v9 does not produce one (inplay_snapshots.csv is score/SOT state and live_games.csv holds MODEL fair odds), so pro_live_odds.yml is the only source and its first successful window is what fills this."
+  ],
+  "scheduler_mode": "LIVE_MATCH",
+  "target_interval_min": 10,
+  "window_days": 14
+}

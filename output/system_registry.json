@@ -5,7 +5,7 @@
     "live_models",
     "n_live_models"
   ],
-  "carried_from": "2026-08-30T11:57:14Z",
+  "carried_from": "2026-08-30T12:11:05Z",
   "collect_health": {
     "shadow_last_run": "2026-08-19T12:31:48Z",
     "shadow_n": 564,
@@ -13,12 +13,13 @@
   },
   "deployment_note": "Season 2026/27 is a data-collection and shadow season. Pro does not stake and does not notify. Signal tier and deployment mode are independent: a SNIPER may be PAPER.",
   "feature_health": {},
-  "generated_at": "2026-08-30T12:11:05Z",
-  "git_sha": "6e455a6cacd7",
+  "generated_at": "2026-08-30T16:56:25Z",
+  "git_sha": "0261e303b816",
   "live_models": [],
   "n_live_models": 0,
-  "n_tables": 15,
-  "n_tables_accounted": 14,
+  "n_tables": 20,
+  "n_tables_accounted": 15,
+  "n_tables_declared": 20,
   "n_tables_populated": 12,
   "pro_may_notify": true,
   "pro_may_stake": false,
@@ -26,6 +27,7 @@
   "season": "season_2026_27",
   "season_store": {
     "clv": {
+      "empty_reason": null,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-30",
       "lifecycle": "ACTIVE",
@@ -34,34 +36,88 @@
       "runs": 14,
       "table": "clv"
     },
+    "combo_candidates": {
+      "empty_reason": "Not empty from the first scheduled run. Backfilled once from the 476 rows in bet_builder_candidates.csv, which had no history because that file is rewritten in place.",
+      "first_dt": null,
+      "last_dt": null,
+      "lifecycle": "ACTIVE",
+      "partitions": 0,
+      "rows": 0,
+      "runs": 0,
+      "table": "combo_candidates"
+    },
+    "combo_dependencies": {
+      "empty_reason": "Not empty \u2014 backfilled from combo_dependency_matrix.csv (1,400+ pairs) and player_combo_dependency.csv, both of which are currently rewritten in place.",
+      "first_dt": null,
+      "last_dt": null,
+      "lifecycle": "ACTIVE",
+      "partitions": 0,
+      "rows": 0,
+      "runs": 0,
+      "table": "combo_dependencies"
+    },
+    "combo_legs": {
+      "empty_reason": "Not empty. Replaces the leg1_/leg2_/leg3_/leg4_ column blocks, which cannot express a 5-leg combo and cannot be grouped by market without unpivoting.",
+      "first_dt": null,
+      "last_dt": null,
+      "lifecycle": "ACTIVE",
+      "partitions": 0,
+      "rows": 0,
+      "runs": 0,
+      "table": "combo_legs"
+    },
+    "combo_price_snapshots": {
+      "empty_reason": "For SAME_MATCH combos: no bookmaker same-game-builder price is collected in any repo; a book applies its own correlation adjustment, so multiplying singles does NOT reconstruct it. CROSS_MATCH multiples are fillable today \u2014 their legs are separately executable, so the product of real single prices is a genuine price \u2014 but the builder currently emits same-match combos only, so there is nothing yet to observe.",
+      "first_dt": null,
+      "last_dt": null,
+      "lifecycle": "SOURCE_REQUIRED",
+      "partitions": 0,
+      "rows": 0,
+      "runs": 0,
+      "table": "combo_price_snapshots"
+    },
+    "combo_settlements": {
+      "empty_reason": "Not empty \u2014 backfilled from the 8,394 rows of bet_builder_settled.csv.",
+      "first_dt": null,
+      "last_dt": null,
+      "lifecycle": "ACTIVE",
+      "partitions": 0,
+      "rows": 0,
+      "runs": 0,
+      "table": "combo_settlements"
+    },
     "data_quality": {
+      "empty_reason": null,
       "first_dt": "2026-08-23",
       "last_dt": "2026-08-30",
       "lifecycle": "ACTIVE",
-      "partitions": 48,
-      "rows": 596,
-      "runs": 48,
+      "partitions": 49,
+      "rows": 609,
+      "runs": 49,
       "table": "data_quality"
     },
     "feature_snapshots": {
+      "empty_reason": null,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-30",
       "lifecycle": "ACTIVE",
-      "partitions": 135,
-      "rows": 21697,
-      "runs": 135,
+      "partitions": 136,
+      "rows": 21877,
+      "runs": 136,
       "table": "feature_snapshots"
     },
     "fixtures": {
+      "empty_reason": null,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-30",
       "lifecycle": "ACTIVE",
-      "partitions": 135,
-      "rows": 21697,
-      "runs": 135,
+      "partitions": 136,
+      "rows": 21877,
+      "runs": 136,
       "table": "fixtures"
     },
     "live_odds_snapshots": {
+      "empty_reason": "Collector verified against the live API but not yet run on a schedule. Flip to ACTIVE once pro_live_odds.yml has completed a match-day window.",
       "first_dt": null,
       "last_dt": null,
       "lifecycle": "PLANNED_OPTIONAL",
@@ -71,6 +127,7 @@
       "table": "live_odds_snapshots"
     },
     "live_signals": {
+      "empty_reason": null,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-30",
       "lifecycle": "ACTIVE",
@@ -80,24 +137,27 @@
       "table": "live_signals"
     },
     "market_snapshots": {
+      "empty_reason": null,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-30",
       "lifecycle": "ACTIVE",
-      "partitions": 147,
-      "rows": 116325,
-      "runs": 147,
+      "partitions": 148,
+      "rows": 116903,
+      "runs": 148,
       "table": "market_snapshots"
     },
     "model_snapshots": {
+      "empty_reason": null,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-30",
       "lifecycle": "ACTIVE",
-      "partitions": 135,
-      "rows": 103640,
-      "runs": 135,
+      "partitions": 136,
+      "rows": 104530,
+      "runs": 136,
       "table": "model_snapshots"
     },
     "movement_observations": {
+      "empty_reason": null,
       "first_dt": "2026-08-23",
       "last_dt": "2026-08-30",
       "lifecycle": "ACTIVE",
@@ -107,6 +167,7 @@
       "table": "movement_observations"
     },
     "player_props": {
+      "empty_reason": null,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-30",
       "lifecycle": "ACTIVE",
@@ -116,6 +177,7 @@
       "table": "player_props"
     },
     "settlements": {
+      "empty_reason": null,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-30",
       "lifecycle": "ACTIVE",
@@ -125,6 +187,7 @@
       "table": "settlements"
     },
     "settlements_backfill": {
+      "empty_reason": null,
       "first_dt": "2026-05-21",
       "last_dt": "2026-05-21",
       "lifecycle": "ACTIVE",
@@ -134,15 +197,17 @@
       "table": "settlements_backfill"
     },
     "signals": {
+      "empty_reason": null,
       "first_dt": "2026-08-17",
       "last_dt": "2026-08-30",
       "lifecycle": "ACTIVE",
-      "partitions": 135,
-      "rows": 21697,
-      "runs": 135,
+      "partitions": 136,
+      "rows": 21877,
+      "runs": 136,
       "table": "signals"
     },
     "team_match_stats": {
+      "empty_reason": "0 rows in the committed store as of 2026-08-30 (88 local-only partitions exist on one laptop). Stays ACTIVE because the collector is written and the credential it needs was added on 2026-08-30 \u2014 an empty table on the NEXT daily sweep is a real fault and must alarm. Also PARTIAL by field: xg reaches ~88% coverage in bet leagues, and six intended fields have no source at all.",
       "first_dt": null,
       "last_dt": null,
       "lifecycle": "ACTIVE",
@@ -152,6 +217,7 @@
       "table": "team_match_stats"
     },
     "team_news": {
+      "empty_reason": "No reliable timestamped team-news source is wired. Lineups are obtainable ~1h before kickoff; injury and suspension news with a trustworthy publication time is not, and that timestamp is the whole point.",
       "first_dt": null,
       "last_dt": null,
       "lifecycle": "PLANNED_OPTIONAL",
@@ -161,13 +227,19 @@
       "table": "team_news"
     }
   },
-  "source_commit_sha": "6e455a6cacd7",
+  "source_commit_sha": "0261e303b816",
   "tables_expected_empty": [
+    "combo_price_snapshots",
     "live_odds_snapshots",
     "team_news"
   ],
+  "tables_never_written": [],
   "tables_unexpected_empty": [
+    "combo_candidates",
+    "combo_dependencies",
+    "combo_legs",
+    "combo_settlements",
     "team_match_stats"
   ],
-  "total_rows": 652312
+  "total_rows": 654333
 }
