@@ -1,56 +1,56 @@
 {
-  "active_matches": 3,
+  "active_matches": 0,
   "api_budget": {
     "abort_at": 60000,
     "alert_at": 45000,
     "limit_day": 75000,
-    "pct_used": 19.5,
+    "pct_used": 3.0,
     "plan": "Ultra",
-    "requests_used": 14660,
-    "snapshot_ts": "2026-08-30T22:06:20Z",
+    "requests_used": 2251,
+    "snapshot_ts": "2026-08-31T07:42:23Z",
     "source": "/home/runner/work/wowzaV9-Pro/wowzaV9-Pro/_v9/output/api_usage_log.csv",
     "status": "OK"
   },
   "fixture_horizon": {
-    "next_24h": 19,
-    "next_3h": 1,
-    "next_6h": 1,
-    "next_72h": 70
+    "next_24h": 18,
+    "next_3h": 0,
+    "next_6h": 0,
+    "next_72h": 69
   },
   "fixtures_today": 19,
   "freshness": {
     "fixtures": {
       "age_hours": 0.0,
-      "last_observed_at": "2026-08-31T00:48:22Z",
+      "last_observed_at": "2026-08-31T08:52:41Z",
       "status": "OK"
     },
     "live_odds_snapshots": {
-      "age_hours": 1.39,
+      "age_hours": 9.46,
       "last_observed_at": "2026-08-30T23:25:17Z",
-      "status": "OK"
+      "status": "STALE"
     },
     "live_signals": {
-      "age_hours": 12.86,
+      "age_hours": 20.93,
       "last_observed_at": "2026-08-30T11:57:04Z",
       "status": "STALE"
     },
     "market_snapshots": {
       "age_hours": 0.0,
-      "last_observed_at": "2026-08-31T00:48:22Z",
+      "last_observed_at": "2026-08-31T08:52:41Z",
       "status": "OK"
     },
     "model_snapshots": {
-      "age_hours": 1.92,
-      "last_observed_at": "2026-08-30T22:53:07Z",
+      "age_hours": 3.42,
+      "last_observed_at": "2026-08-31T05:27:39Z",
       "status": "OK"
     },
     "player_props": {
-      "age_hours": 12.86,
+      "age_hours": 20.93,
       "last_observed_at": "2026-08-30T11:57:04Z",
       "status": "STALE"
     }
   },
-  "generated_at": "2026-08-31T00:48:30Z",
+  "generated_at": "2026-08-31T08:52:49Z",
   "observed_cadence": {
     "live_odds_snapshots": {
       "first": "2026-08-30T18:02:41Z",
@@ -72,34 +72,34 @@
     },
     "market_snapshots": {
       "first": "2026-08-17T13:56:24Z",
-      "last": "2026-08-31T00:48:22Z",
+      "last": "2026-08-31T08:52:41Z",
       "max_gap_min": 808.2,
-      "median_gap_min": 114.7,
-      "missed_windows": 1732,
-      "n_observations": 142,
-      "p90_gap_min": 197.8
+      "median_gap_min": 115.0,
+      "missed_windows": 465,
+      "n_observations": 143,
+      "p90_gap_min": 199.4
     },
     "model_snapshots": {
       "first": "2026-08-17T13:56:24Z",
-      "last": "2026-08-30T22:53:07Z",
+      "last": "2026-08-31T05:27:39Z",
       "max_gap_min": 793.4,
-      "median_gap_min": 120.9,
-      "missed_windows": 1783,
-      "n_observations": 99,
-      "p90_gap_min": 525.5
+      "median_gap_min": 121.6,
+      "missed_windows": 511,
+      "n_observations": 100,
+      "p90_gap_min": 524.7
     },
     "player_props": {
       "first": "2026-08-17T13:56:26Z",
       "last": "2026-08-30T11:57:04Z",
       "max_gap_min": 2471.9,
       "median_gap_min": 1440.9,
-      "missed_windows": 1843,
+      "missed_windows": 604,
       "n_observations": 14,
       "p90_gap_min": 1956.4
     }
   },
-  "scheduler_mode": "LIVE_MATCH",
+  "scheduler_mode": "NORMAL",
   "status": "WARN",
-  "target_interval_min": 10,
+  "target_interval_min": 30,
   "window_days": 14
 }
