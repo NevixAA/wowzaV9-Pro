@@ -6,19 +6,19 @@
       "last": "2026-08-28T23:39:16Z",
       "max_gap_min": 8770.5,
       "median_gap_min": 119.0,
-      "missed_windows": 356,
+      "missed_windows": 1114,
       "n_observations": 17,
       "p90_gap_min": 551.2
     },
     "Mon": {
       "first": "2026-08-17T13:56:24Z",
       "fixtures_kicking_off": 41,
-      "last": "2026-08-31T13:55:46Z",
+      "last": "2026-08-31T17:42:11Z",
       "max_gap_min": 8835.2,
-      "median_gap_min": 112.6,
-      "missed_windows": 643,
-      "n_observations": 23,
-      "p90_gap_min": 466.2
+      "median_gap_min": 115.4,
+      "missed_windows": 2006,
+      "n_observations": 24,
+      "p90_gap_min": 448.1
     },
     "Sat": {
       "first": "2026-08-22T02:02:56Z",
@@ -26,7 +26,7 @@
       "last": "2026-08-29T21:09:00Z",
       "max_gap_min": 9146.0,
       "median_gap_min": 116.3,
-      "missed_windows": 352,
+      "missed_windows": 1100,
       "n_observations": 17,
       "p90_gap_min": 414.7
     },
@@ -36,7 +36,7 @@
       "last": "2026-08-30T21:28:50Z",
       "max_gap_min": 8745.2,
       "median_gap_min": 118.3,
-      "missed_windows": 350,
+      "missed_windows": 1098,
       "n_observations": 19,
       "p90_gap_min": 326.7
     },
@@ -46,7 +46,7 @@
       "last": "2026-08-27T17:39:50Z",
       "max_gap_min": 8913.0,
       "median_gap_min": 112.2,
-      "missed_windows": 345,
+      "missed_windows": 1079,
       "n_observations": 18,
       "p90_gap_min": 375.7
     },
@@ -56,7 +56,7 @@
       "last": "2026-08-25T22:59:41Z",
       "max_gap_min": 8830.4,
       "median_gap_min": 110.0,
-      "missed_windows": 343,
+      "missed_windows": 1097,
       "n_observations": 26,
       "p90_gap_min": 139.5
     },
@@ -66,19 +66,19 @@
       "last": "2026-08-26T21:08:42Z",
       "max_gap_min": 8836.6,
       "median_gap_min": 112.7,
-      "missed_windows": 341,
+      "missed_windows": 1088,
       "n_observations": 24,
       "p90_gap_min": 152.1
     }
   },
   "fixtures": {
     "in_store": 559,
-    "kicked_off": 357,
+    "kicked_off": 368,
     "with_market_snapshot": 10274,
     "with_model_snapshot": 559,
     "with_player_props": 338
   },
-  "generated_at": "2026-08-31T13:56:00Z",
+  "generated_at": "2026-08-31T17:42:18Z",
   "live": {
     "live_odds_fixtures": 90,
     "live_odds_rows": 3624,
@@ -87,60 +87,60 @@
   "near_kickoff_market": {
     "T-10m": {
       "fixtures_covered": 37,
-      "pct_of_kicked_off": 10.4
+      "pct_of_kicked_off": 10.1
     },
     "T-1h": {
       "fixtures_covered": 144,
-      "pct_of_kicked_off": 40.3
+      "pct_of_kicked_off": 39.1
     },
     "T-30m": {
       "fixtures_covered": 58,
-      "pct_of_kicked_off": 16.2
+      "pct_of_kicked_off": 15.8
     },
     "T-3h": {
-      "fixtures_covered": 269,
-      "pct_of_kicked_off": 75.4
+      "fixtures_covered": 275,
+      "pct_of_kicked_off": 74.7
     },
     "T-6h": {
-      "fixtures_covered": 313,
-      "pct_of_kicked_off": 87.7
+      "fixtures_covered": 324,
+      "pct_of_kicked_off": 88.0
     },
-    "fixtures_with_any_prematch_obs": 357,
-    "kicked_off_fixtures": 357,
+    "fixtures_with_any_prematch_obs": 368,
+    "kicked_off_fixtures": 368,
     "status": "OK"
   },
   "near_kickoff_model": {
     "T-10m": {
       "fixtures_covered": 24,
-      "pct_of_kicked_off": 6.7
+      "pct_of_kicked_off": 6.5
     },
     "T-1h": {
       "fixtures_covered": 126,
-      "pct_of_kicked_off": 35.3
+      "pct_of_kicked_off": 34.2
     },
     "T-30m": {
       "fixtures_covered": 76,
-      "pct_of_kicked_off": 21.3
+      "pct_of_kicked_off": 20.7
     },
     "T-3h": {
-      "fixtures_covered": 260,
-      "pct_of_kicked_off": 72.8
+      "fixtures_covered": 266,
+      "pct_of_kicked_off": 72.3
     },
     "T-6h": {
-      "fixtures_covered": 311,
-      "pct_of_kicked_off": 87.1
+      "fixtures_covered": 322,
+      "pct_of_kicked_off": 87.5
     },
-    "fixtures_with_any_prematch_obs": 357,
-    "kicked_off_fixtures": 357,
+    "fixtures_with_any_prematch_obs": 368,
+    "kicked_off_fixtures": 368,
     "status": "OK"
   },
   "recommendations": [
-    "T-10m market coverage is 10.4% of kicked-off fixtures. Closing price cannot be backfilled, so this is a permanent loss per uncovered fixture.",
-    "T-1h market coverage is 40.3%. The final hour is where the sharp money moves; a capture window inside it is worth more than an extra one three days out.",
-    "market_snapshots p90 gap is 208 min against a 30 min target (474 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
-    "model_snapshots p90 gap is 524 min against a 30 min target (526 missed windows) \u2014 the tail, not the median, is where captures are being lost."
+    "T-10m market coverage is 10.1% of kicked-off fixtures. Closing price cannot be backfilled, so this is a permanent loss per uncovered fixture.",
+    "T-1h market coverage is 39.1%. The final hour is where the sharp money moves; a capture window inside it is worth more than an extra one three days out.",
+    "market_snapshots p90 gap is 229 min against a 10 min target (1800 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
+    "model_snapshots p90 gap is 526 min against a 10 min target (1841 missed windows) \u2014 the tail, not the median, is where captures are being lost."
   ],
-  "scheduler_mode": "NORMAL",
-  "target_interval_min": 30,
+  "scheduler_mode": "LIVE_MATCH",
+  "target_interval_min": 10,
   "window_days": 14
 }
