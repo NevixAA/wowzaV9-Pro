@@ -12,7 +12,7 @@
     },
     "Mon": {
       "first": "2026-08-17T13:56:24Z",
-      "fixtures_kicking_off": 41,
+      "fixtures_kicking_off": 51,
       "last": "2026-08-31T23:00:26Z",
       "max_gap_min": 8835.2,
       "median_gap_min": 115.5,
@@ -22,7 +22,7 @@
     },
     "Sat": {
       "first": "2026-08-22T02:02:56Z",
-      "fixtures_kicking_off": 240,
+      "fixtures_kicking_off": 246,
       "last": "2026-08-29T21:09:00Z",
       "max_gap_min": 9146.0,
       "median_gap_min": 116.3,
@@ -32,7 +32,7 @@
     },
     "Sun": {
       "first": "2026-08-23T02:11:25Z",
-      "fixtures_kicking_off": 147,
+      "fixtures_kicking_off": 153,
       "last": "2026-08-30T21:28:50Z",
       "max_gap_min": 8745.2,
       "median_gap_min": 118.3,
@@ -52,13 +52,13 @@
     },
     "Tue": {
       "first": "2026-08-18T02:03:10Z",
-      "fixtures_kicking_off": 36,
-      "last": "2026-08-25T22:59:41Z",
-      "max_gap_min": 8830.4,
-      "median_gap_min": 110.0,
-      "missed_windows": 1097,
-      "n_observations": 26,
-      "p90_gap_min": 139.5
+      "fixtures_kicking_off": 37,
+      "last": "2026-09-01T05:35:22Z",
+      "max_gap_min": 9035.7,
+      "median_gap_min": 111.2,
+      "missed_windows": 1999,
+      "n_observations": 27,
+      "p90_gap_min": 148.1
     },
     "Wed": {
       "first": "2026-08-19T02:05:16Z",
@@ -72,16 +72,16 @@
     }
   },
   "fixtures": {
-    "in_store": 559,
-    "kicked_off": 373,
-    "with_market_snapshot": 10274,
-    "with_model_snapshot": 559,
+    "in_store": 582,
+    "kicked_off": 375,
+    "with_market_snapshot": 10297,
+    "with_model_snapshot": 582,
     "with_player_props": 338
   },
-  "generated_at": "2026-08-31T23:00:33Z",
+  "generated_at": "2026-09-01T05:35:30Z",
   "live": {
-    "live_odds_fixtures": 138,
-    "live_odds_rows": 5645,
+    "live_odds_fixtures": 149,
+    "live_odds_rows": 6103,
     "live_signal_fixtures": 46
   },
   "near_kickoff_market": {
@@ -91,22 +91,22 @@
     },
     "T-1h": {
       "fixtures_covered": 144,
-      "pct_of_kicked_off": 38.6
+      "pct_of_kicked_off": 38.4
     },
     "T-30m": {
       "fixtures_covered": 58,
       "pct_of_kicked_off": 15.5
     },
     "T-3h": {
-      "fixtures_covered": 277,
-      "pct_of_kicked_off": 74.3
+      "fixtures_covered": 279,
+      "pct_of_kicked_off": 74.4
     },
     "T-6h": {
-      "fixtures_covered": 328,
-      "pct_of_kicked_off": 87.9
+      "fixtures_covered": 330,
+      "pct_of_kicked_off": 88.0
     },
-    "fixtures_with_any_prematch_obs": 373,
-    "kicked_off_fixtures": 373,
+    "fixtures_with_any_prematch_obs": 375,
+    "kicked_off_fixtures": 375,
     "status": "OK"
   },
   "near_kickoff_model": {
@@ -116,31 +116,31 @@
     },
     "T-1h": {
       "fixtures_covered": 126,
-      "pct_of_kicked_off": 33.8
+      "pct_of_kicked_off": 33.6
     },
     "T-30m": {
       "fixtures_covered": 76,
-      "pct_of_kicked_off": 20.4
+      "pct_of_kicked_off": 20.3
     },
     "T-3h": {
       "fixtures_covered": 266,
-      "pct_of_kicked_off": 71.3
+      "pct_of_kicked_off": 70.9
     },
     "T-6h": {
       "fixtures_covered": 324,
-      "pct_of_kicked_off": 86.9
+      "pct_of_kicked_off": 86.4
     },
-    "fixtures_with_any_prematch_obs": 373,
-    "kicked_off_fixtures": 373,
+    "fixtures_with_any_prematch_obs": 375,
+    "kicked_off_fixtures": 375,
     "status": "OK"
   },
   "recommendations": [
     "T-10m market coverage is 9.9% of kicked-off fixtures. Closing price cannot be backfilled, so this is a permanent loss per uncovered fixture.",
-    "T-1h market coverage is 38.6%. The final hour is where the sharp money moves; a capture window inside it is worth more than an extra one three days out.",
-    "market_snapshots p90 gap is 258 min against a 10 min target (1794 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
-    "model_snapshots p90 gap is 529 min against a 10 min target (1806 missed windows) \u2014 the tail, not the median, is where captures are being lost."
+    "T-1h market coverage is 38.4%. The final hour is where the sharp money moves; a capture window inside it is worth more than an extra one three days out.",
+    "market_snapshots p90 gap is 279 min against a 10 min target (1806 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
+    "model_snapshots p90 gap is 532 min against a 10 min target (1856 missed windows) \u2014 the tail, not the median, is where captures are being lost."
   ],
-  "scheduler_mode": "LIVE_MATCH",
+  "scheduler_mode": "HIGH_ACTIVITY",
   "target_interval_min": 10,
   "window_days": 14
 }
