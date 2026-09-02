@@ -2,7 +2,7 @@
   "by_weekday": {
     "Fri": {
       "first": "2026-08-21T02:10:42Z",
-      "fixtures_kicking_off": 54,
+      "fixtures_kicking_off": 55,
       "last": "2026-08-28T23:39:16Z",
       "max_gap_min": 8770.5,
       "median_gap_min": 119.0,
@@ -63,25 +63,25 @@
     "Wed": {
       "first": "2026-08-19T02:05:16Z",
       "fixtures_kicking_off": 31,
-      "last": "2026-08-26T21:08:42Z",
-      "max_gap_min": 8836.6,
-      "median_gap_min": 112.7,
-      "missed_windows": 1088,
-      "n_observations": 24,
-      "p90_gap_min": 152.1
+      "last": "2026-09-02T00:29:13Z",
+      "max_gap_min": 8840.5,
+      "median_gap_min": 113.3,
+      "missed_windows": 1971,
+      "n_observations": 25,
+      "p90_gap_min": 163.2
     }
   },
   "fixtures": {
-    "in_store": 593,
+    "in_store": 594,
     "kicked_off": 403,
-    "with_market_snapshot": 10329,
-    "with_model_snapshot": 593,
+    "with_market_snapshot": 10330,
+    "with_model_snapshot": 594,
     "with_player_props": 367
   },
-  "generated_at": "2026-09-01T21:17:14Z",
+  "generated_at": "2026-09-02T00:29:21Z",
   "live": {
-    "live_odds_fixtures": 223,
-    "live_odds_rows": 9485,
+    "live_odds_fixtures": 231,
+    "live_odds_rows": 9922,
     "live_signal_fixtures": 46
   },
   "near_kickoff_market": {
@@ -137,8 +137,8 @@
   "recommendations": [
     "T-10m market coverage is 9.2% of kicked-off fixtures. Closing price cannot be backfilled, so this is a permanent loss per uncovered fixture.",
     "T-1h market coverage is 36.0%. The final hour is where the sharp money moves; a capture window inside it is worth more than an extra one three days out.",
-    "market_snapshots p90 gap is 294 min against a 10 min target (1813 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
-    "model_snapshots p90 gap is 533 min against a 10 min target (1872 missed windows) \u2014 the tail, not the median, is where captures are being lost."
+    "market_snapshots p90 gap is 294 min against a 10 min target (1814 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
+    "model_snapshots p90 gap is 533 min against a 10 min target (1868 missed windows) \u2014 the tail, not the median, is where captures are being lost."
   ],
   "scheduler_mode": "HIGH_ACTIVITY",
   "target_interval_min": 10,
