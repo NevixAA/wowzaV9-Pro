@@ -22,7 +22,7 @@
     },
     "Sat": {
       "first": "2026-08-22T02:02:56Z",
-      "fixtures_kicking_off": 246,
+      "fixtures_kicking_off": 247,
       "last": "2026-08-29T21:09:00Z",
       "max_gap_min": 9146.0,
       "median_gap_min": 116.3,
@@ -52,7 +52,7 @@
     },
     "Tue": {
       "first": "2026-08-18T02:03:10Z",
-      "fixtures_kicking_off": 38,
+      "fixtures_kicking_off": 43,
       "last": "2026-09-01T21:17:08Z",
       "max_gap_min": 9035.7,
       "median_gap_min": 114.4,
@@ -63,35 +63,35 @@
     "Wed": {
       "first": "2026-08-19T02:05:16Z",
       "fixtures_kicking_off": 31,
-      "last": "2026-09-02T11:40:51Z",
+      "last": "2026-09-02T16:50:07Z",
       "max_gap_min": 8840.5,
-      "median_gap_min": 113.3,
-      "missed_windows": 2034,
-      "n_observations": 29,
-      "p90_gap_min": 304.2
+      "median_gap_min": 114.0,
+      "missed_windows": 2063,
+      "n_observations": 30,
+      "p90_gap_min": 323.8
     }
   },
   "fixtures": {
-    "in_store": 594,
-    "kicked_off": 413,
-    "with_market_snapshot": 10381,
-    "with_model_snapshot": 594,
+    "in_store": 600,
+    "kicked_off": 414,
+    "with_market_snapshot": 10387,
+    "with_model_snapshot": 600,
     "with_player_props": 381
   },
-  "generated_at": "2026-09-02T11:40:57Z",
+  "generated_at": "2026-09-02T16:50:15Z",
   "live": {
-    "live_odds_fixtures": 236,
-    "live_odds_rows": 10151,
+    "live_odds_fixtures": 271,
+    "live_odds_rows": 11469,
     "live_signal_fixtures": 46
   },
   "near_kickoff_market": {
     "T-10m": {
       "fixtures_covered": 37,
-      "pct_of_kicked_off": 9.0
+      "pct_of_kicked_off": 8.9
     },
     "T-1h": {
       "fixtures_covered": 145,
-      "pct_of_kicked_off": 35.1
+      "pct_of_kicked_off": 35.0
     },
     "T-30m": {
       "fixtures_covered": 58,
@@ -99,14 +99,14 @@
     },
     "T-3h": {
       "fixtures_covered": 307,
-      "pct_of_kicked_off": 74.3
+      "pct_of_kicked_off": 74.2
     },
     "T-6h": {
-      "fixtures_covered": 368,
+      "fixtures_covered": 369,
       "pct_of_kicked_off": 89.1
     },
-    "fixtures_with_any_prematch_obs": 413,
-    "kicked_off_fixtures": 413,
+    "fixtures_with_any_prematch_obs": 414,
+    "kicked_off_fixtures": 414,
     "status": "OK"
   },
   "near_kickoff_model": {
@@ -124,21 +124,21 @@
     },
     "T-3h": {
       "fixtures_covered": 276,
-      "pct_of_kicked_off": 66.8
+      "pct_of_kicked_off": 66.7
     },
     "T-6h": {
-      "fixtures_covered": 334,
+      "fixtures_covered": 335,
       "pct_of_kicked_off": 80.9
     },
-    "fixtures_with_any_prematch_obs": 413,
-    "kicked_off_fixtures": 413,
+    "fixtures_with_any_prematch_obs": 414,
+    "kicked_off_fixtures": 414,
     "status": "OK"
   },
   "recommendations": [
-    "T-10m market coverage is 9.0% of kicked-off fixtures. Closing price cannot be backfilled, so this is a permanent loss per uncovered fixture.",
-    "T-1h market coverage is 35.1%. The final hour is where the sharp money moves; a capture window inside it is worth more than an extra one three days out.",
-    "market_snapshots p90 gap is 304 min against a 10 min target (1819 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
-    "model_snapshots p90 gap is 532 min against a 10 min target (1865 missed windows) \u2014 the tail, not the median, is where captures are being lost."
+    "T-10m market coverage is 8.9% of kicked-off fixtures. Closing price cannot be backfilled, so this is a permanent loss per uncovered fixture.",
+    "T-1h market coverage is 35.0%. The final hour is where the sharp money moves; a capture window inside it is worth more than an extra one three days out.",
+    "market_snapshots p90 gap is 308 min against a 10 min target (1830 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
+    "model_snapshots p90 gap is 532 min against a 10 min target (1853 missed windows) \u2014 the tail, not the median, is where captures are being lost."
   ],
   "scheduler_mode": "LIVE_MATCH",
   "target_interval_min": 10,
