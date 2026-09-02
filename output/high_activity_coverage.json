@@ -62,85 +62,85 @@
     },
     "Wed": {
       "first": "2026-08-19T02:05:16Z",
-      "fixtures_kicking_off": 31,
-      "last": "2026-09-02T16:50:07Z",
+      "fixtures_kicking_off": 32,
+      "last": "2026-09-02T21:14:16Z",
       "max_gap_min": 8840.5,
-      "median_gap_min": 114.0,
-      "missed_windows": 2063,
-      "n_observations": 30,
-      "p90_gap_min": 323.8
+      "median_gap_min": 115.7,
+      "missed_windows": 2088,
+      "n_observations": 31,
+      "p90_gap_min": 316.6
     }
   },
   "fixtures": {
-    "in_store": 600,
-    "kicked_off": 414,
-    "with_market_snapshot": 10387,
-    "with_model_snapshot": 600,
+    "in_store": 601,
+    "kicked_off": 425,
+    "with_market_snapshot": 10388,
+    "with_model_snapshot": 601,
     "with_player_props": 381
   },
-  "generated_at": "2026-09-02T16:50:15Z",
+  "generated_at": "2026-09-02T21:14:24Z",
   "live": {
-    "live_odds_fixtures": 271,
-    "live_odds_rows": 11469,
+    "live_odds_fixtures": 272,
+    "live_odds_rows": 11496,
     "live_signal_fixtures": 46
   },
   "near_kickoff_market": {
     "T-10m": {
       "fixtures_covered": 37,
-      "pct_of_kicked_off": 8.9
+      "pct_of_kicked_off": 8.7
     },
     "T-1h": {
       "fixtures_covered": 145,
-      "pct_of_kicked_off": 35.0
+      "pct_of_kicked_off": 34.1
     },
     "T-30m": {
       "fixtures_covered": 58,
-      "pct_of_kicked_off": 14.0
+      "pct_of_kicked_off": 13.6
     },
     "T-3h": {
-      "fixtures_covered": 307,
-      "pct_of_kicked_off": 74.2
+      "fixtures_covered": 318,
+      "pct_of_kicked_off": 74.8
     },
     "T-6h": {
-      "fixtures_covered": 369,
-      "pct_of_kicked_off": 89.1
+      "fixtures_covered": 380,
+      "pct_of_kicked_off": 89.4
     },
-    "fixtures_with_any_prematch_obs": 414,
-    "kicked_off_fixtures": 414,
+    "fixtures_with_any_prematch_obs": 425,
+    "kicked_off_fixtures": 425,
     "status": "OK"
   },
   "near_kickoff_model": {
     "T-10m": {
       "fixtures_covered": 24,
-      "pct_of_kicked_off": 5.8
+      "pct_of_kicked_off": 5.6
     },
     "T-1h": {
       "fixtures_covered": 136,
-      "pct_of_kicked_off": 32.9
+      "pct_of_kicked_off": 32.0
     },
     "T-30m": {
       "fixtures_covered": 86,
-      "pct_of_kicked_off": 20.8
+      "pct_of_kicked_off": 20.2
     },
     "T-3h": {
       "fixtures_covered": 276,
-      "pct_of_kicked_off": 66.7
+      "pct_of_kicked_off": 64.9
     },
     "T-6h": {
-      "fixtures_covered": 335,
+      "fixtures_covered": 344,
       "pct_of_kicked_off": 80.9
     },
-    "fixtures_with_any_prematch_obs": 414,
-    "kicked_off_fixtures": 414,
+    "fixtures_with_any_prematch_obs": 425,
+    "kicked_off_fixtures": 425,
     "status": "OK"
   },
   "recommendations": [
-    "T-10m market coverage is 8.9% of kicked-off fixtures. Closing price cannot be backfilled, so this is a permanent loss per uncovered fixture.",
-    "T-1h market coverage is 35.0%. The final hour is where the sharp money moves; a capture window inside it is worth more than an extra one three days out.",
-    "market_snapshots p90 gap is 308 min against a 10 min target (1830 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
-    "model_snapshots p90 gap is 532 min against a 10 min target (1853 missed windows) \u2014 the tail, not the median, is where captures are being lost."
+    "T-10m market coverage is 8.7% of kicked-off fixtures. Closing price cannot be backfilled, so this is a permanent loss per uncovered fixture.",
+    "T-1h market coverage is 34.1%. The final hour is where the sharp money moves; a capture window inside it is worth more than an extra one three days out.",
+    "market_snapshots p90 gap is 309 min against a 10 min target (1824 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
+    "model_snapshots p90 gap is 532 min against a 10 min target (1873 missed windows) \u2014 the tail, not the median, is where captures are being lost."
   ],
-  "scheduler_mode": "LIVE_MATCH",
+  "scheduler_mode": "HIGH_ACTIVITY",
   "target_interval_min": 10,
   "window_days": 14
 }
