@@ -1,0 +1,102 @@
+name: Pro Team Stats
+
+# Per-fixture team match statistics from API-Football /fixtures/statistics — the xG, possession
+# and inside-box shots the feature set never had.
+#
+# WHY THIS IS ITS OWN WORKFLOW (created 2026-09-02)
+#
+# It used to be a step inside pro_collect.yml, gated on the DAILY sweep:
+#
+#     if: steps.collect.outcome == 'success' && github.event.schedule != '40 */2 * * *'
+#
+# The gate is correct and the collector is correct. What failed is the assumption underneath
+# both: that the once-a-day cron actually fires. `pro: collect` has not committed at 06:xx UTC
+# since 2026-08-26, so the sweep — and therefore this collection — simply never ran. Verified
+# directly on 2026-09-02: `python -m src.pipelines.team_stats --limit 3 --dry-run` returned real
+# rows (possession, shots, SOT, inside-box all 100% populated) in one API call. Working collector,
+# valid credential, zero canonical rows, because the step was never reached.
+#
+# Coupling a collector's delivery to another workflow's least-frequent cron gives it the WORST
+# delivery odds in the estate and hides the failure inside a job that reports success for its own
+# reasons. Its own workflow, its own cron, its own health.
+#
+# Resumable and cached by design: already-collected fixture_ids are skipped by reading the
+# existing table, and a finished fixture's statistics never change. So twice a day costs the same
+# API budget as once a day (~47 new fixtures/day, ~47 calls), and a missed run is caught by the
+# next one instead of losing a day.
+
+on:
+  schedule:
+    # Twice daily, off the hour. Two firings rather than one because delivery is not guaranteed:
+    # if either lands, the day is collected, and the second costs nothing when the first worked.
+    - cron: '35 4 * * *'
+    - cron: '35 16 * * *'
+  workflow_dispatch:
+    inputs:
+      seasons:
+        description: 'Comma-separated seasons (default 2026)'
+        required: false
+      limit:
+        description: 'Max fixtures (blank = all)'
+        required: false
+
+concurrency:
+  group: pro-team-stats
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install pandas pyarrow requests
+
+      - name: Collect team match statistics
+        id: stats
+        env:
+          APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
+        run: |
+          SEASONS="${{ github.event.inputs.seasons }}"; [ -n "$SEASONS" ] || SEASONS=2026
+          LIMIT="${{ github.event.inputs.limit }}"
+          if [ -n "$LIMIT" ]; then
+            python -m src.pipelines.team_stats --seasons "$SEASONS" --limit "$LIMIT"
+          else
+            python -m src.pipelines.team_stats --seasons "$SEASONS"
+          fi
+
+      # NOT continue-on-error, unlike the step this replaces. team_match_stats is declared ACTIVE,
+      # which means an empty table is a real fault — so a failure here must fail the job and be
+      # visible, rather than being swallowed and rediscovered by an audit a week later.
+      - name: Commit the season store
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A data 2>/dev/null || true
+          git diff --staged --quiet && { echo "no new fixtures to store"; exit 0; }
+          git commit -m "pro: team stats $(date -u '+%Y-%m-%d %H:%M UTC')"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main && git push && exit 0
+            echo "push race - retry $i"; sleep $((RANDOM % 5 + 3))
+          done
+          echo "::error title=push failed::team stats collected but nothing was persisted."
+          exit 1
+
+      - name: Surface a collection failure
+        if: failure()
+        run: |
+          echo "::error title=team_match_stats did not collect::The table is declared ACTIVE, so \
+          an empty one is a fault and not a design. Check APIFOOTBALL_KEY on THIS repository and \
+          the /fixtures/statistics quota."

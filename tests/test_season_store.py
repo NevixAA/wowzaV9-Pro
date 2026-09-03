@@ -119,8 +119,27 @@ def main() -> int:
         check("January stays with the start year",
               cfg.season_start_year(date(2027, 1, 5)) == 2026)
 
-        print("\n== Pro must never notify ==")
-        check("PRO_MAY_NOTIFY is False", cfg.PRO_MAY_NOTIFY is False)
+        # UPDATED 2026-09-02. This asserted `PRO_MAY_NOTIFY is False` and had been failing since
+        # the bet builder shipped, because the policy changed and the test did not. A red test
+        # nobody acts on is worse than no test: it trains people to ignore the suite.
+        #
+        # The policy is now narrow rather than absent, so the invariants worth protecting are the
+        # ones that keep it narrow — not the flag's value.
+        print("\n== Pro's notification policy is narrow, and staking is still forbidden ==")
+        check("Pro NEVER stakes", cfg.DEFAULT_DEPLOYMENT_MODE == "RESEARCH")
+        check("'LIVE' is not the default deployment mode",
+              cfg.DEFAULT_DEPLOYMENT_MODE != "LIVE")
+        # The sender defaults to dry_run, so a coding mistake cannot broadcast by omission.
+        import inspect
+        from src.combo import notify as cn
+        check("the only sender defaults to dry_run=True",
+              inspect.signature(cn.run).parameters["dry_run"].default is True)
+        # COLLECT must never notify whatever the flag says — enforced by the absence of the
+        # credential, and by pro_collect aborting if one is ever visible to it.
+        src = (Path(__file__).resolve().parents[1] / "src/pipelines/pro_collect.py").read_text(
+            encoding="utf-8")
+        check("collect aborts if Telegram credentials are visible to it",
+              "TELEGRAM_TOKEN" in src and "return 2" in src)
     finally:
         cfg.season_label = orig                       # type: ignore[assignment]
         shutil.rmtree(root, ignore_errors=True)

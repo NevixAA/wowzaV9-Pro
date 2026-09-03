@@ -142,8 +142,19 @@ jobs:
           # Per-file and force-added: output/** is gitignored with a named allowlist, and
           # `git add a b missing` stages NOTHING when one path is absent — the defect that
           # silenced v9's player_props for three days and saved no matrices twice here.
+          # THE CANONICAL STORE. Missing from this list until 2026-09-02, and that single
+          # omission is why combo_candidates / combo_legs / combo_dependencies /
+          # combo_settlements read 0 rows for four days while the importer ran successfully on
+          # every pass. The parquet partitions were written to the runner's disk and destroyed
+          # with the runner. Six builder runs, six green workflows, nothing persisted — the
+          # failure shape this repository keeps meeting.
+          #
+          # `git add -A data` matches pro_collect.yml. It is safe here for the same reason: the
+          # store is run-partitioned, so two workflows can never target the same file.
+          git add -A data 2>/dev/null || true
           for f in output/bet_builder_candidates.csv \
                    output/bet_builder_settled.csv \
+                   output/combo_import_health.json \
                    output/combo_notified.json; do
             git add -f "$f" 2>/dev/null || echo "  (skip, not present: $f)"
           done

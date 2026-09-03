@@ -67,6 +67,11 @@ HORIZONS = ((360, "T-6h"), (180, "T-3h"), (60, "T-1h"), (30, "T-30m"), (10, "T-1
 # a Tuesday cup round is a heavy day whatever the weekday says.
 HEAVY_DAY_FIXTURES = 20
 
+# How far ahead of a kickoff we consider ourselves "on duty". An observation taken 8h before the
+# next kickoff on the board is not a missed 10-minute window — nothing was near enough to matter.
+# 6h matches the widest horizon the coverage table reports.
+ACTIVE_HORIZON_H = 6.0
+
 
 def _utc(s: pd.Series) -> pd.Series:
     return pd.to_datetime(s, errors="coerce", utc=True)
@@ -80,20 +85,38 @@ def _read(table: str) -> pd.DataFrame:
         return pd.DataFrame()
 
 
-def spacing(ts: pd.Series, target_min: float) -> dict:
+def spacing(ts: pd.Series, target_min: float, *, active: pd.Series | None = None) -> dict:
     """Observed cadence of a series of capture timestamps.
 
     Deduplicated first: one run writes thousands of rows sharing a timestamp, and leaving them in
     would report a spacing of zero minutes and a flawless schedule.
+
+    ALL_TIME vs ACTIVE_WINDOW (Prompt 1.5 section 22). The first version counted every gap the
+    same way, so a quiet 03:00-08:00 UTC with no fixture anywhere on earth contributed hundreds
+    of "missed windows" identical in kind to a genuine capture failure during a Saturday
+    afternoon. That inflates the headline and, worse, makes the number useless for deciding
+    anything: you cannot tell a scheduling fault from a night's sleep.
+
+    `active` is a boolean mask over the same index marking observations inside a period we
+    actually wanted to be collecting. Gaps are then measured a second time within those periods
+    only, and both figures are reported. The all-time number stays because it is the honest
+    denominator for "how much history is there"; the active number is the operational one.
     """
-    t = _utc(ts).dropna().drop_duplicates().sort_values()
+    t = _utc(ts).dropna()
+    if active is not None:
+        act = active.reindex(t.index).fillna(False).astype(bool)
+    else:
+        act = None
+    t = t.drop_duplicates().sort_values()
     if len(t) < 2:
         return {"n_observations": int(len(t)), "median_gap_min": None, "p90_gap_min": None,
-                "max_gap_min": None, "missed_windows": None}
+                "max_gap_min": None, "missed_windows": None,
+                "active_median_gap_min": None, "active_p90_gap_min": None,
+                "active_missed_windows": None}
     gaps = t.diff().dropna().dt.total_seconds() / 60.0
     # floor(gap/target) - 1 per gap: a 47-minute gap on a 10-minute target is 3 missed windows.
     missed = int(np.clip(np.floor(gaps / max(target_min, 1e-9)) - 1, 0, None).sum())
-    return {
+    out = {
         "n_observations": int(len(t)),
         "median_gap_min": round(float(gaps.median()), 1),
         "p90_gap_min": round(float(gaps.quantile(0.90)), 1),
@@ -102,6 +125,27 @@ def spacing(ts: pd.Series, target_min: float) -> dict:
         "first": t.iloc[0].strftime("%Y-%m-%dT%H:%M:%SZ"),
         "last": t.iloc[-1].strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
+
+    # Active-window figures. A gap counts only when BOTH ends sit inside an active period —
+    # a gap that starts at 23:00 and ends at 09:00 spans a quiet night and is not a fault.
+    if act is not None and act.any():
+        at = _utc(ts)[act.values].dropna().drop_duplicates().sort_values()
+        if len(at) >= 2:
+            ag = at.diff().dropna().dt.total_seconds() / 60.0
+            # Drop gaps longer than 3x the active window's own median: those bridge inactive
+            # periods rather than measuring cadence within one.
+            med = float(ag.median())
+            inside = ag[ag <= max(med * 3, target_min * 6)]
+            if len(inside):
+                out["active_median_gap_min"] = round(float(inside.median()), 1)
+                out["active_p90_gap_min"] = round(float(inside.quantile(0.90)), 1)
+                out["active_missed_windows"] = int(
+                    np.clip(np.floor(inside / max(target_min, 1e-9)) - 1, 0, None).sum())
+                out["active_n_observations"] = int(len(at))
+    out.setdefault("active_median_gap_min", None)
+    out.setdefault("active_p90_gap_min", None)
+    out.setdefault("active_missed_windows", None)
+    return out
 
 
 def _near_kickoff(snaps: pd.DataFrame, fx: pd.DataFrame) -> dict:
@@ -182,13 +226,27 @@ def collect(days: int = 14) -> tuple[dict, dict]:
         o = _utc(d["observed_at"])
         return d.loc[o >= since, "observed_at"]
 
-    cadence = {
-        "market_snapshots": spacing(_recent(mkt), target),
-        "model_snapshots": spacing(_recent(mdl), target),
-        "player_props": spacing(_recent(props), target),
-        "live_signals": spacing(_recent(live), TARGET_MINUTES["LIVE_MATCH"]),
-        "live_odds_snapshots": spacing(_recent(live_odds), TARGET_MINUTES["LIVE_MATCH"]),
-    }
+    # An observation is "active" when a fixture kicks off within the next ACTIVE_HORIZON_H, i.e.
+    # when there was something worth capturing. Built from the fixture list rather than from a
+    # hardcoded clock, so a midweek European night counts and a quiet Monday does not.
+    def _active_mask(s: pd.Series) -> pd.Series | None:
+        if s.empty or kicks.empty:
+            return None
+        o = _utc(s)
+        ko = np.sort(kicks.values)
+        # For each observation, the next kickoff at or after it.
+        idx = np.searchsorted(ko, o.values, side="left")
+        nxt = np.where(idx < len(ko), ko[np.clip(idx, 0, len(ko) - 1)], np.datetime64("NaT"))
+        hours = (nxt - o.values) / np.timedelta64(1, "h")
+        return pd.Series((hours >= 0) & (hours <= ACTIVE_HORIZON_H), index=s.index)
+
+    cadence = {}
+    for name, d, tgt in (("market_snapshots", mkt, target), ("model_snapshots", mdl, target),
+                         ("player_props", props, target),
+                         ("live_signals", live, TARGET_MINUTES["LIVE_MATCH"]),
+                         ("live_odds_snapshots", live_odds, TARGET_MINUTES["LIVE_MATCH"])):
+        s = _recent(d)
+        cadence[name] = spacing(s, tgt, active=_active_mask(s))
 
     # ---- freshness: how old is the newest row in each table ---------------------------
     freshness = {}
@@ -228,6 +286,9 @@ def collect(days: int = 14) -> tuple[dict, dict]:
         "observed_cadence": cadence,
         "freshness": freshness,
         "api_budget": api,
+        "odds_api_budget": _odds_api_budget(mkt),
+        "odds_spend_by_horizon": _credits_by_horizon(mkt, fx),
+        "active_window_horizon_hours": ACTIVE_HORIZON_H,
         # A judgement, kept separate from the measurements so a threshold change can never be
         # mistaken for the data changing.
         "status": _status(cadence, freshness, target, api),
@@ -258,10 +319,80 @@ def collect(days: int = 14) -> tuple[dict, dict]:
                                    else 0),
             "live_odds_rows": int(len(live_odds)),
         },
+        "by_league": _coverage_by(mkt, fx, "league"),
+        "by_market": _coverage_by(mkt, fx, "market"),
+        "weekend": _weekend_detail(mkt, mdl, props, live_odds, fx, target),
         "recommendations": [],
     }
     coverage["recommendations"] = _recommend(coverage, cadence, target, mode)
+    cov_status, cov_problems = coverage_status(coverage)
+    coverage["status"] = cov_status
+    coverage["problems"] = cov_problems
+    health["coverage_status"] = cov_status
+    health["coverage_problems"] = cov_problems
     return health, coverage
+
+
+def _coverage_by(mkt: pd.DataFrame, fx: pd.DataFrame, col: str) -> dict:
+    """Near-kickoff coverage split by league or market — section 23.
+
+    The split matters because the headline hides the shape: a 9% T-10m figure could be every
+    fixture equally thin, or a handful of leagues covered well and the rest not at all. Those
+    call for opposite fixes.
+    """
+    if mkt.empty or fx.empty or col not in mkt.columns or "kickoff_utc" not in fx.columns:
+        return {}
+    f = fx.drop_duplicates("fixture_key")[["fixture_key", "kickoff_utc"]].copy()
+    f["ko"] = _utc(f["kickoff_utc"])
+    now = pd.Timestamp.now(tz="UTC")
+    f = f[f["ko"].notna() & (f["ko"] <= now)]
+    if f.empty:
+        return {}
+    d = mkt[["fixture_key", "observed_at", col]].copy()
+    d["obs"] = _utc(d["observed_at"])
+    d = d.merge(f, on="fixture_key", how="inner")
+    d = d[d["obs"].notna()]
+    if d.empty:
+        return {}
+    d["mtk"] = (d["ko"] - d["obs"]).dt.total_seconds() / 60.0
+    pre = d[d["mtk"] >= 0]
+    out = {}
+    for key, grp in pre.groupby(col):
+        fixtures = grp["fixture_key"].nunique()
+        if fixtures < 5:               # too thin to read; reported as a count only
+            out[str(key)] = {"fixtures": int(fixtures), "sample_status": "INSUFFICIENT"}
+            continue
+        row = {"fixtures": int(fixtures), "sample_status": "OK"}
+        for lo, name in HORIZONS:
+            row[name] = round(100.0 * grp[grp["mtk"] <= lo]["fixture_key"].nunique()
+                              / fixtures, 1)
+        out[str(key)] = row
+    return dict(sorted(out.items(), key=lambda kv: -kv[1]["fixtures"])[:20])
+
+
+def _weekend_detail(mkt, mdl, props, live_odds, fx, target: float) -> dict:
+    """Fri/Sat/Sun reported separately with every stream — section 23's explicit request."""
+    if fx.empty or "kickoff_utc" not in fx.columns:
+        return {}
+    ko = _utc(fx.drop_duplicates("fixture_key")["kickoff_utc"]).dropna()
+    names = {4: "Fri", 5: "Sat", 6: "Sun"}
+    out = {}
+    for dow, nm in names.items():
+        row = {"fixtures_kicking_off": int((ko.dt.dayofweek == dow).sum())}
+        for label, d in (("market", mkt), ("model", mdl), ("props", props),
+                         ("live_odds", live_odds)):
+            if d.empty or "observed_at" not in d.columns:
+                row[f"{label}_observations"] = 0
+                continue
+            o = _utc(d["observed_at"])
+            day = d.loc[o.dt.dayofweek == dow, "observed_at"]
+            row[f"{label}_observations"] = int(len(day))
+            if label == "market":
+                sp = spacing(day, target)
+                row["market_median_gap_min"] = sp["median_gap_min"]
+                row["market_p90_gap_min"] = sp["p90_gap_min"]
+        out[nm] = row
+    return out
 
 
 def _by_weekday(mkt: pd.DataFrame, fx: pd.DataFrame, target: float) -> dict:
@@ -326,18 +457,136 @@ def _api_budget() -> dict:
             "note": "set V9_LOCAL, or check v9 out beside Pro, to read output/api_usage_log.csv"}
 
 
+def _odds_api_budget(mkt: pd.DataFrame) -> dict:
+    """The Odds API credit picture — Prompt 1.5 section 19.
+
+    THERE IS NO CREDIT METER. API-Football publishes usage on its own endpoint and v9 records it;
+    The Odds API does not, and nothing in any of the three repos counts credits. So this ESTIMATES
+    from the evidence actually stored, and says loudly that it is an estimate.
+
+    The estimator: OddsAPI bills markets x regions per event request, and Pro can see how many
+    distinct (fixture, market) observations were stored per day. That is a LOWER BOUND on credits
+    — a request returning nothing still bills, and those leave no row — so the true figure is
+    higher. A lower bound is still the right thing to publish: it answers "are we anywhere near
+    100,000/month" honestly, and it cannot lull anyone by understating the ceiling.
+
+    Reported per section 19 by market and by time-to-kickoff bucket, because the allocation
+    question is not "how many credits" but "how many were spent on far-future quiet fixtures that
+    had not moved" — spend that section 20 wants moved to the close.
+    """
+    out: dict = {"source": "ESTIMATED from stored market_snapshots — no credit meter exists",
+                 "is_estimate": True, "monthly_allowance": 100_000}
+    if mkt.empty or "observed_at" not in mkt.columns:
+        out["status"] = "NO_DATA"
+        return out
+    d = mkt.copy()
+    d["obs"] = _utc(d["observed_at"])
+    d = d[d["obs"].notna()]
+    if d.empty:
+        out["status"] = "NO_DATA"
+        return out
+
+    now = pd.Timestamp.now(tz="UTC")
+    d["day"] = d["obs"].dt.date
+    # One billable unit per (fixture, market, capture-minute): several selections of one market
+    # arrive in a single response, so counting rows would multiply the estimate by the number of
+    # sides quoted.
+    d["unit"] = (d["fixture_key"].astype(str) + "|" + d.get("market", "").astype(str) + "|"
+                 + d["obs"].dt.strftime("%Y-%m-%dT%H:%M"))
+    per_day = d.groupby("day")["unit"].nunique()
+    month = d[d["obs"] >= now.normalize().replace(day=1)]
+    used_month = int(month["unit"].nunique())
+    days_elapsed = max(1, now.day)
+    days_in_month = pd.Period(now.strftime("%Y-%m")).days_in_month
+
+    out.update({
+        "status": "OK",
+        "credits_used_today": int(per_day.get(now.date(), 0)),
+        "credits_used_month": used_month,
+        "credits_remaining_month": max(0, 100_000 - used_month),
+        "estimated_month_end_usage": int(used_month / days_elapsed * days_in_month),
+        "mean_per_day": round(float(per_day.mean()), 1),
+        "pct_of_monthly_allowance": round(100.0 * used_month / 100_000, 2),
+    })
+    if "market" in d.columns:
+        out["credits_by_market"] = {str(k): int(v) for k, v in
+                                    d.groupby("market")["unit"].nunique().items()}
+    if "league" in d.columns:
+        top = d.groupby("league")["unit"].nunique().sort_values(ascending=False).head(12)
+        out["credits_by_league_top12"] = {str(k): int(v) for k, v in top.items()}
+    return out
+
+
+def _credits_by_horizon(mkt: pd.DataFrame, fx: pd.DataFrame) -> dict:
+    """Where the odds spend actually goes, by time to kickoff. Section 19's most useful cut:
+    it is what turns "reduce waste" from an opinion into an allocation anyone can check."""
+    if mkt.empty or fx.empty or "kickoff_utc" not in fx.columns:
+        return {}
+    f = fx.drop_duplicates("fixture_key")[["fixture_key", "kickoff_utc"]].copy()
+    f["ko"] = _utc(f["kickoff_utc"])
+    d = mkt[["fixture_key", "observed_at"]].copy()
+    d["obs"] = _utc(d["observed_at"])
+    d = d.merge(f[["fixture_key", "ko"]], on="fixture_key", how="inner")
+    d = d[d["obs"].notna() & d["ko"].notna()]
+    if d.empty:
+        return {}
+    d["mtk"] = (d["ko"] - d["obs"]).dt.total_seconds() / 60.0
+    bands = [(-1e9, 0, "post_kickoff"), (0, 10, "T-10m"), (10, 30, "T-30m"), (30, 60, "T-1h"),
+             (60, 180, "T-3h"), (180, 360, "T-6h"), (360, 1440, "T-24h"), (1440, 1e9, "far")]
+    out = {}
+    total = len(d)
+    for lo, hi, name in bands:
+        n = int(((d["mtk"] > lo) & (d["mtk"] <= hi)).sum())
+        out[name] = {"observations": n, "pct": round(100.0 * n / total, 1) if total else 0.0}
+    return out
+
+
 def _status(cadence: dict, freshness: dict, target: float, api: dict) -> str:
+    """PASS / WARN / FAIL, judged on the ACTIVE-window cadence where one exists.
+
+    Judging on the all-time p90 was making this permanently FAIL for a reason that is not a
+    fault: a quiet overnight gap is not a missed capture, and a health signal that is always red
+    is one nobody reads — the same trap PLANNED_OPTIONAL was introduced to escape on the
+    registry side.
+    """
     if api.get("status") == "ABORT":
         return "FAIL"
     stale = [k for k, v in freshness.items() if v.get("status") == "STALE"]
     core = ("market_snapshots", "model_snapshots")
     if any(freshness.get(k, {}).get("status") in ("STALE", "EMPTY") for k in core):
         return "FAIL"
-    slow = [k for k in core
-            if (cadence.get(k, {}).get("p90_gap_min") or 0) > target * 3]
+    slow = []
+    for k in core:
+        c = cadence.get(k, {})
+        # Prefer the active-window p90; fall back to all-time only when there is no active
+        # measurement to make.
+        p90 = c.get("active_p90_gap_min")
+        if p90 is None:
+            p90 = c.get("p90_gap_min") or 0
+        if p90 > target * 3:
+            slow.append(k)
     if slow or stale or api.get("status") == "ALERT":
         return "WARN"
     return "PASS"
+
+
+def coverage_status(coverage: dict, *, floor_t1h: float = 30.0) -> tuple[str, list[str]]:
+    """Health verdict on near-kickoff coverage — Prompt 1.5 section 35.
+
+    A floor rather than a target: the targets in section 15 are where we want to get to, and
+    failing health every run until we arrive would make the signal useless. This fires when
+    coverage falls below what has already been achieved, which is the thing worth alarming on.
+    """
+    problems = []
+    nk = coverage.get("near_kickoff_market", {})
+    if nk.get("status") != "OK":
+        return "UNKNOWN", ["no kicked-off fixtures to measure yet"]
+    t1h = nk.get("T-1h", {}).get("pct_of_kicked_off")
+    if t1h is not None and t1h < floor_t1h:
+        problems.append(f"T-1h coverage {t1h}% is below the {floor_t1h}% floor")
+    if coverage.get("live", {}).get("live_odds_rows", 0) == 0:
+        problems.append("live_odds_snapshots holds no rows")
+    return ("WARN" if problems else "PASS"), problems
 
 
 def _recommend(cov: dict, cadence: dict, target: float, mode: str) -> list[str]:
@@ -387,8 +636,11 @@ def main() -> int:
         if c.get("n_observations", 0) < 2:
             print(f"    {t:22} {c.get('n_observations', 0)} observation(s) — no cadence to measure")
             continue
+        am, aw = c.get("active_median_gap_min"), c.get("active_missed_windows")
+        act = (f" | ACTIVE median {am:>6.1f} · {aw:>4} missed" if am is not None
+               else " | ACTIVE n/a")
         print(f"    {t:22} median {c['median_gap_min']:>6.1f} min · p90 {c['p90_gap_min']:>7.1f} "
-              f"· max {c['max_gap_min']:>8.1f} · {c['missed_windows']:>4} missed windows")
+              f"· max {c['max_gap_min']:>8.1f} · {c['missed_windows']:>4} missed{act}")
     nk = coverage.get("near_kickoff_market", {})
     if nk.get("status") == "OK":
         print(f"    near-kickoff market coverage ({nk['kicked_off_fixtures']} kicked-off "

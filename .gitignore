@@ -91,6 +91,11 @@ output/**
 # current run. Both are small — one JSON object each, no per-row data.
 !output/scheduler_health.json
 !output/high_activity_coverage.json
+# Per-table import accounting for the builder evidence: rows seen, imported, skipped as
+# duplicates, canonical total. Committed because "the importer ran" and "the importer stored
+# anything" are different claims, and only the second one is worth alarming on.
+!output/combo_import_health.json
+!output/output_manifest.json
 
 # The season store IS the deliverable and must survive across CI runs, so it is committed.
 # Safe to commit because writes are run-partitioned (one small file per table per run) and

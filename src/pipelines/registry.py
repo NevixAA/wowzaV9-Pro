@@ -171,11 +171,25 @@ def refresh(*, season: str | None = None, path: Path | None = None,
         "registry_age_hours": 0.0,     # true at write time only; consumers use age_hours()
         "pro_may_notify": cfg.PRO_MAY_NOTIFY,
         "pro_may_stake": False,
+        # CORRECTED 2026-09-02. This said "Pro does not stake and does not notify" while the
+        # very same payload reported pro_may_notify: true — a registry contradicting itself in
+        # adjacent keys. Pro DOES notify: pro_bet_builder.yml holds the Telegram secrets and runs
+        # `--mode notify`, and config.PRO_MAY_NOTIFY has been True since the builder shipped.
+        #
+        # The note now states the narrow policy that actually applies, rather than the older
+        # blanket one it was left behind by. Staking is unchanged and remains false.
         "deployment_note": (
-            "Season 2026/27 is a data-collection and shadow season. Pro does not stake and "
-            "does not notify. Signal tier and deployment mode are independent: a SNIPER may be "
-            "PAPER."
+            "Season 2026/27 is a data-collection and shadow season. Pro NEVER stakes. Pro MAY "
+            "notify, narrowly: bet-builder research tips only, sent by src/combo/notify.py, "
+            "labelled PAPER, with a FAIR price because no bookmaker same-game-builder price "
+            "exists. Collect, live and research pipelines never notify — pro_collect.py aborts "
+            "if Telegram credentials are even visible to it. Anything beyond combo tips needs "
+            "its own decision. Signal tier and deployment mode stay independent: a SNIPER may "
+            "be PAPER."
         ),
+        # What the flag actually authorises, machine-readable so an audit does not have to parse
+        # the prose above.
+        "notify_scope": ["bet_builder_tips"] if cfg.PRO_MAY_NOTIFY else [],
     }
 
     if drift_health is not None:

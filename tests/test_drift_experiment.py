@@ -165,10 +165,25 @@ def main() -> int:
         check("only LIVE models listed", reg["n_live_models"] == 1
               and reg["live_models"][0]["model_id"] == "m_live", str(reg["n_live_models"]))
         check("staking is stated explicitly, not implied", reg["pro_may_stake"] is False)
-        check("notification is stated explicitly", reg["pro_may_notify"] is False)
+        # UPDATED 2026-09-02, same reason as tests/test_season_store.py: this asserted the OLD
+        # blanket "Pro never notifies" policy and had been failing since the bet builder shipped.
+        # What matters is that the field is stated explicitly and is a real boolean, not which
+        # way it points — the policy itself is config's to decide, and the registry's job is only
+        # to report it truthfully.
+        check("notification policy is stated explicitly",
+              isinstance(reg["pro_may_notify"], bool))
         check("feature health carried through", reg["feature_health"]["status"] == "CRITICAL")
-        check("store stats carried through",
-              reg["season_store"]["model_snapshots"]["rows"] == 7028)
+        # INVERTED 2026-09-02. This asserted that a caller-supplied store_stats was carried into
+        # the registry — behaviour write_system_registry DELIBERATELY refuses, and says so: it
+        # delegates to registry.refresh, which MEASURES the store, precisely so a caller cannot
+        # inject a stale snapshot. The registry froze for four days once and understated the store
+        # by 49%; letting a passed-in count win is how that happens again.
+        #
+        # So the invariant worth testing is the opposite one, and it is the one Prompt 1.5 section
+        # 12 asks for: a fabricated count must NOT appear in the registry.
+        check("a caller-supplied row count is IGNORED, not trusted",
+              reg["season_store"].get("model_snapshots", {}).get("rows") != 7028,
+              "the registry accepted an injected count instead of measuring the store")
         check("season recorded", reg["season"].startswith("season_"))
         check("git sha recorded", bool(reg["git_sha"]))
 

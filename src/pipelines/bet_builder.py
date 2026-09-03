@@ -43,6 +43,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import hashlib
+import json
 from pathlib import Path
 
 import numpy as np
@@ -442,13 +443,6 @@ def main() -> int:
             OUT.mkdir(exist_ok=True)
             d.to_csv(CAND_FILE, index=False, encoding="utf-8")
             print(f"[builder] wrote {CAND_FILE.name} ({len(d):,} rows)")
-            # The CSV above is the current-state view and is overwritten every run; this is the
-            # history beside it. Both, not either: the CSV is what notify and the dashboard read,
-            # the canonical tables are what any question about WHEN an opinion was formed needs.
-            head, legs = cc.candidates(d, run_id=cfg.run_id())
-            canon.update(cc.write(head, legs, None, None,
-                                  source="pro:bet_builder/generate",
-                                  allow_local=args.allow_local_write))
 
     if args.mode in ("notify", "all"):
         cand = pd.read_csv(CAND_FILE, low_memory=False) if CAND_FILE.exists() else pd.DataFrame()
@@ -485,29 +479,46 @@ def main() -> int:
         if not s.empty:
             s.to_csv(SETTLED_FILE, index=False, encoding="utf-8")
             print(f"[builder] wrote {SETTLED_FILE.name} ({len(s):,} rows)")
-            # Dependency estimates ride along with the settle pass rather than generate: they are
-            # re-estimated on the same cadence as results arrive, and versioning them next to the
-            # settlements keeps "what did we assume when we graded this" in one place.
-            deps = cc.dependencies(
-                pd.read_csv(OUT / "combo_dependency_matrix.csv")
-                if (OUT / "combo_dependency_matrix.csv").exists() else pd.DataFrame(),
-                pd.read_csv(OUT / "player_combo_dependency.csv")
-                if (OUT / "player_combo_dependency.csv").exists() else pd.DataFrame(),
-                run_id=cfg.run_id())
-            canon.update(cc.write(None, None, cc.settlements(s, run_id=cfg.run_id()), deps,
-                                  source="pro:bet_builder/settle",
-                                  allow_local=args.allow_local_write))
+
+    # ---- canonical import, ONCE, from the files on disk -------------------------------
+    # Deliberately not split across the generate and settle branches any more. Those wrote only
+    # what that branch happened to have in memory, so a `--mode notify` run imported nothing and
+    # a `--mode settle` run imported no candidates. Reading the CSVs here means every mode leaves
+    # the canonical store consistent with the files, and the dedup makes a repeat free.
+    if args.mode in ("generate", "settle", "all"):
+        canon = cc.import_builder_outputs(OUT, run_id=cfg.run_id(),
+                                          allow_local=args.allow_local_write)
 
     if canon:
-        # Printed as a line CI can be read against, and a -1 (append refused) is reported rather
-        # than silently absent — the whole failure mode this repo keeps hitting is a green run
-        # that persisted nothing.
-        print(f"[builder] canonical: " +
-              ", ".join(f"{k}={v:,}" if v >= 0 else f"{k}=FAILED" for k, v in sorted(canon.items())))
-        if any(v < 0 for v in canon.values()):
+        parts = []
+        for t, r in sorted(canon.items()):
+            if r.get("failure"):
+                parts.append(f"{t}=FAILED")
+            else:
+                parts.append(f"{t}=+{r['rows_imported']:,}/{r['canonical_total_rows']:,}")
+        print(f"[builder] canonical (new/total): {', '.join(parts)}")
+
+        try:
+            OUT.mkdir(exist_ok=True)
+            p = OUT / "combo_import_health.json"
+            payload = {"generated_at": dt.datetime.now(dt.timezone.utc)
+                       .strftime("%Y-%m-%dT%H:%M:%SZ"),
+                       "run_id": cfg.run_id(), "tables": canon}
+            p.write_text(json.dumps(payload, indent=2, sort_keys=True, default=str),
+                         encoding="utf-8")
+        except Exception as e:                                     # noqa: BLE001
+            print(f"[builder] could not write combo_import_health.json: {e}")
+
+        if any(r.get("failure") for r in canon.values()):
             print("::warning title=Builder evidence not fully persisted::"
                   "one or more canonical combo tables refused the append; the CSVs were still "
                   "written, so today's tips are unaffected and the HISTORY is what was lost.")
+        # An ACTIVE canonical table that is still empty AFTER an import is the exact state this
+        # whole pass exists to remove, so it is said loudly rather than left to a later audit.
+        empty = [t for t, r in canon.items() if r["canonical_total_rows"] == 0]
+        if empty:
+            print(f"::warning title=Canonical combo tables still empty::{', '.join(empty)} "
+                  f"have 0 rows after import. Check that the workflow commits `data/`.")
 
     return 1 if failed else 0
 

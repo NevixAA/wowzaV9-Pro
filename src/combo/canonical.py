@@ -316,26 +316,171 @@ def dependencies(matrix: pd.DataFrame, player: pd.DataFrame | None = None,
     return out
 
 
-def write(cand: pd.DataFrame, legs: pd.DataFrame, settled: pd.DataFrame,
-          deps: pd.DataFrame, *, source: str, allow_local: bool = False) -> dict[str, int]:
-    """Append whatever is non-empty to the canonical store. Returns rows written per table.
+# Dedup identity per table. The builder CSVs are REWRITTEN IN PLACE every run, so each run
+# re-presents rows that were already imported; without a key, a scheduled import would duplicate
+# the whole history daily and inflate every n the research gates on.
+#
+# The keys are the natural grain of each table, spelled out rather than inferred:
+DEDUP_KEYS: dict[str, tuple[str, ...]] = {
+    "combo_candidates": ("combo_id", "snapshot_ts", "calculation_version"),
+    "combo_legs": ("combo_id", "snapshot_ts", "leg_index"),
+    # No combo_id: a dependency estimate belongs to a market PAIR over a window, and the same
+    # estimate is reused by every combo containing that pair. Versioned, so a re-estimate is a
+    # NEW row rather than a silent overwrite of the assumption older combos were priced under.
+    "combo_dependencies": ("market_a", "market_b", "segment", "league", "model_type",
+                           "estimate_source", "calculation_version"),
+    "combo_settlements": ("combo_id", "settled_at", "calculation_version"),
+}
 
-    Each table is appended independently and a failure on one is reported rather than raised, for
-    the reason pro_collect commits per file: one unwritable table must not discard the four that
-    were fine. The counts come back so the caller can print them and CI can see zeros.
+
+def _key(df: pd.DataFrame, cols: tuple[str, ...]) -> pd.Series:
+    """A single string identity per row. Missing columns become empty rather than raising, so a
+    schema that grows a column does not break the import of everything already stored."""
+    parts = []
+    for c in cols:
+        s = df[c] if c in df.columns else pd.Series("", index=df.index)
+        parts.append(s.astype("string").fillna(""))
+    return parts[0].str.cat(parts[1:], sep="|") if len(parts) > 1 else parts[0]
+
+
+def write(cand: pd.DataFrame, legs: pd.DataFrame, settled: pd.DataFrame,
+          deps: pd.DataFrame, *, source: str, allow_local: bool = False) -> dict[str, dict]:
+    """Append what is NEW to the canonical store, skipping what is already there.
+
+    IDEMPOTENT BY DESIGN, and that is what makes one code path serve both jobs. The builder CSVs
+    always hold the full current picture, so importing all of them and dropping what the store
+    already has means the FIRST run is the backfill and every run after it is an increment. There
+    is no separate backfill script to remember to run, and no window in which the two disagree.
+
+    Each table is handled independently and a failure on one is reported rather than raised, for
+    the reason pro_collect commits per file: one unwritable table must not discard the three that
+    were fine.
+
+    Returns a per-table health block — rows seen, imported, skipped as duplicates, and the
+    resulting canonical total — because "the importer ran" and "the importer stored anything" are
+    different claims and only the second one matters.
     """
     from src.data import season_store as store
 
-    written: dict[str, int] = {}
+    out: dict[str, dict] = {}
     for table, df in (("combo_candidates", cand), ("combo_legs", legs),
                       ("combo_settlements", settled), ("combo_dependencies", deps)):
-        if df is None or df.empty:
-            written[table] = 0
+        if df is None:
             continue
+        rec = {"source_rows_seen": int(len(df)), "rows_imported": 0,
+               "rows_skipped_duplicate": 0, "canonical_total_rows": 0, "failure": None}
         try:
-            store.append(table, df, source=source, allow_local=allow_local)
-            written[table] = len(df)
+            existing = store.read(table)
+            rec["canonical_total_rows"] = int(len(existing))
+            fresh = df
+            if not df.empty:
+                keys = DEDUP_KEYS.get(table, ())
+                if keys and not existing.empty:
+                    seen = set(_key(existing, keys))
+                    mask = ~_key(df, keys).isin(seen)
+                    fresh = df[mask]
+                    rec["rows_skipped_duplicate"] = int(len(df) - len(fresh))
+                # A run that re-presents the same rows is NOT an error and must not be reported
+                # as one — it is the normal state between builder passes.
+                if not fresh.empty:
+                    store.append(table, fresh, source=source, allow_local=allow_local)
+                    rec["rows_imported"] = int(len(fresh))
+                    rec["canonical_total_rows"] += int(len(fresh))
         except Exception as e:                                     # noqa: BLE001
-            written[table] = -1
-            print(f"[canonical] {table} NOT written ({type(e).__name__}: {e})")
-    return written
+            rec["failure"] = f"{type(e).__name__}: {e}"
+            print(f"[canonical] {table} NOT written ({rec['failure']})")
+        out[table] = rec
+    return out
+
+
+def import_builder_outputs(out_dir, *, run_id: str = "", allow_local: bool = False) -> dict:
+    """Read every builder CSV and import all four canonical tables. The single entry point.
+
+    Reads the FULL files rather than a delta. They are small (the settled record is the largest
+    at ~8.7k rows) and the dedup above makes a full read cheap and correct, whereas tracking a
+    delta means maintaining a watermark that can silently drift out of step with the file.
+    """
+    from pathlib import Path
+    out_dir = Path(out_dir)
+
+    def _csv(name: str) -> pd.DataFrame:
+        p = out_dir / name
+        if not p.exists():
+            return pd.DataFrame()
+        try:
+            return pd.read_csv(p, low_memory=False)
+        except Exception as e:                                     # noqa: BLE001
+            print(f"[canonical] could not read {name}: {type(e).__name__}: {e}")
+            return pd.DataFrame()
+
+    cand_csv = _csv("bet_builder_candidates.csv")
+    settled_csv = _csv("bet_builder_settled.csv")
+    head, legs = candidates(cand_csv, run_id=run_id)
+    settled = settlements(settled_csv, run_id=run_id)
+    deps = dependencies(_csv("combo_dependency_matrix.csv"),
+                        _csv("player_combo_dependency.csv"), run_id=run_id)
+
+    health = write(head, legs, settled, deps,
+                   source="pro:bet_builder/canonical", allow_local=allow_local)
+
+    # Source vs canonical freshness, so "the source moved but the store did not" is visible
+    # without cross-referencing two files.
+    def _latest(df: pd.DataFrame, col: str) -> str | None:
+        if df is None or df.empty or col not in df.columns:
+            return None
+        v = pd.to_datetime(df[col], errors="coerce", utc=True).max()
+        return None if pd.isna(v) else v.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    for t, src, col in (("combo_candidates", head, "snapshot_ts"),
+                        ("combo_legs", legs, "snapshot_ts"),
+                        ("combo_settlements", settled, "settled_at"),
+                        ("combo_dependencies", deps, "generated_at")):
+        if t in health:
+            health[t]["latest_source_ts"] = _latest(src, col)
+    return health
+
+
+def main() -> int:
+    """Import builder evidence into the canonical store, standalone.
+
+    Exists as its own entry point so the import does NOT depend on the builder running. The
+    builder fires three times a day at most; `pro_collect` runs every two hours and the CSVs are
+    already committed in the repository, so canonicalization can keep up with the source without
+    waiting for the process that produced it. Idempotent, so running it from both places is free.
+    """
+    import argparse
+    import json
+    from datetime import datetime, timezone
+    import config.pro_config as cfg
+
+    ap = argparse.ArgumentParser(description="Import builder CSVs into the canonical store")
+    ap.add_argument("--allow-local-write", action="store_true")
+    ap.add_argument("--quiet", action="store_true")
+    a = ap.parse_args()
+
+    health = import_builder_outputs(cfg.OUTPUT_DIR, run_id=cfg.run_id(),
+                                    allow_local=a.allow_local_write)
+    if not a.quiet:
+        for t, r in sorted(health.items()):
+            state = r["failure"] or (f"+{r['rows_imported']:,} new, "
+                                     f"{r['rows_skipped_duplicate']:,} already stored")
+            print(f"[canonical] {t:22} total {r['canonical_total_rows']:>7,}  {state}")
+
+    try:
+        p = cfg.OUTPUT_DIR / "combo_import_health.json"
+        p.write_text(json.dumps(
+            {"generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+             "run_id": cfg.run_id(), "tables": health}, indent=2, sort_keys=True, default=str),
+            encoding="utf-8")
+    except Exception as e:                                         # noqa: BLE001
+        print(f"[canonical] could not write combo_import_health.json: {e}")
+
+    # An ACTIVE table still empty after an import is the state this entry point exists to remove.
+    empty = [t for t, r in health.items() if r["canonical_total_rows"] == 0]
+    if empty:
+        print(f"::warning title=Canonical combo tables still empty::{', '.join(empty)}")
+    return 1 if any(r["failure"] for r in health.values()) else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

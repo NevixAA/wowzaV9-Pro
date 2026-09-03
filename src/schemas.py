@@ -55,12 +55,22 @@ _AF_STATS = "api-football /fixtures/statistics"
 
 
 TEAM_NEWS: dict[str, dict] = {
-    "_status": PLANNED_OPTIONAL,
+    # ACTIVE since 2026-09-02: 48 rows over 3 runs, 2026-08-30 to 2026-09-01, once the API key
+    # was added. The collector produces rows, so the table is in use and an empty one is a fault.
+    #
+    # The original objection still stands and is NOT resolved by the table having rows: neither
+    # /fixtures/lineups nor /injuries carries a PUBLICATION time, so `known_at` remains
+    # SOURCE_REQUIRED at the FIELD level and `first_seen_ts` is only our own polling resolution.
+    # That is why the field list below is unchanged. A table can be active while the one field
+    # that makes it usable for leakage-safe research is still missing — and marking the field,
+    # not the table, is what keeps that distinction visible.
+    "_status": ACTIVE,
     "_grain": "one row per (fixture, team, event) — an event log, NOT a fixture summary",
-    "_why_empty": "No reliable timestamped team-news source is wired. Lineups are obtainable "
-                  "~1h before kickoff; injury and suspension news with a trustworthy "
-                  "publication time is not, and that timestamp is the whole point.",
-    "_blocked_on": "a source that publishes an event WITH its publication time",
+    "_why_empty": "Not empty — 48 rows over 3 runs as of 2026-09-02. What remains missing is the "
+                  "publication TIMESTAMP (`known_at`), without which these rows must not be used "
+                  "for out-of-sample timing claims.",
+    "_blocked_on": "nothing for the table; `known_at` still needs a source that publishes an "
+                   "event WITH its publication time",
     "fields": {
         "event_id":         (AVAILABLE, "DERIVED hash of (fixture_key, team, event_type, event_ts)"),
         "fixture_key":      (AVAILABLE, "joins the canonical fixtures table"),
@@ -163,14 +173,22 @@ TEAM_MATCH_STATS: dict[str, dict] = {
 
 
 LIVE_ODDS_SNAPSHOTS: dict[str, dict] = {
-    # PLANNED_OPTIONAL only until the first scheduled run lands. The collector is written and
-    # verified against the live API (216 rows, 5 fixtures, median odds age 25.6s), but nothing
-    # has been persisted yet because local writes to the canonical store are refused by design.
-    "_status": PLANNED_OPTIONAL,
+    # ACTIVE since 2026-09-02. The previous note said "flip to ACTIVE once pro_live_odds.yml has
+    # completed a match-day window" — it has, repeatedly: 10,151 rows across 10 runs spanning
+    # 2026-08-30 to 2026-09-02, once APIFOOTBALL_KEY was added to this repository.
+    #
+    # ACTIVE rather than an opportunistic status, deliberately. The source is a scheduled hourly
+    # sweep against a provider endpoint that answers reliably, so an empty day is a FAULT and
+    # should alarm. What is genuinely opportunistic is the CONTENT — no live fixtures means no
+    # rows — and that is a per-run condition the scheduler health reports, not a property of the
+    # table's lifecycle. Confusing "nothing was in play" with "the collector is optional" is how
+    # a broken live collector would go unnoticed for a month.
+    "_status": ACTIVE,
     "_grain": "one row per (fixture, snapshot, market, selection) — many lines quoted at once",
-    "_why_empty": "Collector verified against the live API but not yet run on a schedule. Flip "
-                  "to ACTIVE once pro_live_odds.yml has completed a match-day window.",
-    "_blocked_on": "nothing — the workflow needs to run",
+    "_why_empty": "Not empty — 10,151 rows over 10 runs as of 2026-09-02. Individual runs may "
+                  "legitimately store nothing when no fixture is in play; that is a run-level "
+                  "condition, not a table-level one.",
+    "_blocked_on": "nothing",
     "fields": {
         "fixture_id": (AVAILABLE, "API-Football fixture id, as /odds/live returns it"),
         "snapshot_ts": (AVAILABLE, "our fetch time"),

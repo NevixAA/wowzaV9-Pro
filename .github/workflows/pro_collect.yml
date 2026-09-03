@@ -93,30 +93,15 @@ jobs:
       # This fills the largest measured gap in the system — home_xg_last5, insidebox and
       # possession were ALL 0% populated on the live board, and missing features are
       # median-imputed, so the model was being handed the league average for its per-team inputs.
-      - name: Collect team match statistics
-        id: team_stats
-        if: steps.collect.outcome == 'success' && github.event.schedule != '40 */2 * * *'
-        env:
-          APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
-        run: python -m src.pipelines.team_stats --seasons 2026
-        continue-on-error: true
-
-      # WHY THIS STEP EXISTS. `continue-on-error: true` above is right — a statistics outage must
-      # not stop the season store advancing — but it swallowed a real failure for four days.
-      # team_stats.py RAISES when APIFOOTBALL_KEY is absent, this repository had no such secret
-      # until 2026-08-30, and so every daily sweep from 2026-08-26 skipped the step and reported
-      # success. The registry then showed team_match_stats ACTIVE with 0 rows and nothing said
-      # why; `git ls-files` confirms zero committed partitions while 88 sit untracked on a laptop.
+      # TEAM STATISTICS MOVED OUT on 2026-09-02, to .github/workflows/pro_team_stats.yml.
       #
-      # continue-on-error suppresses the exit code, not the annotation. This turns the swallowed
-      # failure into something visible in the run summary without making it fatal.
-      - name: Report a swallowed team-stats failure
-        if: always() && steps.team_stats.outcome == 'failure'
-        run: |
-          echo "::warning title=team_match_stats did NOT collect::The team-statistics step failed \
-          and was suppressed by continue-on-error. If the log says APIFOOTBALL_KEY is not \
-          available, the secret is missing from THIS repository — v9's secrets do not apply here. \
-          team_match_stats is declared ACTIVE, so an empty table is a real fault, not a design."
+      # It lived here gated on the daily sweep, and that gate was the whole problem: `pro: collect`
+      # has not committed at 06:xx UTC since 2026-08-26, so the sweep never fired and the step was
+      # never reached. The collector itself is fine — verified directly, real rows in one API call
+      # — but it inherited the worst delivery odds in the estate from a cron it did not own, and
+      # its failure was invisible inside a job that reports success for its own reasons.
+      #
+      # A collector with its own lifecycle gets its own workflow, its own cron and its own health.
 
       # DERIVED RESEARCH, on the daily sweep. Both of these persisted a result but were scheduled
       # NOWHERE until 2026-08-26, so their output only ever refreshed when a human ran them — the
@@ -160,6 +145,31 @@ jobs:
         run: python -m src.monitoring.scheduler --days 14 --write
         continue-on-error: true
 
+      # Who owns which artifact, and which canonical table each raw file is supposed to reach.
+      # Cheap to regenerate and worth doing every collect: it is what makes "v9 produced it but
+      # Pro never imported it" a mechanical question rather than an audit finding — the exact
+      # failure that left four combo tables empty for four days.
+      # BUILDER EVIDENCE -> CANONICAL TABLES. Deliberately here as well as in the builder itself.
+      #
+      # The builder fires at most three times a day; this job runs every two hours, and the CSVs
+      # it reads are already committed in this repository — so canonicalization does not need to
+      # wait for the process that produced them. That matters because the four combo tables read
+      # 0 rows for four days while the builder ran successfully six times: the importer had no
+      # second chance, and one missing `git add -A data` was enough to lose every row.
+      #
+      # Idempotent by dedup key, so importing from two places costs nothing and cannot double up.
+      - name: Import builder evidence into the canonical store
+        if: steps.collect.outcome == 'success'
+        run: python -m src.combo.canonical
+        continue-on-error: true
+
+      - name: Refresh the output manifest
+        if: steps.collect.outcome == 'success'
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: python -m src.monitoring.manifest --write
+        continue-on-error: true
+
       - name: Commit the season store
         if: always()
         run: |
@@ -169,6 +179,7 @@ jobs:
           # Per-file, because `git add -f a b missing` ABORTS and stages NOTHING.
           for f in output/system_registry.json output/clv_enriched.csv \
                    output/scheduler_health.json output/high_activity_coverage.json \
+                   output/output_manifest.json output/combo_import_health.json \
                    output/news_impact.json; do
             git add -f "$f" 2>/dev/null || echo "  (skip, not present: $f)"
           done
