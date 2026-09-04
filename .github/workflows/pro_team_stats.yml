@@ -68,12 +68,35 @@ jobs:
         env:
           APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
         run: |
+          # `cmd | tee` reports TEE's exit code, so without this a crashed collector would look
+          # like a pass.
+          set -o pipefail
           SEASONS="${{ github.event.inputs.seasons }}"; [ -n "$SEASONS" ] || SEASONS=2026
           LIMIT="${{ github.event.inputs.limit }}"
+
+          # CHUNK THE SCHEDULED RUN. Both runs of this workflow (#1 and #2) failed, and the
+          # unbounded first run is why: the committed store holds ZERO partitions for this table,
+          # so a scheduled run starts from nothing and tries to collect the entire season in one
+          # job. The collector's own docstring budgets a season-to-date backfill at ~2,298 calls,
+          # and its rate-limit backoff sleeps up to 60s per stall — against a 30-minute timeout.
+          # An unbounded catch-up cannot fit, and it fails in a way that looks like a broken
+          # collector rather than a job that ran out of clock.
+          #
+          # A chunk is safe because the collector SKIPS fixtures already in the store (it reports
+          # "N fixture(s) already stored" on startup), so successive runs resume rather than
+          # repeat. The table fills over a few days instead of failing forever, and once it is
+          # caught up the limit costs nothing — there are simply fewer new fixtures than the cap.
+          #
+          # A manual dispatch can still pass its own limit, including a larger one.
+          if [ -z "$LIMIT" ] && [ "${{ github.event_name }}" = "schedule" ]; then
+            LIMIT=250
+            echo "scheduled run: chunking to $LIMIT fixtures (resumable; skips what is stored)"
+          fi
+
           if [ -n "$LIMIT" ]; then
-            python -m src.pipelines.team_stats --seasons "$SEASONS" --limit "$LIMIT"
+            python -m src.pipelines.team_stats --seasons "$SEASONS" --limit "$LIMIT" | tee stats.txt
           else
-            python -m src.pipelines.team_stats --seasons "$SEASONS"
+            python -m src.pipelines.team_stats --seasons "$SEASONS" | tee stats.txt
           fi
 
       # NOT continue-on-error, unlike the step this replaces. team_match_stats is declared ACTIVE,
@@ -94,9 +117,30 @@ jobs:
           echo "::error title=push failed::team stats collected but nothing was persisted."
           exit 1
 
+      # The collector's own output, in the summary, whether it passed or failed. Both earlier
+      # failures had to be diagnosed by elimination from outside — ruling out the credential,
+      # the table registration and the required columns one at a time — because nothing the run
+      # produced was readable without opening the raw log.
+      - name: Publish the collector output
+        if: always()
+        run: |
+          {
+            echo "## Team stats"
+            echo ""
+            echo '```'
+            tail -n 40 stats.txt 2>/dev/null || echo "(collector produced no output — it failed before printing)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Surface a collection failure
         if: failure()
         run: |
+          # NAME THE REAL ERROR, do not guess at it. This used to say "check APIFOOTBALL_KEY and
+          # the quota", which sent the investigation down two wrong paths: the credential is
+          # present and working (pro_live_odds uses the same secret and commits data), and the
+          # table had never collected once, so no quota had been spent on it. A guess in an error
+          # message is worse than no message, because it is trusted.
           echo "::error title=team_match_stats did not collect::The table is declared ACTIVE, so \
-          an empty one is a fault and not a design. Check APIFOOTBALL_KEY on THIS repository and \
-          the /fixtures/statistics quota."
+          an empty one is a fault. Last collector output below; the run is chunked to 250 \
+          fixtures and resumes from what is already stored, so a timeout should not recur."
+          tail -n 25 stats.txt 2>/dev/null || echo "(no collector output captured)"
