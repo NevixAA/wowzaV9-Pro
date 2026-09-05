@@ -57,6 +57,23 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      # THE ACTUAL CAUSE OF EVERY FAILURE SO FAR. team_stats reads v9's league-id mapping through
+      # src/data/v9_config.py rather than keeping a second copy that could drift — a good decision
+      # — but that loader looks for v9 as a SIBLING directory, which exists only on a laptop.
+      # In CI there was no v9 anywhere and no V9_LOCAL, so the run died on its first statement:
+      #
+      #   FileNotFoundError: v9 config not found at /home/runner/work/wowzaV9-Pro/v9/config.py
+      #
+      # That is why it failed in ONE SECOND on all four runs, before any API call — so it was
+      # never the credential, never the quota, and never the job timeout. Read-only, exactly as
+      # pro_weekly_audit, pro_live_odds and pro_paper_1x2 already do; Pro writes nothing to v9.
+      - name: Check out v9 (read-only, for the league-id mapping)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9
+          fetch-depth: 1
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -67,6 +84,7 @@ jobs:
         id: stats
         env:
           APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
+          V9_LOCAL: ${{ github.workspace }}/_v9
         run: |
           # `cmd | tee` reports TEE's exit code, so without this a crashed collector would look
           # like a pass. And `2>&1` is not decoration: the first version of this capture piped
@@ -77,13 +95,14 @@ jobs:
           SEASONS="${{ github.event.inputs.seasons }}"; [ -n "$SEASONS" ] || SEASONS=2026
           LIMIT="${{ github.event.inputs.limit }}"
 
-          # CHUNK THE SCHEDULED RUN. Both runs of this workflow (#1 and #2) failed, and the
-          # unbounded first run is why: the committed store holds ZERO partitions for this table,
-          # so a scheduled run starts from nothing and tries to collect the entire season in one
-          # job. The collector's own docstring budgets a season-to-date backfill at ~2,298 calls,
-          # and its rate-limit backoff sleeps up to 60s per stall — against a 30-minute timeout.
-          # An unbounded catch-up cannot fit, and it fails in a way that looks like a broken
-          # collector rather than a job that ran out of clock.
+          # CHUNK THE SCHEDULED RUN. NOTE: this was NOT why the earlier runs failed — that was the
+          # missing v9 checkout above, which killed the job in one second before any of this
+          # mattered. This comment previously asserted the timeout as the cause and was wrong.
+          #
+          # It is kept because the first successful catch-up is still genuinely large: the store
+          # holds ZERO partitions, a full 2026 pass covers ~2,377 fixtures, and measured
+          # /fixtures/statistics latency is ~1.02s per cold call — roughly 40 minutes against a
+          # 30-minute timeout, before any rate-limit backoff.
           #
           # A chunk is safe because the collector SKIPS fixtures already in the store (it reports
           # "N fixture(s) already stored" on startup), so successive runs resume rather than
