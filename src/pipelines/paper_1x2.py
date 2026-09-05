@@ -48,6 +48,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import os
 import glob
 import hashlib
 import json
@@ -65,6 +66,16 @@ PAPER_FILE = OUT / "paper_1x2.csv"
 
 CALC_VERSION = "1.0.0"
 HORIZON_DAYS = 3
+
+# TOP SLICE SENT AS TIPS. Set by the owner, against the backtest, and that disagreement is the
+# point of sending them: the 505-fixture sample said this slice is the worst available (12 picks,
+# 1 winner, -73% ROI, and monotonically worse the harder it selects), but that sample is small,
+# name-biased, and backward-looking. A forward record is the only thing that can settle it, and
+# the picks are marked PAPER so settling it costs nothing but patience.
+TOP_PCT = float(os.getenv("PAPER_1X2_TOP_PCT", "3"))
+# Never more than this many in one run, however large the board — the same anti-spam floor the
+# combo notifier uses, for the same reason.
+MAX_TIPS_PER_RUN = 3
 
 
 def _v9_root() -> Path | None:
@@ -281,6 +292,83 @@ def settle(d: pd.DataFrame | None = None, now: dt.datetime | None = None) -> pd.
     return out
 
 
+def _edge(row: pd.Series) -> tuple[str, float, float] | None:
+    """(outcome, EV at the offered price, odds) for the model's best selection on this fixture.
+
+    EV uses the price WITH the vig in it, because that is what a bet actually returns. Ranking on
+    the de-vigged probability would flatter every pick by the overround.
+    """
+    o = [row.get("o_home"), row.get("o_draw"), row.get("o_away")]
+    p = [row.get("p_home"), row.get("p_draw"), row.get("p_away")]
+    if any(v is None or pd.isna(v) for v in o + p):
+        return None
+    ev = [float(pi) * float(oi) - 1.0 for pi, oi in zip(p, o)]
+    i = int(np.argmax(ev))
+    return ("HOME", "DRAW", "AWAY")[i], ev[i], float(o[i])
+
+
+def format_tip(row: pd.Series, pick: str, ev: float, odds: float) -> str:
+    """One Telegram message. Says what it is and what the evidence says, every time."""
+    side = {"HOME": row["home_team"], "AWAY": row["away_team"], "DRAW": "Draw"}[pick]
+    return "\n".join([
+        "🎯 *1X2 tip* (top %.0f%% by edge)" % TOP_PCT,
+        "",
+        f"*{row['home_team']} vs {row['away_team']}*",
+        f"_{row['league']} · {str(row['kickoff_utc'])[:16]}_",
+        "",
+        f"Pick: *{side}*  @ `{odds:.2f}`",
+        f"Model: {float(row['p_home']):.0%} / {float(row['p_draw']):.0%} / {float(row['p_away']):.0%}"
+        "  (home/draw/away)",
+        f"Edge at that price: *{ev:+.1%}*",
+        "",
+        "⚠️ _PAPER. This model LOSES to the closing line in backtest "
+        "(1.0693 vs 1.0305 log-loss), and this top slice measured -73% ROI on 12 picks. "
+        "Sent forward to test that finding, not because it is beaten._",
+    ])
+
+
+def notify(d: pd.DataFrame, *, dry_run: bool = True) -> dict:
+    """Send the top TOP_PCT of unsent, unstarted picks. Records what was sent, in the record."""
+    from src.combo import notify as cn
+    import config.pro_config as cfg
+    out = {"considered": 0, "eligible": 0, "sent": 0, "dry_run": dry_run,
+           "top_pct": TOP_PCT, "reasons": {}}
+    if d is None or d.empty:
+        return out
+    if "notified_at" not in d.columns:
+        d["notified_at"] = pd.NA
+    now = dt.datetime.now(dt.timezone.utc)
+    live = d[pd.to_datetime(d["kickoff_utc"], errors="coerce", utc=True) > now]
+    live = live[live["notified_at"].isna()]
+    out["considered"] = len(live)
+    scored = []
+    for i, r in live.iterrows():
+        e = _edge(r)
+        if e is None:
+            out["reasons"]["NO_PRICE"] = out["reasons"].get("NO_PRICE", 0) + 1
+            continue
+        scored.append((i, *e))
+    if not scored:
+        return out
+    scored.sort(key=lambda x: -x[2])
+    n = max(1, int(round(len(scored) * TOP_PCT / 100.0)))
+    chosen = scored[:n]
+    out["eligible"] = len(chosen)
+    for i, pick, ev, odds in chosen[:MAX_TIPS_PER_RUN]:
+        if dry_run or not getattr(cfg, "PRO_MAY_NOTIFY", False):
+            continue
+        ok, detail = cn.send(format_tip(d.loc[i], pick, ev, odds))
+        if not ok:
+            out["reasons"][f"SEND_FAILED:{detail}"] = 1
+            break                                  # same circuit breaker as the combo notifier
+        d.at[i, "notified_at"] = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+        d.at[i, "notified_pick"] = pick
+        d.at[i, "notified_odds"] = odds
+        d.at[i, "notified_ev"] = round(ev, 4)
+        out["sent"] += 1
+    return out
+
+
 def scoreboard(d: pd.DataFrame) -> dict:
     """The record so far. Reported over EVERY logged pick, with slices shown separately."""
     if d is None or d.empty or "result" not in d.columns:
@@ -308,7 +396,7 @@ def scoreboard(d: pd.DataFrame) -> dict:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--mode", choices=("log", "settle", "all"), default="all")
+    ap.add_argument("--mode", choices=("log", "settle", "notify", "all"), default="all")
     ap.add_argument("--dry-run", action="store_true", help="compute and report, write nothing")
     args = ap.parse_args()
 
@@ -337,6 +425,11 @@ def main() -> int:
                 if "result" in d.columns else 0
             if after < before:
                 raise RuntimeError(f"settlement lost graded rows ({before} -> {after})")
+
+    if args.mode in ("notify", "all"):
+        if not d.empty:
+            res = notify(d, dry_run=args.dry_run)
+            print(f"[paper1x2] notify: {res}")
 
     print(f"[paper1x2] scoreboard: {scoreboard(d)}")
     if not args.dry_run and not d.empty:

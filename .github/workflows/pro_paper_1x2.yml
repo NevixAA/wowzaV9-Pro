@@ -68,9 +68,19 @@ jobs:
 
       - run: pip install pandas pyarrow numpy scipy requests
 
-      - name: Log and settle the paper record
+      - name: Log, settle, and send the top slice
         env:
           V9_LOCAL: ${{ github.workspace }}/_v9
+          # SENDS THE TOP 3% BY EDGE. Requested explicitly and twice, against the backtest — the
+          # 505-fixture sample says this slice is the worst available (12 picks, 1 winner, -73%
+          # ROI, monotonically worse the harder it selects). That sample is small, name-biased and
+          # backward-looking, and a forward record is the only thing that can settle the
+          # disagreement. Every message says PAPER and carries the counter-evidence in its own
+          # body, so nobody can act on one without seeing what the backtest found.
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          # Tune the slice without editing code: PAPER_1X2_TOP_PCT=0 effectively stops sending.
+          PAPER_1X2_TOP_PCT: '3'
         run: |
           # pipefail, and 2>&1 so a traceback reaches the summary rather than only stdout —
           # the omission that made pro_team_stats fail three times with an empty published log.
