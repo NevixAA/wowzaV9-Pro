@@ -1,0 +1,110 @@
+name: Pro Paper 1X2
+
+# Forward PAPER record for the 1X2 model: log what the model believes before kickoff, with the
+# price that was actually available, then grade it when the match finishes.
+#
+# WHY IT EXISTS. The offline evaluation says the model loses to the closing line (log-loss 1.0693
+# vs 1.0305 on 505 fixtures). That is evidence but not the whole question: a backtest cannot see
+# which fixtures really get priced and when, what odds were available, or whether club-name
+# resolution holds up live. A forward record is out-of-sample IN TIME, which no re-run of history
+# is. If the model turns out to beat the close over a few hundred live fixtures, that is earned
+# forward rather than fitted; if it does not, nothing was staked to find out.
+#
+# PAPER, AND IT STAYS PAPER. No Telegram, no tiers, no stakes. PRO_MAY_NOTIFY authorises combo
+# tips and nothing else, and this workflow passes no credential that could send anything.
+#
+# IT LOGS EVERYTHING IT CAN PRICE, deliberately. The tempting rule -- bet only the top few percent
+# by model-vs-market edge -- was measured and is the WORST slice available (top 3%: 12 picks, 8.3%
+# hit, -73.3% ROI; the gradient is monotone across 5/10/25%). Ranking by disagreement finds
+# overpriced longshots by construction. Baking that rule into the COLLECTION would leave the data
+# unable to answer the question, so the selection rule is chosen later, from the record.
+
+on:
+  schedule:
+    # Once a day, and once is enough: a pick is logged with its hours-to-kickoff, so a daily
+    # cadence yields opinions at a range of horizons naturally. Deliberately one firing — the
+    # estate is already delivery-constrained and this is research, so it must not compete with
+    # odds capture, whose pre-match prices cannot be backfilled.
+    # :41 keeps it off the hour and clear of the other Pro crons.
+    - cron: '41 7 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Compute and report, write nothing'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+concurrency:
+  group: pro-paper-1x2
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  paper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # v9 read-only: the 1X2 prices live in its sharp tracker's history, and the club-name
+      # resolver this joins with is v9's. Nothing is written back.
+      - name: Check out v9 (read-only, for prices and the name resolver)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install pandas pyarrow numpy scipy requests
+
+      - name: Log and settle the paper record
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: |
+          # pipefail, and 2>&1 so a traceback reaches the summary rather than only stdout —
+          # the omission that made pro_team_stats fail three times with an empty published log.
+          set -o pipefail
+          FLAG=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then FLAG="--dry-run"; fi
+          python -m src.pipelines.paper_1x2 --mode all $FLAG 2>&1 | tee paper.txt
+
+      - name: Publish the scoreboard
+        if: always()
+        run: |
+          {
+            echo "## Paper 1X2"
+            echo ""
+            echo '```'
+            tail -n 30 paper.txt 2>/dev/null || echo "(no output captured)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit the record
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Named and force-added: output/** is gitignored behind an explicit allowlist, and a
+          # `git add` on an ignored path aborts the WHOLE add and stages nothing.
+          git add -f output/paper_1x2.csv 2>/dev/null || echo "  (nothing logged)"
+          git diff --staged --quiet && { echo "no change"; exit 0; }
+          git commit -m "pro: paper 1x2 $(date -u '+%Y-%m-%d')"
+          for i in 1 2 3 4 5; do
+            # No `-X ours`: in a rebase `ours` is UPSTREAM, so it would discard this run's rows.
+            git pull --rebase --autostash origin main && git push && exit 0
+            echo "push race - retry $i"; sleep $((RANDOM % 5 + 3))
+          done
+          echo "::error title=push failed::Paper picks were logged but NOT persisted — a forward"
+          echo "record that does not survive its own run is not evidence."
+          exit 1

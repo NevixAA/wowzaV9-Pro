@@ -78,6 +78,15 @@ output/**
 # The notify dedup state. It MUST persist between runs or every run re-sends the whole board as
 # NEW — the same failure shape as v9's duplicate-tip flood.
 !output/combo_notified.json
+# The forward 1X2 paper record. MUST be committed or the whole point is lost: it is evidence of
+# what was believed BEFORE kickoff, and a record that does not survive the run that wrote it
+# proves nothing. Small and append-only — one row per fixture the model could price.
+!output/paper_1x2.csv
+# The trained 1X2 parameters the paper logger predicts from. Committed so a CI run scores from
+# the SAME model a human evaluated, rather than silently refitting on whatever data it happens
+# to find.
+!output/model_1x2.json
+!output/model_1x2_eval.csv
 # The weekly audit record. Committed so the history of "was the pipeline persisting" is itself
 # persisted — a check whose result is thrown away cannot show a slow decline.
 !output/weekly_audit.json
