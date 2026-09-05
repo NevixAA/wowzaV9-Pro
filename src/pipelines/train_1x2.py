@@ -53,8 +53,15 @@ EVAL_FILE = OUT / "model_1x2_eval.csv"
 DEFAULT_TEST_DAYS = 120
 
 
-def _matches() -> pd.DataFrame:
-    """One row per fixture, with a scoreline."""
+def _matches(extra_history: str = "") -> pd.DataFrame:
+    """One row per fixture, with a scoreline.
+
+    `extra_history` is a glob of parquet files to read IN ADDITION to the canonical store, for
+    research runs only. It exists because the 88 team_match_stats partitions this evaluation was
+    built on were quarantined out of the tree on 2026-08-30 (they were laptop-written, and the
+    store is meant to be CI-written). Reading them here does NOT write them back: the store stays
+    CI-owned, and the evaluation says which source it used.
+    """
     from src.data import season_store as store
     need = {"home_team", "away_team", "home_goals", "away_goals", "match_date", "league"}
     parts = []
@@ -65,6 +72,18 @@ def _matches() -> pd.DataFrame:
             continue
         if not d.empty and need.issubset(d.columns):
             parts.append(d[list(need)])
+    if extra_history:
+        import glob as _g
+        extra = [f for f in _g.glob(extra_history, recursive=True)]
+        got = 0
+        for f in extra:
+            try:
+                e = pd.read_parquet(f)
+            except Exception:                                    # noqa: BLE001
+                continue
+            if need.issubset(e.columns):
+                parts.append(e[list(need)]); got += 1
+        print(f"[1x2] extra history: {got}/{len(extra)} file(s) usable from {extra_history}")
     if not parts:
         return pd.DataFrame()
     d = pd.concat(parts, ignore_index=True)
@@ -77,6 +96,35 @@ def _matches() -> pd.DataFrame:
 
 def _outcome(hg, ag) -> int:
     return 0 if hg > ag else (1 if hg == ag else 2)
+
+
+def _resolver():
+    """v9's club-name resolver, loaded BY FILE PATH rather than by import.
+
+    v9 has its own top-level `src` package. Appending v9 to sys.path and importing
+    `src.team_names` would either fail or shadow Pro's own `src`, which is the trap the live-odds
+    client comment already warns about. importlib.spec_from_file_location avoids sys.path
+    entirely, so nothing about Pro's import graph changes.
+
+    Returns None when v9 is not checked out — the caller then falls back to exact matching and
+    SAYS so, rather than silently reporting a low join rate as if it were a market limitation.
+    """
+    import importlib.util
+    import os
+    for r in (os.getenv("V9_LOCAL", ""), str(ROOT / "_v9"), str(ROOT.parent / "v9")):
+        if not r:
+            continue
+        p = Path(r) / "src" / "team_names.py"
+        if not p.exists():
+            continue
+        try:
+            spec = importlib.util.spec_from_file_location("_v9_team_names", p)
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            return mod.resolve
+        except Exception as e:                                   # noqa: BLE001
+            print(f"[1x2] could not load v9 team_names ({type(e).__name__}: {e})")
+    return None
 
 
 def _market() -> pd.DataFrame:
@@ -119,6 +167,10 @@ def _market() -> pd.DataFrame:
                     continue
                 inv = np.array([1 / float(oh), 1 / float(od), 1 / float(oa)])
                 rows.append({"home_team": s.get("home"), "away_team": s.get("away"),
+                             # League is carried because the resolver is LEAGUE-SCOPED: candidate
+                             # club names must come from the same competition or the match is
+                             # meaningless. Omitting it silently disabled resolution entirely.
+                             "league": s.get("league"),
                              "_d": pd.to_datetime(str(s.get("date"))[:10], errors="coerce"),
                              "m_home": inv[0] / inv.sum(), "m_draw": inv[1] / inv.sum(),
                              "m_away": inv[2] / inv.sum(), "overround": float(inv.sum())})
@@ -129,9 +181,11 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--test-days", type=int, default=DEFAULT_TEST_DAYS)
     ap.add_argument("--half-life", type=float, default=dc.HALF_LIFE_DAYS)
+    ap.add_argument("--extra-history", default="",
+                    help="glob of extra scoreline parquet files (research runs; never written back)")
     args = ap.parse_args()
 
-    d = _matches()
+    d = _matches(args.extra_history)
     if d.empty:
         print("[1x2] no match data with scorelines — nothing to train")
         return 1
@@ -202,7 +256,46 @@ def main() -> int:
         mk = mkt.dropna(subset=["_d"]).copy()
         mk["_d"] = mk["_d"].dt.normalize()
         mk = mk.drop_duplicates(subset=["_d", "home_team", "away_team"])
+
+        # RESOLVE CLUB NAMES BEFORE JOINING. The two sides come from different providers —
+        # predictions carry API-Football names, the sharp tracker carries OddsAPI names — and
+        # invariant 11 exists because those disagree: "1. FC Kaiserslautern"/"Kaiserslautern",
+        # "QPR"/"Queens Park Rangers", "Cadiz CF"/"Cadiz". An exact join therefore measured name
+        # agreement, not market coverage: 188 of 1,409 (13.3%), and the verdict on the model rested
+        # on whichever 13% happened to spell the same.
+        #
+        # v9's resolver is LEAGUE-SCOPED and refuses ambiguous matches, which is what keeps this
+        # from inventing joins — a naive prefix match once mapped "Real Valladolid CF" onto any
+        # club starting "Real". Unresolved names are left as they are and simply fail to join.
+        resolve = _resolver()
+        exact = len(pf.merge(mk, on=["_d", "home_team", "away_team"], how="inner"))
+        if resolve is not None and "league" in mk.columns:
+            # Candidates are the prediction-side names for the SAME league (invariant 11).
+            cand_by_league = {lg: sorted(set(g["home_team"].astype(str))
+                                         | set(g["away_team"].astype(str)))
+                              for lg, g in pf.groupby("league")}
+            cache: dict[tuple, str] = {}
+            for side in ("home_team", "away_team"):
+                out = []
+                for lg, nm in zip(mk["league"].astype(str), mk[side].astype(str)):
+                    cands = cand_by_league.get(lg)
+                    if not cands or nm in cands:
+                        out.append(nm)
+                        continue
+                    key = (lg, nm)
+                    if key not in cache:
+                        try:
+                            cache[key] = resolve(nm, cands) or nm
+                        except Exception:                        # noqa: BLE001
+                            cache[key] = nm
+                    out.append(cache[key])
+                mk[side] = out
+            mk = mk.drop_duplicates(subset=["_d", "home_team", "away_team"])
         j = pf.merge(mk, on=["_d", "home_team", "away_team"], how="inner")
+        how = ("resolver active" if resolve is not None
+               else "NO RESOLVER (v9 not checked out) — a low rate here is a NAME problem, "
+                    "not a market-coverage one")
+        print(f"[1x2] join: exact {exact} -> resolved {len(j)}  ({how})")
         # Club names differ between sources (invariant 11), so the join rate is REPORTED rather
         # than assumed. A low rate means the comparison rests on a biased subset, not that the
         # market is unavailable.
