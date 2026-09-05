@@ -69,7 +69,10 @@ jobs:
           APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
         run: |
           # `cmd | tee` reports TEE's exit code, so without this a crashed collector would look
-          # like a pass.
+          # like a pass. And `2>&1` is not decoration: the first version of this capture piped
+          # only stdout, so the TRACEBACK — the one thing worth capturing — went to stderr and
+          # never reached the summary. The step failed in 1 second three times running and the
+          # published output was still empty.
           set -o pipefail
           SEASONS="${{ github.event.inputs.seasons }}"; [ -n "$SEASONS" ] || SEASONS=2026
           LIMIT="${{ github.event.inputs.limit }}"
@@ -94,9 +97,9 @@ jobs:
           fi
 
           if [ -n "$LIMIT" ]; then
-            python -m src.pipelines.team_stats --seasons "$SEASONS" --limit "$LIMIT" | tee stats.txt
+            python -m src.pipelines.team_stats --seasons "$SEASONS" --limit "$LIMIT" 2>&1 | tee stats.txt
           else
-            python -m src.pipelines.team_stats --seasons "$SEASONS" | tee stats.txt
+            python -m src.pipelines.team_stats --seasons "$SEASONS" 2>&1 | tee stats.txt
           fi
 
       # NOT continue-on-error, unlike the step this replaces. team_match_stats is declared ACTIVE,
