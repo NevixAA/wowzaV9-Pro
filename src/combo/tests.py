@@ -298,6 +298,41 @@ def main() -> int:
     finally:
         nt.send, nt.STATE_FILE = _real_send, _real_state
 
+    # == cross-league strength calibration recovers a known answer ==
+    #
+    # The tournament model cannot be validated on real UEFA ties until the top-division backfill
+    # lands, so its MATHS is validated the one way available now: generate ties from known league
+    # strengths and check the fit recovers them. Without this the module would ship unexercised —
+    # which is how a sort that discarded every multi-leg combo survived into production.
+    from src.combo import league_strength as _ls
+    _rng = np.random.default_rng(7)
+    _true = {"Strong": 0.45, "Mid": 0.0, "Weak": -0.45}
+    _teams = {lg: [f"{lg}{i}" for i in range(12)] for lg in _true}
+    _att = {t: _rng.normal(0, 0.25) for lg in _teams for t in _teams[lg]}
+    _dfn = {t: _rng.normal(0, 0.25) for lg in _teams for t in _teams[lg]}
+    _rows = []
+    for _n in range(400):
+        _lh, _la = _rng.choice(list(_true), 2, replace=False)
+        _h, _a = _rng.choice(_teams[_lh]), _rng.choice(_teams[_la])
+        _diff = _true[_lh] - _true[_la]
+        _rows.append({"match_date": pd.Timestamp("2026-01-01") + pd.Timedelta(days=_n),
+                      "home_team": _h, "away_team": _a,
+                      "home_league": _lh, "away_league": _la,
+                      "att_h": _att[_h], "def_h": _dfn[_h],
+                      "att_a": _att[_a], "def_a": _dfn[_a],
+                      "home_goals": _rng.poisson(np.exp(_att[_h] - _dfn[_a] + 0.25 + _diff)),
+                      "away_goals": _rng.poisson(np.exp(_att[_a] - _dfn[_h] - _diff))})
+    _d = pd.DataFrame(_rows)
+    _cal = _ls.fit(_d)
+    check("league-strength fit converges", _cal.get("ok") and _cal.get("converged"), str(_cal)[:90])
+    if _cal.get("ok"):
+        _err = max(abs(_cal["strength"][k] - v) for k, v in _true.items())
+        check("...and recovers the true strengths", _err < 0.12, f"max error {_err:.3f}")
+    # Refusing to fit on too little is a FEATURE: a handful of cross-league ties cannot identify
+    # a per-league scale, and a number produced from them would be trusted anyway.
+    check("it refuses to fit below the anchor floor",
+          _ls.fit(_d.head(10)).get("ok") is False)
+
     print(f"\n{'FAILED: ' + ', '.join(FAILS) if FAILS else 'all checks passed'}")
     return 1 if FAILS else 0
 
