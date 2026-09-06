@@ -55,6 +55,7 @@ from src.combo import notify as cn
 from src.combo import player_dependency as pdep
 from src.combo import score_model as sm
 from src.combo import settle as cs
+from src.combo import v9_direction as v9gate
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "output"
@@ -221,6 +222,17 @@ def generate(days: int = DEFAULT_DAYS, *, now: dt.datetime | None = None) -> pd.
         return pd.DataFrame()
 
     d = pd.concat(out, ignore_index=True)
+
+    # Never offer a combo that points the opposite way to v9's live O/U tip on the same fixture.
+    # Applied HERE, on the assembled board, rather than per fixture inside the loop: one read of
+    # v9 for the whole run, and the printed count is a board-level number that shows immediately
+    # if the name resolver has stopped matching. Fails open — see src/combo/v9_direction.py for
+    # what this gate does and, just as importantly, what it does not.
+    d = v9gate.apply(d)
+    if d.empty:
+        print("[builder] every candidate contradicted v9's O/U tips — nothing to offer")
+        return d
+
     # A stable identity per (fixture, leg set) so notify can dedup and settle can merge.
     #
     # THE ID MUST CONTAIN THE SELECTION, NOT ONLY THE MARKET. The previous version hashed
