@@ -221,11 +221,42 @@ def build(matrix: np.ndarray, *, props: pd.DataFrame | None = None,
     mixed = out[mkcols].apply(
         lambda r: r.astype(str).str.startswith(("player_", "teamcard")).any(), axis=1)
     out = out.assign(_mixed=mixed.astype(int))
-    return (out.sort_values(["_mixed", "dependency_ratio"], ascending=[False, False])
-               .groupby("n_legs", group_keys=False).head(top_n)
-               .sort_values(["n_legs", "_mixed", "dependency_ratio"],
-                            ascending=[True, False, False])
-               .drop(columns=["_mixed"]))
+
+    # ONE OPINION ABOUT GOALS MUST NOT OWN THE FIXTURE. dependency_ratio is the right ranking --
+    # with no bookmaker price for a builder, the gap between the true joint and what multiplying
+    # the legs implies is the only edge estimate available, and it is exactly how books price
+    # these. But it rises monotonically as the goal leg gets rarer (board means: O35 1.751,
+    # O25 1.542, BTTS 1.369, O15 1.245, unders ~1.01), so on a high-scoring fixture the rarest
+    # over sweeps the quota: Greuther Furth v Heidenheim came back 26 of 36 candidates led by
+    # Over 3.5, Hertha v Magdeburg 25 of 36, Almeria v Cadiz 22 of 36.
+    #
+    # That is not a broken ranking, it is an unbalanced BOARD: every one of those 26 is a
+    # restatement of "lots of goals", so the fixture offers the reader one idea wearing 26 faces
+    # and crowds out the O2.5, BTTS and Over 1.5 builders that survived every other filter.
+    #
+    # Cap any single goal-family leg at half a leg count's quota. The best O35 combos still rank
+    # first and still lead the fixture; they just stop taking every slot. Fixtures that are
+    # already balanced (Oviedo v Burgos was 10 BTTS / 4 O15 / 11 O25 / 11 O35) are unaffected --
+    # the cap only binds where one leg had run away with it.
+    # Taken from the matrix's own goal legs rather than a second hard-coded list, so a new
+    # score-grid market is covered by this cap the day it is added.
+    _goal_keys = set(g)
+
+    def _goal_of(r) -> str:
+        for c in mkcols:
+            v = r[c]
+            if isinstance(v, str) and v in _goal_keys:
+                return v
+        return ""
+
+    out = out.assign(_goal=out.apply(_goal_of, axis=1))
+    per_leg_cap = max(1, top_n // 2)
+    ranked = out.sort_values(["_mixed", "dependency_ratio"], ascending=[False, False])
+    kept = (ranked.groupby(["n_legs", "_goal"], group_keys=False).head(per_leg_cap)
+                  .groupby("n_legs", group_keys=False).head(top_n))
+    return (kept.sort_values(["n_legs", "_mixed", "dependency_ratio"],
+                             ascending=[True, False, False])
+                .drop(columns=["_mixed", "_goal"]))
 
 
 def _reject(legs: list[dict]) -> str | None:
