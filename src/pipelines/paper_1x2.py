@@ -218,6 +218,20 @@ def log_picks(now: dt.datetime | None = None) -> pd.DataFrame:
     return d
 
 
+def _as_object(d: pd.DataFrame, *cols: str) -> None:
+    """Make `cols` able to hold a string, in place.
+
+    Needed wherever a text value is written row-by-row into a column that may have been read
+    back from CSV while entirely empty — pandas types such a column float64 and pandas 3 raises
+    rather than widening it. Creates the column if it is missing, so callers need only one call.
+    """
+    for c in cols:
+        if c not in d.columns:
+            d[c] = pd.NA
+        elif d[c].dtype != object:
+            d[c] = d[c].astype(object)
+
+
 def settle(d: pd.DataFrame | None = None, now: dt.datetime | None = None) -> pd.DataFrame:
     """Grade logged picks whose fixture has finished, and attach the CLOSING price.
 
@@ -262,6 +276,16 @@ def settle(d: pd.DataFrame | None = None, now: dt.datetime | None = None) -> pd.
     for c in ("result", "settled_at", "c_home", "c_draw", "c_away"):
         if c not in out.columns:
             out[c] = pd.NA
+    # AN ALL-EMPTY COLUMN READ BACK FROM CSV IS float64, NOT object, and pandas 3 refuses to
+    # widen a float64 column in place: `out.at[i, "settled_at"] = "2026-09-06T11:45:40Z"` raises
+    # TypeError("Invalid value ... for dtype 'float64'"). The `if c not in out.columns` guard
+    # above cannot catch this — the column IS there, it just cannot hold a string.
+    #
+    # That is why the first scheduled run died. It only bites once there is something to grade:
+    # every earlier local run printed "graded 0" and never reached the assignment, so the crash
+    # waited for the first finished fixture and then took the whole run with it, losing that
+    # day's freshly logged picks. Forcing the dtype is version-proof and costs nothing.
+    _as_object(out, "settled_at")
 
     graded = 0
     for i, row in out.iterrows():
@@ -335,8 +359,14 @@ def notify(d: pd.DataFrame, *, dry_run: bool = True) -> dict:
            "top_pct": TOP_PCT, "reasons": {}}
     if d is None or d.empty:
         return out
-    if "notified_at" not in d.columns:
-        d["notified_at"] = pd.NA
+    # THE SAME float64 TRAP AS settle(), and it had never fired only because no send had ever
+    # succeeded. `notified_at` and `notified_pick` take strings; `notified_odds`/`notified_ev`
+    # are numeric but are created here so a first send cannot assign into a column that does not
+    # exist yet. All four are absent from the record written before this fix.
+    _as_object(d, "notified_at", "notified_pick")
+    for c in ("notified_odds", "notified_ev"):
+        if c not in d.columns:
+            d[c] = pd.NA
     now = dt.datetime.now(dt.timezone.utc)
     live = d[pd.to_datetime(d["kickoff_utc"], errors="coerce", utc=True) > now]
     live = live[live["notified_at"].isna()]
