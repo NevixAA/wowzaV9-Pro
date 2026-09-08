@@ -264,6 +264,82 @@ def from_odds_histories() -> list[tuple[str, pd.DataFrame]]:
     return [("market_snapshots", pd.concat(frames, ignore_index=True))]
 
 
+_BOOK_ODDS_FILE = "output/book_odds_snapshots.csv"
+
+
+def from_book_odds() -> list[tuple[str, pd.DataFrame]]:
+    """v9's PER-BOOKMAKER quotes -> the `book_odds_snapshots` canonical table.
+
+    WHY THIS EXISTS. `market_snapshots.bookmaker` holds two synthetic values — `v9_selected_best`
+    and `v9_capture` — because v9 gives Pro the price it CHOSE, not the book that offered it. So
+    three questions were unanswerable from the canonical store: two-sided de-vigging against a
+    named book, multi-book consensus, and which book moves first. v9 has been committing the
+    per-book data all along in output/book_odds_snapshots.csv; nothing imported it.
+
+    Incremental on `snapshot_ts`, the same contract as from_odds_histories: the file only grows,
+    and a full re-import would add ~132k duplicate rows per run.
+
+    NOTHING IS DROPPED FOR BEING INCOMPLETE. A book quoting only one side is kept and flagged
+    MISSING_OPPOSITE_SIDE — 19.9% of (snapshot, match, market, book) groups are one-sided, and
+    which books those are is itself a research finding about book behaviour. Pro stores dirty rows
+    and lets the reader choose a strictness level; discarding them here would silently answer a
+    question the reader should be asking.
+    """
+    raw = fetch_csv(_BOOK_ODDS_FILE, required=False)
+    if raw.empty or "match" not in raw.columns or "bookmaker" not in raw.columns:
+        return []
+
+    mark = wm.get(_BOOK_ODDS_FILE)
+    if "snapshot_ts" in raw.columns:
+        new_high = str(raw["snapshot_ts"].max() or "")
+        if mark:
+            raw = raw[raw["snapshot_ts"].astype(str) > mark]
+        if raw.empty:
+            print(f"[import] {_BOOK_ODDS_FILE}: nothing new past {mark}")
+            return []
+        print(f"[import] {_BOOK_ODDS_FILE}: {len(raw):,} new row(s) past "
+              f"{mark or '(first import)'}")
+        _PENDING_MARKS[_BOOK_ODDS_FILE] = new_high
+
+    home, away = ent.split_match(raw["match"])
+    blk = pd.DataFrame({
+        "league": raw.get("league", ""),
+        "match_date": raw["match_date"].astype(str).str[:10],
+        "home_team": home,
+        "away_team": away,
+        "kickoff_utc": raw.get("kickoff_utc", ""),
+        "market": raw.get("market", ""),
+        "side": raw.get("side", ""),
+        # The whole reason for the table: the REAL book name, as the provider gave it.
+        "bookmaker": raw["bookmaker"].astype(str),
+        "odds": num(raw["odds"]),
+        "odds_source": "REAL",
+        "snapshot_ts": raw.get("snapshot_ts", ""),
+    })
+    blk = ent.add_fixture_key(blk)
+    blk["odds_band"] = blk["odds"].map(lambda v: cfg.band_label(v, cfg.ODDS_BANDS))
+
+    # Minutes to kickoff, so the horizon question can be asked of this table directly rather
+    # than by re-joining fixtures every time.
+    _ko = pd.to_datetime(blk["kickoff_utc"], errors="coerce", utc=True)
+    _ts = pd.to_datetime(blk["snapshot_ts"], errors="coerce", utc=True)
+    blk["minutes_to_kickoff"] = ((_ko - _ts).dt.total_seconds() / 60.0).round(1)
+    # A post-kickoff quote is NOT a pre-match price and must never be used as a close.
+    blk["is_post_kickoff"] = blk["minutes_to_kickoff"] < 0
+
+    blk["quality_flags"] = ""
+    blk["quality_flags"] = q.add_flag(blk["quality_flags"], blk["odds"].isna(),
+                                      "MARKET_MAPPING_INVALID")
+    blk["quality_flags"] = q.add_flag(blk["quality_flags"], blk["away_team"] == "",
+                                      "ENTITY_UNRESOLVED")
+    # One-sided quotes, flagged per (snapshot, fixture, market, book) rather than per row: the
+    # property belongs to the group, and a row cannot tell on its own whether its partner exists.
+    sides = blk.groupby(["snapshot_ts", "fixture_key", "market", "bookmaker"])["side"] \
+               .transform("nunique")
+    blk["quality_flags"] = q.add_flag(blk["quality_flags"], sides < 2, "MISSING_OPPOSITE_SIDE")
+    return [("book_odds_snapshots", blk)]
+
+
 # ── ledgers -> settlements ───────────────────────────────────────────────────
 
 def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
@@ -418,6 +494,10 @@ def from_live_signals() -> list[tuple[str, pd.DataFrame]]:
 IMPORTERS = {
     "predictions":    from_predictions,
     "odds_histories": from_odds_histories,
+    # Registered AFTER odds_histories deliberately: both read snapshot-keyed v9 files and both
+    # advance a watermark, and running the coarse one first means a failure here cannot stop the
+    # market_snapshots import that existing research already depends on.
+    "book_odds":      from_book_odds,
     "ledgers":        from_ledgers,
     "player_props":   from_player_props,
     "clv":            from_clv,

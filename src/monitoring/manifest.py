@@ -134,6 +134,9 @@ _PRO_TABLES = [
     ("player_props", "paper only, permanently"),
     ("live_signals", "OUR in-play opinion"),
     ("live_odds_snapshots", "the MARKET's in-play price. Never merge with live_signals."),
+    ("book_odds_snapshots", "PER-BOOKMAKER quotes, 24 named books. The only table that can "
+                            "answer de-vig, consensus and book lead/lag questions — "
+                            "market_snapshots.bookmaker holds two synthetic values."),
     ("movement_observations", "v11 research, archived verbatim with provenance"),
     ("data_quality", "per-(table, flag) findings"),
     ("team_match_stats", "xG / possession / inside-box per fixture"),

@@ -64,6 +64,11 @@ REQUIRED: dict[str, tuple[str, ...]] = {
     # first_seen_ts is REQUIRED: without it a row is just a lineup, and the entire reason this
     # table exists is the timing.
     "team_news":         ("fixture_key", "league", "team", "first_seen_ts"),
+    # PER-BOOK quotes. `bookmaker` is REQUIRED here and that is the entire point of the table:
+    # market_snapshots has the same column carrying two synthetic values, so a row without a real
+    # book name adds nothing this table exists for. `side` is required too — de-vigging needs both
+    # sides of the same book's market, and a one-sided row has to be identifiable as such.
+    "book_odds_snapshots": ("fixture_key", "market", "side", "bookmaker", "odds", "snapshot_ts"),
     # ── builder evidence ──────────────────────────────────────────────────────
     # combo_id + snapshot_ts, not combo_id alone: the SAME combo is re-generated on every run as
     # kickoff approaches, and each generation is a separate observation of what the model thought

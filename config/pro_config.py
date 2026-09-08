@@ -113,6 +113,33 @@ TABLES = (
     "team_news",
     # v11-computed market-movement research observations, archived verbatim with provenance.
     "movement_observations",
+    # PER-BOOKMAKER quotes. The one thing market_snapshots cannot answer.
+    #
+    # market_snapshots carries a `bookmaker` column with exactly TWO values — `v9_selected_best`
+    # and `v9_capture` — and `book_count` entirely null, because v9 hands Pro the price it chose
+    # rather than the book that offered it. That makes three research questions impossible:
+    # proper two-sided de-vigging against a named book, multi-book consensus, and any lead/lag
+    # study of which book moves first.
+    #
+    # v9 HAS the data and already commits it: output/book_odds_snapshots.csv, 132,751 rows over
+    # 24 bookmakers, written by src/predict.py and src/btts_odds.py. Pro simply never imported
+    # it. Measured before adding this table:
+    #
+    #   two-sided per (snapshot, match, market, book)   80.1%   -> real de-vig is possible
+    #   >=3 books per (snapshot, market)                34.9%   -> consensus on a third of quotes
+    #   books per quote                                 median 2, p90 5, max 17
+    #   fixture_key join rate to Pro's fixtures         99.4%   (789/794; the 5 misses are
+    #                                                            fixtures Pro has not collected yet)
+    #
+    # A SEPARATE table, not extra rows in market_snapshots. Adding book-grain rows there would
+    # change that table's grain and therefore every existing consumer's counts, which section 0B
+    # forbids; a new table breaks nothing.
+    #
+    # Bonus finding: this source is better allocated than market_snapshots for exactly the
+    # horizons the research needs — T-10m 1.1% / T-30m 1.4% / T-1h 1.7% against 0.2 / 0.3 / 0.4%,
+    # and far-future 40.1% against 80.0%. Importing it improves near-kickoff evidence immediately,
+    # with no new API call: the data is already collected and already committed.
+    "book_odds_snapshots",
     # ── BET BUILDER EVIDENCE (Prompt 01 sections 4-5) ─────────────────────────
     #
     # The builder already produced good research, and it produced it into two CSVs that are

@@ -360,8 +360,44 @@ COMBO_PRICE_SNAPSHOTS: dict[str, dict] = {
 }
 
 
+BOOK_ODDS_SNAPSHOTS: dict[str, dict] = {
+    "_status": ACTIVE,
+    "_grain": "one row per (snapshot_ts, fixture, market, side, bookmaker) — a NAMED book's quote",
+    "_why_empty": "Not empty from the first import. Source is v9's committed "
+                  "output/book_odds_snapshots.csv, 132,751 rows over 24 bookmakers, which v9 has "
+                  "been writing since 2026-08-19 and Pro never imported.",
+    "_blocked_on": "nothing",
+    "fields": {
+        "fixture_key": (AVAILABLE, "derived via src/data/entities; joins Pro's fixtures on 99.4% "
+                                   "of source fixtures (789/794 — the misses are fixtures Pro "
+                                   "has not collected yet)"),
+        "bookmaker": (AVAILABLE, "THE REASON THIS TABLE EXISTS. 24 distinct real book names. "
+                                 "market_snapshots.bookmaker carries only v9_selected_best and "
+                                 "v9_capture, so no book-level question can be asked of it"),
+        "market": (AVAILABLE, "OU15 | OU25 | OU35 | BTTS"),
+        "side": (AVAILABLE, "OVER | UNDER | YES | NO"),
+        "odds": (AVAILABLE, "as the provider gave it; never de-vigged in place"),
+        "snapshot_ts": (AVAILABLE, "v9's capture time"),
+        "kickoff_utc": (AVAILABLE, ""),
+        "minutes_to_kickoff": (DERIVED, "kickoff minus snapshot. Stored so the horizon question "
+                                        "can be asked of this table without re-joining fixtures"),
+        "is_post_kickoff": (DERIVED, "a post-kickoff quote is NOT a pre-match price and must "
+                                     "never be used as a close"),
+        "odds_band": (DERIVED, "cfg.ODDS_BANDS label"),
+        "fair_probability": (UNAVAILABLE, "NOT stored. De-vigging is v11's job by the ownership "
+                                          "rule, and storing one method's output here would "
+                                          "freeze a choice the research still has to make. The "
+                                          "raw two sides are what make it computable"),
+        "quality_flags": (AVAILABLE, "MISSING_OPPOSITE_SIDE on 19.9% of (snapshot, fixture, "
+                                     "market, book) groups — kept and flagged, not dropped: "
+                                     "which books quote one side is itself a finding"),
+    },
+}
+
+
 TABLES: dict[str, dict] = {
     "live_odds_snapshots": LIVE_ODDS_SNAPSHOTS,
+    "book_odds_snapshots": BOOK_ODDS_SNAPSHOTS,
     "team_news": TEAM_NEWS,
     "team_match_stats": TEAM_MATCH_STATS,
     "combo_candidates": COMBO_CANDIDATES,
