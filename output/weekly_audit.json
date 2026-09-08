@@ -1,28 +1,28 @@
 {
-  "generated_at": "2026-08-31T13:45:42Z",
+  "generated_at": "2026-09-07T12:28:46Z",
   "window_days": 7,
-  "v9_sha": "25ceea4b674c",
+  "v9_sha": "5c468a67d1ba",
   "worst": "FAIL",
   "counts": {
-    "PASS": 28,
+    "PASS": 26,
     "INFO": 10,
     "WARN": 3,
-    "FAIL": 1
+    "FAIL": 3
   },
   "checks": [
     {
       "area": "wiring",
       "name": "output/predictions.csv",
       "status": "PASS",
-      "detail": "201 rows, written 0.1h ago per generated_at [active window 08-23h, no idle time in gap]; 201 future-dated row(s)",
-      "value": 0.1,
+      "detail": "194 rows, written 2.3h ago per generated_at [active window 08-23h, no idle time in gap]; 194 future-dated row(s)",
+      "value": 2.3,
       "why": "predict is the entry point; stale means no board is being produced"
     },
     {
       "area": "wiring",
       "name": "output/bets.csv",
       "status": "PASS",
-      "detail": "56 rows, written 0.0h ago per file mtime; 56 future-dated row(s)",
+      "detail": "59 rows, written 0.0h ago per file mtime; 59 future-dated row(s)",
       "value": 0.0,
       "why": "the staked board. thin weeks are legitimate, so only WARN"
     },
@@ -30,7 +30,7 @@
       "area": "wiring",
       "name": "output/player_tips.csv",
       "status": "PASS",
-      "detail": "493 rows, written 0.0h ago per file mtime; 440 future-dated row(s)",
+      "detail": "479 rows, written 0.0h ago per file mtime; 386 future-dated row(s)",
       "value": 0.0,
       "why": "props are paper-only, so staleness is not money \u2014 but it is a broken collector"
     },
@@ -38,127 +38,127 @@
       "area": "wiring",
       "name": "output/side_bets_ledger.csv",
       "status": "PASS",
-      "detail": "143 rows, written 0.1h ago per generated_at; 38 future-dated row(s)",
-      "value": 0.1,
+      "detail": "228 rows, written 2.3h ago per generated_at; 52 future-dated row(s)",
+      "value": 2.3,
       "why": "side markets carry most staked tips right now"
     },
     {
       "area": "wiring",
       "name": "output/bets_ledger.csv",
       "status": "PASS",
-      "detail": "4,997 rows, written 0.1h ago per generated_at; 59 future-dated row(s)",
-      "value": 0.1,
+      "detail": "5,137 rows, written 2.3h ago per generated_at; 89 future-dated row(s)",
+      "value": 2.3,
       "why": "the durable tip record; grading and CLV hang off it"
     },
     {
       "area": "odds_curve",
       "name": "output/standard_sidemarket_odds_history.csv",
       "status": "PASS",
-      "detail": "2,902 rows / 25 distinct snapshot minutes in 7d; 1.92 points per fixture-market",
-      "value": 1.92,
+      "detail": "5,695 rows / 60 distinct snapshot minutes in 7d; 1.88 points per fixture-market",
+      "value": 1.88,
       "why": "1.0 means an ENTRY PRICE, not a curve \u2014 CLV needs several points per fixture"
     },
     {
       "area": "odds_curve",
       "name": "output/newformat_odds_history.csv",
       "status": "PASS",
-      "detail": "4,092 rows / 67 distinct snapshot minutes in 7d; 2.05 points per fixture-market",
-      "value": 2.05,
+      "detail": "4,370 rows / 62 distinct snapshot minutes in 7d; 2.17 points per fixture-market",
+      "value": 2.17,
       "why": "1.0 means an ENTRY PRICE, not a curve \u2014 CLV needs several points per fixture"
     },
     {
       "area": "odds_curve",
       "name": "output/book_odds_snapshots.csv",
       "status": "PASS",
-      "detail": "43,350 rows / 93 distinct snapshot minutes in 7d; 6.16 points per fixture-market",
-      "value": 6.16,
+      "detail": "47,971 rows / 54 distinct snapshot minutes in 7d; 6.18 points per fixture-market",
+      "value": 6.18,
       "why": "1.0 means an ENTRY PRICE, not a curve \u2014 CLV needs several points per fixture"
     },
     {
       "area": "odds_curve",
       "name": "near-kickoff snapshots",
       "status": "PASS",
-      "detail": "197 snapshot(s) within 6h of kickoff in 7d",
-      "value": 197,
+      "detail": "393 snapshot(s) within 6h of kickoff in 7d",
+      "value": 393,
       "why": "T-1h/T-30m is where the closing line forms"
     },
     {
       "area": "odds_curve",
       "name": "drift_signal populated",
       "status": "PASS",
-      "detail": "20.4% of rows are 'New' ({'Neutral': 100, 'Conflicted': 42, 'New': 41, 'Confirmed': 18})",
-      "value": 0.204,
+      "detail": "1.0% of rows are 'New' ({'Neutral': 137, 'Confirmed': 32, 'Conflicted': 23, 'New': 2})",
+      "value": 0.0103,
       "why": "100% 'New' means odds history is not persisting, so tier drift never fires"
     },
     {
       "area": "tips",
       "name": "staked tips recorded",
       "status": "PASS",
-      "detail": "67 SNIPER/MARKSMAN in 7d (all tiers: {'VALUABLE': 96, 'MARKSMAN': 58, 'SNIPER': 9})",
-      "value": 67,
+      "detail": "74 SNIPER/MARKSMAN in 7d (all tiers: {'VALUABLE': 125, 'MARKSMAN': 59, 'SNIPER': 15})",
+      "value": 74,
       "why": "VALUABLE is recorded but NOT staked"
     },
     {
       "area": "tips",
       "name": "settled tips graded",
       "status": "PASS",
-      "detail": "301/315 (96%) of kicked-off tips have a result",
-      "value": 0.956,
+      "detail": "276/323 (85%) of kicked-off tips have a result",
+      "value": 0.854,
       "why": "ungraded tips cannot produce P&L or CLV"
     },
     {
       "area": "tips",
       "name": "CLV recorded",
       "status": "WARN",
-      "detail": "561/4938 (11%) settled tips carry clv_pct",
-      "value": 0.114,
+      "detail": "638/5048 (13%) settled tips carry clv_pct",
+      "value": 0.126,
       "why": "CLV is the gate that certifies a BET; without it everything stays PAPER"
     },
     {
       "area": "collection",
       "name": "player_history.parquet",
       "status": "FAIL",
-      "detail": "newest row 14.6d old (limit 10d)",
-      "value": 14.6,
+      "detail": "newest row 21.5d old (limit 10d)",
+      "value": 21.5,
       "why": "a season-keyed table that stops advancing while the job reports success is the COLLECT_SEASONS failure"
     },
     {
       "area": "collection",
       "name": "output/af_history.parquet",
       "status": "PASS",
-      "detail": "newest row 13.6d old (limit 14d)",
-      "value": 13.6,
+      "detail": "newest row 0.5d old (limit 14d)",
+      "value": 0.5,
       "why": "a season-keyed table that stops advancing while the job reports success is the COLLECT_SEASONS failure"
     },
     {
       "area": "collection",
       "name": "pro season store",
       "status": "PASS",
-      "detail": "663,443 rows across 14/20 tables; empty: ['team_match_stats', 'combo_candidates', 'combo_legs', 'combo_dependencies', 'combo_settlements', 'combo_price_snapshots']",
-      "value": 663443,
+      "detail": "1,234,231 rows across 19/20 tables; empty: ['combo_price_snapshots']",
+      "value": 1234231,
       "why": "Pro must keep its own record"
     },
     {
       "area": "snapshot coverage",
       "name": "main O/U (per book): near-kickoff",
-      "status": "PASS",
-      "detail": "946 series over 337 kicked-off fixtures; median 48 snapshots; T-6h 90%  T-3h 83%  T-1h 61%  T-30m 48%  T-10m 24%",
-      "value": 0.481,
+      "status": "FAIL",
+      "detail": "1560 series over 562 kicked-off fixtures; median 46 snapshots; T-6h 84%  T-3h 76%  T-1h 49%  T-30m 38%  T-10m 20%  BELOW FLOOR: T-1h, T-30m",
+      "value": 0.3776,
       "why": "the closing price is what CLV is measured against and /odds cannot be backfilled \u2014 a close missed before kickoff is lost permanently"
     },
     {
       "area": "snapshot coverage",
       "name": "standard side-markets: near-kickoff",
       "status": "INFO",
-      "detail": "1840 series; median 2 snapshots; T-6h 29%  T-3h 19%  T-1h 10%  T-30m 5%  T-10m 0%",
-      "value": 0.0511,
+      "detail": "3788 series; median 2 snapshots; T-6h 38%  T-3h 22%  T-1h 9%  T-30m 5%  T-10m 2%",
+      "value": 0.0523,
       "why": "reported, not gated: side-market density is known-thin, so a floor here would fire every run"
     },
     {
       "area": "snapshot coverage",
       "name": "new-format dense: bucketing",
       "status": "INFO",
-      "detail": "no kickoff_utc column; T-minus buckets not computable for this source (rows 5,372)",
+      "detail": "no kickoff_utc column; T-minus buckets not computable for this source (rows 7,237)",
       "value": null,
       "why": "adding kickoff_utc to this writer would make its close auditable"
     },
@@ -166,7 +166,7 @@
       "area": "v11 freshness",
       "name": "v11 self-reported verdict",
       "status": "PASS",
-      "detail": "v11 research health = PASS (calc v1.0.0, generated 2026-08-30T23:35:57Z)",
+      "detail": "v11 research health = PASS (calc v1.0.0, generated 2026-09-07T01:07:08Z)",
       "value": null,
       "why": "v11 compares each derived artifact's generated_at against its source's newest observation, so this distinguishes 'no new data' from 'analysis did not refresh'"
     },
@@ -190,15 +190,15 @@
       "area": "v11 freshness",
       "name": "sample sizes",
       "status": "INFO",
-      "detail": "raw 42063 snapshot rows | movement 41118 distinct obs over 513 fixtures (published n=501) | residual n=409 | clean CLV n=417",
-      "value": 513,
+      "detail": "raw 48722 snapshot rows | movement 47429 distinct obs over 768 fixtures (published n=747) | residual n=364 | clean CLV n=625",
+      "value": 768,
       "why": "distinct observations, NOT the warehouse row count \u2014 the archive holds supersets from repeated ingests and the raw count overstates n by ~38%"
     },
     {
       "area": "v11 freshness",
       "name": "monotonicity",
       "status": "PASS",
-      "detail": "non-decreasing (movement fixtures +8, residual n +0)",
+      "detail": "non-decreasing (movement fixtures +3, residual n +0)",
       "value": null,
       "why": "a decrease is legitimate after a methodology or quality-rule change, but it must be visible and explained rather than absorbed silently"
     },
@@ -238,15 +238,15 @@
       "area": "clv schema",
       "name": "coverage by level",
       "status": "PASS",
-      "detail": "RAW 3,263 | CLEAN 4,366 (82.2%) | STRICT 1,933 (36.4%) of 5,310 rows",
-      "value": 0.8222,
+      "detail": "RAW 10,071 | CLEAN 11,761 (85.0%) | STRICT 6,110 (44.2%) of 13,830 rows",
+      "value": 0.8504,
       "why": "CLEAN is what to average; STRICT is what a headline or a graduation decision needs"
     },
     {
       "area": "clv schema",
       "name": "why rows are not strict",
       "status": "INFO",
-      "detail": "OK=1,933; CLOSE_NOT_PROVEN_PRE_KICKOFF=1,498; CLOSE_EQUALS_ENTRY=935; NO_CLOSE=549; CLV_IMPLAUSIBLE=395",
+      "detail": "OK=6,110; CLOSE_EQUALS_ENTRY=2,860; CLOSE_NOT_PROVEN_PRE_KICKOFF=2,791; CLV_IMPLAUSIBLE=1,101; NO_CLOSE=968",
       "value": null,
       "why": "NO_CLOSE and CLOSE_EQUALS_ENTRY are absent measurements, not zero CLV"
     },
@@ -254,7 +254,7 @@
       "area": "clv schema",
       "name": "clv_pct units",
       "status": "INFO",
-      "detail": "stored clv_pct is a FRACTION (median residual vs entry/close-1: 0.00001 as fraction, 4.95000 as percent, n=3,263)",
+      "detail": "stored clv_pct is a FRACTION (median residual vs entry/close-1: 0.00001 as fraction, 4.01355 as percent, n=10,071)",
       "value": null,
       "why": "clv_records.csv stores a FRACTION and bets_ledger.csv stores a PERCENT under the same column name. CLV_PLAUSIBLE_ABS=25 is therefore inert against clv_records \u2014 it means 2500% there. Derived numbers use clv_pct_normalised, which is always percent"
     },
@@ -262,16 +262,16 @@
       "area": "movement research",
       "name": "advancing",
       "status": "PASS",
-      "detail": "last ingest 25.8h ago (limit 30h); 241,063 rows over 471 fixtures",
-      "value": 25.8,
+      "detail": "last ingest 25.5h ago (limit 30h); 546,277 rows over 661 fixtures",
+      "value": 25.5,
       "why": "a research archive that stops advancing looks identical to one that is fine"
     },
     {
       "area": "movement research",
       "name": "eligibility",
       "status": "PASS",
-      "detail": "233,310/241,063 (96.8%) eligible; excluded: {'INSUFFICIENT_BOOKS': np.int64(6290), 'MISSING_KICKOFF': np.int64(1463)}",
-      "value": 0.9678,
+      "detail": "528,572/546,277 (96.8%) eligible; excluded: {'INSUFFICIENT_BOOKS': np.int64(14961), 'MISSING_KICKOFF': np.int64(2744)}",
+      "value": 0.9676,
       "why": "a sharp fall means an upstream field stopped resolving, not that the market changed"
     },
     {
@@ -286,40 +286,40 @@
       "area": "movement research",
       "name": "re-ingest overlap",
       "status": "INFO",
-      "detail": "241,063 rows describe 40,670 distinct observations (200,393 superseded by a later ingest)",
-      "value": 200393,
+      "detail": "546,277 rows describe 46,446 distinct observations (499,831 superseded by a later ingest)",
+      "value": 499831,
       "why": "dedupe by snapshot_id keeping the latest ingested_at before aggregating; raw row counts over this table are NOT observation counts"
     },
     {
       "area": "movement research",
       "name": "sample discipline",
       "status": "INFO",
-      "detail": "471 fixtures -> RESEARCH; graduation needs 500+ clean fixture-level observations",
-      "value": 471,
+      "detail": "661 fixtures -> VALIDATABLE; graduation needs 500+ clean fixture-level observations",
+      "value": 661,
       "why": "RESEARCH ONLY until the graduation criteria in MARKET_MOVEMENT_RESEARCH.md are met"
     },
     {
       "area": "registry",
       "name": "freshness",
       "status": "PASS",
-      "detail": "generated 4.9h ago (limit 30h)",
-      "value": 4.9,
+      "detail": "generated 7.3h ago (limit 30h)",
+      "value": 7.3,
       "why": "pro_collect refreshes it 2-hourly; 30h means the refresh step itself stopped, which is how the counts drifted 49% unnoticed"
     },
     {
       "area": "registry",
       "name": "reconciliation",
-      "status": "PASS",
-      "detail": "all 20 tables match canonical (663,443 rows)",
-      "value": 663443,
-      "why": ""
+      "status": "FAIL",
+      "detail": "1/20 tables disagree; registry 1,234,201 vs canonical 1,234,231 (+30 rows). Worst: team_match_stats 3268 vs 3,298",
+      "value": 30,
+      "why": "a registry that states counts it did not measure is worse than no registry: the numbers look plausible so a reader has no way to notice they are wrong. Fix with `python -m src.pipelines.registry`, then find out why the collect step skipped it"
     },
     {
       "area": "registry",
       "name": "populated tables",
       "status": "WARN",
-      "detail": "14/20 tables hold rows; EMPTY: combo_candidates, combo_dependencies, combo_legs, combo_price_snapshots, combo_settlements, team_match_stats",
-      "value": 6,
+      "detail": "19/20 tables hold rows; EMPTY: combo_price_snapshots",
+      "value": 1,
       "why": "an always-empty canonical table usually means nothing writes to it, which no row count can distinguish from 'nothing happened yet'"
     },
     {
