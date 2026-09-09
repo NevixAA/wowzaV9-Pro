@@ -74,7 +74,24 @@ jobs:
           # manual dispatch sweep everything.
           ONLY="${{ github.event.inputs.only }}"
           if [ -z "$ONLY" ] && [ "${{ github.event.schedule }}" = '40 */2 * * *' ]; then
-            ONLY="predictions"
+            # `book_odds` ADDED to the 2-hourly list on 2026-09-09, and it has to be here rather
+            # than waiting for the daily sweep.
+            #
+            # The split below is sound in principle — predictions.csv is current-state and must be
+            # sampled often; ledgers and props are UPDATED in place and a daily re-capture is
+            # enough. But it silently made the daily sweep a dependency, and that sweep is the
+            # least reliable cron in the estate. Measured 06:00-08:00 UTC `pro: collect` commits:
+            #
+            #     08-25 x2, 08-26 x2, 08-29, 08-31, then NOTHING for nine days
+            #
+            # book_odds_snapshots was deployed 2026-09-08 and read 0 rows / 0 runs a day later
+            # for exactly this reason — the same trap that kept team_match_stats empty until it
+            # was given its own workflow.
+            #
+            # Cheap to run 2-hourly: the source is a 15 MB CSV, the importer is watermarked on
+            # snapshot_ts, and v9's predict appends to it continuously. So the first run imports
+            # ~132k rows and every run after it imports only what is new.
+            ONLY="predictions,book_odds"
           fi
           if [ -n "$ONLY" ]; then
             python -m src.pipelines.pro_collect --only "$ONLY"
