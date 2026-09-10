@@ -106,10 +106,76 @@ the estate are `live_scanner.MAX_FAIR_OVER = 3.30` (live path, and on *fair* odd
 `sharp_tracker`'s garbage-data limits (>15). **There is no upper bound on the main O/U path**,
 which is precisely how 48 bets above 3.00 were placed. `CLAUDE.md` corrected the same day.
 
-## 4. Best-price execution — REAL but the headline was overstated
+## 3b. The staked-tier defect was MISDIAGNOSED — production never used 14%
+
+I had been reporting, across several sessions, that "37 of 38 staked standard MARKSMAN bets had a
+measured edge below the 14% MARKSMAN threshold they were supposedly selected for." Agent 3 and
+Agent 6 independently flagged this as misdiagnosed, and they are right.
+
+`config.py:282` is `MARKSMAN_THRESHOLD = float(os.getenv("MARKSMAN_THRESHOLD", "0.14"))` — 0.14 is
+only the **default**. `predict.yml` sets the environment for every production run:
+
+```
+LEAGUE_SNIPER_CAP: "0.12"
+MARKSMAN_THRESHOLD: "0.08"
+VALUABLE_THRESHOLD: "0.03"
+```
+
+So the deployed MARKSMAN floor has been **0.08 since 2026-08-21**, not 0.14. Measuring against
+0.14 was measuring against a rule production does not apply. Re-measured with the production env
+loaded, and against each bet's **own league's** effective threshold
+(`LEAGUE_MARKSMAN_THRESHOLDS` covers only `Bundesliga 2` and `League Two`, both 0.12):
+
+| threshold used | bets below it |
+|---|---|
+| 0.14 — config default, what I wrongly used | 37 of 38 (97.4%) |
+| 0.08 — deployed global | 25 of 38 (65.8%) |
+| **own league's effective floor** | **25 of 38 violate; 13 meet it** |
+
+| league | effective floor | n | edge range | meets floor | P/L |
+|---|---:|---:|---|---:|---:|
+| Bundesliga 2 | 12.00% | 8 | 3.61–13.72 | 1/8 | −3.23u |
+| Championship | 8.00% | 7 | 3.36–9.12 | 1/7 | −0.81u |
+| La Liga 2 | 8.00% | 9 | 3.59–14.08 | 6/9 | −6.92u |
+| League One | 8.00% | 6 | 3.26–11.43 | 4/6 | −3.86u |
+| Ligue 2 | 8.00% | 1 | 4.27 | 0/1 | −1.00u |
+| Serie B | 8.00% | 7 | 3.62–12.54 | 1/7 | +2.04u |
+
+**[PROVEN]** A real defect survives — **two thirds of staked standard MARKSMAN bets do not meet
+the floor they are nominally selected by**, with edges as low as 3.26%. But the magnitude and the
+framing were both wrong, and the correct diagnosis matters: the deployed thresholds live in
+**workflow environment variables, not in `config.py`**. Any future threshold analysis that reads
+`config.py` and stops there is measuring a system that isn't running.
+
+Also corrected: I had characterised the drift adjustment as promoting the worse bets. Per drift
+signal on these 38: `Confirmed` n=20 ROI −0.205 (mean edge 4.83), `Conflicted` n=13 ROI −0.525
+(mean edge 9.00), `Neutral` n=2, `New` n=3. The bets with the *highest* claimed edge
+(`Conflicted`) did worst — consistent with edge carrying no information — but at these cell sizes
+no drift-signal claim is supportable in either direction. Withdraw it rather than reverse it.
+
+## 4. Best-price execution — Agent 4 was RIGHT; my first correction of it was wrong
 
 Agent 4's F1: v9 takes the first-listed bookmaker's price rather than the best, worth +2.03 ROI
 points, CI [+1.41, +2.73], n=217.
+
+> **This section was published on 2026-09-10 claiming Agent 4 had overstated the effect at
+> +2.03pp and that the executable figure was +1.25pp. That claim was mine and it was wrong.**
+> I read `book_odds_snapshots` as a snapshot panel — grouping by `(fixture-side, instant)` — when
+> it is a **change-log** storing consecutive-distinct changes only. At any single instant only
+> the books that just moved are present, so I saw a median of **3** books per bet instead of the
+> **8** actually quoting: a 2.7x understatement of panel depth, and therefore of the best price
+> available.
+>
+> Read correctly, with last-observation-carried-forward per bookmaker up to the decision instant:
+> **+1.99 ROI points, CI [+1.37, +2.67], p=7.2e-09, n=221** — v9 worse on 55.7% of bets, mean
+> improvement +4.05% when one existed. Against Agent 4's +2.03pp CI [+1.41, +2.73] n=217, that is
+> the same measurement.
+>
+> The sting: Agent 4's report states this trap explicitly ("read as a panel it understates book
+> depth 6x") and I made it anyway while checking their arithmetic. The change-log storage format
+> has now caused three separate wrong conclusions in this estate — sparse near-kickoff rows
+> looking like a dead NEAR loop, Agent 5's 35-55-day gate estimate, and this. **Anything reading
+> a `*_snapshots` table must carry forward per entity before aggregating.**
 
 **The mechanism is PROVEN at the code level.** `v9/src/predict.py:135-138` reads
 `if pt == 2.5 and nm == "Over" and not ov25: ov25 = pr` — first book in the API response wins and
@@ -119,24 +185,24 @@ at one instant quoted betsson 1.55, gtbets 1.58, leovegas_se 1.60. v9 books 1.55
 **The size depends entirely on how "available" is defined, and this is where the claim needs
 care.** Three measurements on the same 323/221 matched settled bets:
 
-| definition | n | v9 worse on | paired delta | p |
-|---|---:|---:|---|---|
-| best price seen *any time* pre-kickoff | 323 | 91.6% | **+6.51pp** [+5.34, +7.71] | 7e-24 |
-| median per-instant best | 323 | 50.8% | +0.36pp [−0.43, +1.13] | 0.36 |
-| **best at the decision instant** | **221** | **45.2%** | **+1.25pp [+0.62, +1.91]** | **0.00026** |
+| definition | n | v9 worse on | paired delta | p | status |
+|---|---:|---:|---|---|---|
+| best price seen *any time* pre-kickoff | 323 | 91.6% | +6.51pp [+5.34, +7.71] | 7e-24 | **look-ahead — never quote** |
+| best at decision instant, last-instant books only | 221 | 45.2% | +1.25pp [+0.62, +1.91] | 3e-04 | **wrong — panel misread** |
+| median per-instant best | 323 | 50.8% | +0.36pp [−0.43, +1.13] | 0.36 | wrong, same cause |
+| **best at decision instant, LOCF panel** | **221** | **55.7%** | **+1.99pp [+1.37, +2.67]** | **7e-09** | **correct** |
 
-The first is **look-ahead contaminated** — a maximum over the whole pre-kickoff window requires
-knowing in advance when the peak would occur. It should never be quoted as an achievable gain.
-The third is the executable one: at the moment v9 decides, shop every book in hand and take the
-best. n=221 matches Agent 4's 217 and 45.2% matches their 46.6%, so we measured the same
-population; the delta differs by snapshot-matching choice.
+The first is look-ahead contaminated — a maximum over the whole pre-kickoff window requires
+knowing in advance when the peak would occur, and it should never be quoted as achievable. The
+middle two understate the panel, as described above. The last is the executable one: at the moment
+v9 decides, take the best price among all books whose last-known quote is on file.
 
-**[PROVEN] +1.25 ROI points, CI [+0.62, +1.91], p=0.00026.** When a better price existed it was
-on average **3.57%** better. This is the only positive-expectation finding verified in this pass,
-and it needs no model to be correct.
+**[PROVEN] +1.99 ROI points, CI [+1.37, +2.67], p=7.2e-09, n=221.** When a better price existed it
+was on average **4.05%** better. This is the only positive-expectation finding verified in this
+pass, and it needs no model to be correct.
 
 **But state the size honestly against the hole it has to fill.** `standard` is −22.5 ROI points
-and `new_format` −2.1. A +1.25pp execution gain is real, free of model risk, and does **not**
+and `new_format` −2.1. A +1.99pp execution gain is real, free of model risk, and does **not**
 make either track profitable. It is worth doing on its own merits, not as a rescue.
 
 **It is not a one-line change.** `edge = model_prob − 1/odds`, so taking a better price *raises*
@@ -154,6 +220,41 @@ approval:
 * adding an upper odds bound (new_format) — **needs approval**, it is a live selection change
 * best-price selection in `predict.py` — **needs approval**, it moves tiers via `edge_pct`
 * anything about the standard MARKSMAN cell — **needs approval**
+
+## 5. The v11 placebo battery is void — a one-line `merge_asof` bug
+
+The red team's headline, and it lands on code this session's predecessor wrote. Reproduced from
+scratch in pandas 3.0.3:
+
+`wowza-v11/scripts/v11_momentum_control.py:158` ends `_asof()` with
+`return out.sort_index()["p_at"]`. **`pd.merge_asof` resets the index**, so `out` carries a fresh
+`RangeIndex` in `target_ts`-sorted order; `sort_index()` on that is a no-op and cannot recover the
+caller's row order. `build()` then does `d[name] = d["v11_p_market"] - _asof(...)`, which aligns
+by index — so every movement value lands on the wrong row. Minimal repro returns `[0.1, 0.2, 0.3]`
+where the correct answer is `[0.3, 0.1, 0.2]`.
+
+**Every momentum, movement and placebo number from that script is void**, including the result
+that has been quoted as settled ("mean reversion 0.995, fixed anchor 0.753, shuffled residual
+0.711 all beat v9's 0.703 toward-rate"). It was also handed to all thirteen auditors in their
+shared brief as `PROVEN`. It is not proven; it is unmeasured. The fix is to carry the caller's
+index through the sort explicitly rather than trying to restore it afterwards.
+
+**What replaces it as the load-bearing negative result** is Agent 6's calibration gap, which the
+red team attacked with a selection-bias simulation and could not dent: **claimed 0.5430 vs
+realised 0.4066 = +13.64pp, z=7.81, n=792**; +16.80pp on staked bets and +10.78pp on
+never-staked VALUABLE. The gap being the *same size* in both is the finding — the tier ladder
+carries no information. And Brier: model 0.2583 versus the bookmaker's own **vigged** price
+0.2368.
+
+That is a better result than the one it replaces, because it is denominated in the model's own
+metric rather than in a movement series.
+
+### My own `merge_asof` use in §4 was checked, not assumed
+
+The same function appears in the best-price test above. Verified empirically rather than argued:
+that code reads `odds`, `pnl` and the matched price off the **same merged frame** and never
+assigns a merge result back onto another frame by index, so row-internal consistency holds
+regardless of the index reset. Confirmed with a constructed case.
 
 ## Standing caveats
 
