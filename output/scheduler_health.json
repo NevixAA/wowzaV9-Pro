@@ -1,70 +1,70 @@
 {
-  "active_matches": 9,
+  "active_matches": 6,
   "active_window_horizon_hours": 6.0,
   "api_budget": {
     "abort_at": 60000,
     "alert_at": 45000,
     "limit_day": 75000,
-    "pct_used": 4.3,
+    "pct_used": 8.5,
     "plan": "Ultra",
-    "requests_used": 3231,
-    "snapshot_ts": "2026-09-19T06:40:31Z",
+    "requests_used": 6370,
+    "snapshot_ts": "2026-09-19T12:04:29Z",
     "source": "/home/runner/work/wowzaV9-Pro/wowzaV9-Pro/_v9/output/api_usage_log.csv",
     "status": "OK"
   },
   "coverage_problems": [],
   "coverage_status": "PASS",
   "fixture_horizon": {
-    "next_24h": 87,
-    "next_3h": 44,
-    "next_6h": 51,
-    "next_72h": 134
+    "next_24h": 64,
+    "next_3h": 11,
+    "next_6h": 15,
+    "next_72h": 85
   },
   "fixtures_today": 85,
   "freshness": {
     "fixtures": {
       "age_hours": 0.0,
-      "last_observed_at": "2026-09-19T11:27:18Z",
+      "last_observed_at": "2026-09-19T16:02:08Z",
       "status": "OK"
     },
     "live_odds_snapshots": {
-      "age_hours": 11.27,
-      "last_observed_at": "2026-09-19T00:11:29Z",
-      "status": "STALE"
+      "age_hours": 1.71,
+      "last_observed_at": "2026-09-19T14:19:48Z",
+      "status": "OK"
     },
     "live_signals": {
-      "age_hours": 0.4,
+      "age_hours": 4.98,
       "last_observed_at": "2026-09-19T11:03:47Z",
       "status": "OK"
     },
     "market_snapshots": {
       "age_hours": 0.0,
-      "last_observed_at": "2026-09-19T11:27:18Z",
+      "last_observed_at": "2026-09-19T16:02:08Z",
       "status": "OK"
     },
     "model_snapshots": {
-      "age_hours": 2.42,
-      "last_observed_at": "2026-09-19T09:02:12Z",
+      "age_hours": 3.51,
+      "last_observed_at": "2026-09-19T12:31:53Z",
       "status": "OK"
     },
     "player_props": {
-      "age_hours": 0.4,
+      "age_hours": 4.98,
       "last_observed_at": "2026-09-19T11:03:46Z",
       "status": "OK"
     }
   },
-  "generated_at": "2026-09-19T11:27:32Z",
+  "generated_at": "2026-09-19T16:02:23Z",
   "observed_cadence": {
     "live_odds_snapshots": {
-      "active_median_gap_min": 176.2,
-      "active_missed_windows": 586,
+      "active_median_gap_min": 176.6,
+      "active_missed_windows": 570,
       "active_n_observations": 51,
-      "active_p90_gap_min": 221.2,
-      "first": "2026-09-05T13:49:58Z",
-      "last": "2026-09-19T00:11:29Z",
+      "active_p90_gap_min": 223.9,
+      "first": "2026-09-05T16:45:14Z",
+      "last": "2026-09-19T14:19:48Z",
       "max_gap_min": 998.1,
-      "median_gap_min": 191.8,
-      "missed_windows": 1848,
+      "median_gap_min": 193.1,
+      "missed_windows": 1915,
       "n_observations": 59,
       "p90_gap_min": 892.8
     },
@@ -82,30 +82,30 @@
       "p90_gap_min": 1503.6
     },
     "market_snapshots": {
-      "active_median_gap_min": 229.1,
-      "active_missed_windows": 1410,
+      "active_median_gap_min": 238.8,
+      "active_missed_windows": 1419,
       "active_n_observations": 68,
       "active_p90_gap_min": 377.5,
-      "first": "2026-09-05T15:30:02Z",
-      "last": "2026-09-19T11:27:18Z",
+      "first": "2026-09-05T18:33:06Z",
+      "last": "2026-09-19T16:02:08Z",
       "max_gap_min": 449.1,
-      "median_gap_min": 229.2,
-      "missed_windows": 1866,
+      "median_gap_min": 248.3,
+      "missed_windows": 1875,
       "n_observations": 88,
       "p90_gap_min": 378.2
     },
     "model_snapshots": {
-      "active_median_gap_min": 259.4,
-      "active_missed_windows": 1117,
+      "active_median_gap_min": 258.7,
+      "active_missed_windows": 1136,
       "active_n_observations": 51,
-      "active_p90_gap_min": 460.3,
-      "first": "2026-09-05T14:11:26Z",
-      "last": "2026-09-19T09:02:12Z",
-      "max_gap_min": 1210.5,
-      "median_gap_min": 269.8,
-      "missed_windows": 1881,
+      "active_p90_gap_min": 454.1,
+      "first": "2026-09-06T10:21:55Z",
+      "last": "2026-09-19T12:31:53Z",
+      "max_gap_min": 485.8,
+      "median_gap_min": 265.6,
+      "missed_windows": 1780,
       "n_observations": 71,
-      "p90_gap_min": 394.7
+      "p90_gap_min": 388.8
     },
     "player_props": {
       "active_median_gap_min": 1500.9,
@@ -123,24 +123,24 @@
   },
   "odds_api_budget": {
     "credits_by_league_top12": {
-      "Argentina Primera Division": 13351,
-      "Brazil Serie A": 8460,
-      "Bundesliga 2": 7011,
-      "Championship": 11716,
-      "La Liga 2": 8576,
-      "League One": 10842,
-      "League Two": 10577,
-      "Mexico Liga MX": 7100,
-      "Norway Eliteserien": 6344,
-      "Serie B": 6843,
-      "Sweden Allsvenskan": 6979,
-      "USA MLS": 16803
+      "Argentina Primera Division": 13386,
+      "Brazil Serie A": 8480,
+      "Bundesliga 2": 7023,
+      "Championship": 11733,
+      "La Liga 2": 8600,
+      "League One": 10862,
+      "League Two": 10599,
+      "Mexico Liga MX": 7120,
+      "Norway Eliteserien": 6363,
+      "Serie B": 6861,
+      "Sweden Allsvenskan": 6997,
+      "USA MLS": 16845
     },
     "credits_by_market": {
-      "BTTS": 29410,
-      "OU15": 2227,
-      "OU25": 43280,
-      "OU35": 9939,
+      "BTTS": 29539,
+      "OU15": 2237,
+      "OU25": 43409,
+      "OU35": 9975,
       "btts_no": 12126,
       "btts_yes": 12126,
       "h2h_away": 3975,
@@ -157,14 +157,14 @@
       "under25": 9201,
       "under35": 4131
     },
-    "credits_remaining_month": 25911,
-    "credits_used_month": 74089,
-    "credits_used_today": 2976,
-    "estimated_month_end_usage": 116982,
+    "credits_remaining_month": 25607,
+    "credits_used_month": 74393,
+    "credits_used_today": 3280,
+    "estimated_month_end_usage": 117462,
     "is_estimate": true,
-    "mean_per_day": 4671.1,
+    "mean_per_day": 4680.1,
     "monthly_allowance": 100000,
-    "pct_of_monthly_allowance": 74.09,
+    "pct_of_monthly_allowance": 74.39,
     "source": "ESTIMATED from stored market_snapshots \u2014 no credit meter exists",
     "status": "OK"
   },
@@ -178,28 +178,28 @@
       "pct": 0.4
     },
     "T-24h": {
-      "observations": 17009,
-      "pct": 10.6
+      "observations": 17181,
+      "pct": 10.7
     },
     "T-30m": {
-      "observations": 439,
+      "observations": 445,
       "pct": 0.3
     },
     "T-3h": {
-      "observations": 2238,
+      "observations": 2267,
       "pct": 1.4
     },
     "T-6h": {
-      "observations": 3998,
+      "observations": 4010,
       "pct": 2.5
     },
     "far": {
-      "observations": 127832,
-      "pct": 79.6
+      "observations": 127924,
+      "pct": 79.4
     },
     "post_kickoff": {
-      "observations": 8087,
-      "pct": 5.0
+      "observations": 8209,
+      "pct": 5.1
     }
   },
   "scheduler_mode": "LIVE_MATCH",
