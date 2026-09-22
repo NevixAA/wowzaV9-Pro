@@ -102,6 +102,11 @@ output/**
 # invite re-reading the best of thirty comparisons as a fresh discovery every time. Small: one
 # row per ordered model pair.
 !output/cross_model_correlation.csv
+# Calibration study. Committed because the SHAPE of the miss is the finding and it should be
+# re-checked as n grows: the model is UNDER-confident overall but OVER-confident in the high
+# bins where it actually bets, and that split is what a single average hides.
+!output/calibration_study.csv
+!output/calibration_bins.csv
 # Scheduler observability (Prompt 01 section 7). Committed because the QUESTION is historical:
 # "is the observed cadence degrading" cannot be answered by a file that only ever holds the
 # current run. Both are small — one JSON object each, no per-row data.
