@@ -116,6 +116,10 @@ output/**
 # models last actually learn' cannot be answered by a file that only holds the current
 # run, and every failure this estate has had ran for WEEKS before anyone noticed.
 !output/ml_learning_health.json
+# The mixed/stacked challenger evaluation. Committed because its answer is expected to
+# CHANGE: model_snapshots only began in August, so today's test window is ~8 days. The
+# verdict that matters is the one taken when the window is a season long.
+!output/mixed_model_eval.json
 # Scheduler observability (Prompt 01 section 7). Committed because the QUESTION is historical:
 # "is the observed cadence degrading" cannot be answered by a file that only ever holds the
 # current run. Both are small — one JSON object each, no per-row data.

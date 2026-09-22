@@ -1,0 +1,113 @@
+{
+  "generated_at": "2026-09-22T09:10:58.863321+00:00",
+  "results": [
+    {
+      "label": "ALL",
+      "status": "OK",
+      "calc_version": "1.0.0",
+      "features": [
+        "p_BTTS",
+        "p_OU15",
+        "p_OU25",
+        "p_OU35"
+      ],
+      "dropped_low_coverage": [
+        "p_HT_OU05(38%)",
+        "p_HT_OU15(38%)"
+      ],
+      "n": 555,
+      "n_train": 360,
+      "n_test": 195,
+      "train_from": "2026-08-17",
+      "train_to": "2026-09-12",
+      "test_from": "2026-09-12",
+      "test_to": "2026-09-20",
+      "incumbent": {
+        "logloss": 0.6845140439892671,
+        "brier": 0.2457692171097369,
+        "ece": 0.03827966057699116,
+        "n": 195
+      },
+      "challenger": {
+        "logloss": 0.6849684122117129,
+        "brier": 0.24595783570631144,
+        "ece": 0.02937395381443178,
+        "n": 195
+      },
+      "delta_logloss": 0.0004543682224458223,
+      "ci_lo": -0.016790669861099665,
+      "ci_hi": 0.017042153589435328,
+      "challenger_better_oos": false,
+      "coefficients": {
+        "p_BTTS": 0.04164243694119083,
+        "p_OU15": 0.7178067011940942,
+        "p_OU25": 1.261547762459143,
+        "p_OU35": 0.218203634968495
+      },
+      "decision": "REJECT",
+      "reason": "no improvement beyond noise on untouched later fixtures"
+    },
+    {
+      "label": "model_type=new_format",
+      "status": "OK",
+      "calc_version": "1.0.0",
+      "features": [
+        "p_BTTS",
+        "p_OU15",
+        "p_OU25",
+        "p_OU35"
+      ],
+      "dropped_low_coverage": [
+        "p_HT_OU05(0%)",
+        "p_HT_OU15(0%)"
+      ],
+      "n": 343,
+      "n_train": 222,
+      "n_test": 121,
+      "train_from": "2026-08-17",
+      "train_to": "2026-09-11",
+      "test_from": "2026-09-11",
+      "test_to": "2026-09-20",
+      "incumbent": {
+        "logloss": 0.6827081378546687,
+        "brier": 0.24488281983160062,
+        "ece": 0.11039318929185378,
+        "n": 121
+      },
+      "challenger": {
+        "logloss": 0.6796812562916549,
+        "brier": 0.24329236523696815,
+        "ece": 0.09849477028954928,
+        "n": 121
+      },
+      "delta_logloss": -0.0030268815630137835,
+      "ci_lo": -0.018429903755155397,
+      "ci_hi": 0.012116167833761769,
+      "challenger_better_oos": false,
+      "coefficients": {
+        "p_BTTS": -0.0504777846238825,
+        "p_OU15": 0.5287786429459086,
+        "p_OU25": 1.332263043600924,
+        "p_OU35": 0.12490667788784823
+      },
+      "decision": "REJECT",
+      "reason": "no improvement beyond noise on untouched later fixtures"
+    },
+    {
+      "label": "model_type=standard",
+      "status": "INSUFFICIENT_DATA",
+      "n": 212,
+      "n_train": 137,
+      "n_test": 75,
+      "features": [
+        "p_BTTS",
+        "p_HT_OU05",
+        "p_HT_OU15",
+        "p_OU15",
+        "p_OU25",
+        "p_OU35"
+      ],
+      "dropped_low_coverage": []
+    }
+  ]
+}

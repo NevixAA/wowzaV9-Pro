@@ -87,6 +87,16 @@ jobs:
         run: python -m src.monitoring.ml_learning_health --v9 _v9 --write | tee mlhealth.txt
         continue-on-error: true
 
+      # THE MIXED RETRAIN. Trains a stacked challenger over every market's model probability
+      # and scores it against the single-market incumbent on the SAME untouched later fixtures.
+      # Nothing is promoted — Pro does not write v9 models. It records a verdict.
+      - name: Mixed-model retrain (does combining the markets beat one?)
+        id: mixed
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: python -m src.pipelines.train_mixed --write | tee mixed.txt
+        continue-on-error: true
+
       - name: Threshold curves (what edge bar would each league have needed?)
         id: thresh
         env:
@@ -139,6 +149,14 @@ jobs:
               if not lv:
                   print("::error title=NO LEARNING EVENT ON RECORD::No challenger has ever been "
                         "trained, compared to an incumbent and decided on in the production path.")
+
+          mx = out / "mixed_model_eval.json"
+          if mx.exists():
+              for r in _json.loads(mx.read_text()).get("results", []):
+                  if r.get("challenger_better_oos"):
+                      print(f"::notice title=MIXED MODEL BEATS SINGLE::{r['label']} — stacked "
+                            f"challenger logloss {r['challenger']['logloss']:.5f} vs incumbent "
+                            f"{r['incumbent']['logloss']:.5f} on n={r['n_test']} untouched rows")
 
           cm = rd("cross_model_correlation.csv")
           if cm is not None and "bh_significant" in cm.columns:
