@@ -1,0 +1,171 @@
+name: Pro Research (cross-model, calibration, thresholds)
+
+# THE THREE STUDIES THAT HAVE TO ACCUMULATE, not be run once and quoted forever.
+#
+# Each of these was built on 2026-09-22 and each answered its question with "not yet" — no model
+# pair survives multiple-testing correction, no recalibration beats noise out of sample, no
+# league's threshold holds up. Those are honest answers at today's sample sizes and they are
+# USELESS AS ONE-OFF SNAPSHOTS. The only thing that can ever turn a "not yet" into a "yes" is the
+# same measurement repeated as n grows, with the history of its verdicts on disk.
+#
+# Run once and pasted into a report, they would instead become folklore: someone would quote
+# "BTTS agreement lifts standard O/U by 40 points" a month from now, long after the number moved.
+# Committed per run, the CSVs carry their own dates and their own n, so a stale claim is visibly
+# stale.
+#
+# COST: zero API calls. All three read Pro's committed parquet and v9's committed CSVs.
+#
+# DAILY, and deliberately only once a day. Measured 2026-09-10 over 1,367 runs: GitHub drops
+# 75-87% of high-frequency schedule slots but delivers roughly 100% of once-daily ones (late, by
+# 4-5 hours, which does not matter for a study whose input changes when fixtures settle). Asking
+# for more would deliver less.
+
+on:
+  schedule:
+    # 05:40 UTC. Off the hour — :00 is the busiest slot on GitHub's shared scheduler — and after
+    # pro_collect's 15 6 daily sweep has had a chance to land the previous day's settlements.
+    - cron: '40 5 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: pro-research
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # v9 read-only — cross_model reads the ledgers, which are v9's. Same pattern as
+      # pro_weekly_audit and pro_collect: Pro reads the baseline, never writes to it.
+      - name: Check out v9 baseline (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install pandas pyarrow numpy scipy scikit-learn requests
+
+      # EACH STUDY IS continue-on-error AND SEPARATE. They answer independent questions on
+      # independent data; one failing must not silence the other two. That is the same per-track
+      # isolation the retrain gate uses, applied to research.
+      - name: Cross-model correlation (does requiring agreement help?)
+        id: crossmodel
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: python -m src.validation.cross_model --write | tee cross.txt
+        continue-on-error: true
+
+      - name: Calibration (is the model's confidence honest?)
+        id: calib
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: python -m src.validation.calibration_study --write | tee calib.txt
+        continue-on-error: true
+
+      - name: Threshold curves (what edge bar would each league have needed?)
+        id: thresh
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: python -m src.validation.threshold_curves --write | tee thresh.txt
+        continue-on-error: true
+
+      # Put the answers where they can be read without opening a log. Every incident in this
+      # project was "green workflow, nobody looked".
+      - name: Publish to the job summary
+        if: always()
+        run: |
+          {
+            echo "## Pro research — $(date -u '+%Y-%m-%d')"
+            for f in cross calib thresh; do
+              echo ""
+              echo "### $f"
+              echo '```'
+              sed -n '1,120p' "$f.txt" 2>/dev/null || echo "(did not run)"
+              echo '```'
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # SHOUT WHEN A VERDICT FLIPS. These studies exist to detect the day a "not yet" becomes a
+      # "yes", and a result nobody is told about is the same as no result. An annotation is the
+      # cheapest thing that shows up without anyone going looking.
+      - name: Annotate any surviving finding
+        if: always()
+        run: |
+          python - <<'PY'
+          import pandas as pd, pathlib
+          out = pathlib.Path("output")
+          def rd(n):
+              p = out / n
+              try:
+                  return pd.read_csv(p) if p.exists() else None
+              except Exception:
+                  return None
+
+          cm = rd("cross_model_correlation.csv")
+          if cm is not None and "bh_significant" in cm.columns:
+              hit = cm[cm["bh_significant"] == True]
+              if len(hit):
+                  for _, r in hit.iterrows():
+                      print(f"::notice title=CROSS-MODEL PAIR SURVIVES::{r['model_a']} given "
+                            f"{r['model_b']} lift {r['lift_pp']:+.1f}pp on n={int(r['n_both'])} "
+                            f"— survived Benjamini-Hochberg. Pre-registered candidate is now real.")
+              else:
+                  print("::notice title=cross-model::no pair survives correction (expected)")
+
+          th = rd("threshold_verdicts.csv")
+          if th is not None and "holds_oos" in th.columns:
+              hit = th[th["holds_oos"] == True]
+              if len(hit):
+                  for _, r in hit.iterrows():
+                      print(f"::notice title=THRESHOLD HOLDS OUT OF SAMPLE::"
+                            f"{r['model_type']}/{r['market']}/{r['league']} -> "
+                            f"{r['chosen_threshold']}% ({r['verdict']}), "
+                            f"{r['improvement_pp']:+.1f}pp on n={int(r['n_test_at_chosen'])}")
+              else:
+                  print("::notice title=thresholds::0 leagues survive out of sample (expected)")
+
+          ca = rd("calibration_study.csv")
+          if ca is not None:
+              for col in ("platt_helps", "isotonic_helps"):
+                  if col in ca.columns and (ca[col] == True).any():
+                      for _, r in ca[ca[col] == True].iterrows():
+                          print(f"::notice title=RECALIBRATION HELPS::{r['model_type']}/"
+                                f"{r['market']} — {col.split('_')[0]} beats raw out of sample")
+          PY
+
+      - name: Commit the research record
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Per-file: `git add a b missing` stages NOTHING when one path is absent — the defect
+          # that silenced v9's player_props for three days and retrain for three weeks.
+          for f in output/cross_model_correlation.csv \
+                   output/calibration_study.csv output/calibration_bins.csv \
+                   output/threshold_verdicts.csv output/threshold_curves.csv; do
+            git add -f "$f" 2>/dev/null || echo "  (skip, not present: $f)"
+          done
+          echo "staged: $(git diff --staged --name-only | wc -l) file(s)"
+          git diff --staged --quiet && { echo "no change — studies produced identical output"; exit 0; }
+          git commit -m "pro: research studies $(date -u '+%Y-%m-%d')"
+          for i in 1 2 3 4 5; do
+            # No `-X ours`: in a rebase `ours` is UPSTREAM, so it discards this run's own rows.
+            git pull --rebase --autostash origin main && git push && exit 0
+            echo "push race - retry $i"; sleep $((RANDOM % 5 + 3))
+          done
+          echo "::error title=push failed::Studies ran but the record was not persisted."
+          exit 1
