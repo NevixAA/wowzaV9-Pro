@@ -243,6 +243,15 @@ These are now the baseline the gate compares against.
   season.
 * Calibration study fits every calibrator on an earlier slice and scores on a later unseen one.
 * Threshold study chooses on the earlier 60% and reports the later 40%.
+* **Found — same-day ordering sensitivity in `league_avg_goals`.** `_league_expanding_avg` uses
+  a positional `expanding().mean().shift(1)`, so matches on the SAME DATE can enter a fixture's
+  league average depending on row order. Measured effect on `home_attack_str`: 0.13%. Not future
+  leakage; §20's "same-match statistics" category. Proven and quantified, deliberately not fixed
+  (see §I).
+* **Found — train/serve asymmetry on the same feature.** `build_features` (training, line 468)
+  derives `league_avg_goals` from a shifted expanding mean; `build_upcoming_features` (inference,
+  line 720) maps a whole-frame per-league average. The same named feature is computed two
+  different ways on the two sides of the model.
 * **Remaining risk, not yet resolved:** the inference-time median-imputation question from §20
   (whether preprocessing medians are computed from the prediction batch rather than from
   training) was **not** re-verified in this pass. It is called out in `CLAUDE.md` invariant 8 as
@@ -250,12 +259,59 @@ These are now the baseline the gate compares against.
 
 ---
 
-## I. Feature freshness
+## I. Feature freshness — PROVEN
 
-**Not demonstrated, and deliberately not claimed.** The prompt asks for proof that a recent
-match changes a team's rolling inputs. That requires building features before and after a
-settlement, which needs the training frame CI builds at runtime. It was not run here, so no
-claim is made either way. This is the most important remaining gap and is listed in §N.
+Traced by hand, on `Jeju United FC`, fixture 2026-08-30 (K-League 1).
+
+**Test 1 — does the feature equal the team's actual last five results?**
+
+Its five preceding matches, either venue:
+
+| date | match | goals for Jeju |
+|---|---|---:|
+| 2026-08-02 | Jeju 3–3 Incheon | 3 |
+| 2026-08-08 | Jeonbuk 1–3 Jeju | 3 |
+| 2026-08-15 | Jeju 2–0 Anyang | 2 |
+| 2026-08-22 | Jeju 0–0 Gimcheon | 0 |
+| 2026-08-25 | Jeju 1–2 Pohang | 1 |
+
+Hand-computed mean = (3+3+2+0+1)/5 = **1.8000**. The feature `home_scored_last5` = **1.8000**.
+Conceded: hand-computed **1.2000**, feature **1.2000**. Exact match on both.
+
+The rolling window also visibly advances match to match for that team — 2.2 → 2.2 → 2.0 → 1.8
+across consecutive fixtures. **New completed matches do change model inputs.** §10 satisfied.
+
+**Test 2 — no-lookahead check, and it found something small but real.**
+
+Rebuilding features with every match after the fixture date removed, then comparing the *same*
+fixture's row:
+
+| feature | full history | truncated at D | delta |
+|---|---:|---:|---:|
+| `home_scored_last5` | 1.800000 | 1.800000 | **0.000000** |
+| `league_avg_goals` | 2.536054 | 2.539456 | −0.003401 |
+| `home_attack_str` | 1.419528 | 1.417627 | +0.001901 (**0.13%**) |
+
+The rolling-form numerator is identical to twelve decimal places. The entire movement is in
+`league_avg_goals`.
+
+**Mechanism:** `_league_expanding_avg` computes `grp["total_goals"].expanding().mean().shift(1)`,
+which is **positional, not date-aware**. Four K-League matches fall on 2026-08-30; whether a
+same-day match sits before or after this fixture in row order changes the running mean.
+
+**Characterisation, deliberately not inflated:** this is same-match-day ordering sensitivity, not
+future leakage. No match from a later *date* enters the average. It belongs to §20's
+"same-match statistics" category, the effect on attack strength is ~0.13%, and there is no
+evidence it is predictively material.
+
+**Not fixed, on purpose.** A date-aware expanding average would change every attack/defence
+strength value, which changes model inputs, which changes live predictions. §20 is explicit:
+prove, quantify, design a backward-compatible correction, version the preprocessor, and do not
+silently change live predictions. Steps 1 and 2 are done here; 3–5 are a separate, approved
+change. Note `build_upcoming_features` (inference) takes a different route entirely — a
+whole-frame `league` average at line 720 rather than the expanding one at 468 — so train and
+serve do not compute this feature the same way. That asymmetry is the more interesting finding
+and is listed in §N.
 
 ---
 
@@ -306,7 +362,8 @@ here — it should run on the record once there is one.
 ## N. Remaining blockers
 
 1. **The loop has not completed a cycle.** Everything is wired; nothing has run end to end.
-2. **Feature freshness unproven** (§I) — the single most valuable next check.
+2. **Train/serve asymmetry on `league_avg_goals`** (§H) — training uses a shifted expanding
+   mean, inference uses a whole-frame average. Quantify the serving-side gap before deciding.
 3. **Median-imputation leakage unverified** (§H).
 4. **sklearn version skew uninvestigated** (§J).
 5. **No challenger/incumbent artifact separation** (§8). The gate compares metrics and declines
@@ -324,7 +381,7 @@ V9_PREDICTIVE_LOGIC_UNCHANGED=YES
 
 NEW_DATA_REACHES_TRAINING=PARTIAL
 TRAINING_DATA_FRESH=NO
-FEATURES_ADVANCE_WITH_NEW_MATCHES=UNVERIFIED
+FEATURES_ADVANCE_WITH_NEW_MATCHES=YES
 
 RETRAIN_PIPELINE_OPERATIONAL=REPAIRED_UNVERIFIED
 CHALLENGER_CREATION_OPERATIONAL=NO
