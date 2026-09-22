@@ -124,6 +124,10 @@ output/**
 # output: it deliberately ignores odds, edge, CLV and ROI, and mixing it with an
 # edge-based table is exactly how someone later reads a 76% hit rate as 76% profitable.
 !output/pick_accuracy.json
+# Accuracy-vs-edge and the combo test. Committed because its central number — the price a
+# book must offer for the Over2.5+BTTS double to break even — is the thing to re-check
+# as more real prices accumulate.
+!output/accuracy_vs_edge.json
 # Scheduler observability (Prompt 01 section 7). Committed because the QUESTION is historical:
 # "is the observed cadence degrading" cannot be answered by a file that only ever holds the
 # current run. Both are small — one JSON object each, no per-row data.
