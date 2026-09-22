@@ -76,6 +76,17 @@ jobs:
         run: python -m src.validation.calibration_study --write | tee calib.txt
         continue-on-error: true
 
+      # THE LEARNING-HEALTH CHECK. Deliberately NOT continue-on-error-silent: it is the one
+      # step whose whole purpose is to shout. Every incident this estate has had was a green
+      # pipeline that had stopped learning, and none of the existing monitors could see it
+      # because they all answer "did it run".
+      - name: ML learning health (is the model LEARNING, not just predicting?)
+        id: mlhealth
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: python -m src.monitoring.ml_learning_health --v9 _v9 --write | tee mlhealth.txt
+        continue-on-error: true
+
       - name: Threshold curves (what edge bar would each league have needed?)
         id: thresh
         env:
@@ -114,6 +125,20 @@ jobs:
                   return pd.read_csv(p) if p.exists() else None
               except Exception:
                   return None
+
+          import json as _json
+          mh = out / "ml_learning_health.json"
+          if mh.exists():
+              h = _json.loads(mh.read_text())
+              lv = h.get("last_genuine_learning_event", {}).get("date")
+              for c in h.get("checks", []):
+                  if c["status"] in ("STALE", "FAILED", "BLOCKED"):
+                      print(f"::error title=NOT LEARNING [{c['status']}] {c['model']}::{c['why']}")
+                  elif c["status"] == "TRAINING_DUE":
+                      print(f"::warning title=TRAINING DUE {c['model']}::{c['why']}")
+              if not lv:
+                  print("::error title=NO LEARNING EVENT ON RECORD::No challenger has ever been "
+                        "trained, compared to an incumbent and decided on in the production path.")
 
           cm = rd("cross_model_correlation.csv")
           if cm is not None and "bh_significant" in cm.columns:
@@ -154,7 +179,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           # Per-file: `git add a b missing` stages NOTHING when one path is absent — the defect
           # that silenced v9's player_props for three days and retrain for three weeks.
-          for f in output/cross_model_correlation.csv \
+          for f in output/ml_learning_health.json                    output/cross_model_correlation.csv \
                    output/calibration_study.csv output/calibration_bins.csv \
                    output/threshold_verdicts.csv output/threshold_curves.csv; do
             git add -f "$f" 2>/dev/null || echo "  (skip, not present: $f)"
