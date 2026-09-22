@@ -1,0 +1,143 @@
+name: Pure Prediction Research Lab
+
+# Rule 34: the lab grows as new results settle. It re-reads v9's committed history, rebuilds the
+# leakage-safe dataset, re-runs the evaluation and rewrites the reports -- so the documents can
+# never drift away from the data that produced them.
+#
+# WEEKLY, NOT DAILY. Nothing here is time-sensitive: a research answer does not decay in a day,
+# and the measured scheduling reality (docs/SCHEDULING_RELIABILITY_MEASUREMENT.md) is that a
+# once-daily cron lands 4-5 hours late anyway. Weekly at a quiet hour costs nothing and keeps the
+# runner free for the collectors that DO care about time.
+#
+# THIS WORKFLOW CANNOT AFFECT PRODUCTION. It reads v9 through a read-only checkout, writes only
+# into Pro's own output/pure_prediction and docs, and trains nothing that any serving path loads.
+
+on:
+  schedule:
+    - cron: "40 2 * * 1"          # Mondays 02:40 UTC -- after the weekend's results have settled
+  workflow_dispatch:
+    inputs:
+      phases:
+        description: "Phases to run (space separated), or 'all'"
+        required: false
+        default: "all"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prediction-lab
+  cancel-in-progress: false
+
+jobs:
+  lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # v9's history lives in its repo. Read it from a checkout rather than raw HTTP: unauthenticated
+      # raw.githubusercontent rate-limits, and Pro's first live run died on a 429.
+      - name: Check out v9 (read-only source of history)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install
+        run: |
+          python -m pip install -q --upgrade pip
+          pip install -q pandas numpy scipy scikit-learn pyarrow lightgbm requests
+
+      - name: Build dataset and prove it cannot see the future
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: |
+          python -m src.prediction_lab.data --inventory --write
+          python -m src.prediction_lab.leakage
+
+      # Every later phase depends on the dataset being clean, so the leakage step above is NOT
+      # allowed to fail soft -- it exits non-zero and the job stops.
+      - name: Match-level experiments
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+          PHASES: ${{ github.event.inputs.phases || 'all' }}
+        run: python -m src.prediction_lab.run $PHASES
+
+      - name: Goal-distribution comparison
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: python -m src.prediction_lab.goal_dist
+
+      - name: Player goalscorer research
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: python -m src.prediction_lab.player_goals || echo "::warning::player track skipped"
+
+      - name: Cross-market signal research
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: python -m src.prediction_lab.cross_market
+
+      - name: Reports and verdicts
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: python -m src.prediction_lab.report
+
+      # Stage per file, never `git add -A`. A missing artifact must not abort the commit and take
+      # every other result down with it -- and `git add -f a b missing` stages NOTHING at all.
+      - name: Commit results
+        run: |
+          git config user.name "wowza-bot"
+          git config user.email "bot@users.noreply.github.com"
+          for f in \
+            output/pure_prediction/data_inventory.csv \
+            output/pure_prediction/leakage_perturbation.csv \
+            output/pure_prediction/leakage_single_feature_auc.csv \
+            output/pure_prediction/target_performance.csv \
+            output/pure_prediction/model_comparison.csv \
+            output/pure_prediction/feature_ablation.csv \
+            output/pure_prediction/time_ablation.csv \
+            output/pure_prediction/market_ablation.csv \
+            output/pure_prediction/league_performance.csv \
+            output/pure_prediction/learning_curves.csv \
+            output/pure_prediction/chronological_folds.csv \
+            output/pure_prediction/confidence_calibration.csv \
+            output/pure_prediction/confidence_topk.csv \
+            output/pure_prediction/goal_distribution_comparison.csv \
+            output/pure_prediction/consistency_violations.csv \
+            output/pure_prediction/player_goalscorer_performance.csv \
+            output/pure_prediction/player_match_interactions.csv \
+            output/pure_prediction/player_v9_column_check.csv \
+            output/pure_prediction/cross_market_matrix.csv \
+            output/pure_prediction/conditional_outcomes.csv \
+            output/pure_prediction/stratified_control.csv \
+            output/pure_prediction/agreement_analysis.csv \
+            output/pure_prediction/disagreement_analysis.csv \
+            output/pure_prediction/prediction_correlation.csv \
+            output/pure_prediction/error_correlation.csv \
+            output/pure_prediction/meta_model_comparison.csv \
+            output/pure_prediction/cross_market_lr_tests.csv \
+            output/pure_prediction/cross_market_discoveries.csv \
+            output/pure_prediction/research_manifest.json \
+            output/pure_prediction/verdicts.json \
+            output/pure_prediction/verdicts.txt \
+            output/pure_prediction/cross_market_verdicts.json \
+            output/pure_prediction/cross_market_verdicts.txt \
+            docs/PURE_PREDICTION_RESEARCH_REPORT.md \
+            docs/PURE_PREDICTION_DATA_INVENTORY.md \
+            docs/CROSS_MARKET_SIGNAL_RESEARCH.md ; do
+            [ -f "$f" ] && git add -f "$f" || echo "::warning::missing $f"
+          done
+          git diff --cached --quiet && echo "nothing changed" && exit 0
+          git commit -m "research(lab): weekly pure-prediction refresh"
+          git pull --rebase --autostash origin main || true
+          git push origin HEAD:main

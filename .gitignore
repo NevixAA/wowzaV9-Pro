@@ -131,6 +131,51 @@ output/**
 # Accumulator study across SEPARATE fixtures. The number to re-check is leg EV: above 1.0
 # an acca compounds upward, below it compounds downward, and nothing else matters.
 !output/accumulators.json
+
+# ---------------------------------------------------------------------------------------------
+# PURE PREDICTION RESEARCH LAB (src/prediction_lab).
+#
+# Named file by file rather than with an `output/pure_prediction/*` glob, for the reason the
+# combo block above gives: a glob would also sweep in the two working artifacts this lab writes
+# and must NOT commit --
+#   feature_matrix.parquet   23 MB, rebuilt from v9's history in seconds, pure cache
+#   oof_probabilities.parquet / scoreline_oof.parquet   per-fixture predictions, regenerable
+# Committing those would add ~30 MB per weekly run to a repo that has to stay clonable in CI.
+!output/pure_prediction/
+!output/pure_prediction/data_inventory.csv
+!output/pure_prediction/leakage_perturbation.csv
+!output/pure_prediction/leakage_single_feature_auc.csv
+!output/pure_prediction/target_performance.csv
+!output/pure_prediction/model_comparison.csv
+!output/pure_prediction/feature_ablation.csv
+!output/pure_prediction/time_ablation.csv
+!output/pure_prediction/market_ablation.csv
+!output/pure_prediction/league_performance.csv
+!output/pure_prediction/learning_curves.csv
+!output/pure_prediction/chronological_folds.csv
+!output/pure_prediction/confidence_calibration.csv
+!output/pure_prediction/confidence_topk.csv
+!output/pure_prediction/goal_distribution_comparison.csv
+!output/pure_prediction/consistency_violations.csv
+!output/pure_prediction/player_goalscorer_performance.csv
+!output/pure_prediction/player_match_interactions.csv
+!output/pure_prediction/player_v9_column_check.csv
+!output/pure_prediction/cross_market_matrix.csv
+!output/pure_prediction/conditional_outcomes.csv
+!output/pure_prediction/stratified_control.csv
+!output/pure_prediction/agreement_analysis.csv
+!output/pure_prediction/disagreement_analysis.csv
+!output/pure_prediction/prediction_correlation.csv
+!output/pure_prediction/error_correlation.csv
+!output/pure_prediction/meta_model_comparison.csv
+!output/pure_prediction/cross_market_lr_tests.csv
+!output/pure_prediction/cross_market_discoveries.csv
+!output/pure_prediction/cross_market_manifest.json
+!output/pure_prediction/research_manifest.json
+!output/pure_prediction/verdicts.json
+!output/pure_prediction/verdicts.txt
+!output/pure_prediction/cross_market_verdicts.json
+!output/pure_prediction/cross_market_verdicts.txt
 # Scheduler observability (Prompt 01 section 7). Committed because the QUESTION is historical:
 # "is the observed cadence degrading" cannot be answered by a file that only ever holds the
 # current run. Both are small — one JSON object each, no per-row data.
