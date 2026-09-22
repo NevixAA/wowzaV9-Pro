@@ -120,6 +120,10 @@ output/**
 # CHANGE: model_snapshots only began in August, so today's test window is ~8 days. The
 # verdict that matters is the one taken when the window is a season long.
 !output/mixed_model_eval.json
+# Pure hit-rate study. Kept as its own artifact and NOT merged into any other research
+# output: it deliberately ignores odds, edge, CLV and ROI, and mixing it with an
+# edge-based table is exactly how someone later reads a 76% hit rate as 76% profitable.
+!output/pick_accuracy.json
 # Scheduler observability (Prompt 01 section 7). Committed because the QUESTION is historical:
 # "is the observed cadence degrading" cannot be answered by a file that only ever holds the
 # current run. Both are small — one JSON object each, no per-row data.
