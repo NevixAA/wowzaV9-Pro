@@ -107,6 +107,11 @@ output/**
 # bins where it actually bets, and that split is what a single average hides.
 !output/calibration_study.csv
 !output/calibration_bins.csv
+# Per-league threshold curves and their out-of-sample verdicts. Committed because the whole
+# point is to re-run it as cells grow: today 0 of 23 survive, and the record of WHEN that
+# changes is the only thing that can ever justify moving a live threshold.
+!output/threshold_verdicts.csv
+!output/threshold_curves.csv
 # Scheduler observability (Prompt 01 section 7). Committed because the QUESTION is historical:
 # "is the observed cadence degrading" cannot be answered by a file that only ever holds the
 # current run. Both are small — one JSON object each, no per-row data.
