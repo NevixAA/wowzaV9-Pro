@@ -1,9 +1,11 @@
 {
-  "generated_at": "2026-09-22T08:47:47Z",
+  "generated_at": "2026-09-22T11:18:04Z",
   "calc_version": "1.0.0",
   "worst": "STALE",
   "counts": {
-    "STALE": 7
+    "STALE": 1,
+    "NO_NEW_DATA": 1,
+    "PASS": 5
   },
   "settlements_fingerprint": {
     "rows": 39046,
@@ -13,87 +15,131 @@
     "fingerprint": "26a2806a4e082c03"
   },
   "last_genuine_learning_event": {
-    "date": null,
-    "evidence": "output/retrain_log.json has no runs \u2014 no challenger has ever been trained, compared against an incumbent and had a decision recorded in the production path."
+    "date": "2026-09-22",
+    "models_decided": [
+      "btts",
+      "ht_over05",
+      "ht_over15",
+      "newformat",
+      "over15",
+      "over35",
+      "standard"
+    ],
+    "evidence": "7 model(s) recorded a promote/reject decision on 2026-09-22"
   },
   "checks": [
     {
       "model": "standard",
-      "status": "STALE",
-      "why": "training INPUT stopped advancing: newest match in output/fd_history.parquet is 2026-09-05, 17d ago. Collection is the problem, not training.",
+      "status": "PASS",
+      "why": "challenger trained and promoted \u2014 log loss 0.69013 -> 0.68885 (-0.00127), within the 0.00500 tolerance",
       "model_artifact": "models/model_v9_standard.pkl",
-      "incumbent_changed_at": "2026-08-30T09:58:22Z",
-      "incumbent_age_days": 23.0,
+      "incumbent_changed_at": "2026-09-22T11:14:51Z",
+      "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
-      "training_input_latest_match": "2026-09-05",
-      "training_input_age_days": 17,
-      "new_settled_since_incumbent": 155,
-      "last_decision": null
+      "training_input_latest_match": "2026-09-22",
+      "training_input_age_days": 0,
+      "new_settled_since_incumbent": 0,
+      "last_decision": {
+        "promoted": true,
+        "why": "log loss 0.69013 -> 0.68885 (-0.00127), within the 0.00500 tolerance",
+        "rows": 17846,
+        "logloss_old": 0.69013,
+        "logloss_new": 0.68885,
+        "at": "2026-09-22T11:09:48Z"
+      }
     },
     {
       "model": "new_format",
-      "status": "STALE",
-      "why": "training INPUT stopped advancing: newest match in output/fd_history.parquet is 2026-09-05, 17d ago. Collection is the problem, not training.",
+      "status": "NO_NEW_DATA",
+      "why": "only 0 new settled fixture(s) since the incumbent was built \u2014 too few to learn from. Healthy.",
       "model_artifact": "models/model_v9_newformat.pkl",
-      "incumbent_changed_at": "2026-08-30T09:58:22Z",
-      "incumbent_age_days": 23.0,
+      "incumbent_changed_at": "2026-09-22T11:14:51Z",
+      "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
-      "training_input_latest_match": "2026-09-05",
-      "training_input_age_days": 17,
-      "new_settled_since_incumbent": 237,
+      "training_input_latest_match": "2026-09-22",
+      "training_input_age_days": 0,
+      "new_settled_since_incumbent": 0,
       "last_decision": null
     },
     {
       "model": "btts",
-      "status": "STALE",
-      "why": "training INPUT stopped advancing: newest match in output/fd_history.parquet is 2026-09-05, 17d ago. Collection is the problem, not training.",
+      "status": "PASS",
+      "why": "challenger trained and promoted \u2014 log loss 0.68742 -> 0.68064 (-0.00678), within the 0.00500 tolerance",
       "model_artifact": "models/model_v9_btts.pkl",
-      "incumbent_changed_at": "2026-08-30T09:58:22Z",
-      "incumbent_age_days": 23.0,
+      "incumbent_changed_at": "2026-09-22T11:14:51Z",
+      "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
-      "training_input_latest_match": "2026-09-05",
-      "training_input_age_days": 17,
-      "new_settled_since_incumbent": 392,
-      "last_decision": null
+      "training_input_latest_match": "2026-09-22",
+      "training_input_age_days": 0,
+      "new_settled_since_incumbent": 0,
+      "last_decision": {
+        "promoted": true,
+        "why": "log loss 0.68742 -> 0.68064 (-0.00678), within the 0.00500 tolerance",
+        "rows": 66057,
+        "logloss_old": 0.68742,
+        "logloss_new": 0.68064,
+        "at": "2026-09-22T11:12:36Z"
+      }
     },
     {
       "model": "over15",
-      "status": "STALE",
-      "why": "training INPUT stopped advancing: newest match in output/fd_history.parquet is 2026-09-05, 17d ago. Collection is the problem, not training.",
+      "status": "PASS",
+      "why": "challenger trained and promoted \u2014 log loss 0.55078 -> 0.54054 (-0.01024), within the 0.00500 tolerance",
       "model_artifact": "models/model_v9_over15.pkl",
-      "incumbent_changed_at": "2026-08-30T09:58:22Z",
-      "incumbent_age_days": 23.0,
+      "incumbent_changed_at": "2026-09-22T11:14:51Z",
+      "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
-      "training_input_latest_match": "2026-09-05",
-      "training_input_age_days": 17,
-      "new_settled_since_incumbent": 392,
-      "last_decision": null
+      "training_input_latest_match": "2026-09-22",
+      "training_input_age_days": 0,
+      "new_settled_since_incumbent": 0,
+      "last_decision": {
+        "promoted": true,
+        "why": "log loss 0.55078 -> 0.54054 (-0.01024), within the 0.00500 tolerance",
+        "rows": 66057,
+        "logloss_old": 0.55078,
+        "logloss_new": 0.54054,
+        "at": "2026-09-22T11:13:42Z"
+      }
     },
     {
       "model": "over35",
-      "status": "STALE",
-      "why": "training INPUT stopped advancing: newest match in output/fd_history.parquet is 2026-09-05, 17d ago. Collection is the problem, not training.",
+      "status": "PASS",
+      "why": "challenger trained and promoted \u2014 log loss 0.59823 -> 0.59620 (-0.00202), within the 0.00500 tolerance",
       "model_artifact": "models/model_v9_over35.pkl",
-      "incumbent_changed_at": "2026-08-30T09:58:22Z",
-      "incumbent_age_days": 23.0,
+      "incumbent_changed_at": "2026-09-22T11:14:51Z",
+      "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
-      "training_input_latest_match": "2026-09-05",
-      "training_input_age_days": 17,
-      "new_settled_since_incumbent": 392,
-      "last_decision": null
+      "training_input_latest_match": "2026-09-22",
+      "training_input_age_days": 0,
+      "new_settled_since_incumbent": 0,
+      "last_decision": {
+        "promoted": true,
+        "why": "log loss 0.59823 -> 0.59620 (-0.00202), within the 0.00500 tolerance",
+        "rows": 66057,
+        "logloss_old": 0.59823,
+        "logloss_new": 0.5962,
+        "at": "2026-09-22T11:14:47Z"
+      }
     },
     {
       "model": "ht_over05",
-      "status": "STALE",
-      "why": "training INPUT stopped advancing: newest match in output/fd_history.parquet is 2026-09-05, 17d ago. Collection is the problem, not training.",
+      "status": "PASS",
+      "why": "challenger trained and REJECTED \u2014 log loss ROSE +0.08861 (0.60431 -> 0.69292), beyond the 0.00500 tolerance. A rejection is a healthy learning outcome, not a failure.",
       "model_artifact": "models/model_ht_over05.pkl",
       "incumbent_changed_at": "2026-08-30T09:58:22Z",
-      "incumbent_age_days": 23.0,
+      "incumbent_age_days": 23.1,
       "training_input": "output/fd_history.parquet",
-      "training_input_latest_match": "2026-09-05",
-      "training_input_age_days": 17,
+      "training_input_latest_match": "2026-09-22",
+      "training_input_age_days": 0,
       "new_settled_since_incumbent": 392,
-      "last_decision": null
+      "last_decision": {
+        "promoted": false,
+        "why": "log loss ROSE +0.08861 (0.60431 -> 0.69292), beyond the 0.00500 tolerance",
+        "rows": 28496,
+        "logloss_old": 0.60431,
+        "logloss_new": 0.69292,
+        "at": "2026-09-22T11:11:01Z"
+      }
     },
     {
       "model": "props",
@@ -101,7 +147,7 @@
       "why": "training INPUT stopped advancing: newest match in player_history.parquet is 2026-08-17, 36d ago. Collection is the problem, not training.",
       "model_artifact": "models/model_player_goals.pkl",
       "incumbent_changed_at": "2026-09-20T11:33:14Z",
-      "incumbent_age_days": 1.9,
+      "incumbent_age_days": 2.0,
       "training_input": "player_history.parquet",
       "training_input_latest_match": "2026-08-17",
       "training_input_age_days": 36,

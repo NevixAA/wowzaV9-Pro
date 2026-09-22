@@ -81,6 +81,31 @@ The gap was the three middle-lower rows. Everything above them worked.
 
 ## C. Last genuine learning event
 
+**2026-09-22 11:14:51 UTC — the first in the project's history.**
+
+Commit `5f965869`, run `2026-09-22`, seven models each with a recorded decision:
+
+| model | decision | log loss before | after | delta |
+|---|---|---:|---:|---:|
+| ht_over15 | PROMOTE | 0.64741 | 0.55207 | **−0.09534** |
+| new_format | PROMOTE | 0.68106 | 0.65773 | −0.02333 |
+| over15 | PROMOTE | 0.55078 | 0.54054 | −0.01024 |
+| btts | PROMOTE | 0.68742 | 0.68064 | −0.00678 |
+| over35 | PROMOTE | 0.59823 | 0.59620 | −0.00203 |
+| standard | PROMOTE | 0.69013 | 0.68885 | −0.00128 |
+| **ht_over05** | **REJECT** | 0.60431 | 0.69292 | **+0.08861** |
+
+**The rejection is the proof, not the promotions.** `models/model_ht_over05.pkl` is absent from
+the commit diff — the candidate was 0.089 worse on held-out data and the incumbent kept serving.
+Six promoted models changed their `.pkl`; the blocked one did not. The decision record and the
+artifacts agree.
+
+`retrain_log.json` +63 lines; `telegram_bot/notified.json` +1 (the RETRAIN dedup key, so the
+notice was sent). That is the full chain — new data → training → per-model comparison → decision
+→ artifact changed only where promoted → decision recorded → human told.
+
+### What it looked like before
+
 **NONE.**
 
 Evidence, all independently checkable:
@@ -379,16 +404,16 @@ here — it should run on the record once there is one.
 RUNNING_REPOS_SAFE=YES
 V9_PREDICTIVE_LOGIC_UNCHANGED=YES
 
-NEW_DATA_REACHES_TRAINING=PARTIAL
-TRAINING_DATA_FRESH=NO
+NEW_DATA_REACHES_TRAINING=YES
+TRAINING_DATA_FRESH=PARTIAL (team YES, props NO)
 FEATURES_ADVANCE_WITH_NEW_MATCHES=YES
 
-RETRAIN_PIPELINE_OPERATIONAL=REPAIRED_UNVERIFIED
+RETRAIN_PIPELINE_OPERATIONAL=YES
 CHALLENGER_CREATION_OPERATIONAL=NO
 CHRONOLOGICAL_OOS_VALIDATION_OPERATIONAL=YES
-INCUMBENT_COMPARISON_OPERATIONAL=REPAIRED_UNVERIFIED
-PROMOTION_GATE_OPERATIONAL=REPAIRED_UNVERIFIED
-REJECTION_GATE_OPERATIONAL=REPAIRED_UNVERIFIED
+INCUMBENT_COMPARISON_OPERATIONAL=YES
+PROMOTION_GATE_OPERATIONAL=YES
+REJECTION_GATE_OPERATIONAL=YES
 MODEL_PROVENANCE_COMPLETE=NO
 
 PLAYER_PROPS_LEARNING_OPERATIONAL=REPAIRED_UNVERIFIED
@@ -397,11 +422,11 @@ SIDE_MARKET_OOS_LEARNING_OPERATIONAL=YES
 SILENT_STALENESS_DETECTION=YES
 LEARNING_HEALTH_MONITORING=YES
 
-LAST_GENUINE_MODEL_LEARNING_DATE=NONE
-CURRENT_INCUMBENT_MODEL_AGE_DAYS=23
-NEW_SETTLED_MATCHES_SINCE_INCUMBENT=392
+LAST_GENUINE_MODEL_LEARNING_DATE=2026-09-22
+CURRENT_INCUMBENT_MODEL_AGE_DAYS=0 (6 of 7; ht_over05 held at 23 by the gate)
+NEW_SETTLED_MATCHES_SINCE_INCUMBENT=0 (team) / 392 unseen by the held ht_over05
 
-ML_LEARNING_SYSTEM_HEALTHY=NO
+ML_LEARNING_SYSTEM_HEALTHY=PARTIAL (team models YES, props still STALE)
 SAFE_TO_CONTINUE_PROSPECTIVE_COLLECTION=YES
 ```
 
