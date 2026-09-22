@@ -128,6 +128,9 @@ output/**
 # book must offer for the Over2.5+BTTS double to break even — is the thing to re-check
 # as more real prices accumulate.
 !output/accuracy_vs_edge.json
+# Accumulator study across SEPARATE fixtures. The number to re-check is leg EV: above 1.0
+# an acca compounds upward, below it compounds downward, and nothing else matters.
+!output/accumulators.json
 # Scheduler observability (Prompt 01 section 7). Committed because the QUESTION is historical:
 # "is the observed cadence degrading" cannot be answered by a file that only ever holds the
 # current run. Both are small — one JSON object each, no per-row data.
