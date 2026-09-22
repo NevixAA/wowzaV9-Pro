@@ -95,6 +95,13 @@ output/**
 # The monthly out-of-sample evaluation record. Committed for the same reason: a hypothesis test
 # whose result is discarded cannot show whether an effect held up over time.
 !output/monthly_eval.json
+# Cross-model correlation study. Committed for that same reason and one more: its whole value is
+# the TREND. "ou25_standard does better when btts agrees" is a pre-registration candidate at
+# n_both=33 and nothing else; the only thing that can promote or kill it is the same table
+# recomputed as n grows. A run whose result is discarded can never do that, and would instead
+# invite re-reading the best of thirty comparisons as a fresh discovery every time. Small: one
+# row per ordered model pair.
+!output/cross_model_correlation.csv
 # Scheduler observability (Prompt 01 section 7). Committed because the QUESTION is historical:
 # "is the observed cadence degrading" cannot be answered by a file that only ever holds the
 # current run. Both are small — one JSON object each, no per-row data.
