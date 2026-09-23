@@ -206,6 +206,16 @@ output/**
 # The provider lookup result IS committed, unlike the other parquets: 709 rows, it is an
 # immutable fact about finished fixtures, and committing it means CI never re-spends the calls.
 !output/architecture/fixture_id_map.parquet
+
+# ---------------------------------------------------------------------------------------------
+# SHADOW LEARNING (src/shadow_learning). Named file by file; the parquet universes and the
+# walk-forward prediction ledger are derived and stay out.
+!output/shadow_learning/
+!output/shadow_learning/dataset_inventory.csv
+!output/shadow_learning/dataset_quality_tiers.csv
+!output/shadow_learning/incremental_fixture_inventory.csv
+!output/shadow_learning/incremental_by_league.csv
+!output/shadow_learning/distribution_shift.csv
 # Scheduler observability (Prompt 01 section 7). Committed because the QUESTION is historical:
 # "is the observed cadence degrading" cannot be answered by a file that only ever holds the
 # current run. Both are small — one JSON object each, no per-row data.
