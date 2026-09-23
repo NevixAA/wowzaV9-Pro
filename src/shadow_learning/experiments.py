@@ -179,8 +179,15 @@ def run(group: str = "core") -> tuple[pd.DataFrame, pd.DataFrame]:
     print(f"[shadow] common fixtures {len(common):,}; test set {len(test_keys):,} "
           f"from {cutoff.date()}")
 
-    dup_counts = (v9u.loc[v9u["in_v9_training"]]
-                  .groupby("fixture_key").size() if "fixture_key" in v9u.columns else None)
+    # DUPLICATES LIVE IN V9'S LOADER, NOT IN THE CANONICAL FRAME.
+    #
+    # The first version counted rows per fixture_key in the v9 universe frame -- but the probe
+    # already deduplicated that frame, so every count came back 1 and all three duplicate
+    # variants produced byte-identical results. A no-op experiment that looks like a null
+    # result is worse than no experiment. The probe does carry `is_duplicate_row`, computed
+    # BEFORE its dedupe, so that is the usable signal: a fixture v9 sees twice.
+    dup_flag = (v9u.loc[v9u["in_v9_training"]].set_index("fixture_key")["is_duplicate_row"]
+                if "is_duplicate_row" in v9u.columns else None)
 
     rows, losses = [], {}
     for v in variants:
@@ -205,11 +212,9 @@ def run(group: str = "core") -> tuple[pd.DataFrame, pd.DataFrame]:
             continue
 
         w = _weights(dates[tr], v["weights"])
-        if v["mode"] == "fit_dupes" and dup_counts is not None:
-            rep = feat["fixture_key"].map(dup_counts).fillna(1).to_numpy()[tr]
-            w = (w if w is not None else np.ones(len(tr))) * rep
-        if v["mode"] == "fit_dupeweight" and dup_counts is not None:
-            rep = np.where(feat["fixture_key"].map(dup_counts).fillna(1).to_numpy()[tr] > 1, 2.0, 1.0)
+        if v["mode"] in ("fit_dupes", "fit_dupeweight") and dup_flag is not None:
+            rep = np.where(feat["fixture_key"].map(dup_flag).fillna(False).to_numpy()[tr],
+                           2.0, 1.0)
             w = (w if w is not None else np.ones(len(tr))) * rep
 
         te = np.flatnonzero(is_test)
@@ -219,7 +224,14 @@ def run(group: str = "core") -> tuple[pd.DataFrame, pd.DataFrame]:
         fold = [FO.Fold(name="f1", train=tr2, val=va, test=te,
                         t_start=str(cutoff.date()), t_end=str(feat["date"].max())[:10])]
         for t in TARGETS:
-            oof = E.walk_forward(feat, t, cols, model="hgb", fold_list=fold)
+            # Weights are built per TRAINING ROW; walk_forward indexes a full-length vector,
+            # so scatter them back. The first version computed `w` and never passed it, which
+            # is why all five recency variants returned identical numbers.
+            sw = None
+            if w is not None:
+                sw = np.ones(len(feat), dtype=float)
+                sw[tr] = w
+            oof = E.walk_forward(feat, t, cols, model="hgb", fold_list=fold, sample_weight=sw)
             if oof.empty:
                 continue
             r = E.score(oof, label=f"{v['name']}/{t}")
@@ -235,11 +247,14 @@ def run(group: str = "core") -> tuple[pd.DataFrame, pd.DataFrame]:
               f"ll={np.mean([r['log_loss'] for r in rows if r['variant']==v['name']]):.5f}")
 
     tab = pd.DataFrame(rows)
-    boots = _bootstrap(losses, baseline="A_v9_current" if group in ("core", "all")
-                       else ("R_none" if group == "recency"
-                             else ("X_dupes_as_v9_does" if group == "dupes"
-                                   else ("V_covid_kept" if group == "covid"
-                                         else "W_expanding"))))
+    # Each group needs its OWN control as the bootstrap baseline. The completeness group had
+    # none -- it fell through to "W_expanding", which is not one of its variants -- so no
+    # comparisons were produced and the bootstrap file came back empty.
+    baseline = {"core": "A_v9_current", "all": "A_v9_current", "recency": "R_none",
+                "dupes": "X_dupes_as_v9_does", "covid": "V_covid_kept",
+                "completeness": "Q_STANDARD_complete_only",
+                "window": "W_expanding"}.get(group, "W_expanding")
+    boots = _bootstrap(losses, baseline=baseline)
     return tab, boots
 
 

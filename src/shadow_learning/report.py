@@ -129,9 +129,20 @@ def verdict() -> dict:
     v["CANONICAL_VS_V9_PATH_TESTED"] = (
         "YES" if built and {"canonical", "v9_path"} <= set(led.variant) else "NO")
     if not tr.empty:
+        # THE LEARNING VERDICT IS READ OFF THE MARGIN, NOT OFF RAW LOG LOSS.
+        #
+        # Section 63 is explicit that a moving base rate must not be mistaken for skill, and it
+        # cuts both ways: Over 3.5's raw log loss got WORSE across the period while its edge over
+        # a contemporaneous naive predictor nearly doubled. The period got harder, not the model.
+        # Judging on raw log loss would report that market as flat-to-degrading when the model
+        # demonstrably pulled further ahead of the thing it has to beat. Both are recorded.
         for t in TARGETS:
-            s = tr[(tr.variant == "canonical") & (tr.target == t) & (tr.metric == "log_loss")]
-            v[f"{t.upper()}_LEARNING_TREND"] = (s.verdict.iloc[0] if len(s) else "UNCLEAR")
+            mg = tr[(tr.variant == "canonical") & (tr.target == t)
+                    & (tr.metric == "margin_vs_baseline_ll")]
+            raw = tr[(tr.variant == "canonical") & (tr.target == t)
+                     & (tr.metric == "log_loss")]
+            v[f"{t.upper()}_LEARNING_TREND"] = (mg.verdict.iloc[0] if len(mg) else "UNCLEAR")
+            v[f"_{t}_raw_logloss_trend"] = (raw.verdict.iloc[0] if len(raw) else "UNCLEAR")
     v["PLAYER_SCORER_LEARNING_TREND"] = "NOT_TESTED"
     if built:
         m = led[led.interpretable].groupby("variant")["log_loss"].mean()
@@ -139,8 +150,17 @@ def verdict() -> dict:
             v["RETRAINING_BEATS_FROZEN_MODEL"] = (
                 "YES" if m["canonical"] < m["frozen"] else "NO")
         if {"canonical", "v9_path"} <= set(m.index):
+            # NOT COMPARABLE, and saying YES or NO here would be the exact error section 15
+            # forbids. v9_path evaluates a SMALLER universe -- 189,576 test fixtures against
+            # canonical's 219,380 -- because its data path simply does not contain some of the
+            # leagues. Two models sitting different exams cannot be ranked by their marks.
+            nt = led[led.interpretable].groupby("variant")["n_test"].sum()
+            same_exam = int(nt.get("canonical", 0)) == int(nt.get("v9_path", -1))
             v["CANONICAL_RETRAINING_BEATS_V9_DATA_PATH"] = (
-                "YES" if m["canonical"] < m["v9_path"] else "NO")
+                ("YES" if m["canonical"] < m["v9_path"] else "NO") if same_exam
+                else "NOT_COMPARABLE_DIFFERENT_TEST_SETS")
+            v["_v9_path_test_fixtures"] = int(nt.get("v9_path", 0))
+            v["_canonical_test_fixtures"] = int(nt.get("canonical", 0))
         mm = led[led.interpretable].groupby("variant")["margin_vs_baseline_ll"].mean()
         v["_mean_margin_over_baseline"] = {k: round(float(x), 5) for k, x in mm.items()}
     if not gate.empty:

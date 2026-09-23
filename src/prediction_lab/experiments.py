@@ -54,7 +54,8 @@ def walk_forward(df: pd.DataFrame, target: str, feat_cols: list[str], *,
                  halflife_days: float | None = None,
                  train_window_days: int | None = None,
                  fold_list: list[FO.Fold] | None = None,
-                 zoo: dict | None = None) -> pd.DataFrame:
+                 zoo: dict | None = None,
+                 sample_weight: "np.ndarray | None" = None) -> pd.DataFrame:
     """Out-of-sample probabilities for every test row, across rolling chronological folds.
 
     `train_window_days` truncates training to a rolling window instead of an expanding one --
@@ -88,7 +89,11 @@ def walk_forward(df: pd.DataFrame, target: str, feat_cols: list[str], *,
         if not keep.any():
             continue
         Xtr, Xv, Xte = X[np.ix_(tr, np.flatnonzero(keep))], X[:, keep][f.val], X[:, keep][f.test]
-        w = FO.recency_weights(dates[tr], halflife_days=halflife_days)
+        # A caller-supplied per-row weight wins over the halflife shortcut. Both exist because
+        # `halflife_days` covers the common case in one argument, while an arbitrary vector is
+        # needed for linear decay or for reproducing duplicate rows as explicit weights.
+        w = (np.asarray(sample_weight, dtype=float)[tr] if sample_weight is not None
+             else FO.recency_weights(dates[tr], halflife_days=halflife_days))
         p_val, p_test = FO.fit_predict(zoo[model], Xtr, y[tr], [Xv, Xte], sample_weight=w)
         # TWO thresholds, both chosen on VALIDATION, never on test.
         #
