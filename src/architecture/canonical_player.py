@@ -115,6 +115,28 @@ def build() -> tuple[pd.DataFrame, dict]:
         cf = pd.to_numeric(cache["fixture_id"], errors="coerce")
         recovered = cache[~cf.isin(hist_fix)].copy()
 
+    # Attach the resolved fixture dates, if src.architecture.resolve_fixtures has run.
+    #
+    # The cache responses carry statistics but no date, so the recovered rows arrive unplaceable
+    # in time. That is not a reason to guess one -- it is a reason to ask the provider, which
+    # costs ~36 batched calls for 709 fixtures. Rows that remain unresolved keep their null date
+    # and stay excluded; nothing here invents a timestamp to make a count look better.
+    fmap_p = out_dir() / "fixture_id_map.parquet"
+    if len(recovered) and fmap_p.exists():
+        fmap = pd.read_parquet(fmap_p)
+        fmap = fmap[fmap["date"].astype(str).str.len() == 10][
+            ["fixture_id", "date", "league_api", "kickoff_utc"]]
+        fmap["fixture_id"] = pd.to_numeric(fmap["fixture_id"], errors="coerce")
+        recovered = recovered.copy()
+        recovered["fixture_id"] = pd.to_numeric(recovered["fixture_id"], errors="coerce")
+        recovered = recovered.drop(columns=["date"]).merge(fmap, on="fixture_id", how="left")
+        recovered["date"] = pd.to_datetime(recovered["date"], errors="coerce")
+        recovered["league"] = recovered["league"].fillna(recovered["league_api"])
+        recovered = recovered.drop(columns=["league_api", "kickoff_utc"], errors="ignore")
+        n_ok = int(recovered["date"].notna().sum())
+        print(f"[player] fixture dates resolved for {n_ok:,} of {len(recovered):,} "
+              f"recovered rows")
+
     can = pd.concat([hist, recovered], ignore_index=True)
     for c in ("minutes", "goals", "assists", "shots_total", "shots_on_target",
               "yellow_cards", "red_cards", "started", "rating"):

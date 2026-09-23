@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-23T11:01:56.058874+00:00",
-  "status": "FAIL",
+  "generated_at": "2026-09-23T11:16:20.761720+00:00",
+  "status": "PASS",
   "checks": [
     {
       "check": "canonical_match_fresh",
@@ -29,12 +29,10 @@
     },
     {
       "check": "player_observations_all_placeable",
-      "status": "FAIL",
-      "detail": "30,919 collected player rows cannot be placed in time (missing fixture date) and are therefore excluded from training"
+      "status": "PASS",
+      "detail": "0 collected player rows cannot be placed in time (missing fixture date) and are therefore excluded from training"
     }
   ],
   "calc_version": "1.0.0",
-  "failing": [
-    "player_observations_all_placeable"
-  ]
+  "failing": []
 }

@@ -200,6 +200,12 @@ output/**
 !output/architecture/canonical_match_training_manifest.json
 !output/architecture/canonical_player_training_manifest.json
 !output/architecture/training_flow_canary.json
+!output/architecture/asof_coverage.csv
+!output/architecture/asof_manifest.json
+!output/architecture/fixture_resolution_manifest.json
+# The provider lookup result IS committed, unlike the other parquets: 709 rows, it is an
+# immutable fact about finished fixtures, and committing it means CI never re-spends the calls.
+!output/architecture/fixture_id_map.parquet
 # Scheduler observability (Prompt 01 section 7). Committed because the QUESTION is historical:
 # "is the observed cadence degrading" cannot be answered by a file that only ever holds the
 # current run. Both are small — one JSON object each, no per-row data.
