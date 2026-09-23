@@ -184,22 +184,47 @@ def run(variants: list[str], *, start: str | None = "2022-08",
                     else:
                         ll_ch = ll_cd = float("nan")
                         promote = True
+                    # SCORE THE OUTGOING CHAMPION BEFORE IT IS REPLACED.
+                    #
+                    # The first version scored only the ACTIVE model and the challenger, and then
+                    # asked whether the decision was right. On a PROMOTE the active model IS the
+                    # challenger, so the test compared a thing with itself and returned True
+                    # every time -- 190 of 190 promotions "correct". That is a tautology, not a
+                    # finding, and reporting it would have been a headline about nothing. Only
+                    # the rejections carried information.
+                    #
+                    # The honest question needs both candidates scored on the month neither has
+                    # seen: what did the challenger do, and what would the incumbent have done?
+                    prev = champion.get(t)
+                    p_prev = (_predict(prev[0], prev[1], frame, cols, te)
+                              if prev is not None else None)
                     if promote:
                         champion[t] = (cand, ckeep, ds_id, str(mon))
                     ch_m, ch_k, active_ds, ch_mon = champion[t]
                     p = _predict(ch_m, ch_k, frame, cols, te)
-                    # What WOULD the rejected challenger have scored? That is the only way to
-                    # know whether the gate's decision was right.
                     p_cand = _predict(cand, ckeep, frame, cols, te)
+                    ll_cand_next = M.log_loss(y_te, p_cand)
+                    ll_prev_next = (M.log_loss(y_te, p_prev) if p_prev is not None
+                                    else float("nan"))
+                    # Right iff the decision matched what the unseen month actually rewarded.
+                    if p_prev is None:
+                        correct = None                     # nothing to compare against yet
+                    else:
+                        challenger_really_better = ll_cand_next < ll_prev_next
+                        correct = bool(promote == challenger_really_better)
                     gate_log.append({
                         "variant": vname, "month": str(mon), "target": t,
                         "val_logloss_champion": ll_ch, "val_logloss_challenger": ll_cd,
                         "decision": "PROMOTE" if promote else "REJECT",
                         "next_month_logloss_active": M.log_loss(y_te, p),
-                        "next_month_logloss_challenger": M.log_loss(y_te, p_cand),
-                        "decision_was_correct": bool(
-                            (promote and M.log_loss(y_te, p_cand) <= M.log_loss(y_te, p) + 1e-12)
-                            or (not promote and M.log_loss(y_te, p) <= M.log_loss(y_te, p_cand))),
+                        "next_month_logloss_challenger": ll_cand_next,
+                        "next_month_logloss_incumbent": ll_prev_next,
+                        "challenger_better_next_month": (None if p_prev is None
+                                                         else bool(ll_cand_next < ll_prev_next)),
+                        "decision_was_correct": correct,
+                        "regret_logloss": (None if p_prev is None
+                                           else float(M.log_loss(y_te, p)
+                                                      - min(ll_cand_next, ll_prev_next))),
                         "champion_month": ch_mon, "train_rows": int(len(tr))})
                     gate_decision = "PROMOTE" if promote else "REJECT"
                     model_age = mi - months.index(pd.Period(ch_mon, freq="M"))
@@ -314,8 +339,13 @@ def main() -> int:
 
     if not gate.empty:
         print(f"\nSIMULATED PROMOTION GATE: {len(gate):,} decisions")
-        print(gate.groupby(["variant", "decision"])["decision_was_correct"]
+        gg = gate.dropna(subset=["decision_was_correct"])
+        print(gg.groupby(["variant", "decision"])["decision_was_correct"]
               .agg(["size", "mean"]).round(3).to_string())
+        print(f"  (first decision per variant/target has no incumbent to compare against "
+              f"and is excluded: {len(gate) - len(gg)} rows)")
+        print("\n  mean regret in log loss (0 = the gate always kept the better model):")
+        print(gate.groupby("variant")["regret_logloss"].mean().round(5).to_string())
 
     if a.write:
         led.to_csv(O() / "monthly_walkforward_performance.csv", index=False)
