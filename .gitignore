@@ -176,6 +176,23 @@ output/**
 !output/pure_prediction/verdicts.txt
 !output/pure_prediction/cross_market_verdicts.json
 !output/pure_prediction/cross_market_verdicts.txt
+
+# ---------------------------------------------------------------------------------------------
+# ARCHITECTURE AUDIT (src/architecture). Named file by file, same reason as the blocks above.
+# canonical_match_history.parquet is DERIVED and rebuildable from raw in a couple of minutes, so
+# it is deliberately NOT committed -- it would add several MB per run to a repo CI has to clone,
+# and committing a derived table invites someone to edit it instead of the builder.
+!output/architecture/
+!output/architecture/data_lineage.csv
+!output/architecture/training_data_health.json
+!output/architecture/player_gap.json
+!output/architecture/entity_resolution_audit.csv
+!output/architecture/canonical_match_manifest.json
+!output/architecture/training_dataset_comparison.csv
+!output/architecture/training_dataset_bootstrap.csv
+!output/architecture/v9_training_probe.json
+!output/architecture/architecture_verdict.json
+!output/architecture/architecture_verdict.txt
 # Scheduler observability (Prompt 01 section 7). Committed because the QUESTION is historical:
 # "is the observed cadence degrading" cannot be answered by a file that only ever holds the
 # current run. Both are small — one JSON object each, no per-row data.

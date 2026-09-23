@@ -1,0 +1,163 @@
+{
+  "generated_at": "2026-09-23T07:25:04.919535+00:00",
+  "calc_version": "1.0.0",
+  "AVAILABLE_COMPLETED_FIXTURES": 80868,
+  "AVAILABLE_NAIVE_UNION_BEFORE_NAME_RESOLUTION": 83020,
+  "NAME_RESOLUTION_REMOVED_DOUBLE_COUNTED": 2152,
+  "FIXTURES_REACHING_V9_LOADER": 58156,
+  "ACTUAL_V9_TRAINING_FIXTURES": 57699,
+  "STRANDED_FIXTURES": 23169,
+  "STRANDED_FIXTURE_PCT": 28.65,
+  "stranded_by_cause": {
+    "never_loaded_not_in_loader_sources": 22712,
+    "loaded_but_reached_no_main_model": 457
+  },
+  "unique_fixtures_each_source_adds_over_fd_history": {
+    "backtest_all_leagues": 22522,
+    "af_history": 191
+  },
+  "per_source": {
+    "fd_history": {
+      "rows": 58155,
+      "fixtures": 58155,
+      "first": "2019-02-15",
+      "last": "2026-09-22"
+    },
+    "backtest_all_leagues": {
+      "rows": 44207,
+      "fixtures": 38198,
+      "first": "2019-09-28",
+      "last": "2026-04-23"
+    },
+    "af_history": {
+      "rows": 2329,
+      "fixtures": 2329,
+      "first": "2019-02-15",
+      "last": "2026-09-21"
+    }
+  },
+  "duplicate_rows_inside_v9_training_frame": 2889,
+  "LATEST_AVAILABLE_FIXTURE": "2026-09-22",
+  "LATEST_TRAINING_FIXTURE": "2026-09-22",
+  "entity_resolution": {
+    "pairs_examined": 608,
+    "accepted": 507,
+    "ambiguous_quarantined": 34,
+    "weak_evidence": 67,
+    "accepted_but_different_string": 77
+  },
+  "v9_funnel": [
+    {
+      "stage": "1_load_all_matches",
+      "rows": 61045,
+      "unique_fixtures": 58156,
+      "duplicate_rows": 2889,
+      "leagues": 30,
+      "first": "2019-02-15",
+      "last": "2026-09-22",
+      "note": "everything the loader can see"
+    },
+    {
+      "stage": "2_after_covid_exclusion",
+      "rows": 61045,
+      "unique_fixtures": 58156,
+      "duplicate_rows": 2889,
+      "leagues": 30,
+      "first": "2019-02-15",
+      "last": "2026-09-22",
+      "note": "EXCLUDE_COVID_SEASONS=True ['2019/20', '2020/21']"
+    },
+    {
+      "stage": "3_build_features",
+      "rows": 61045,
+      "unique_fixtures": 58156,
+      "duplicate_rows": 2889,
+      "leagues": 30,
+      "first": "2019-02-15",
+      "last": "2026-09-22",
+      "note": "rolling form attached"
+    },
+    {
+      "stage": "4_dropna_form",
+      "rows": 60564,
+      "unique_fixtures": 57699,
+      "duplicate_rows": 2865,
+      "leagues": 30,
+      "first": "2019-02-22",
+      "last": "2026-09-22",
+      "note": "rows with no rolling-form history are dropped (invariant 8)"
+    },
+    {
+      "stage": "5a_standard_model_input",
+      "rows": 17720,
+      "unique_fixtures": 17720,
+      "duplicate_rows": 0,
+      "leagues": 15,
+      "first": "2023-08-04",
+      "last": "2026-09-20",
+      "note": "STANDARD_FORMAT_LEAGUES only"
+    },
+    {
+      "stage": "5b_newformat_model_input",
+      "rows": 42844,
+      "unique_fixtures": 39979,
+      "duplicate_rows": 2865,
+      "leagues": 15,
+      "first": "2019-02-22",
+      "last": "2026-09-22",
+      "note": "NEW_FORMAT_LEAGUES only"
+    },
+    {
+      "stage": "6_ht_over05_model_input",
+      "rows": 29449,
+      "unique_fixtures": 26584,
+      "duplicate_rows": 2865,
+      "leagues": 30,
+      "first": "2019-08-22",
+      "last": "2026-09-20",
+      "note": "needs ['ht_over05', 'home_ht_over05_rate']"
+    },
+    {
+      "stage": "6_ht_over15_model_input",
+      "rows": 29449,
+      "unique_fixtures": 26584,
+      "duplicate_rows": 2865,
+      "leagues": 30,
+      "first": "2019-08-22",
+      "last": "2026-09-20",
+      "note": "needs ['ht_over15', 'home_ht_over15_rate']"
+    },
+    {
+      "stage": "7_sidemarket_btts",
+      "rows": 60564,
+      "unique_fixtures": 57699,
+      "duplicate_rows": 2865,
+      "leagues": 30,
+      "first": "2019-02-22",
+      "last": "2026-09-22",
+      "note": "dropna on target btts"
+    },
+    {
+      "stage": "7_sidemarket_over15",
+      "rows": 60564,
+      "unique_fixtures": 57699,
+      "duplicate_rows": 2865,
+      "leagues": 30,
+      "first": "2019-02-22",
+      "last": "2026-09-22",
+      "note": "dropna on target over15"
+    },
+    {
+      "stage": "7_sidemarket_over35",
+      "rows": 60564,
+      "unique_fixtures": 57699,
+      "duplicate_rows": 2865,
+      "leagues": 30,
+      "first": "2019-02-22",
+      "last": "2026-09-22",
+      "note": "dropna on target over35"
+    }
+  ],
+  "covid_filter_removed_rows": 0,
+  "TRAINING_DATA_LAG_DAYS": 0
+}
