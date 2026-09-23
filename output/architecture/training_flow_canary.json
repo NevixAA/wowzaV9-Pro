@@ -1,0 +1,40 @@
+{
+  "generated_at": "2026-09-23T11:01:56.058874+00:00",
+  "status": "FAIL",
+  "checks": [
+    {
+      "check": "canonical_match_fresh",
+      "status": "PASS",
+      "detail": "newest canonical fixture 2026-09-22, 1d old (limit 10)"
+    },
+    {
+      "check": "canonical_match_trainable",
+      "status": "PASS",
+      "detail": "newest trainable 2026-09-22 vs newest known 2026-09-22"
+    },
+    {
+      "check": "match_view_reaches_canonical",
+      "status": "PASS",
+      "detail": "training view reaches 2026-09-22"
+    },
+    {
+      "check": "match_view_lag",
+      "status": "PASS",
+      "detail": "training view is 1d behind today"
+    },
+    {
+      "check": "player_view_lag",
+      "status": "PASS",
+      "detail": "player training view reaches 2026-09-20, 3d behind (club football pauses for internationals, so the tolerance here is wider than the match side's)"
+    },
+    {
+      "check": "player_observations_all_placeable",
+      "status": "FAIL",
+      "detail": "30,919 collected player rows cannot be placed in time (missing fixture date) and are therefore excluded from training"
+    }
+  ],
+  "calc_version": "1.0.0",
+  "failing": [
+    "player_observations_all_placeable"
+  ]
+}

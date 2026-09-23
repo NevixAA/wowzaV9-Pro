@@ -193,6 +193,13 @@ output/**
 !output/architecture/v9_training_probe.json
 !output/architecture/architecture_verdict.json
 !output/architecture/architecture_verdict.txt
+!output/architecture/workflow_lineage.csv
+!output/architecture/workflow_write_overlap.csv
+!output/architecture/canonical_player_manifest.json
+!output/architecture/canonical_market_manifest.json
+!output/architecture/canonical_match_training_manifest.json
+!output/architecture/canonical_player_training_manifest.json
+!output/architecture/training_flow_canary.json
 # Scheduler observability (Prompt 01 section 7). Committed because the QUESTION is historical:
 # "is the observed cadence degrading" cannot be answered by a file that only ever holds the
 # current run. Both are small — one JSON object each, no per-row data.
