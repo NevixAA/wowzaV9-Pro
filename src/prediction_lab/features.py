@@ -56,11 +56,22 @@ WINDOWS = (5, 10)
 EWM_HALFLIFE = 5.0
 
 FAMILIES = ("BASE", "FORM", "SHOTS", "SOT", "CORNERS", "DISCIPLINE", "STRENGTH", "REST",
-            "HT", "H2H", "MARKET")
+            "HT", "H2H", "EARLY", "MARKET")
 
 # Football-only means every family except the market. Stated once, used by every experiment, so
 # that "football only" cannot quietly start including a price.
-FOOTBALL_FAMILIES = tuple(f for f in FAMILIES if f != "MARKET")
+#
+# EARLY IS ALSO EXCLUDED BY DEFAULT, AND THAT IS A MEASURED DECISION, NOT AN OVERSIGHT.
+# It was built to fix the season-start weak spot by labelling stale form (see _early_season).
+# Tested on the season phase where the problem actually lives, it did NOT help: 0 of 4
+# opening-20% cells improved significantly, and it significantly HURT four mid/late-season
+# cells. Shipping it by default would cost accuracy across the calendar to fix nothing.
+#
+# The family is kept because the negative is worth keeping -- it says the season-start problem
+# is NOT the model's ignorance of staleness. Telling a model its numbers are old cannot help
+# when there is no fresher number to reach for. The gap is missing CURRENT-season information,
+# not missing metadata about the old information. Opt in with FAMILIES if testing that further.
+FOOTBALL_FAMILIES = tuple(f for f in FAMILIES if f not in ("MARKET", "EARLY"))
 
 
 def _prior_mean_by_date(d: pd.DataFrame, group: str, value: str) -> pd.Series:
@@ -149,6 +160,72 @@ def _rest(long: pd.DataFrame) -> pd.DataFrame:
                          "matches_14d": pd.concat(cong).reindex(long.index)}, index=long.index)
 
 
+def _early_season(long: pd.DataFrame) -> pd.DataFrame:
+    """Tell the model WHEN its form numbers came from. The gap nobody had filled.
+
+    The walk-forward found prediction is worst at the start of a season and that retraining
+    helps least there. The obvious explanation -- "there is no form data yet" -- is WRONG, and
+    measuring it said so: rolling form is populated on 94.9% of opening-20% fixtures.
+
+    The real problem is that the numbers are STALE AND UNLABELLED. On a team's first match of a
+    season the entire five-match window is last season's football, played by a partly different
+    squad, sometimes in a different division -- and `gf_r5` looks exactly the same as a mid-season
+    `gf_r5`. The model has no way to discount it because nothing in the feature set distinguishes
+    the two.
+
+    So this family does not invent data. It labels the data that is already there:
+
+        season_match_idx        matches this team has played in this season, before this one
+        frac_window_this_season what share of the 5-match form window is CURRENT-season football
+                                (0.0 on the opening day, 1.0 from match six onward)
+        is_season_opener        the first match of a team's season
+        days_since_last_match   already in REST, but the 57-day median summer gap is the signal
+        changed_league          promoted, relegated or moved -- last season's form was earned in
+                                a different division (1.7% of team-seasons, and exactly the ones
+                                a stale number misleads on most)
+        prev_season_gf/ga/n     an EXPLICIT carry-over prior, so the model has a deliberate
+                                anchor rather than an accidental one
+
+    A CAVEAT WORTH RECORDING. `season_label` is an Aug-Jul rule, which is right for the European
+    leagues and wrong for the calendar-year ones (Brazil, Japan, MLS, Scandinavia) where a single
+    campaign straddles two labels. For those leagues `changed_league` and the carry-over prior are
+    noisier than they look. The features are still computed -- a noisy signal beats no signal --
+    but a per-league season calendar would sharpen them, and that is a collection change.
+    """
+    d = long.sort_values(["team", "date"], kind="mergesort").copy()
+    g = d.groupby("team", sort=False)
+    prev_season = g["season_label"].shift(1)
+    prev_league = g["league"].shift(1)
+
+    out = pd.DataFrame(index=d.index)
+    out["season_match_idx"] = d.groupby(["team", "season_label"], sort=False).cumcount()
+    out["is_season_opener"] = (out["season_match_idx"] == 0).astype(float)
+    out["frac_window_this_season"] = np.minimum(out["season_match_idx"] / 5.0, 1.0)
+    out["changed_league"] = ((prev_season.notna()) & (prev_season != d["season_label"])
+                             & (prev_league != d["league"])).astype(float)
+
+    # Explicit carry-over: the team's own previous-season averages. Every match behind these
+    # numbers was played before the current season began, so no future information is involved.
+    per = (d.groupby(["team", "season_label"], sort=False)
+             .agg(_gf=("gf", "mean"), _ga=("ga", "mean"), _n=("gf", "size"))
+             .reset_index().sort_values(["team", "season_label"], kind="mergesort"))
+    for c in ("_gf", "_ga", "_n"):
+        per[f"prev{c}"] = per.groupby("team", sort=False)[c].shift(1)
+    m = d[["team", "season_label"]].merge(
+        per[["team", "season_label", "prev_gf", "prev_ga", "prev_n"]],
+        on=["team", "season_label"], how="left")
+    m.index = d.index
+    out["prev_season_gf"] = m["prev_gf"]
+    out["prev_season_ga"] = m["prev_ga"]
+    out["prev_season_n"] = m["prev_n"]
+
+    # A shrinkage weight the model can use directly: how much should this season's short form be
+    # trusted against the carry-over? Standard n/(n+k) form, k=5.
+    n = out["season_match_idx"].astype(float)
+    out["form_reliability"] = n / (n + 5.0)
+    return out
+
+
 def build_team_features(fx: pd.DataFrame) -> pd.DataFrame:
     """All per-team pre-match features, on the long (team x match) frame."""
     long = D.team_match_long(fx)
@@ -163,7 +240,8 @@ def build_team_features(fx: pd.DataFrame) -> pd.DataFrame:
     parts = [long[["fixture_key", "team", "is_home", "date", "league"]],
              _team_rolling(long, core + shots + sot + corners + disc + ht),
              _venue_rolling(long, core),
-             _rest(long)]
+             _rest(long),
+             _early_season(long)]
     feat = pd.concat(parts, axis=1)
 
     # STRENGTH: the team's prior scoring vs its league's prior scoring. Ratio, not difference,
@@ -279,6 +357,11 @@ def family_columns(df: pd.DataFrame) -> dict[str, list[str]]:
         "REST": pick("days_rest", "matches_14d"),
         "HT": pick("ht_gf", "ht_ga"),
         "H2H": pick("h2h_"),
+        # EARLY is picked BEFORE MARKET and after H2H; ordering matters because a column may
+        # only belong to one family and the dedupe below keeps the first claim.
+        "EARLY": pick("season_match_idx", "is_season_opener", "frac_window_this_season",
+                      "changed_league", "prev_season_gf", "prev_season_ga", "prev_season_n",
+                      "form_reliability"),
         "MARKET": pick("mkt_"),
     }
     # A column may only belong to one family, else an ablation "removing SHOTS" would leave a

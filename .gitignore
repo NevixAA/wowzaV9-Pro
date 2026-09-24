@@ -240,6 +240,12 @@ output/**
 # Charts are small PNGs and are the deliverable section 76 asks for, so they DO ship.
 !output/shadow_learning/charts/
 !output/shadow_learning/charts/*.png
+!output/shadow_learning/early_season_experiment.csv
+!output/shadow_learning/early_season_significance.csv
+!output/shadow_learning/early_season_market.csv
+!output/shadow_learning/gate_policy_performance.csv
+!output/shadow_learning/gate_policy_significance.csv
+!output/shadow_learning/gate_policy_decisions.csv
 # Scheduler observability (Prompt 01 section 7). Committed because the QUESTION is historical:
 # "is the observed cadence degrading" cannot be answered by a file that only ever holds the
 # current run. Both are small — one JSON object each, no per-row data.
