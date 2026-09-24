@@ -223,11 +223,16 @@ def main() -> int:
         common = base.index.intersection(s.index)
         pv, obs, ci = paired_bootstrap_p(s[common].to_numpy(), base[common].to_numpy(),
                                          n_boot=3000, block=4)
+        # SIGN. paired_bootstrap_p(a, b) returns mean(b) - mean(a), so with a = this policy and
+        # b = always_promote a POSITIVE value means the policy's loss is lower, i.e. the policy
+        # is better. The first version had this inverted and printed "policy better" next to
+        # never_promote -- which the raw means flatly contradict (0.62961 against 0.62027).
+        # Caught by sanity-checking the label against the means it is supposed to describe.
         out.append({"policy": p, "vs": "always_promote", "mean_diff": round(obs, 6),
                     "ci_lo": round(ci[0], 6), "ci_hi": round(ci[1], 6),
                     "p_value": round(pv, 4),
                     "significant": bool(ci[0] > 0 or ci[1] < 0),
-                    "direction": "policy better" if obs < 0 else "no gate better"})
+                    "verdict": "BETTER than no gate" if obs > 0 else "WORSE than no gate"})
     b = pd.DataFrame(out)
     print("\nAGAINST NO GATE AT ALL (negative mean_diff = the policy beat 'promote everything')")
     print(b.to_string(index=False))
@@ -235,7 +240,7 @@ def main() -> int:
     best = piv.index[0]
     print(f"\n  best policy by realised log loss: {best}")
     print(f"  does ANY gate beat 'always promote'? "
-          f"{'YES' if (b.significant & (b.mean_diff < 0)).any() else 'NO'}")
+          f"{'YES' if (b.significant & (b.mean_diff > 0)).any() else 'NO'}")
 
     if a.write:
         led.to_csv(O() / "gate_policy_performance.csv", index=False)
