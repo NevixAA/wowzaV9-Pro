@@ -5,68 +5,68 @@
     "abort_at": 60000,
     "alert_at": 45000,
     "limit_day": 75000,
-    "pct_used": 59.6,
+    "pct_used": 61.4,
     "plan": "Ultra",
-    "requests_used": 44683,
-    "snapshot_ts": "2026-09-24T12:55:07Z",
+    "requests_used": 46015,
+    "snapshot_ts": "2026-09-24T17:59:15Z",
     "source": "/home/runner/work/wowzaV9-Pro/wowzaV9-Pro/_v9/output/api_usage_log.csv",
-    "status": "OK"
+    "status": "ALERT"
   },
   "coverage_problems": [],
   "coverage_status": "PASS",
   "fixture_horizon": {
-    "next_24h": 0,
+    "next_24h": 1,
     "next_3h": 0,
     "next_6h": 0,
-    "next_72h": 49
+    "next_72h": 53
   },
   "fixtures_today": 1,
   "freshness": {
     "fixtures": {
-      "age_hours": 0.0,
-      "last_observed_at": "2026-09-24T13:45:07Z",
+      "age_hours": 0.01,
+      "last_observed_at": "2026-09-24T18:38:15Z",
       "status": "OK"
     },
     "live_odds_snapshots": {
-      "age_hours": 12.45,
-      "last_observed_at": "2026-09-24T01:18:26Z",
-      "status": "STALE"
-    },
-    "live_signals": {
-      "age_hours": 1.93,
-      "last_observed_at": "2026-09-24T11:49:43Z",
+      "age_hours": 2.84,
+      "last_observed_at": "2026-09-24T15:47:56Z",
       "status": "OK"
     },
+    "live_signals": {
+      "age_hours": 6.81,
+      "last_observed_at": "2026-09-24T11:49:43Z",
+      "status": "STALE"
+    },
     "market_snapshots": {
-      "age_hours": 0.0,
-      "last_observed_at": "2026-09-24T13:45:07Z",
+      "age_hours": 0.01,
+      "last_observed_at": "2026-09-24T18:38:15Z",
       "status": "OK"
     },
     "model_snapshots": {
-      "age_hours": 0.22,
-      "last_observed_at": "2026-09-24T13:32:16Z",
+      "age_hours": 0.67,
+      "last_observed_at": "2026-09-24T17:58:25Z",
       "status": "OK"
     },
     "player_props": {
-      "age_hours": 1.93,
+      "age_hours": 6.81,
       "last_observed_at": "2026-09-24T11:49:43Z",
-      "status": "OK"
+      "status": "STALE"
     }
   },
-  "generated_at": "2026-09-24T13:45:22Z",
+  "generated_at": "2026-09-24T18:38:36Z",
   "observed_cadence": {
     "live_odds_snapshots": {
-      "active_median_gap_min": 187.2,
-      "active_missed_windows": 572,
-      "active_n_observations": 47,
-      "active_p90_gap_min": 239.2,
-      "first": "2026-09-10T14:57:35Z",
-      "last": "2026-09-24T01:18:26Z",
+      "active_median_gap_min": 181.4,
+      "active_missed_windows": 535,
+      "active_n_observations": 45,
+      "active_p90_gap_min": 239.7,
+      "first": "2026-09-10T21:34:33Z",
+      "last": "2026-09-24T15:47:56Z",
       "max_gap_min": 1010.0,
-      "median_gap_min": 196.8,
-      "missed_windows": 1850,
-      "n_observations": 57,
-      "p90_gap_min": 850.4
+      "median_gap_min": 197.1,
+      "missed_windows": 1898,
+      "n_observations": 56,
+      "p90_gap_min": 862.7
     },
     "live_signals": {
       "active_median_gap_min": 1505.4,
@@ -82,28 +82,28 @@
       "p90_gap_min": 1503.6
     },
     "market_snapshots": {
-      "active_median_gap_min": 223.1,
-      "active_missed_windows": 343,
-      "active_n_observations": 64,
-      "active_p90_gap_min": 376.6,
-      "first": "2026-09-10T16:38:58Z",
-      "last": "2026-09-24T13:45:07Z",
+      "active_median_gap_min": 221.3,
+      "active_missed_windows": 332,
+      "active_n_observations": 63,
+      "active_p90_gap_min": 376.8,
+      "first": "2026-09-10T19:15:02Z",
+      "last": "2026-09-24T18:38:15Z",
       "max_gap_min": 449.1,
-      "median_gap_min": 227.6,
-      "missed_windows": 548,
+      "median_gap_min": 229.0,
+      "missed_windows": 552,
       "n_observations": 88,
       "p90_gap_min": 394.2
     },
     "model_snapshots": {
-      "active_median_gap_min": 261.7,
-      "active_missed_windows": 339,
-      "active_n_observations": 51,
-      "active_p90_gap_min": 447.8,
-      "first": "2026-09-10T17:01:26Z",
-      "last": "2026-09-24T13:32:16Z",
+      "active_median_gap_min": 260.0,
+      "active_missed_windows": 331,
+      "active_n_observations": 50,
+      "active_p90_gap_min": 454.1,
+      "first": "2026-09-10T21:52:06Z",
+      "last": "2026-09-24T17:58:25Z",
       "max_gap_min": 489.2,
       "median_gap_min": 265.6,
-      "missed_windows": 553,
+      "missed_windows": 552,
       "n_observations": 75,
       "p90_gap_min": 385.3
     },
@@ -127,20 +127,20 @@
       "Brazil Serie A": 8706,
       "Bundesliga 2": 7086,
       "Championship": 11973,
-      "La Liga 2": 9662,
-      "League One": 11599,
-      "League Two": 11781,
-      "Mexico Liga MX": 7923,
+      "La Liga 2": 9684,
+      "League One": 11618,
+      "League Two": 11806,
+      "Mexico Liga MX": 7943,
       "Norway Eliteserien": 6524,
       "Serie B": 6953,
       "Sweden Allsvenskan": 7116,
-      "USA MLS": 18673
+      "USA MLS": 18716
     },
     "credits_by_market": {
-      "BTTS": 31463,
+      "BTTS": 31520,
       "OU15": 2320,
-      "OU25": 45371,
-      "OU35": 10599,
+      "OU25": 45428,
+      "OU35": 10616,
       "btts_no": 12386,
       "btts_yes": 12386,
       "h2h_away": 4325,
@@ -157,14 +157,14 @@
       "under25": 9651,
       "under35": 4397
     },
-    "credits_remaining_month": 17046,
-    "credits_used_month": 82954,
-    "credits_used_today": 901,
-    "estimated_month_end_usage": 103692,
+    "credits_remaining_month": 16915,
+    "credits_used_month": 83085,
+    "credits_used_today": 1032,
+    "estimated_month_end_usage": 103856,
     "is_estimate": true,
-    "mean_per_day": 4299.6,
+    "mean_per_day": 4302.9,
     "monthly_allowance": 100000,
-    "pct_of_monthly_allowance": 82.95,
+    "pct_of_monthly_allowance": 83.08,
     "source": "ESTIMATED from stored market_snapshots \u2014 no credit meter exists",
     "status": "OK"
   },
@@ -178,7 +178,7 @@
       "pct": 0.5
     },
     "T-24h": {
-      "observations": 18019,
+      "observations": 18022,
       "pct": 10.6
     },
     "T-30m": {
@@ -194,8 +194,8 @@
       "pct": 2.5
     },
     "far": {
-      "observations": 134297,
-      "pct": 79.1
+      "observations": 134482,
+      "pct": 79.2
     },
     "post_kickoff": {
       "observations": 9017,
