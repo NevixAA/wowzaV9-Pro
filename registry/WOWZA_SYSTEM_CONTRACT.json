@@ -8,7 +8,8 @@
     "pro_commit": "4011587f68dac613c7f77f941a03d6ccc10041df",
     "pro_commit_note": "clean, in sync with origin/main at generation time",
     "v11_commit": "6d3d69956fabf4f0645dd5f4b4ea642d4afcc05f",
-    "v11_commit_note": "LOCAL HEAD, 8 ahead of origin/main at generation time. Pre-existing; not created by this mission."
+    "v11_commit_note": "LOCAL HEAD, 8 ahead of origin/main at generation time. Pre-existing; not created by this mission.",
+    "self_reference_note": "Pro's HEAD necessarily advances past pro_commit the instant this contract is committed, because committing it IS a Pro commit. Chasing that SHA is an infinite regress, so it is not chased. A Pro-only staleness warning with zero errors is therefore the EXPECTED steady state and means nothing on its own. What matters is whether ARCHITECTURAL commits landed since — new workflows, moved models, changed routing, altered notification paths. A v9 or v11 staleness warning is more informative, because nothing in this mission moves those."
   },
 
   "evidence_vocabulary": [
