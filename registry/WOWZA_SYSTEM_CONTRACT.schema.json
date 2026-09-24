@@ -1,0 +1,230 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/NevixAA/wowzaV9-Pro/registry/WOWZA_SYSTEM_CONTRACT.schema.json",
+  "title": "Wowza System Contract",
+  "description": "Machine-readable description of the live Wowza estate. Deliberately permissive about EXTRA keys (the contract will grow) and strict about the fields automation depends on: provenance, evidence typing, and the boundaries that protect production and real money.",
+  "type": "object",
+  "required": ["contract_version", "generated_at_utc", "verified_against", "repos", "real_money", "ai_change_policy", "product_boundary"],
+  "additionalProperties": true,
+
+  "definitions": {
+    "evidence": {
+      "description": "How strongly an assertion is backed. Prevents a future agent treating a code comment as a hard constraint.",
+      "enum": ["CODE_ENFORCED", "WORKFLOW_ENFORCED", "CONFIG_ENFORCED", "TEST_VERIFIED", "OWNER_POLICY", "DOCUMENTED_ONLY", "INFERRED", "UNVERIFIED",
+               "CODE_ENFORCED_WITH_DOCUMENTED_EXCEPTIONS"]
+    },
+    "repo_status": {
+      "enum": ["IMMUTABLE", "CHANGE_CONTROLLED", "ACTIVE_RESEARCH", "EXPERIMENTAL", "DEPRECATED", "LEGACY_IGNORED"]
+    },
+    "signal_state": {
+      "enum": ["FORECAST", "RESEARCH", "PAPER", "VALIDATED", "LIVE", "BLOCKED", "RETIRED"]
+    },
+    "research_status": {
+      "enum": ["CURRENT", "SUPERSEDED", "INVALIDATED", "INSUFFICIENT_SAMPLE", "EXPERIMENTAL"]
+    },
+    "sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "tri_state": {
+      "description": "Booleans are for things code can prove. Use these strings when it cannot.",
+      "enum": ["UNKNOWN", "UNVERIFIED", "OWNER_CONFIRMATION_REQUIRED", "OWNER_POLICY_ONLY", "CONTESTED"]
+    },
+    "bool_or_unknown": {
+      "oneOf": [{ "type": "boolean" }, { "$ref": "#/definitions/tri_state" }]
+    }
+  },
+
+  "properties": {
+    "contract_version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "generated_at_utc": { "type": "string", "format": "date-time" },
+    "generated_by": { "type": "string" },
+
+    "verified_against": {
+      "description": "Every architectural statement in this contract is traceable to these three repository states. If any differs from the current HEAD, the contract is STALE.",
+      "type": "object",
+      "required": ["v9_commit", "pro_commit", "v11_commit"],
+      "properties": {
+        "v9_commit": { "$ref": "#/definitions/sha" },
+        "pro_commit": { "$ref": "#/definitions/sha" },
+        "v11_commit": { "$ref": "#/definitions/sha" }
+      },
+      "additionalProperties": true
+    },
+
+    "repos": {
+      "type": "object",
+      "required": ["v9", "pro", "v11"],
+      "additionalProperties": {
+        "type": "object",
+        "required": ["repo_url", "role", "status", "production_critical", "may_notify", "may_modify_v9"],
+        "properties": {
+          "repo_name": { "type": "string" },
+          "repo_url": { "type": "string", "format": "uri" },
+          "local_path": { "type": "string" },
+          "generation": { "type": "string" },
+          "role": { "enum": ["live_production", "evidence_validation_learning", "market_shadow_research"] },
+          "status": { "$ref": "#/definitions/repo_status" },
+          "status_evidence": { "$ref": "#/definitions/evidence" },
+          "default_branch": { "type": "string" },
+          "tracked_files": { "type": "integer", "minimum": 0 },
+          "production_critical": { "type": "boolean" },
+          "may_notify": { "$ref": "#/definitions/bool_or_unknown" },
+          "may_stake_automatically": { "$ref": "#/definitions/bool_or_unknown" },
+          "may_modify_v9": { "$ref": "#/definitions/bool_or_unknown" },
+          "reads_from": { "type": "array", "items": { "type": "string" } },
+          "writes_to": { "type": "array", "items": { "type": "string" } },
+          "primary_entrypoints": { "type": "array", "items": { "type": "string" } },
+          "workflow_count": { "type": "integer", "minimum": 0 },
+          "test_suite": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    },
+
+    "real_money": {
+      "description": "The most safety-critical block. A Telegram notification is NOT a wager.",
+      "type": "object",
+      "required": ["automated_placement_exists", "REAL_MONEY_SCOPE_CODE_VERIFIED", "REAL_MONEY_SCOPE_OWNER_POLICY_REQUIRED"],
+      "properties": {
+        "automated_placement_exists": { "type": "boolean" },
+        "evidence": { "$ref": "#/definitions/evidence" },
+        "scope_claim": { "type": "string" },
+        "scope_claim_status": { "enum": ["CODE_ENFORCED_INVARIANT", "OWNER_OPERATING_POLICY"] },
+        "REAL_MONEY_SCOPE_CODE_VERIFIED": { "type": "boolean" },
+        "REAL_MONEY_SCOPE_OWNER_POLICY_REQUIRED": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+
+    "notification_matrix": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["repo", "pipeline", "can_notify"],
+        "properties": {
+          "repo": { "enum": ["v9", "pro", "v11"] },
+          "pipeline": { "type": "string" },
+          "module": { "type": "string" },
+          "can_notify": { "type": "boolean" },
+          "credentials": { "type": "string" },
+          "paper_or_live": { "enum": ["PAPER", "LIVE", "UNKNOWN"] },
+          "dedup": { "type": "string" },
+          "evidence": { "$ref": "#/definitions/evidence" }
+        },
+        "additionalProperties": true
+      }
+    },
+
+    "invariants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "statement", "status", "evidence"],
+        "properties": {
+          "id": { "type": "integer" },
+          "statement": { "type": "string" },
+          "status": { "enum": ["HOLDS", "PARTIALLY_ENFORCED", "RESTATED", "SPLIT", "OWNER_POLICY", "UNVERIFIED_IN_THIS_PASS", "VIOLATED"] },
+          "evidence": { "$ref": "#/definitions/evidence" },
+          "exceptions_found": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": true
+      }
+    },
+
+    "models": {
+      "type": "object",
+      "properties": {
+        "match_models": { "type": "array", "items": { "$ref": "#/properties/models/definitions/model" } },
+        "player_models": { "type": "array", "items": { "$ref": "#/properties/models/definitions/model" } }
+      },
+      "definitions": {
+        "model": {
+          "type": "object",
+          "required": ["model_id", "market", "signal_state"],
+          "properties": {
+            "model_id": { "type": "string" },
+            "repo": { "type": "string" },
+            "market": { "type": "string" },
+            "format": { "enum": ["standard", "new_format", "player", "mixed"] },
+            "artifact": { "type": "string" },
+            "signal_state": { "$ref": "#/definitions/signal_state" },
+            "real_money_authorized": { "$ref": "#/definitions/bool_or_unknown" },
+            "validation_state": { "type": "string" }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+
+    "research_validity_registry": {
+      "description": "Prevents future sessions quoting dead research. Every important empirical conclusion carries a status and, when superseded, a pointer.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["research_id", "status"],
+        "properties": {
+          "research_id": { "type": "string" },
+          "repo": { "type": "string" },
+          "script": { "type": "string" },
+          "status": { "$ref": "#/definitions/research_status" },
+          "reason": { "type": "string" },
+          "superseded_by": { "type": "string" },
+          "evidence": { "$ref": "#/definitions/evidence" }
+        },
+        "additionalProperties": true
+      }
+    },
+
+    "shared_root": {
+      "type": "object",
+      "properties": {
+        "path": { "type": "string" },
+        "mutation_policy": { "enum": ["DO_NOT_MOVE_OR_RENAME", "SAFE_TO_REORGANIZE"] }
+      },
+      "additionalProperties": true
+    },
+
+    "product_boundary": {
+      "description": "The product is a downstream CONSUMER of Wowza intelligence, never a reason to restructure the engines that produce it.",
+      "type": "object",
+      "required": ["exists", "may_write_v9", "may_write_pro", "may_write_v11"],
+      "properties": {
+        "exists": { "type": "boolean" },
+        "planned": { "type": "boolean" },
+        "may_write_v9": { "type": "boolean", "const": false },
+        "may_write_pro": { "type": "boolean", "const": false },
+        "may_write_v11": { "type": "boolean", "const": false },
+        "immutable_history_invariant": { "type": "string" },
+        "frontend_rule": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+
+    "ai_change_policy": {
+      "type": "object",
+      "required": ["v9", "pro", "v11", "product"],
+      "properties": {
+        "v9": { "const": "READ_ONLY_BY_DEFAULT" },
+        "pro": { "type": "string" },
+        "v11": { "type": "string" },
+        "product": { "type": "string" },
+        "authorization_rule": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+
+    "known_ambiguities": {
+      "description": "UNKNOWN is a valid result. Anything that could not be proven belongs here rather than being guessed.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["item", "status"],
+        "properties": {
+          "item": { "type": "string" },
+          "status": { "type": "string" },
+          "why": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}
