@@ -332,6 +332,7 @@
     {"item": "Invariant 8 (never bet without rolling form)", "status": "UNVERIFIED_IN_THIS_PASS"},
     {"item": "Residual-vs-velocity conflict between v11 post-fix momentum and AGENT_11_PRO_BENCHMARK", "status": "CONTESTED"},
     {"item": "output/af_ht_history.parquet", "status": "STALE", "why": "Last match 2026-06-23, 15 leagues; written only by backfill_ht_parallel.py which NO workflow runs. Feeds HT grading, not prediction."},
-    {"item": "Scottish League One / League Two", "status": "LISTED_BUT_ABSENT", "why": "In STANDARD_FORMAT_LEAGUES but present in no history file, so they contribute nothing to training."}
+    {"item": "Scottish League One / League Two", "status": "RESOLVED_AFTER_GENERATION", "why": "Was LISTED_BUT_ABSENT: in STANDARD_FORMAT_LEAGUES but present in no history file. Both landed in output/af_history.parquet later the same day (v9 commit 4f37662a), ~1,100 fixtures each back to 2019-09-28, alongside Denmark 1st Div. Kept here rather than deleted so the transition is visible."},
+    {"item": "player_history.parquet size vs GitHub's 100 MB limit", "status": "ACTION_REQUIRED", "why": "On 2026-09-24 the file went 316,157 -> 501,474 rows and 135 MB, and `git push` was REJECTED with GH001. A float32/int32 downcast plus zstd brought it to 90.6 MB (verified: same rows, same columns, ids byte-identical, worst relative float error 5.96e-08) and it pushed. That is a STOPGAP with ~9 MB of headroom on a file that grew 48 MB in one afternoon. Seasons 2023-2024 are still uncollected and would breach the limit again. Git LFS, splitting the file, or not committing it at all is an architecture decision that must be made BEFORE the next depth increase. The backfill is deliberately paused pending it."}
   ]
 }
