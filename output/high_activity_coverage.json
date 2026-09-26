@@ -378,12 +378,12 @@
       "active_p90_gap_min": null,
       "first": "2026-08-22T02:02:56Z",
       "fixtures_kicking_off": 456,
-      "last": "2026-09-26T05:23:47Z",
+      "last": "2026-09-26T11:28:25Z",
       "max_gap_min": 9146.0,
       "median_gap_min": 174.6,
-      "missed_windows": 5005,
-      "n_observations": 40,
-      "p90_gap_min": 8777.9
+      "missed_windows": 5040,
+      "n_observations": 42,
+      "p90_gap_min": 8764.5
     },
     "Sun": {
       "active_median_gap_min": null,
@@ -441,11 +441,11 @@
   "fixtures": {
     "in_store": 1050,
     "kicked_off": 990,
-    "with_market_snapshot": 11362,
+    "with_market_snapshot": 11368,
     "with_model_snapshot": 1050,
-    "with_player_props": 876
+    "with_player_props": 880
   },
-  "generated_at": "2026-09-26T05:24:07Z",
+  "generated_at": "2026-09-26T11:28:50Z",
   "live": {
     "live_odds_fixtures": 3463,
     "live_odds_rows": 148408,
@@ -505,8 +505,8 @@
   "recommendations": [
     "T-10m market coverage is 8.1% of kicked-off fixtures. Closing price cannot be backfilled, so this is a permanent loss per uncovered fixture.",
     "T-1h market coverage is 31.9%. The final hour is where the sharp money moves; a capture window inside it is worth more than an extra one three days out.",
-    "market_snapshots p90 gap is 400 min against a 10 min target (1857 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
-    "model_snapshots p90 gap is 360 min against a 10 min target (1877 missed windows) \u2014 the tail, not the median, is where captures are being lost."
+    "market_snapshots p90 gap is 401 min against a 10 min target (1865 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
+    "model_snapshots p90 gap is 350 min against a 10 min target (1866 missed windows) \u2014 the tail, not the median, is where captures are being lost."
   ],
   "scheduler_mode": "HIGH_ACTIVITY",
   "status": "PASS",
@@ -525,10 +525,10 @@
       "fixtures_kicking_off": 456,
       "live_odds_observations": 45869,
       "market_median_gap_min": 174.6,
-      "market_observations": 25290,
-      "market_p90_gap_min": 8777.9,
-      "model_observations": 25634,
-      "props_observations": 25424
+      "market_observations": 26234,
+      "market_p90_gap_min": 8764.5,
+      "model_observations": 25892,
+      "props_observations": 35505
     },
     "Sun": {
       "fixtures_kicking_off": 283,
