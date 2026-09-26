@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-25T10:32:12Z",
+  "generated_at": "2026-09-26T10:13:09Z",
   "calc_version": "1.0.0",
   "worst": "NO_NEW_DATA",
   "counts": {
@@ -7,14 +7,14 @@
     "PASS": 5
   },
   "settlements_fingerprint": {
-    "rows": 43665,
-    "latest_match": "2026-09-22",
+    "rows": 45209,
+    "latest_match": "2026-09-24",
     "earliest_match": "2025-08-02",
     "leagues": 24,
-    "fingerprint": "34e1d8c510d84568"
+    "fingerprint": "b12c6e15708b0509"
   },
   "last_genuine_learning_event": {
-    "date": "2026-09-25",
+    "date": "2026-09-26",
     "models_decided": [
       "btts",
       "ht_over05",
@@ -24,28 +24,28 @@
       "over35",
       "standard"
     ],
-    "evidence": "7 model(s) recorded a promote/reject decision on 2026-09-25"
+    "evidence": "7 model(s) recorded a promote/reject decision on 2026-09-26"
   },
   "checks": [
     {
       "model": "standard",
       "status": "PASS",
-      "why": "challenger trained and promoted \u2014 log loss 0.70641 -> 0.68744 (-0.01897), within the 0.03000 tolerance",
+      "why": "challenger trained and promoted \u2014 log loss 0.68753 -> 0.68785 (+0.00033), within the 0.03000 tolerance",
       "model_artifact": "models/model_v9_standard.pkl",
-      "incumbent_changed_at": "2026-09-25T10:14:48Z",
+      "incumbent_changed_at": "2026-09-26T09:55:39Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-09-24",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
-        "why": "log loss 0.70641 -> 0.68744 (-0.01897), within the 0.03000 tolerance",
+        "why": "log loss 0.68753 -> 0.68785 (+0.00033), within the 0.03000 tolerance",
         "rows": 21388,
         "comparison_basis": "same_holdout",
-        "logloss_old": 0.70641,
-        "logloss_new": 0.68744,
-        "at": "2026-09-25T08:41:44Z"
+        "logloss_old": 0.68753,
+        "logloss_new": 0.68785,
+        "at": "2026-09-26T08:27:33Z"
       }
     },
     {
@@ -53,96 +53,96 @@
       "status": "NO_NEW_DATA",
       "why": "only 0 new settled fixture(s) since the incumbent was built \u2014 too few to learn from. Healthy.",
       "model_artifact": "models/model_v9_newformat.pkl",
-      "incumbent_changed_at": "2026-09-25T10:14:48Z",
+      "incumbent_changed_at": "2026-09-26T09:55:39Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-09-24",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": null
     },
     {
       "model": "btts",
       "status": "PASS",
-      "why": "challenger trained and promoted \u2014 log loss 0.68904 -> 0.68513 (-0.00391), within the 0.03000 tolerance",
+      "why": "challenger trained and promoted \u2014 log loss 0.68565 -> 0.68564 (-0.00001), within the 0.03000 tolerance",
       "model_artifact": "models/model_v9_btts.pkl",
-      "incumbent_changed_at": "2026-09-25T10:14:48Z",
+      "incumbent_changed_at": "2026-09-26T09:55:39Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-09-24",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
-        "why": "log loss 0.68904 -> 0.68513 (-0.00391), within the 0.03000 tolerance",
+        "why": "log loss 0.68565 -> 0.68564 (-0.00001), within the 0.03000 tolerance",
         "rows": 59816,
         "comparison_basis": "same_holdout",
-        "logloss_old": 0.68904,
-        "logloss_new": 0.68513,
-        "at": "2026-09-25T08:43:58Z"
+        "logloss_old": 0.68565,
+        "logloss_new": 0.68564,
+        "at": "2026-09-26T08:30:14Z"
       }
     },
     {
       "model": "over15",
       "status": "PASS",
-      "why": "challenger trained and promoted \u2014 log loss 0.54509 -> 0.54586 (+0.00077), within the 0.03000 tolerance",
+      "why": "challenger trained and promoted \u2014 log loss 0.54637 -> 0.54567 (-0.00070), within the 0.03000 tolerance",
       "model_artifact": "models/model_v9_over15.pkl",
-      "incumbent_changed_at": "2026-09-25T10:14:48Z",
+      "incumbent_changed_at": "2026-09-26T09:55:39Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-09-24",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
-        "why": "log loss 0.54509 -> 0.54586 (+0.00077), within the 0.03000 tolerance",
+        "why": "log loss 0.54637 -> 0.54567 (-0.00070), within the 0.03000 tolerance",
         "rows": 59816,
         "comparison_basis": "same_holdout",
-        "logloss_old": 0.54509,
-        "logloss_new": 0.54586,
-        "at": "2026-09-25T08:44:49Z"
+        "logloss_old": 0.54637,
+        "logloss_new": 0.54567,
+        "at": "2026-09-26T08:31:15Z"
       }
     },
     {
       "model": "over35",
       "status": "PASS",
-      "why": "challenger trained and promoted \u2014 log loss 0.60261 -> 0.59836 (-0.00425), within the 0.03000 tolerance",
+      "why": "challenger trained and promoted \u2014 log loss 0.59826 -> 0.59951 (+0.00124), within the 0.03000 tolerance",
       "model_artifact": "models/model_v9_over35.pkl",
-      "incumbent_changed_at": "2026-09-25T10:14:48Z",
+      "incumbent_changed_at": "2026-09-26T09:55:39Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-09-24",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
-        "why": "log loss 0.60261 -> 0.59836 (-0.00425), within the 0.03000 tolerance",
+        "why": "log loss 0.59826 -> 0.59951 (+0.00124), within the 0.03000 tolerance",
         "rows": 59816,
         "comparison_basis": "same_holdout",
-        "logloss_old": 0.60261,
-        "logloss_new": 0.59836,
-        "at": "2026-09-25T08:45:39Z"
+        "logloss_old": 0.59826,
+        "logloss_new": 0.59951,
+        "at": "2026-09-26T08:32:16Z"
       }
     },
     {
       "model": "ht_over05",
       "status": "PASS",
-      "why": "challenger trained and promoted \u2014 log loss 0.68751 -> 0.64722 (-0.04029), within the 0.03000 tolerance",
+      "why": "challenger trained and promoted \u2014 log loss 0.64789 -> 0.66716 (+0.01927), within the 0.03000 tolerance",
       "model_artifact": "models/model_ht_over05.pkl",
-      "incumbent_changed_at": "2026-09-25T10:14:48Z",
+      "incumbent_changed_at": "2026-09-26T09:55:39Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-09-24",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
-        "why": "log loss 0.68751 -> 0.64722 (-0.04029), within the 0.03000 tolerance",
-        "rows": 30205,
+        "why": "log loss 0.64789 -> 0.66716 (+0.01927), within the 0.03000 tolerance",
+        "rows": 30199,
         "comparison_basis": "same_holdout",
-        "logloss_old": 0.68751,
-        "logloss_new": 0.64722,
-        "at": "2026-09-25T08:42:39Z"
+        "logloss_old": 0.64789,
+        "logloss_new": 0.66716,
+        "at": "2026-09-26T08:28:39Z"
       }
     },
     {
@@ -150,11 +150,11 @@
       "status": "NO_NEW_DATA",
       "why": "only 0 new settled fixture(s) since the incumbent was built \u2014 too few to learn from. Healthy.",
       "model_artifact": "models/model_player_goals.pkl",
-      "incumbent_changed_at": "2026-09-25T10:14:48Z",
+      "incumbent_changed_at": "2026-09-26T09:55:39Z",
       "incumbent_age_days": 0.0,
       "training_input": "player_history.parquet",
-      "training_input_latest_match": "2026-09-24",
-      "training_input_age_days": 1,
+      "training_input_latest_match": "2026-09-26",
+      "training_input_age_days": 0,
       "new_settled_since_incumbent": 0,
       "last_decision": null
     }
