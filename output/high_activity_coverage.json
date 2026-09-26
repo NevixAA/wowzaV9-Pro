@@ -377,13 +377,13 @@
       "active_missed_windows": null,
       "active_p90_gap_min": null,
       "first": "2026-08-22T02:02:56Z",
-      "fixtures_kicking_off": 457,
-      "last": "2026-09-26T16:43:32Z",
+      "fixtures_kicking_off": 483,
+      "last": "2026-09-26T21:29:31Z",
       "max_gap_min": 9146.0,
-      "median_gap_min": 174.6,
-      "missed_windows": 5068,
-      "n_observations": 44,
-      "p90_gap_min": 7138.1
+      "median_gap_min": 178.8,
+      "missed_windows": 5095,
+      "n_observations": 45,
+      "p90_gap_min": 6324.8
     },
     "Sun": {
       "active_median_gap_min": null,
@@ -439,16 +439,16 @@
     }
   },
   "fixtures": {
-    "in_store": 1051,
+    "in_store": 1077,
     "kicked_off": 1016,
-    "with_market_snapshot": 11369,
-    "with_model_snapshot": 1051,
+    "with_market_snapshot": 11394,
+    "with_model_snapshot": 1077,
     "with_player_props": 880
   },
-  "generated_at": "2026-09-26T16:43:54Z",
+  "generated_at": "2026-09-26T21:29:51Z",
   "live": {
-    "live_odds_fixtures": 3592,
-    "live_odds_rows": 154171,
+    "live_odds_fixtures": 3601,
+    "live_odds_rows": 154519,
     "live_signal_fixtures": 72
   },
   "near_kickoff_market": {
@@ -505,10 +505,10 @@
   "recommendations": [
     "T-10m market coverage is 7.9% of kicked-off fixtures. Closing price cannot be backfilled, so this is a permanent loss per uncovered fixture.",
     "T-1h market coverage is 31.2%. The final hour is where the sharp money moves; a capture window inside it is worth more than an extra one three days out.",
-    "market_snapshots p90 gap is 400 min against a 10 min target (1877 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
-    "model_snapshots p90 gap is 350 min against a 10 min target (1872 missed windows) \u2014 the tail, not the median, is where captures are being lost."
+    "market_snapshots p90 gap is 400 min against a 10 min target (1883 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
+    "model_snapshots p90 gap is 360 min against a 10 min target (1889 missed windows) \u2014 the tail, not the median, is where captures are being lost."
   ],
-  "scheduler_mode": "LIVE_MATCH",
+  "scheduler_mode": "HIGH_ACTIVITY",
   "status": "PASS",
   "target_interval_min": 10,
   "weekend": {
@@ -522,12 +522,12 @@
       "props_observations": 39184
     },
     "Sat": {
-      "fixtures_kicking_off": 457,
-      "live_odds_observations": 51632,
-      "market_median_gap_min": 174.6,
-      "market_observations": 26587,
-      "market_p90_gap_min": 7138.1,
-      "model_observations": 26408,
+      "fixtures_kicking_off": 483,
+      "live_odds_observations": 51980,
+      "market_median_gap_min": 178.8,
+      "market_observations": 26792,
+      "market_p90_gap_min": 6324.8,
+      "model_observations": 26718,
       "props_observations": 35505
     },
     "Sun": {
