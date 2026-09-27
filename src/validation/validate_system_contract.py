@@ -116,8 +116,14 @@ def run() -> dict:
     pb = c.get("product_boundary", {})
     for k in ("may_write_v9", "may_write_pro", "may_write_v11"):
         ck(f"product boundary: {k} is false", pb.get(k) is False, repr(pb.get(k)))
-    ck("ai_change_policy: v9 is READ_ONLY_BY_DEFAULT",
-       (c.get("ai_change_policy") or {}).get("v9") == "READ_ONLY_BY_DEFAULT")
+    # v9 is read-only to agents EXCEPT that its existing retraining machinery keeps running.
+    # Blocking routine retraining would itself be a violation, so both spellings are accepted.
+    ck("ai_change_policy: v9 is read-only by default",
+       str((c.get("ai_change_policy") or {}).get("v9", "")).startswith("READ_ONLY_BY_DEFAULT"))
+    vp = c.get("v9_change_policy") or {}
+    ck("v9: continuous retraining allowed", vp.get("V9_CONTINUOUS_RETRAINING_ALLOWED") is True)
+    ck("v9: architecture change-controlled", vp.get("V9_ARCHITECTURE_CHANGE_CONTROLLED") is True)
+    ck("v9: literal-freeze claim rejected", vp.get("V9_LITERAL_FREEZE_CORRECT") is False)
     rm = c.get("real_money", {})
     ck("real money: no automated placement recorded",
        rm.get("automated_placement_exists") is False, repr(rm.get("automated_placement_exists")))

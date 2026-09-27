@@ -1,29 +1,41 @@
 {
-  "contract_version": "1.0.0",
-  "generated_at_utc": "2026-09-24T11:20:00Z",
+  "contract_version": "2.0.0",
+  "generated_at_utc": "2026-09-27T08:40:00Z",
   "generated_by": "read-only inspection of three working trees; no repository was modified by this mission",
   "verified_against": {
-    "v9_commit": "6dc09e3115c21ac29545f988d99a55dd0ab60c1a",
-    "v9_commit_note": "LOCAL HEAD, 3 ahead / 2 behind origin/main at generation time. Two of those commits are pre-existing authorized work from the same session, unrelated to this contract mission.",
-    "pro_commit": "4011587f68dac613c7f77f941a03d6ccc10041df",
-    "pro_commit_note": "clean, in sync with origin/main at generation time",
+    "v9_commit": "cacee086d39723e85f1c244e6b4101ad2727a00b",
+    "pro_commit": "9d986b1275552775500ab28704f59d927f0a7983",
     "v11_commit": "6d3d69956fabf4f0645dd5f4b4ea642d4afcc05f",
-    "v11_commit_note": "LOCAL HEAD, 8 ahead of origin/main at generation time. Pre-existing; not created by this mission.",
     "self_reference_note": "Pro's HEAD necessarily advances past pro_commit the instant this contract is committed, because committing it IS a Pro commit. Chasing that SHA is an infinite regress, so it is not chased. A Pro-only staleness warning with zero errors is therefore the EXPECTED steady state and means nothing on its own. What matters is whether ARCHITECTURAL commits landed since — new workflows, moved models, changed routing, altered notification paths. A v9 or v11 staleness warning is more informative, because nothing in this mission moves those."
   },
-
   "evidence_vocabulary": [
-    "CODE_ENFORCED", "WORKFLOW_ENFORCED", "CONFIG_ENFORCED", "TEST_VERIFIED",
-    "OWNER_POLICY", "DOCUMENTED_ONLY", "INFERRED", "UNVERIFIED"
+    "CODE_ENFORCED",
+    "WORKFLOW_ENFORCED",
+    "CONFIG_ENFORCED",
+    "TEST_VERIFIED",
+    "OWNER_POLICY",
+    "DOCUMENTED_ONLY",
+    "INFERRED",
+    "UNVERIFIED"
   ],
   "status_vocabulary": [
-    "IMMUTABLE", "CHANGE_CONTROLLED", "ACTIVE_RESEARCH", "EXPERIMENTAL",
-    "DEPRECATED", "LEGACY_IGNORED"
+    "PRODUCTION_CHANGE_CONTROLLED",
+    "ACTIVE_RESEARCH",
+    "EXPERIMENTAL",
+    "DEPRECATED",
+    "LEGACY_IGNORED",
+    "IMMUTABLE",
+    "CHANGE_CONTROLLED"
   ],
   "signal_state_vocabulary": [
-    "FORECAST", "RESEARCH", "PAPER", "VALIDATED", "LIVE", "BLOCKED", "RETIRED"
+    "FORECAST",
+    "RESEARCH",
+    "PAPER",
+    "VALIDATED",
+    "LIVE",
+    "BLOCKED",
+    "RETIRED"
   ],
-
   "repos": {
     "v9": {
       "repo_name": "wowza-betting",
@@ -31,9 +43,9 @@
       "local_path": "mixed/v9",
       "generation": "v9",
       "role": "live_production",
-      "status": "CHANGE_CONTROLLED",
+      "status": "PRODUCTION_CHANGE_CONTROLLED",
       "status_evidence": "CODE_ENFORCED",
-      "status_note": "NOT immutable. Between 2026-09-22 and 2026-09-24 this repo received training-data expansion, club-name canonicalisation, promotion-gate changes and a notifier fix, alongside continuous automated commits. 'Frozen' is owner policy meaning 'change-controlled, do not redesign casually', not a code-enforced lock.",
+      "status_note": "NOT frozen and NOT immutable. v9 is the live production generation: it collects, predicts, settles, retrains and promotes continuously, and that is correct and must not be blocked. What is change-controlled is the ARCHITECTURE — see v9_change_policy.",
       "default_branch": "main",
       "tracked_files": 257,
       "production_critical": true,
@@ -43,13 +55,33 @@
       "may_stake_evidence": "CODE_ENFORCED",
       "may_stake_note": "No bet-placement code exists. Output is advisory only.",
       "may_modify_v9": true,
-      "reads_from": ["football-data.co.uk", "API-Football", "OddsAPI", "RapidAPI", "shared DATA_DIR root"],
-      "writes_to": ["v9/output/*", "v9/player_history.parquet", "v9/models/*", "Telegram"],
-      "primary_entrypoints": ["pipeline.py", "retrain.py", "update_results.py", "app.py", "player_model.pipeline"],
+      "reads_from": [
+        "football-data.co.uk",
+        "API-Football",
+        "OddsAPI",
+        "RapidAPI",
+        "shared DATA_DIR root"
+      ],
+      "writes_to": [
+        "v9/output/*",
+        "v9/player_history.parquet",
+        "v9/models/*",
+        "Telegram"
+      ],
+      "primary_entrypoints": [
+        "pipeline.py",
+        "retrain.py",
+        "update_results.py",
+        "app.py",
+        "player_model.pipeline"
+      ],
       "workflow_count": 22,
       "test_suite": "NONE",
       "test_suite_evidence": "CODE_ENFORCED",
-      "test_suite_note": "test_telegram.py is a manual send check, not a suite. Validation here is the backtest and audit harness. Do not claim tests pass for v9."
+      "test_suite_note": "test_telegram.py is a manual send check, not a suite. Validation here is the backtest and audit harness. Do not claim tests pass for v9.",
+      "continuous_retraining": true,
+      "architecture_change_policy": "EXPLICIT_APPROVAL_REQUIRED",
+      "product_access": "READ_ONLY_BY_DEFAULT"
     },
     "pro": {
       "repo_name": "wowzaV9-Pro",
@@ -68,8 +100,18 @@
       "may_modify_v9": false,
       "may_modify_v9_evidence": "CODE_ENFORCED",
       "may_modify_v9_note": "Pro reads v9 over HTTP via src/data/v9_source.py. No write path into v9 was found.",
-      "reads_from": ["v9 committed output over HTTP", "API-Football", "odds feeds"],
-      "writes_to": ["v10/output/*", "v10/data/*", "v10/registry/*", "v10/models/*", "Telegram (bet_builder, paper_1x2 only)"],
+      "reads_from": [
+        "v9 committed output over HTTP",
+        "API-Football",
+        "odds feeds"
+      ],
+      "writes_to": [
+        "v10/output/*",
+        "v10/data/*",
+        "v10/registry/*",
+        "v10/models/*",
+        "Telegram (bet_builder, paper_1x2 only)"
+      ],
       "workflow_count": 10,
       "test_suite": "tests/",
       "test_suite_command": "python -m pytest tests/  (run from mixed/v10; no pytest config file exists)",
@@ -97,7 +139,6 @@
       "test_suite_note": "Not a pytest suite; a script."
     }
   },
-
   "real_money": {
     "automated_placement_exists": false,
     "evidence": "CODE_ENFORCED",
@@ -107,22 +148,97 @@
     "scope_claim_status": "OWNER_OPERATING_POLICY",
     "scope_claim_note": "Cannot be proven from code, because no code stakes anything. A Telegram tip must NEVER be assumed to be a wager. Which tips became real bets is owner knowledge.",
     "REAL_MONEY_SCOPE_CODE_VERIFIED": false,
-    "REAL_MONEY_SCOPE_OWNER_POLICY_REQUIRED": true
+    "REAL_MONEY_SCOPE_OWNER_POLICY_REQUIRED": true,
+    "tier_stake_semantics_in_code": {
+      "source": "v9/src/betting.py:143-145 and v9/src/backtest.py:358",
+      "SNIPER": "meets per-league threshold — full stake (1.0 in backtest sizing)",
+      "MARKSMAN": "edge >= MARKSMAN_THRESHOLD — 3/4 stake (0.75)",
+      "VALUABLE": "edge >= VALUABLE_THRESHOLD — half stake / monitor (0.5)",
+      "CORRECTION_TO_V1": "VALUABLE is NOT 'information only'; the code documents it as half stake / monitor, and MARKSMAN is a real tip at 3/4 stake. v1 understated both."
+    },
+    "SNIPER_STAKED_BY_CODE": false,
+    "MARKSMAN_STAKED_BY_CODE": false,
+    "VALUABLE_STAKED_BY_CODE": false,
+    "ONLY_SNIPER_REAL_MONEY_CODE_ENFORCED": false,
+    "OWNER_REAL_MONEY_POLICY_CONFIRMATION_REQUIRED": true,
+    "why_all_false": "No tier is staked BY CODE, because no code places a bet anywhere in the estate. What the tier mapping produces is a RECOMMENDED stake size — kelly_pct in the ledger, a sizing weight in the backtest. A human places the bets. So 'real money is standard 2nd-division SNIPER only' is OWNER OPERATING POLICY and cannot be proven or refuted from the repository. Do NOT rewrite production to make the code match that sentence, and do NOT modify MARKSMAN. Document the discrepancy and leave it."
   },
-
   "notification_matrix": [
-    {"repo": "v9",  "pipeline": "predict / tips",       "module": "telegram_bot/notifier.py", "can_notify": true,  "credentials": "TELEGRAM_TOKEN, TELEGRAM_CHAT_ID", "dedup": "notified.json, key = date|home|away|SIDE, plus an opposite-side guard added 2026-09-24", "evidence": "CODE_ENFORCED"},
-    {"repo": "v9",  "pipeline": "player props",         "module": "telegram_bot/notifier.py", "can_notify": true,  "paper_or_live": "PAPER", "dedup": "player_notified.json", "evidence": "CODE_ENFORCED"},
-    {"repo": "v9",  "pipeline": "live scanner",         "module": "telegram_bot/notifier.py", "can_notify": true,  "dedup": "live_notified.json keyed by match+minute window", "evidence": "CODE_ENFORCED"},
-    {"repo": "v9",  "pipeline": "daily digest",         "module": "telegram_bot/notifier.py", "can_notify": true,  "dedup": "DIGEST|<utc-date> in notified.json", "evidence": "CODE_ENFORCED", "note": "Do not remove this dedup; the five-slot over-scheduling of daily_summary is only safe because of it."},
-    {"repo": "pro", "pipeline": "bet_builder",          "module": "src/combo/notify.py",      "can_notify": true,  "credentials": "TELEGRAM_TOKEN, TELEGRAM_CHAT_ID", "evidence": "WORKFLOW_ENFORCED", "workflow": "pro_bet_builder.yml:94,110"},
-    {"repo": "pro", "pipeline": "paper_1x2",            "module": "UNKNOWN",                  "can_notify": true,  "credentials": "TELEGRAM_TOKEN, TELEGRAM_CHAT_ID", "evidence": "WORKFLOW_ENFORCED", "workflow": "pro_paper_1x2.yml:80-81"},
-    {"repo": "pro", "pipeline": "collect",              "module": "src/pipelines/pro_collect","can_notify": false, "evidence": "WORKFLOW_ENFORCED", "workflow": "pro_collect.yml:5 states no Telegram secret is referenced"},
-    {"repo": "pro", "pipeline": "all other pro_* jobs", "can_notify": false, "evidence": "WORKFLOW_ENFORCED"},
-    {"repo": "v11", "pipeline": "all",                  "can_notify": false, "evidence": "CODE_ENFORCED"}
+    {
+      "repo": "v9",
+      "pipeline": "predict / tips",
+      "module": "telegram_bot/notifier.py",
+      "can_notify": true,
+      "credentials": "TELEGRAM_TOKEN, TELEGRAM_CHAT_ID",
+      "dedup": "notified.json, key = date|home|away|SIDE, plus an opposite-side guard added 2026-09-24",
+      "evidence": "CODE_ENFORCED"
+    },
+    {
+      "repo": "v9",
+      "pipeline": "player props",
+      "module": "telegram_bot/notifier.py",
+      "can_notify": true,
+      "paper_or_live": "PAPER",
+      "dedup": "player_notified.json",
+      "evidence": "CODE_ENFORCED"
+    },
+    {
+      "repo": "v9",
+      "pipeline": "live scanner",
+      "module": "telegram_bot/notifier.py",
+      "can_notify": true,
+      "dedup": "live_notified.json keyed by match+minute window",
+      "evidence": "CODE_ENFORCED"
+    },
+    {
+      "repo": "v9",
+      "pipeline": "daily digest",
+      "module": "telegram_bot/notifier.py",
+      "can_notify": true,
+      "dedup": "DIGEST|<utc-date> in notified.json",
+      "evidence": "CODE_ENFORCED",
+      "note": "Do not remove this dedup; the five-slot over-scheduling of daily_summary is only safe because of it."
+    },
+    {
+      "repo": "pro",
+      "pipeline": "bet_builder",
+      "module": "src/combo/notify.py",
+      "can_notify": true,
+      "credentials": "TELEGRAM_TOKEN, TELEGRAM_CHAT_ID",
+      "evidence": "WORKFLOW_ENFORCED",
+      "workflow": "pro_bet_builder.yml:94,110"
+    },
+    {
+      "repo": "pro",
+      "pipeline": "paper_1x2",
+      "module": "UNKNOWN",
+      "can_notify": true,
+      "credentials": "TELEGRAM_TOKEN, TELEGRAM_CHAT_ID",
+      "evidence": "WORKFLOW_ENFORCED",
+      "workflow": "pro_paper_1x2.yml:80-81"
+    },
+    {
+      "repo": "pro",
+      "pipeline": "collect",
+      "module": "src/pipelines/pro_collect",
+      "can_notify": false,
+      "evidence": "WORKFLOW_ENFORCED",
+      "workflow": "pro_collect.yml:5 states no Telegram secret is referenced"
+    },
+    {
+      "repo": "pro",
+      "pipeline": "all other pro_* jobs",
+      "can_notify": false,
+      "evidence": "WORKFLOW_ENFORCED"
+    },
+    {
+      "repo": "v11",
+      "pipeline": "all",
+      "can_notify": false,
+      "evidence": "CODE_ENFORCED"
+    }
   ],
   "notification_rule": "Pro COLLECTION must never notify. Explicitly authorized Pro research/paper pipelines (bet_builder, paper_1x2) MAY notify. The blanket statement 'Pro never notifies' is stale and false.",
-
   "invariants": [
     {
       "id": 1,
@@ -142,22 +258,83 @@
       "status": "HOLDS",
       "evidence": "OWNER_POLICY",
       "evidence_note": "Owner policy, reinforced by the CODE_ENFORCED fact that no staking path exists anywhere in the estate.",
-      "detail": {"prediction_enabled": true, "paper_enabled": true, "real_money_enabled": false},
+      "detail": {
+        "prediction_enabled": true,
+        "paper_enabled": true,
+        "real_money_enabled": false
+      },
       "code_support": "player_model/clv_tracker.py:4 'Year-long PAPER tracking of player props (no real money)'; ledger pnl documented as 'flat 1u on the entry price — PAPER only'; a PAPER tier exists in PLAYER_TRACKED_TIERS.",
       "separation_warning": "Prediction quality and betting edge are DIFFERENT things. Canonical player-history recovery improving predictive quality does NOT authorize betting."
     },
-    {"id": 3, "statement": "v9 is frozen.", "status": "RESTATED", "evidence": "OWNER_POLICY", "restated_as": "v9 is the live production generation: CHANGE_CONTROLLED, not immutable. See repos.v9.status_note."},
-    {"id": 4, "statement": "v11 never touches v9.", "status": "HOLDS", "evidence": "CODE_ENFORCED"},
-    {"id": 5, "statement": "Production prediction is pre-match only.", "status": "HOLDS", "evidence": "CODE_ENFORCED", "proof": "v9/src/predict.py:87 'PRE-MATCH ONLY: skip matches that have already kicked off', filtering on commence_time.", "note": "The live scanner is a SEPARATE system (LIVE_ALERT_SYSTEM), not the pre-match model."},
-    {"id": 6, "statement": "No retrospective tuning.", "status": "OWNER_POLICY", "evidence": "OWNER_POLICY"},
-    {"id": 7, "statement": "Training-only leagues are not bet leagues.", "status": "HOLDS", "evidence": "CONFIG_ENFORCED", "proof": "STANDARD_FORMAT_LEAGUES (17) is a superset of ENABLED_LEAGUES (20 across both tracks); 7 standard leagues are bet."},
-    {"id": 8, "statement": "Never bet a fixture with no rolling-form history.", "status": "UNVERIFIED_IN_THIS_PASS", "evidence": "DOCUMENTED_ONLY"},
-    {"id": 9, "statement": "Write NaN, never an invented number.", "status": "SPLIT", "evidence": "DOCUMENTED_ONLY", "note": "Applies to CANONICAL STORAGE. Model preprocessing legitimately imputes at inference (src/model._prep). These are different policies and must not be conflated."},
-    {"id": 10, "statement": "odds_history_v9.json must stay committed.", "status": "HOLDS", "evidence": "CODE_ENFORCED", "proof": "Tracked at v9 repo ROOT (not output/). git ls-files confirms."},
-    {"id": 11, "statement": "Club names differ between sources; use canonical resolution.", "status": "HOLDS", "evidence": "CODE_ENFORCED", "proof": "src/team_names.resolve is league-scoped and refuses ambiguous matches; src/data_loader._canonicalise_clubs unifies spellings and quarantines score conflicts."},
-    {"id": 12, "statement": "A player belongs to his latest CLUB, not every club he has played for.", "status": "HOLDS", "evidence": "DOCUMENTED_ONLY", "note": "history holds internationals where team is the player's country; club-only resolution matters."}
+    {
+      "id": 3,
+      "statement": "v9 is frozen.",
+      "status": "RESTATED",
+      "evidence": "OWNER_POLICY",
+      "restated_as": "v9 is the live production generation: CHANGE_CONTROLLED, not immutable. See repos.v9.status_note."
+    },
+    {
+      "id": 4,
+      "statement": "v11 never touches v9.",
+      "status": "HOLDS",
+      "evidence": "CODE_ENFORCED"
+    },
+    {
+      "id": 5,
+      "statement": "Production prediction is pre-match only.",
+      "status": "HOLDS",
+      "evidence": "CODE_ENFORCED",
+      "proof": "v9/src/predict.py:87 'PRE-MATCH ONLY: skip matches that have already kicked off', filtering on commence_time.",
+      "note": "The live scanner is a SEPARATE system (LIVE_ALERT_SYSTEM), not the pre-match model."
+    },
+    {
+      "id": 6,
+      "statement": "No retrospective tuning.",
+      "status": "OWNER_POLICY",
+      "evidence": "OWNER_POLICY"
+    },
+    {
+      "id": 7,
+      "statement": "Training-only leagues are not bet leagues.",
+      "status": "HOLDS",
+      "evidence": "CONFIG_ENFORCED",
+      "proof": "STANDARD_FORMAT_LEAGUES (17) is a superset of ENABLED_LEAGUES (20 across both tracks); 7 standard leagues are bet."
+    },
+    {
+      "id": 8,
+      "statement": "Never bet a fixture with no rolling-form history.",
+      "status": "UNVERIFIED_IN_THIS_PASS",
+      "evidence": "DOCUMENTED_ONLY"
+    },
+    {
+      "id": 9,
+      "statement": "Write NaN, never an invented number.",
+      "status": "SPLIT",
+      "evidence": "DOCUMENTED_ONLY",
+      "note": "Applies to CANONICAL STORAGE. Model preprocessing legitimately imputes at inference (src/model._prep). These are different policies and must not be conflated."
+    },
+    {
+      "id": 10,
+      "statement": "odds_history_v9.json must stay committed.",
+      "status": "HOLDS",
+      "evidence": "CODE_ENFORCED",
+      "proof": "Tracked at v9 repo ROOT (not output/). git ls-files confirms."
+    },
+    {
+      "id": 11,
+      "statement": "Club names differ between sources; use canonical resolution.",
+      "status": "HOLDS",
+      "evidence": "CODE_ENFORCED",
+      "proof": "src/team_names.resolve is league-scoped and refuses ambiguous matches; src/data_loader._canonicalise_clubs unifies spellings and quarantines score conflicts."
+    },
+    {
+      "id": 12,
+      "statement": "A player belongs to his latest CLUB, not every club he has played for.",
+      "status": "HOLDS",
+      "evidence": "DOCUMENTED_ONLY",
+      "note": "history holds internationals where team is the player's country; club-only resolution matters."
+    }
   ],
-
   "shared_root": {
     "path": "mixed/ (v9/config.py sets DATA_DIR = BASE_DIR.parent)",
     "mutation_policy": "DO_NOT_MOVE_OR_RENAME",
@@ -169,46 +346,167 @@
     ],
     "product_rule": "Future product code must not reorganize the shared filesystem."
   },
-
   "pro_file_classification": {
     "mechanism": "v10/.gitignore is a WHITELIST: line 13 is `/*` (ignore every root entry), followed by `!` re-admissions for .github, README.md, docs, config, src, registry, experiments, tests, data, models, output.",
-    "tracked_top_level": [".github", ".gitignore", "README.md", "config", "data", "docs", "experiments", "models", "output", "registry", "src", "tests"],
+    "tracked_top_level": [
+      ".github",
+      ".gitignore",
+      "README.md",
+      "config",
+      "data",
+      "docs",
+      "experiments",
+      "models",
+      "output",
+      "registry",
+      "src",
+      "tests"
+    ],
     "legacy_files_classification": "LEGACY_IGNORED",
-    "legacy_examples_verified": ["pipeline.py", "app.py", "retrain.py", "telegram_bot/notifier.py", "player_model/pipeline.py"],
+    "legacy_examples_verified": [
+      "pipeline.py",
+      "app.py",
+      "retrain.py",
+      "telegram_bot/notifier.py",
+      "player_model/pipeline.py"
+    ],
     "CORRECTION": "A prior architecture note claimed `git add -A` in v10/ 'would swallow all of it'. That is FALSE. These files are git-IGNORED, not merely untracked, so `git add -A` skips them. Verified by `git check-ignore -v` and a `git add -An` dry run, which listed only Pro-tree files.",
     "residual_risk": "`git add -A` in v10/ WOULD stage generated experiment outputs under experiments/ and docs/. Stage per file.",
     "agent_warning": "Never mistake the LEGACY_IGNORED app.py or pipeline.py for current Wowza architecture. They ship nothing."
   },
-
   "models": {
     "note": "Existence does NOT imply validated edge, real-money authorization, notification authorization, or commercial authorization. Those are separate fields.",
     "match_models": [
-      {"model_id": "model_v9_standard",   "repo": "v9", "market": "OVER_UNDER_2_5", "format": "standard",   "artifact": "models/model_v9_standard.pkl",   "signal_state": "LIVE",     "real_money_authorized": "OWNER_POLICY_ONLY", "validation_state": "CONTESTED"},
-      {"model_id": "model_v9_newformat",  "repo": "v9", "market": "OVER_UNDER_2_5", "format": "new_format", "artifact": "models/model_v9_newformat.pkl",  "signal_state": "LIVE",     "real_money_authorized": false, "validation_state": "NEGATIVE_EVIDENCE", "note": "Odds > 3.0 is 6.1% of settled bets and 35.5% of net loss; every one of those 48 bets is new_format."},
-      {"model_id": "model_v9_btts",       "repo": "v9", "market": "BTTS",           "format": "standard",   "artifact": "models/model_v9_btts.pkl",       "signal_state": "LIVE",     "real_money_authorized": false},
-      {"model_id": "model_v9_over15",     "repo": "v9", "market": "OVER_1_5",       "format": "standard",   "artifact": "models/model_v9_over15.pkl",     "signal_state": "LIVE",     "real_money_authorized": false},
-      {"model_id": "model_v9_over35",     "repo": "v9", "market": "OVER_3_5",       "format": "standard",   "artifact": "models/model_v9_over35.pkl",     "signal_state": "LIVE",     "real_money_authorized": false},
-      {"model_id": "model_ht_over05",     "repo": "v9", "market": "HT_OVER_0_5",    "format": "standard",   "artifact": "models/model_ht_over05.pkl",     "signal_state": "LIVE",     "real_money_authorized": false, "note": "Applied under std_mask only (src/predict.py:386). HT is standard-leagues-only by design."},
-      {"model_id": "model_ht_over15",     "repo": "v9", "market": "HT_OVER_1_5",    "format": "standard",   "artifact": "models/model_ht_over15.pkl",     "signal_state": "LIVE",     "real_money_authorized": false}
+      {
+        "model_id": "model_v9_standard",
+        "repo": "v9",
+        "market": "OVER_UNDER_2_5",
+        "format": "standard",
+        "artifact": "models/model_v9_standard.pkl",
+        "signal_state": "LIVE",
+        "real_money_authorized": "OWNER_POLICY_ONLY",
+        "validation_state": "CONTESTED"
+      },
+      {
+        "model_id": "model_v9_newformat",
+        "repo": "v9",
+        "market": "OVER_UNDER_2_5",
+        "format": "new_format",
+        "artifact": "models/model_v9_newformat.pkl",
+        "signal_state": "LIVE",
+        "real_money_authorized": false,
+        "validation_state": "NEGATIVE_EVIDENCE",
+        "note": "Odds > 3.0 is 6.1% of settled bets and 35.5% of net loss; every one of those 48 bets is new_format."
+      },
+      {
+        "model_id": "model_v9_btts",
+        "repo": "v9",
+        "market": "BTTS",
+        "format": "standard",
+        "artifact": "models/model_v9_btts.pkl",
+        "signal_state": "LIVE",
+        "real_money_authorized": false
+      },
+      {
+        "model_id": "model_v9_over15",
+        "repo": "v9",
+        "market": "OVER_1_5",
+        "format": "standard",
+        "artifact": "models/model_v9_over15.pkl",
+        "signal_state": "LIVE",
+        "real_money_authorized": false
+      },
+      {
+        "model_id": "model_v9_over35",
+        "repo": "v9",
+        "market": "OVER_3_5",
+        "format": "standard",
+        "artifact": "models/model_v9_over35.pkl",
+        "signal_state": "LIVE",
+        "real_money_authorized": false
+      },
+      {
+        "model_id": "model_ht_over05",
+        "repo": "v9",
+        "market": "HT_OVER_0_5",
+        "format": "standard",
+        "artifact": "models/model_ht_over05.pkl",
+        "signal_state": "LIVE",
+        "real_money_authorized": false,
+        "note": "Applied under std_mask only (src/predict.py:386). HT is standard-leagues-only by design."
+      },
+      {
+        "model_id": "model_ht_over15",
+        "repo": "v9",
+        "market": "HT_OVER_1_5",
+        "format": "standard",
+        "artifact": "models/model_ht_over15.pkl",
+        "signal_state": "LIVE",
+        "real_money_authorized": false
+      }
     ],
     "player_models": [
-      {"model_id": "model_player_goals",   "market": "PLAYER_GOALS",   "signal_state": "PAPER", "real_money_authorized": false},
-      {"model_id": "model_player_goals2",  "market": "PLAYER_GOALS_2", "signal_state": "PAPER", "real_money_authorized": false},
-      {"model_id": "model_player_goals3",  "market": "PLAYER_GOALS_3", "signal_state": "PAPER", "real_money_authorized": false},
-      {"model_id": "model_player_assists", "market": "PLAYER_ASSISTS", "signal_state": "PAPER", "real_money_authorized": false},
-      {"model_id": "model_player_cards",   "market": "PLAYER_CARDS",   "signal_state": "PAPER", "real_money_authorized": false},
-      {"model_id": "model_player_sot",     "market": "PLAYER_SOT",     "signal_state": "PAPER", "real_money_authorized": false},
-      {"model_id": "model_player_sot2",    "market": "PLAYER_SOT_2",   "signal_state": "PAPER", "real_money_authorized": false},
-      {"model_id": "model_player_sot3",    "market": "PLAYER_SOT_3",   "signal_state": "PAPER", "real_money_authorized": false},
-      {"model_id": "model_player_sot4",    "market": "PLAYER_SOT_4",   "signal_state": "PAPER", "real_money_authorized": false}
+      {
+        "model_id": "model_player_goals",
+        "market": "PLAYER_GOALS",
+        "signal_state": "PAPER",
+        "real_money_authorized": false
+      },
+      {
+        "model_id": "model_player_goals2",
+        "market": "PLAYER_GOALS_2",
+        "signal_state": "PAPER",
+        "real_money_authorized": false
+      },
+      {
+        "model_id": "model_player_goals3",
+        "market": "PLAYER_GOALS_3",
+        "signal_state": "PAPER",
+        "real_money_authorized": false
+      },
+      {
+        "model_id": "model_player_assists",
+        "market": "PLAYER_ASSISTS",
+        "signal_state": "PAPER",
+        "real_money_authorized": false
+      },
+      {
+        "model_id": "model_player_cards",
+        "market": "PLAYER_CARDS",
+        "signal_state": "PAPER",
+        "real_money_authorized": false
+      },
+      {
+        "model_id": "model_player_sot",
+        "market": "PLAYER_SOT",
+        "signal_state": "PAPER",
+        "real_money_authorized": false
+      },
+      {
+        "model_id": "model_player_sot2",
+        "market": "PLAYER_SOT_2",
+        "signal_state": "PAPER",
+        "real_money_authorized": false
+      },
+      {
+        "model_id": "model_player_sot3",
+        "market": "PLAYER_SOT_3",
+        "signal_state": "PAPER",
+        "real_money_authorized": false
+      },
+      {
+        "model_id": "model_player_sot4",
+        "market": "PLAYER_SOT_4",
+        "signal_state": "PAPER",
+        "real_money_authorized": false
+      }
     ],
     "model_architecture": "LogReg + GradientBoosting (+ LightGBM) ensemble with Platt calibration, trained per market on a CHRONOLOGICAL walk-forward split. Never a random split."
   },
-
   "training_contract": {
     "promotion_gate_location": "v9/pipeline.py",
     "tolerance_env": "TRAIN_MAX_LOGLOSS_RISE",
-    "tolerance_default_at_head": 0.030,
+    "tolerance_default_at_head": 0.03,
     "tolerance_previous": 0.005,
     "tolerance_changed_at": "v9 commit a3207713, 2026-09-24T08:26:27Z",
     "no_workflow_override_found": true,
@@ -217,7 +515,6 @@
     "known_event": "The 2026-09-24 08:22:54Z retrain BLOCKED model_v9_standard for a +0.00533 rise against the then-deployed 0.00500 tolerance. The loosening commit landed at 08:26:27Z, four minutes later.",
     "props_gate_env": "PROPS_MAX_LOGLOSS_RISE"
   },
-
   "research_validity_registry": [
     {
       "research_id": "v11_momentum_control_pre_fix",
@@ -225,7 +522,10 @@
       "script": "scripts/v11_momentum_control.py",
       "status": "INVALIDATED",
       "reason": "pd.merge_asof returns a fresh RangeIndex in sorted-key order; `return out.sort_index()['p_at']` was a no-op, so assigning back aligned every value onto the wrong row.",
-      "affected_commits": ["929f783 (2026-08-30)", "4ed8aa9 (2026-09-08)"],
+      "affected_commits": [
+        "929f783 (2026-08-30)",
+        "4ed8aa9 (2026-09-08)"
+      ],
       "example_invalidated_claim": "mean reversion 0.995 / fixed anchor 0.753 / shuffled residual 0.711 all beat v9's 0.703 toward-rate",
       "superseded_by": "v11_momentum_control_post_fix"
     },
@@ -234,7 +534,10 @@
       "repo": "v11",
       "status": "CURRENT",
       "fixed_at": "v11 commit ba21c4c, 2026-09-10T16:30:28+03:00",
-      "artifacts": ["output/v11_momentum_control.csv", "output/v11_momentum_roles.csv"],
+      "artifacts": [
+        "output/v11_momentum_control.csv",
+        "output/v11_momentum_roles.csv"
+      ],
       "artifacts_regenerated_at": "v11 commit 6d3d699, 2026-09-22 (AFTER the fix)",
       "result_summary": "Output is now a regression, not a toward-rate. residual_pp is positive and its CI excludes zero in every specification: residual-only 0.0153 (p=0.00, n=51,692), +momentum 0.0091 (p=0.00), +full controls 0.0142 (p=0.00, n=29,846, 957 fixtures). sample_status VALIDATABLE.",
       "CAUTION": "This REVERSES the pre-fix conclusion that controls beat the model. It also sits in tension with v10/docs/audit_2026_09/AGENT_11_PRO_BENCHMARK.md:29, which reports the residual coefficient collapsing to +0.00089 (p=0.232) once price velocity is controlled. Two artifacts disagree; neither is dismissed here."
@@ -255,7 +558,11 @@
       "repo": "pro",
       "status": "EXPERIMENTAL",
       "evidence": "DOCUMENTED_ONLY",
-      "sources": ["v10/docs/audit_2026_09/AGENT_13_RED_TEAM.md:109", "v10/docs/audit_2026_09/AGENT_3_MODELING_GAPS.md:14", "v10/docs/audit_2026_09/AGENT_11_PRO_BENCHMARK.md:313"],
+      "sources": [
+        "v10/docs/audit_2026_09/AGENT_13_RED_TEAM.md:109",
+        "v10/docs/audit_2026_09/AGENT_3_MODELING_GAPS.md:14",
+        "v10/docs/audit_2026_09/AGENT_11_PRO_BENCHMARK.md:313"
+      ],
       "note": "Registered as EVIDENCE with a sample and a model version, NOT as a permanent architectural invariant. One analysis finding is not an invariant."
     },
     {
@@ -268,9 +575,55 @@
       "significance": "The retrain reported AUC 0.534 -> 0.709, but that was measured across two DIFFERENT test sets (n_test 3,570 -> 5,558) and over the whole training universe, not the bet leagues. On bet leagues the model barely discriminates.",
       "KNOWN_LIMITATION": "The experiment's models have a prediction spread of 0.026 against production's 0.207, because it trains only on the 22,869 standard bet-league rows while production trains on the full universe. Its P&L therefore does NOT describe the deployed model and must not be quoted as such.",
       "status_of_conclusion": "Restored features add nothing measurable: SUPPORTED. Deployed model better or worse in money terms: UNKNOWN."
+    },
+    {
+      "research_id": "canonical_player_history_prediction_quality",
+      "repo": "pro",
+      "status": "CURRENT",
+      "script": "src/shadow_learning/player_walkforward.py",
+      "artifact": "output/shadow_learning/player_walkforward_performance.csv",
+      "data_period": "41 months",
+      "sample": "123 rows = 41 months x 3 variants",
+      "result_verified_against_artifact": {
+        "canonical": {
+          "log_loss": 0.24697,
+          "auc": 0.76314,
+          "pr_auc": 0.23423
+        },
+        "current": {
+          "log_loss": 0.25131,
+          "auc": 0.74745,
+          "pr_auc": 0.2228
+        },
+        "frozen": {
+          "log_loss": 0.25525,
+          "auc": 0.73591,
+          "pr_auc": 0.21295
+        }
+      },
+      "classification": "PREDICTION_QUALITY_RESEARCH",
+      "NOT": "BETTING_EDGE. Recovering canonical player history measurably improves PREDICTION. It does not create, and is not evidence of, a betting edge, and it does not change real_money_enabled for props.",
+      "evidence": "TEST_VERIFIED"
+    },
+    {
+      "research_id": "more_match_rows_does_not_mean_better_model",
+      "repo": "pro",
+      "status": "CURRENT",
+      "script": "experiments/v9_model_change_backtest.py",
+      "result_summary": "A large increase in training fixtures produced only a small, inconsistent predictive gain. The restored corners/HT feature families were worth 0.0005-0.002 log loss across 7 monthly folds on the 7 standard BET leagues, against the 0.048 the retrain metrics appeared to claim.",
+      "caution": "MORE ROWS != BETTER MODEL. The retrain's AUC 0.534 -> 0.709 was measured across two DIFFERENT test sets (n_test 3,570 -> 5,558) and over the whole training universe, not the bet leagues. On bet leagues AUC was 0.512-0.517.",
+      "evidence": "TEST_VERIFIED"
+    },
+    {
+      "research_id": "does_retraining_beat_a_frozen_model",
+      "repo": "pro",
+      "status": "CURRENT",
+      "location": "src/shadow_learning/walkforward.py + player_walkforward.py",
+      "question": "Does repeatedly retraining on accumulated football experience improve FUTURE prediction versus a frozen model?",
+      "current_answer": "Yes on player prediction quality: frozen is the worst of the three variants on all three metrics (LL 0.25525 / AUC 0.73591 / PR-AUC 0.21295) and canonical the best. This is SEPARATE from architecture and separate from betting edge.",
+      "evidence": "TEST_VERIFIED"
     }
   ],
-
   "product_boundary": {
     "exists": false,
     "planned": true,
@@ -300,20 +653,44 @@
       "validation_state": "string",
       "source_generation": "V9"
     },
-    "immutable_history_invariant": "A changed probability MUST be published as a NEW snapshot. Never overwrite an earlier prediction. Users must be able to see what Wowza actually predicted at the time.",
+    "immutable_history_invariant": "A changed probability is published as a NEW snapshot. 14:00, 16:00 and 18:00 are three snapshots, never one overwritten value. Neither a retrain nor a pre-match update may rewrite history.",
     "frontend_rule": "The UI must NEVER decide FORECAST/PAPER/VALIDATED/LIVE. That state arrives from the backend publication contract; the UI only renders it.",
-    "claim_safety": "Never convert 'AUC improved' into 'profitable betting system'. Never convert 'player scorer model predicts better' into 'player scorer bets have edge'. Prediction quality, calibration, market residual, CLV, historical betting ROI and prospective betting ROI are six different things."
+    "claim_safety": "Never convert 'AUC improved' into 'profitable betting system'. Never convert 'player scorer model predicts better' into 'player scorer bets have edge'. Prediction quality, calibration, market residual, CLV, historical betting ROI and prospective betting ROI are six different things.",
+    "PRODUCT_SUPPORTS_MODEL_VERSION_EVOLUTION": true,
+    "model_version_evolution": {
+      "why": "v9 retrains continuously, so the product WILL see model_version A, B, C over time. That is expected, not an error.",
+      "publisher_must_publish": [
+        "model_version",
+        "dataset_id",
+        "generated_at",
+        "code_sha"
+      ],
+      "reason": "so a customer's historical predictions stay attributable to the model that actually made them"
+    },
+    "may_train_models": false,
+    "may_promote_models": false,
+    "may_control_telegram": false,
+    "stack": "V9 / approved Pro outputs -> Product Publisher -> Product PostgreSQL -> FastAPI -> Web / Android / future clients",
+    "player_forecast_governance": "Player predictions MAY become valuable product features even though betting stays permanently PAPER. 'Messi scores: 34%' is a FORECAST; 'BET Messi to score' is a betting claim. The product may expose forecasting intelligence subject to licensing and compliance WITHOUT asserting betting value."
   },
-
   "ai_change_policy": {
-    "v9": "READ_ONLY_BY_DEFAULT",
+    "v9": "READ_ONLY_BY_DEFAULT_EXCEPT_ROUTINE_EXISTING_RETRAINING",
     "pro": "RESEARCH_CHANGES_ALLOWED_WITH_TESTS",
     "v11": "EXPERIMENTAL_CHANGES_ALLOWED_WITH_TESTS",
     "product": "ISOLATED_DEVELOPMENT_ALLOWED",
-    "authorization_rule": "v9 changes require EXPLICIT owner authorization. No AI agent may infer authorization from a broad request such as 'improve Wowza', 'make the model better' or 'build the app'. Product work NEVER implies permission to modify v9.",
-    "emergency_exception": "A genuine production-down emergency may be REPORTED immediately. Fixing it is a separate authorization."
+    "authorization_rule": "A prompt such as 'improve Wowza', 'build the product' or 'make predictions better' does NOT imply permission to modify v9 architecture.",
+    "emergency_exception": "A genuine production-down emergency may be REPORTED immediately. Fixing it is a separate authorization.",
+    "v9_clarification": "This does NOT permit an agent to trigger new or altered v9 retraining ARCHITECTURE. It means the EXISTING v9 retraining machinery remains allowed to operate normally and must not be blocked or disabled.",
+    "explicit_authorization_required_for": [
+      "feature changes",
+      "model changes",
+      "threshold changes",
+      "staking changes",
+      "notification changes",
+      "training-source switches",
+      "promotion methodology changes"
+    ]
   },
-
   "source_of_truth_hierarchy": [
     "1. Current executable code",
     "2. Current workflow configuration",
@@ -324,15 +701,187 @@
     "7. Old architecture descriptions"
   ],
   "source_of_truth_caveat": "Code proves BEHAVIOUR. It does not prove owner POLICY. Operating-policy fields are labelled OWNER_POLICY and cannot be confirmed or refuted by reading code.",
-
   "known_ambiguities": [
-    {"item": "Which Telegram tips became real wagers", "status": "OWNER_CONFIRMATION_REQUIRED"},
-    {"item": "Whether the deployed standard model is better or worse than its predecessor in money terms", "status": "UNKNOWN", "why": "No fair out-of-sample window exists yet; the available walk-forward does not reproduce production's training universe."},
-    {"item": "pro_paper_1x2 notifying module", "status": "UNKNOWN", "why": "Workflow binds Telegram secrets; the sending module was not traced in this pass."},
-    {"item": "Invariant 8 (never bet without rolling form)", "status": "UNVERIFIED_IN_THIS_PASS"},
-    {"item": "Residual-vs-velocity conflict between v11 post-fix momentum and AGENT_11_PRO_BENCHMARK", "status": "CONTESTED"},
-    {"item": "output/af_ht_history.parquet", "status": "STALE", "why": "Last match 2026-06-23, 15 leagues; written only by backfill_ht_parallel.py which NO workflow runs. Feeds HT grading, not prediction."},
-    {"item": "Scottish League One / League Two", "status": "RESOLVED_AFTER_GENERATION", "why": "Was LISTED_BUT_ABSENT: in STANDARD_FORMAT_LEAGUES but present in no history file. Both landed in output/af_history.parquet later the same day (v9 commit 4f37662a), ~1,100 fixtures each back to 2019-09-28, alongside Denmark 1st Div. Kept here rather than deleted so the transition is visible."},
-    {"item": "player_history.parquet size vs GitHub's 100 MB limit", "status": "ACTION_REQUIRED", "why": "On 2026-09-24 the file went 316,157 -> 501,474 rows and 135 MB, and `git push` was REJECTED with GH001. A float32/int32 downcast plus zstd brought it to 90.6 MB (verified: same rows, same columns, ids byte-identical, worst relative float error 5.96e-08) and it pushed. That is a STOPGAP with ~9 MB of headroom on a file that grew 48 MB in one afternoon. Seasons 2023-2024 are still uncollected and would breach the limit again. Git LFS, splitting the file, or not committing it at all is an architecture decision that must be made BEFORE the next depth increase. The backfill is deliberately paused pending it."}
-  ]
+    {
+      "item": "Which Telegram tips became real wagers",
+      "status": "OWNER_CONFIRMATION_REQUIRED"
+    },
+    {
+      "item": "Whether the deployed standard model is better or worse than its predecessor in money terms",
+      "status": "UNKNOWN",
+      "why": "No fair out-of-sample window exists yet; the available walk-forward does not reproduce production's training universe."
+    },
+    {
+      "item": "pro_paper_1x2 notifying module",
+      "status": "UNKNOWN",
+      "why": "Workflow binds Telegram secrets; the sending module was not traced in this pass."
+    },
+    {
+      "item": "Invariant 8 (never bet without rolling form)",
+      "status": "UNVERIFIED_IN_THIS_PASS"
+    },
+    {
+      "item": "Residual-vs-velocity conflict between v11 post-fix momentum and AGENT_11_PRO_BENCHMARK",
+      "status": "CONTESTED"
+    },
+    {
+      "item": "output/af_ht_history.parquet",
+      "status": "STALE",
+      "why": "Last match 2026-06-23, 15 leagues; written only by backfill_ht_parallel.py which NO workflow runs. Feeds HT grading, not prediction."
+    },
+    {
+      "item": "Scottish League One / League Two",
+      "status": "RESOLVED_AFTER_GENERATION",
+      "why": "Was LISTED_BUT_ABSENT: in STANDARD_FORMAT_LEAGUES but present in no history file. Both landed in output/af_history.parquet later the same day (v9 commit 4f37662a), ~1,100 fixtures each back to 2019-09-28, alongside Denmark 1st Div. Kept here rather than deleted so the transition is visible."
+    },
+    {
+      "item": "player_history.parquet size vs GitHub's 100 MB limit",
+      "status": "ACTION_REQUIRED",
+      "why": "On 2026-09-24 the file went 316,157 -> 501,474 rows and 135 MB, and `git push` was REJECTED with GH001. A float32/int32 downcast plus zstd brought it to 90.6 MB (verified: same rows, same columns, ids byte-identical, worst relative float error 5.96e-08) and it pushed. That is a STOPGAP with ~9 MB of headroom on a file that grew 48 MB in one afternoon. Seasons 2023-2024 are still uncollected and would breach the limit again. Git LFS, splitting the file, or not committing it at all is an architecture decision that must be made BEFORE the next depth increase. The backfill is deliberately paused pending it."
+    }
+  ],
+  "supersedes": "1.0.0 (2026-09-24). v1 recorded v9 as CHANGE_CONTROLLED but did not separate ROUTINE MODEL LEARNING from ARCHITECTURAL CHANGE, and left the tier stake semantics and threshold regimes under-specified. Those are the substantive corrections in 2.0.0.",
+  "v9_change_policy": {
+    "headline": "V9 learns continuously from new football. Structural changes to HOW it learns or acts are validated outside production before promotion. These are two different processes and both are necessary.",
+    "V9_CONTINUOUS_RETRAINING_ALLOWED": true,
+    "V9_CONTINUOUS_RETRAINING_CONFIRMED": true,
+    "V9_ARCHITECTURE_CHANGE_CONTROLLED": true,
+    "V9_LITERAL_FREEZE_CORRECT": false,
+    "confirmed_by": "output/retrain_log.json shows retrains on 2026-09-24, 09-25 and 09-26, every comparison on basis=same_holdout, with promotions and blocks both occurring. The machinery is live and working.",
+    "ROUTINE_MODEL_LEARNING": {
+      "policy": "ALLOWED_AND_EXPECTED — never block it, never call it an unauthorized production change",
+      "covers": [
+        "new training rows",
+        "new training end date",
+        "new fitted coefficients",
+        "new GradientBoosting trees",
+        "new logistic parameters",
+        "new calibration parameters",
+        "new model artifact",
+        "new validation metrics"
+      ],
+      "condition": "produced by the EXISTING approved training/retraining system"
+    },
+    "ARCHITECTURAL_OR_BEHAVIORAL_CHANGE": {
+      "policy": "EXPLICIT_APPROVAL_REQUIRED",
+      "covers": [
+        "new target definition",
+        "new feature family",
+        "different model algorithm",
+        "different calibration architecture",
+        "new league routing",
+        "different preprocessing behavior",
+        "new threshold system",
+        "different staking logic",
+        "different Telegram semantics",
+        "new promotion methodology",
+        "different training-source architecture",
+        "new inference behavior"
+      ]
+    },
+    "ai_misreading_to_avoid": "'Do not modify V9' does NOT mean 'stop V9 retraining'. The restriction is on manual architecture changes; the automatic learning loop continues."
+  },
+  "signal_states": {
+    "rule": "prediction_state and betting_state are SEPARATE dimensions. Collapsing them is how 'the model is accurate' becomes 'the bet is profitable'.",
+    "prediction_state_vocabulary": [
+      "FORECAST",
+      "RESEARCH",
+      "VALIDATED",
+      "RETIRED"
+    ],
+    "betting_state_vocabulary": [
+      "PAPER",
+      "LIVE",
+      "BLOCKED",
+      "NO_BET"
+    ],
+    "v9_tier_vocabulary": [
+      "SNIPER",
+      "MARKSMAN",
+      "VALUABLE",
+      "AVOID"
+    ],
+    "v11_state_vocabulary": [
+      "BET",
+      "PAPER",
+      "NO_BET"
+    ],
+    "examples": [
+      {
+        "what": "standard O/U 2.5 SNIPER",
+        "prediction_state": "FORECAST",
+        "betting_state": "LIVE (owner policy, not code)"
+      },
+      {
+        "what": "player prop goals",
+        "prediction_state": "FORECAST",
+        "betting_state": "PAPER"
+      },
+      {
+        "what": "v11 market-first signal",
+        "prediction_state": "RESEARCH",
+        "betting_state": "NO_BET by default"
+      }
+    ]
+  },
+  "threshold_regimes": {
+    "rule": "REFERENCE thresholds (config.py defaults) are NOT what production runs. predict.yml overrides them per run. Reading config.py and stopping there analyses a system that is not running.",
+    "REFERENCE_config_py": {
+      "MARKSMAN_THRESHOLD": 0.14,
+      "VALUABLE_THRESHOLD": 0.04,
+      "SNIPER_THRESHOLD": 0.12,
+      "EDGE_CEILING": 0.19,
+      "LEAGUE_SNIPER_CAP": "unset (1.0 = no cap)"
+    },
+    "ACTIVE_predict_yml": {
+      "MARKSMAN_THRESHOLD": 0.08,
+      "VALUABLE_THRESHOLD": 0.03,
+      "LEAGUE_SNIPER_CAP": 0.12
+    },
+    "evidence": "CONFIG_ENFORCED",
+    "consequence": "Historical performance MUST NOT silently pool multiple threshold regimes. A bet taken under MARKSMAN 0.08 is not comparable to one taken under 0.14.",
+    "recommendation_not_implemented": "Future prediction publications should carry a threshold_regime_id (or equivalent provenance). NOT implemented in v9 by this mission — recommendation only."
+  },
+  "rolling_form_guard": {
+    "DEFAULT_REQUIRE_FORM_POLICY": "ARMED — a fixture missing rolling form is forced to AVOID (invariant 8)",
+    "implementation": "v9/src/betting.py:385-399",
+    "HISTORICAL_OVERRIDE_EVENTS": [
+      {
+        "what": "REQUIRE_FORM_DATA=0 set in predict.yml for early-season testing",
+        "time_boxed_by": "REQUIRE_FORM_DATA_UNTIL=2026-09-15 (~GW5, with margin for the staggered La Liga 2 / Serie B starts)",
+        "status_now": "EXPIRED — the guard re-armed automatically on 2026-09-15 and is ARMED today",
+        "verified": "The expiry is evaluated in code: _expired = today >= REQUIRE_FORM_DATA_UNTIL, and _require_form is True when expired REGARDLESS of the env flag. Evaluated on 2026-09-27: expired=True, guard ARMED."
+      }
+    ],
+    "note": "Do not pretend no override occurred. It did, it was deliberately time-boxed, and it self-expired as designed."
+  },
+  "scientific_invariants": {
+    "leakage_rule": [
+      "chronological split",
+      "as-of features",
+      "train-only preprocessing",
+      "no post-kickoff information",
+      "no random split for time-dependent validation"
+    ],
+    "evidence": "CODE_ENFORCED",
+    "verified": "v9/src/feature_engineering.py::_rolling is x.shift(1).rolling(n) grouped by team, and no raw same-match column appears in FEATURE_COLS. v9/src/model.py::train uses a chronological split, never a random one."
+  },
+  "missing_data_policy": {
+    "CANONICAL_STORAGE": "Prefer NaN. Never invent a value. An invented number survives into outputs and misleads readers.",
+    "MODEL_PREPROCESSING": "May legitimately impute at fit/inference time (v9/src/model.py::_prep).",
+    "rule": "'Write NaN, never invent a number' applies to EVIDENCE AND CANONICAL STORAGE, not to all model preprocessing. Conflating the two produces wrong conclusions in both directions."
+  },
+  "staleness_policy": {
+    "CONTRACT_STALE_YES_MEANS": "Architecture documentation needs re-verification. Nothing more.",
+    "must_not": [
+      "stop V9",
+      "stop retraining",
+      "stop predictions",
+      "stop Telegram",
+      "stop collectors"
+    ],
+    "validator_exit_code": "0 on staleness by default; --strict is available for a REPORTING workflow only",
+    "never": "Never make v9 production depend on the system-contract validator.",
+    "no_auto_update": "Do NOT create CI that silently rewrites architectural truth. If the contract goes stale, REPORT it; a human or an explicit audit regenerates it."
+  }
 }

@@ -1,165 +1,170 @@
-# System Contract — build report
+# System Contract — build report (v2.0.0)
 
-*What was inspected to produce [`WOWZA_SYSTEM_CONTRACT.md`](WOWZA_SYSTEM_CONTRACT.md) and
-[`registry/WOWZA_SYSTEM_CONTRACT.json`](../registry/WOWZA_SYSTEM_CONTRACT.json), what was found,
-and what could not be proven.*
+*What was inspected at HEAD, what was found, what changed from v1, and what could not be proven.*
 
-Generated 2026-09-24. Read-only mission: no running repository was modified by it.
+Generated 2026-09-27. Read-only mission: no running repository was modified by it.
 
 ---
 
-## Repos inspected
+## HEADs scanned
 
-| repo | commit | state at inspection |
-|---|---|---|
-| `NevixAA/wowza-betting` (v9) | `6dc09e3115c21ac29545f988d99a55dd0ab60c1a` | 3 ahead / 2 behind origin |
-| `NevixAA/wowzaV9-Pro` (Pro) | `4011587f68dac613c7f77f941a03d6ccc10041df` | clean, in sync |
-| `NevixAA/wowza_v11` (v11) | `6d3d69956fabf4f0645dd5f4b4ea642d4afcc05f` | 8 ahead of origin |
-
-Both divergences are **pre-existing** and were not created by this mission. v9's two extra
-commits are authorized work from the same session (props collection fix; both-sides tip guard
-plus a retrain hold). v11's eight unpushed commits predate the session entirely and were not
-touched.
-
-## Inventory
-
-- **33 workflows** — v9 22, Pro 10, v11 1
-- **16 model artifacts** — 7 match, 9 player
-- **3 Telegram send sites** — `v9/telegram_bot/notifier.py`, `v10/src/combo/notify.py`, and a
-  `LEGACY_IGNORED` copy at `v10/telegram_bot/notifier.py` that ships nothing
-- **257 / 3,013 / 50** tracked files
-
----
-
-## What the inspection changed about the accepted story
-
-### 1. "v9 has been frozen since 2026-08-19" — not literally true
-
-v9 received training-data expansion, club canonicalisation, promotion-gate changes and a
-notifier fix in the three days before this contract was built, on top of continuous automated
-commits. Recorded as `CHANGE_CONTROLLED`, not `IMMUTABLE`, with the freeze recorded as
-`OWNER_POLICY`.
-
-### 2. "Pro never notifies" — false
-
-`pro_bet_builder.yml:94,110` and `pro_paper_1x2.yml:80-81` both bind `TELEGRAM_TOKEN` and
-`TELEGRAM_CHAT_ID`. `pro_collect.yml` binds neither and says so at line 5 — but the same
-comment also asserts *"NONE EXISTS IN THIS REPO"*, which is stale.
-
-Accurate rule recorded: **Pro collection must never notify; explicitly authorized Pro
-research/paper pipelines may.**
-
-### 3. "`git add -A` in v10/ would swallow the legacy files" — false
-
-`v10/.gitignore` is a whitelist (`/*` at line 13, then `!` re-admissions). `pipeline.py`,
-`app.py`, `retrain.py`, `telegram_bot/notifier.py` and `player_model/pipeline.py` are all
-**git-ignored**, verified with `git check-ignore -v`. A `git add -An` dry run listed only
-Pro-tree files.
-
-Classification corrected from `LEGACY_UNTRACKED` to `LEGACY_IGNORED`. The **real** residual
-risk is different and is now recorded: `git add -A` *would* stage generated experiment output
-under `experiments/` and `docs/`.
-
-### 4. Invariant 1 has two real exceptions
-
-"Standard and new-format never mix" is `PARTIALLY_ENFORCED`. Routing is genuine, but:
-
-- `src/predict.py:332` — if the new-format artifact is missing, **new-format fixtures are
-  scored by the standard model**
-- `src/predict.py:339-343` — a league in neither list is **scored by the standard model**
-
-### 5. The v11 `merge_asof` bug was fixed two weeks ago
-
-Prior documentation still describes every momentum number as void. The fix landed in `ba21c4c`
-(2026-09-10) and the artifacts were regenerated in `6d3d699` (2026-09-22), **after** it.
-
-Pre-fix results (`929f783`, `4ed8aa9`) are recorded `INVALIDATED`; current artifacts are
-recorded `CURRENT`. The post-fix output also **reverses** the pre-fix conclusion: `residual_pp`
-is positive with a CI excluding zero in every specification, including full controls.
-
-That sits in direct tension with `docs/audit_2026_09/AGENT_11_PRO_BENCHMARK.md:29`. Logged as
-`CONTESTED`; neither artifact dismissed.
-
----
-
-## Real-money path
-
-**No automated bet placement exists in any repo.** Searched for `place_bet`, `place_order`,
-`submit_bet`, exchange integrations. The only "betfair / smarkets / matchbook" matches are
-bookmaker *name lists used to read prices*.
-
-The code emits advisory output: tier, edge, and `kelly_pct` — *"recommended stake as % of
-bankroll (25% Kelly)"* (`src/ledger.py:22`).
-
-Consequently the claim *"real money is standard-format second-division O/U SNIPER only"* is
-recorded as `OWNER_OPERATING_POLICY`, **not** a code-enforced invariant:
-
-```
-REAL_MONEY_SCOPE_CODE_VERIFIED           = NO
-REAL_MONEY_SCOPE_OWNER_POLICY_REQUIRED   = YES
-```
-
-A Telegram notification is never assumed to be a wager.
-
----
-
-## Unverified owner policies
-
-- which tips became real wagers
-- the real-money scope claim
-- "no retrospective tuning"
-- invariant 8 (never bet a fixture with no rolling form) — not verified in this pass
-
-## Things found stale or absent
-
-| item | finding |
+| repo | commit |
 |---|---|
-| `output/af_ht_history.parquet` | last match 2026-06-23; written only by `backfill_ht_parallel.py`, which **no workflow runs**. Feeds HT grading, not prediction. |
-| Scottish League One / Two | in `STANDARD_FORMAT_LEAGUES`, present in no history file |
-| Pro test suite | 18 tests pass, but **no workflow executes them**, and `pytest` is not in `requirements.txt` |
+| `NevixAA/wowza-betting` (v9) | `cacee086d39723e85f1c244e6b4101ad2727a00b` |
+| `NevixAA/wowzaV9-Pro` (Pro) | `9d986b1275552775500ab28704f59d927f0a7983` |
+| `NevixAA/wowza_v11` (v11) | `6d3d69956fabf4f0645dd5f4b4ea642d4afcc05f` |
+
+33 workflows (22 / 10 / 1) · 16 model artifacts (7 match, 9 player) · 3 Telegram send sites.
 
 ---
 
-## Placement decisions
+## What v2 corrects in v1
 
-The brief proposed `scripts/validate_system_contract.py`. **Pro has no tracked `scripts/`
-directory** — its whitelist `.gitignore` would silently ignore anything placed there. The
-validator lives at `src/validation/validate_system_contract.py` instead, beside the other
-validators.
+### 1. "V9 is frozen" was too strong, and dangerously so
 
-Contract artifacts went to Pro alone, as the brief preferred: one source of truth, in the
-governance layer.
+v1 recorded `CHANGE_CONTROLLED` but never separated **routine model learning** from
+**architectural change**. That leaves an agent free to read *"do not modify v9"* as *"stop v9
+retraining"* — which would halt the thing that makes Wowza improve.
+
+v2 splits them explicitly and confirms the learning loop is live: `output/retrain_log.json`
+shows retrains on 09-24, 09-25 and 09-26, all on `basis=same_holdout`, with both promotions and
+blocks occurring.
+
+```
+V9_CONTINUOUS_RETRAINING_ALLOWED   = YES
+V9_ARCHITECTURE_CHANGE_CONTROLLED  = YES
+V9_LITERAL_FREEZE_CORRECT          = NO
+```
+
+### 2. Tier stake semantics were understated
+
+v1 described VALUABLE as "information only". The code says otherwise
+(`src/betting.py:143-145`, `src/backtest.py:358`): SNIPER full stake, **MARKSMAN 3/4**,
+**VALUABLE half stake / monitor**.
+
+This does not change the real-money verdict — **no tier is staked by code, because no code
+places a bet**. But the distinction matters, and per the brief nothing was modified to make the
+code match the owner's policy sentence.
+
+### 3. Threshold regimes were unrecorded
+
+| | `config.py` (REFERENCE) | `predict.yml` (ACTIVE) |
+|---|---|---|
+| `MARKSMAN_THRESHOLD` | 0.14 | **0.08** |
+| `VALUABLE_THRESHOLD` | 0.04 | **0.03** |
+| `LEAGUE_SNIPER_CAP` | unset | **0.12** |
+
+Historical performance must not pool regimes. A `threshold_regime_id` is **recommended, not
+implemented** — no v9 change was made.
+
+### 4. The rolling-form override was undocumented — and has expired
+
+`REQUIRE_FORM_DATA=0` was set in `predict.yml` for early-season testing, time-boxed by
+`REQUIRE_FORM_DATA_UNTIL=2026-09-15`. The code re-arms the guard **regardless of the env flag**
+once that date passes (`src/betting.py:385-399`).
+
+Evaluated 2026-09-27: `expired=True`, guard **ARMED**. Invariant 8 is live again. The override
+happened, was deliberately bounded, and self-expired as designed — all three facts are recorded.
 
 ---
 
-## Tests and checks run
+## Findings carried forward from v1, re-verified at HEAD
+
+- **No automated bet placement exists** in any repo. The "betfair / smarkets / matchbook"
+  matches are bookmaker name lists used to read prices.
+- **"Pro never notifies" is false** — `pro_bet_builder.yml:94,110` and `pro_paper_1x2.yml:80-81`
+  bind Telegram secrets; `pro_collect.yml` binds none.
+- **Invariant 1 has two runtime fallbacks** (`predict.py:332`, `predict.py:339-343`) where a
+  new-format or unknown-league fixture is scored by the **standard** model. Recorded as
+  `DESIGN_SEPARATION=YES`, `STRICT_RUNTIME_ISOLATION=NO`.
+- **Pro legacy files are `LEGACY_IGNORED`, not untracked.** `v10/.gitignore` is a whitelist, so
+  `git add -A` skips them. v1's claim that it "would swallow all of it" was wrong.
+
+---
+
+## Newly verified at HEAD
+
+**Player identity** — latest **club**, not every club. `player_model/predict.py:454-472`: sort
+by date, `drop_duplicates(player_id, keep="last")` over club rows only. Internationals are
+excluded because `team` there is the player's country.
+
+**V11 market states** — `MIN_CLV_N = 150` at HEAD (`wowza-v11/config.py:22`), `NO_BET` is the
+default (`src/edge_engine.py:154-156`).
+
+**Leakage invariants** — `_rolling` is `x.shift(1).rolling(n)` grouped by team; no raw
+same-match column appears in `FEATURE_COLS`; `train()` uses a chronological split.
+
+**Canonical player research** — the brief quoted numbers; they were checked against the artifact
+`output/shadow_learning/player_walkforward_performance.csv` (41 months, 123 rows) and match to
+five decimals:
+
+| variant | log loss | AUC | PR-AUC |
+|---|---|---|---|
+| canonical | 0.24697 | 0.76314 | 0.23423 |
+| current | 0.25131 | 0.74745 | 0.22280 |
+| frozen | 0.25525 | 0.73591 | 0.21295 |
+
+Classified `PREDICTION_QUALITY_RESEARCH`, **not** `BETTING_EDGE`. It does not change
+`real_money_enabled` for props. It also answers the learning question: **frozen is the worst
+variant on all three metrics.**
+
+**More rows ≠ better model** — the restored corners/HT families were worth 0.0005–0.002 log loss
+across 7 monthly folds on the 7 standard bet leagues, against the 0.048 the retrain metrics
+appeared to claim. The apparent AUC 0.534 → 0.709 was measured across two *different* test sets.
+
+---
+
+## Research validity
+
+| research | status |
+|---|---|
+| v11 momentum pre-fix (`929f783`, `4ed8aa9`) | **INVALIDATED** — `merge_asof` index reset |
+| v11 momentum post-fix (fixed `ba21c4c`, regenerated `6d3d699`) | **CURRENT** |
+| canonical player history | **CURRENT**, `TEST_VERIFIED` |
+| more match rows → better model | **CURRENT** — answer is no |
+| calibration +13.64pp | **CURRENT**, `DOCUMENTED_ONLY` (`AGENT_13_RED_TEAM.md:100`) |
+| tier ladder carries no information | **EXPERIMENTAL** — evidence, not architecture |
+
+`ALL_V11_MOMENTUM_RESULTS = INVALID` is **not** encoded — corrected post-fix runs exist and are
+current, and they *reverse* the pre-fix conclusion, which puts them in tension with
+`AGENT_11_PRO_BENCHMARK.md:29`. Logged `CONTESTED` rather than resolved by fiat.
+
+---
+
+## Unverified / owner-confirmation-required
+
+- which Telegram tips became actual wagers → `OWNER_CONFIRMATION_REQUIRED`
+- the real-money scope claim → `OWNER_OPERATING_POLICY`
+- whether the deployed model is better in money terms → `UNKNOWN`
+- `pro_paper_1x2` sending module → `UNKNOWN`
+- `output/af_ht_history.parquet` → `STALE`, written only by a script no workflow runs
+
+---
+
+## Tests and checks
 
 | | result |
 |---|---|
 | `python -m pytest tests/` (from `v10/`) | **18 passed** |
-| `python -m src.validation.validate_system_contract` | **27 checks, 0 errors, 0 warnings, `CONTRACT_STALE=NO`** |
-| JSON Schema validation of the contract | **passes** (Draft-07, via `jsonschema`) |
+| `python -m src.validation.validate_system_contract` | **0 errors, 0 warnings, `CONTRACT_STALE=NO`** |
+| JSON Schema validation (Draft-07) | **passes** |
 
-`pytest` and `jsonschema` were installed into the local v9 virtualenv to run these. That
-virtualenv is not committed; `requirements.txt` was not modified.
-
-The validator earned its place immediately — its first run **caught a real schema violation in
-the contract itself** (an `evidence` field carrying free text instead of an enum value), which
-was then fixed.
+The validator gained three checks in v2 — continuous retraining allowed, architecture
+change-controlled, literal-freeze rejected — so the central correction cannot silently regress.
 
 ---
 
-## Files changed by this mission
+## Files changed
 
 ```
-v10/docs/WOWZA_SYSTEM_CONTRACT.md                     new
-v10/docs/WOWZA_SYSTEM_CONTRACT_BUILD_REPORT.md        new
-v10/registry/WOWZA_SYSTEM_CONTRACT.json               new
-v10/registry/WOWZA_SYSTEM_CONTRACT.schema.json        new
-v10/src/validation/validate_system_contract.py        new
+v10/docs/WOWZA_SYSTEM_CONTRACT.md                 rewritten to the 19-section structure
+v10/docs/WOWZA_SYSTEM_CONTRACT_BUILD_REPORT.md    this file
+v10/registry/WOWZA_SYSTEM_CONTRACT.json           1.0.0 -> 2.0.0
+v10/registry/WOWZA_SYSTEM_CONTRACT.schema.json    new enums + v9_change_policy required
+v10/src/validation/validate_system_contract.py    3 new checks
 ```
 
-No v9 file, no v11 file, and no Pro production logic was touched.
+No v9 file, no v11 file, no Pro production logic.
 
 ---
 
@@ -169,32 +174,52 @@ No v9 file, no v11 file, and no Pro production logic was touched.
 SYSTEM_CONTRACT_BUILT=YES
 
 V9_CURRENTLY_RUNNING=YES
-V9_LITERAL_IMMUTABILITY_CONFIRMED=NO
-V9_CHANGE_CONTROLLED=YES
 
-PRO_ROLE_VERIFIED=YES
-V11_SHADOW_ISOLATION_VERIFIED=YES
+V9_CONTINUOUS_RETRAINING_ALLOWED=YES
+V9_CONTINUOUS_RETRAINING_CONFIRMED=YES
+V9_ARCHITECTURE_CHANGE_CONTROLLED=YES
+V9_LITERAL_FREEZE_CORRECT=NO
+
+V9_TRAINING_PATH_MAPPED=YES
+V9_RETRAINING_PATH_MAPPED=YES
+V9_PROMOTION_GATE_MAPPED=YES
+
+STANDARD_NEWFORMAT_DESIGN_SEPARATE=YES
+STRICT_RUNTIME_TRACK_ISOLATION=NO
 
 PLAYER_PROPS_PAPER_ONLY_VERIFIED=YES
-REAL_MONEY_SCOPE_CODE_VERIFIED=NO
-REAL_MONEY_SCOPE_OWNER_POLICY_REQUIRED=YES
+
+SNIPER_STAKED_BY_CODE=NO
+MARKSMAN_STAKED_BY_CODE=NO
+VALUABLE_STAKED_BY_CODE=NO
+
+ONLY_SNIPER_REAL_MONEY_CODE_ENFORCED=NO
+OWNER_REAL_MONEY_POLICY_CONFIRMATION_REQUIRED=YES
 
 PRO_CAN_NOTIFY=YES
 PRO_COLLECT_CAN_NOTIFY=NO
+
+V11_READS_V9_ONLY=YES
+V11_WRITES_V9=NO
+V11_CAN_STAKE=NO
 V11_CAN_NOTIFY=NO
 
-SHARED_DATA_DIR_RISK_VERIFIED=YES
-TRACKED_VS_LEGACY_PRO_FILES_CLASSIFIED=YES
+V11_PRE_FIX_MOMENTUM_INVALIDATED=YES
+V11_POST_FIX_RESEARCH_IDENTIFIED=YES
 
-V11_PRE_FIX_MOMENTUM_RESULTS_INVALIDATED=YES
-V11_POST_FIX_RESULTS_IDENTIFIED=YES
+SHARED_DATA_DIR_RISK_VERIFIED=YES
+
+PRO_TRACKED_LEGACY_CLASSIFIED=YES
 
 CALIBRATION_13_64PP_CLAIM_VERIFIED=YES
+TIER_INFORMATION_CLAIM_VERIFIED=NO
 
 PRODUCT_BOUNDARY_DEFINED=YES
 PRODUCT_CAN_WRITE_V9=NO
 PRODUCT_CAN_WRITE_PRO=NO
 PRODUCT_CAN_WRITE_V11=NO
+
+PRODUCT_SUPPORTS_MODEL_VERSION_EVOLUTION=YES
 
 CONTRACT_VALIDATOR_BUILT=YES
 CONTRACT_STALE=NO
@@ -208,18 +233,24 @@ PRO_PRODUCTION_LOGIC_CHANGED=NO
 RUNNING_REPOS_SAFE_AFTER_MISSION=YES
 ```
 
-### Two fields deliberately not YES
+### Fields deliberately not YES
 
-**`V9_LITERAL_IMMUTABILITY_CONFIRMED=NO`** — this is the correct answer, not a failure. The
-brief asked for it to be determined from the repository, and the repository says v9 is
-change-controlled rather than immutable.
+**`V9_LITERAL_FREEZE_CORRECT=NO`** — required by the brief and correct: v9 retrains continuously.
 
-**`REAL_MONEY_SCOPE_CODE_VERIFIED=NO`** — also correct. No code stakes anything, so no code can
-verify the scope of what is staked. That is precisely why
-`REAL_MONEY_SCOPE_OWNER_POLICY_REQUIRED=YES`.
+**`STRICT_RUNTIME_TRACK_ISOLATION=NO`** — two real fallbacks exist. Recording YES would be false.
+
+**`SNIPER/MARKSMAN/VALUABLE_STAKED_BY_CODE=NO`** — no code places a bet, so no tier is staked by
+code. The tier→stake mapping produces a *recommendation*.
+
+**`ONLY_SNIPER_REAL_MONEY_CODE_ENFORCED=NO`** — and hence
+`OWNER_REAL_MONEY_POLICY_CONFIRMATION_REQUIRED=YES`.
+
+**`TIER_INFORMATION_CLAIM_VERIFIED=NO`** — the claim is traceable to audit documents but was not
+reproduced from a re-runnable artifact in this pass. Registered as `EXPERIMENTAL` evidence with
+its sample, deliberately **not** promoted to an architectural invariant.
 
 ### Caveat on `CALIBRATION_13_64PP_CLAIM_VERIFIED=YES`
 
-This means the **provenance was located** — `docs/audit_2026_09/AGENT_13_RED_TEAM.md:100`,
-corroborated in `VERIFICATION_OF_AUDIT_CLAIMS.md:243-244` — not that the calculation was
-re-executed in this pass. Its evidence type is `DOCUMENTED_ONLY`.
+Means the **provenance was located** (`docs/audit_2026_09/AGENT_13_RED_TEAM.md:100`, corroborated
+in `VERIFICATION_OF_AUDIT_CLAIMS.md:243-244`) — not that the calculation was re-executed. Its
+evidence type is `DOCUMENTED_ONLY`.
