@@ -1,6 +1,6 @@
 {
-  "contract_version": "2.0.0",
-  "generated_at_utc": "2026-09-27T08:40:00Z",
+  "contract_version": "2.1.0",
+  "generated_at_utc": "2026-09-27T09:30:00Z",
   "generated_by": "read-only inspection of three working trees; no repository was modified by this mission",
   "verified_against": {
     "v9_commit": "cacee086d39723e85f1c244e6b4101ad2727a00b",
@@ -385,7 +385,16 @@
         "artifact": "models/model_v9_standard.pkl",
         "signal_state": "LIVE",
         "real_money_authorized": "OWNER_POLICY_ONLY",
-        "validation_state": "CONTESTED"
+        "validation_state": "CONTESTED",
+        "target": "OVER_UNDER_2_5",
+        "league_scope": "STANDARD_FORMAT_LEAGUES",
+        "training_source": "fd_history.parquet + af_history.parquet + backtest_all_leagues.csv, canonicalised and deduped by src/data_loader",
+        "feature_family": "FEATURE_COLS (65) — rolling form, corners, half-time, season/venue, rest, referee, odds-derived",
+        "retraining_status": "ROUTINE_CONTINUOUS — retrain.yml, promotion-gated",
+        "production_status": "LIVE",
+        "paper_status": "N/A",
+        "notification_status": "ALLOWED via v9 notifier",
+        "staking_status": "NOT_STAKED_BY_CODE — recommendation only"
       },
       {
         "model_id": "model_v9_newformat",
@@ -396,7 +405,16 @@
         "signal_state": "LIVE",
         "real_money_authorized": false,
         "validation_state": "NEGATIVE_EVIDENCE",
-        "note": "Odds > 3.0 is 6.1% of settled bets and 35.5% of net loss; every one of those 48 bets is new_format."
+        "note": "Odds > 3.0 is 6.1% of settled bets and 35.5% of net loss; every one of those 48 bets is new_format.",
+        "target": "OVER_UNDER_2_5",
+        "league_scope": "NEW_FORMAT_LEAGUES",
+        "training_source": "fd_history.parquet + af_history.parquet + backtest_all_leagues.csv, canonicalised and deduped by src/data_loader",
+        "feature_family": "FEATURE_COLS (65) — rolling form, corners, half-time, season/venue, rest, referee, odds-derived",
+        "retraining_status": "ROUTINE_CONTINUOUS — retrain.yml, promotion-gated",
+        "production_status": "LIVE",
+        "paper_status": "N/A",
+        "notification_status": "ALLOWED via v9 notifier",
+        "staking_status": "NOT_STAKED_BY_CODE — recommendation only"
       },
       {
         "model_id": "model_v9_btts",
@@ -405,7 +423,16 @@
         "format": "standard",
         "artifact": "models/model_v9_btts.pkl",
         "signal_state": "LIVE",
-        "real_money_authorized": false
+        "real_money_authorized": false,
+        "target": "BTTS",
+        "league_scope": "STANDARD_FORMAT_LEAGUES",
+        "training_source": "fd_history.parquet + af_history.parquet + backtest_all_leagues.csv, canonicalised and deduped by src/data_loader",
+        "feature_family": "FEATURE_COLS (65) — rolling form, corners, half-time, season/venue, rest, referee, odds-derived",
+        "retraining_status": "ROUTINE_CONTINUOUS — retrain.yml, promotion-gated",
+        "production_status": "LIVE",
+        "paper_status": "N/A",
+        "notification_status": "ALLOWED via v9 notifier",
+        "staking_status": "NOT_STAKED_BY_CODE — recommendation only"
       },
       {
         "model_id": "model_v9_over15",
@@ -414,7 +441,16 @@
         "format": "standard",
         "artifact": "models/model_v9_over15.pkl",
         "signal_state": "LIVE",
-        "real_money_authorized": false
+        "real_money_authorized": false,
+        "target": "OVER_1_5",
+        "league_scope": "STANDARD_FORMAT_LEAGUES",
+        "training_source": "fd_history.parquet + af_history.parquet + backtest_all_leagues.csv, canonicalised and deduped by src/data_loader",
+        "feature_family": "FEATURE_COLS (65) — rolling form, corners, half-time, season/venue, rest, referee, odds-derived",
+        "retraining_status": "ROUTINE_CONTINUOUS — retrain.yml, promotion-gated",
+        "production_status": "LIVE",
+        "paper_status": "N/A",
+        "notification_status": "ALLOWED via v9 notifier",
+        "staking_status": "NOT_STAKED_BY_CODE — recommendation only"
       },
       {
         "model_id": "model_v9_over35",
@@ -423,7 +459,16 @@
         "format": "standard",
         "artifact": "models/model_v9_over35.pkl",
         "signal_state": "LIVE",
-        "real_money_authorized": false
+        "real_money_authorized": false,
+        "target": "OVER_3_5",
+        "league_scope": "STANDARD_FORMAT_LEAGUES",
+        "training_source": "fd_history.parquet + af_history.parquet + backtest_all_leagues.csv, canonicalised and deduped by src/data_loader",
+        "feature_family": "FEATURE_COLS (65) — rolling form, corners, half-time, season/venue, rest, referee, odds-derived",
+        "retraining_status": "ROUTINE_CONTINUOUS — retrain.yml, promotion-gated",
+        "production_status": "LIVE",
+        "paper_status": "N/A",
+        "notification_status": "ALLOWED via v9 notifier",
+        "staking_status": "NOT_STAKED_BY_CODE — recommendation only"
       },
       {
         "model_id": "model_ht_over05",
@@ -433,7 +478,16 @@
         "artifact": "models/model_ht_over05.pkl",
         "signal_state": "LIVE",
         "real_money_authorized": false,
-        "note": "Applied under std_mask only (src/predict.py:386). HT is standard-leagues-only by design."
+        "note": "Applied under std_mask only (src/predict.py:386). HT is standard-leagues-only by design.",
+        "target": "HT_OVER_0_5",
+        "league_scope": "STANDARD_FORMAT_LEAGUES",
+        "training_source": "fd_history.parquet + af_history.parquet + backtest_all_leagues.csv, canonicalised and deduped by src/data_loader",
+        "feature_family": "FEATURE_COLS (65) — rolling form, corners, half-time, season/venue, rest, referee, odds-derived",
+        "retraining_status": "ROUTINE_CONTINUOUS — retrain.yml, promotion-gated",
+        "production_status": "LIVE",
+        "paper_status": "N/A",
+        "notification_status": "ALLOWED via v9 notifier",
+        "staking_status": "NOT_STAKED_BY_CODE — recommendation only"
       },
       {
         "model_id": "model_ht_over15",
@@ -442,7 +496,16 @@
         "format": "standard",
         "artifact": "models/model_ht_over15.pkl",
         "signal_state": "LIVE",
-        "real_money_authorized": false
+        "real_money_authorized": false,
+        "target": "HT_OVER_1_5",
+        "league_scope": "STANDARD_FORMAT_LEAGUES",
+        "training_source": "fd_history.parquet + af_history.parquet + backtest_all_leagues.csv, canonicalised and deduped by src/data_loader",
+        "feature_family": "FEATURE_COLS (65) — rolling form, corners, half-time, season/venue, rest, referee, odds-derived",
+        "retraining_status": "ROUTINE_CONTINUOUS — retrain.yml, promotion-gated",
+        "production_status": "LIVE",
+        "paper_status": "N/A",
+        "notification_status": "ALLOWED via v9 notifier",
+        "staking_status": "NOT_STAKED_BY_CODE — recommendation only"
       }
     ],
     "player_models": [
@@ -450,58 +513,186 @@
         "model_id": "model_player_goals",
         "market": "PLAYER_GOALS",
         "signal_state": "PAPER",
-        "real_money_authorized": false
+        "real_money_authorized": false,
+        "repo": "v9",
+        "target": "PLAYER_GOALS",
+        "artifact": "models/model_player_goals.pkl",
+        "format": "player",
+        "league_scope": "PROP_LEAGUES (29 configured; 26 collected, cups excluded)",
+        "training_source": "player_history.parquet (directory of per-season parts)",
+        "feature_family": "139 columns per player-match — rolling form, season aggregates, career priors, opponent composites, referee, injury, venue/position",
+        "retraining_status": "ROUTINE_CONTINUOUS — player_props.yml, promotion-gated by PROPS_MAX_LOGLOSS_RISE",
+        "production_status": "LIVE (prediction)",
+        "paper_status": "PAPER",
+        "notification_status": "ALLOWED, labelled PAPER",
+        "staking_status": "NEVER — real_money_enabled=false",
+        "validation_status": "PREDICTION_QUALITY validated; NO betting edge (8 tests, 2026-07-09)"
       },
       {
         "model_id": "model_player_goals2",
         "market": "PLAYER_GOALS_2",
         "signal_state": "PAPER",
-        "real_money_authorized": false
+        "real_money_authorized": false,
+        "repo": "v9",
+        "target": "PLAYER_GOALS_2",
+        "artifact": "models/model_player_goals2.pkl",
+        "format": "player",
+        "league_scope": "PROP_LEAGUES (29 configured; 26 collected, cups excluded)",
+        "training_source": "player_history.parquet (directory of per-season parts)",
+        "feature_family": "139 columns per player-match — rolling form, season aggregates, career priors, opponent composites, referee, injury, venue/position",
+        "retraining_status": "ROUTINE_CONTINUOUS — player_props.yml, promotion-gated by PROPS_MAX_LOGLOSS_RISE",
+        "production_status": "LIVE (prediction)",
+        "paper_status": "PAPER",
+        "notification_status": "ALLOWED, labelled PAPER",
+        "staking_status": "NEVER — real_money_enabled=false",
+        "validation_status": "PREDICTION_QUALITY validated; NO betting edge (8 tests, 2026-07-09)"
       },
       {
         "model_id": "model_player_goals3",
         "market": "PLAYER_GOALS_3",
         "signal_state": "PAPER",
-        "real_money_authorized": false
+        "real_money_authorized": false,
+        "repo": "v9",
+        "target": "PLAYER_GOALS_3",
+        "artifact": "models/model_player_goals3.pkl",
+        "format": "player",
+        "league_scope": "PROP_LEAGUES (29 configured; 26 collected, cups excluded)",
+        "training_source": "player_history.parquet (directory of per-season parts)",
+        "feature_family": "139 columns per player-match — rolling form, season aggregates, career priors, opponent composites, referee, injury, venue/position",
+        "retraining_status": "ROUTINE_CONTINUOUS — player_props.yml, promotion-gated by PROPS_MAX_LOGLOSS_RISE",
+        "production_status": "LIVE (prediction)",
+        "paper_status": "PAPER",
+        "notification_status": "ALLOWED, labelled PAPER",
+        "staking_status": "NEVER — real_money_enabled=false",
+        "validation_status": "PREDICTION_QUALITY validated; NO betting edge (8 tests, 2026-07-09)"
       },
       {
         "model_id": "model_player_assists",
         "market": "PLAYER_ASSISTS",
         "signal_state": "PAPER",
-        "real_money_authorized": false
+        "real_money_authorized": false,
+        "repo": "v9",
+        "target": "PLAYER_ASSISTS",
+        "artifact": "models/model_player_assists.pkl",
+        "format": "player",
+        "league_scope": "PROP_LEAGUES (29 configured; 26 collected, cups excluded)",
+        "training_source": "player_history.parquet (directory of per-season parts)",
+        "feature_family": "139 columns per player-match — rolling form, season aggregates, career priors, opponent composites, referee, injury, venue/position",
+        "retraining_status": "ROUTINE_CONTINUOUS — player_props.yml, promotion-gated by PROPS_MAX_LOGLOSS_RISE",
+        "production_status": "LIVE (prediction)",
+        "paper_status": "PAPER",
+        "notification_status": "ALLOWED, labelled PAPER",
+        "staking_status": "NEVER — real_money_enabled=false",
+        "validation_status": "PREDICTION_QUALITY validated; NO betting edge (8 tests, 2026-07-09)"
       },
       {
         "model_id": "model_player_cards",
         "market": "PLAYER_CARDS",
         "signal_state": "PAPER",
-        "real_money_authorized": false
+        "real_money_authorized": false,
+        "repo": "v9",
+        "target": "PLAYER_CARDS",
+        "artifact": "models/model_player_cards.pkl",
+        "format": "player",
+        "league_scope": "PROP_LEAGUES (29 configured; 26 collected, cups excluded)",
+        "training_source": "player_history.parquet (directory of per-season parts)",
+        "feature_family": "139 columns per player-match — rolling form, season aggregates, career priors, opponent composites, referee, injury, venue/position",
+        "retraining_status": "ROUTINE_CONTINUOUS — player_props.yml, promotion-gated by PROPS_MAX_LOGLOSS_RISE",
+        "production_status": "LIVE (prediction)",
+        "paper_status": "PAPER",
+        "notification_status": "ALLOWED, labelled PAPER",
+        "staking_status": "NEVER — real_money_enabled=false",
+        "validation_status": "PREDICTION_QUALITY validated; NO betting edge (8 tests, 2026-07-09)"
       },
       {
         "model_id": "model_player_sot",
         "market": "PLAYER_SOT",
         "signal_state": "PAPER",
-        "real_money_authorized": false
+        "real_money_authorized": false,
+        "repo": "v9",
+        "target": "PLAYER_SOT",
+        "artifact": "models/model_player_sot.pkl",
+        "format": "player",
+        "league_scope": "PROP_LEAGUES (29 configured; 26 collected, cups excluded)",
+        "training_source": "player_history.parquet (directory of per-season parts)",
+        "feature_family": "139 columns per player-match — rolling form, season aggregates, career priors, opponent composites, referee, injury, venue/position",
+        "retraining_status": "ROUTINE_CONTINUOUS — player_props.yml, promotion-gated by PROPS_MAX_LOGLOSS_RISE",
+        "production_status": "LIVE (prediction)",
+        "paper_status": "PAPER",
+        "notification_status": "ALLOWED, labelled PAPER",
+        "staking_status": "NEVER — real_money_enabled=false",
+        "validation_status": "PREDICTION_QUALITY validated; NO betting edge (8 tests, 2026-07-09)"
       },
       {
         "model_id": "model_player_sot2",
         "market": "PLAYER_SOT_2",
         "signal_state": "PAPER",
-        "real_money_authorized": false
+        "real_money_authorized": false,
+        "repo": "v9",
+        "target": "PLAYER_SOT_2",
+        "artifact": "models/model_player_sot2.pkl",
+        "format": "player",
+        "league_scope": "PROP_LEAGUES (29 configured; 26 collected, cups excluded)",
+        "training_source": "player_history.parquet (directory of per-season parts)",
+        "feature_family": "139 columns per player-match — rolling form, season aggregates, career priors, opponent composites, referee, injury, venue/position",
+        "retraining_status": "ROUTINE_CONTINUOUS — player_props.yml, promotion-gated by PROPS_MAX_LOGLOSS_RISE",
+        "production_status": "LIVE (prediction)",
+        "paper_status": "PAPER",
+        "notification_status": "ALLOWED, labelled PAPER",
+        "staking_status": "NEVER — real_money_enabled=false",
+        "validation_status": "PREDICTION_QUALITY validated; NO betting edge (8 tests, 2026-07-09)"
       },
       {
         "model_id": "model_player_sot3",
         "market": "PLAYER_SOT_3",
         "signal_state": "PAPER",
-        "real_money_authorized": false
+        "real_money_authorized": false,
+        "repo": "v9",
+        "target": "PLAYER_SOT_3",
+        "artifact": "models/model_player_sot3.pkl",
+        "format": "player",
+        "league_scope": "PROP_LEAGUES (29 configured; 26 collected, cups excluded)",
+        "training_source": "player_history.parquet (directory of per-season parts)",
+        "feature_family": "139 columns per player-match — rolling form, season aggregates, career priors, opponent composites, referee, injury, venue/position",
+        "retraining_status": "ROUTINE_CONTINUOUS — player_props.yml, promotion-gated by PROPS_MAX_LOGLOSS_RISE",
+        "production_status": "LIVE (prediction)",
+        "paper_status": "PAPER",
+        "notification_status": "ALLOWED, labelled PAPER",
+        "staking_status": "NEVER — real_money_enabled=false",
+        "validation_status": "PREDICTION_QUALITY validated; NO betting edge (8 tests, 2026-07-09)"
       },
       {
         "model_id": "model_player_sot4",
         "market": "PLAYER_SOT_4",
         "signal_state": "PAPER",
-        "real_money_authorized": false
+        "real_money_authorized": false,
+        "repo": "v9",
+        "target": "PLAYER_SOT_4",
+        "artifact": "models/model_player_sot4.pkl",
+        "format": "player",
+        "league_scope": "PROP_LEAGUES (29 configured; 26 collected, cups excluded)",
+        "training_source": "player_history.parquet (directory of per-season parts)",
+        "feature_family": "139 columns per player-match — rolling form, season aggregates, career priors, opponent composites, referee, injury, venue/position",
+        "retraining_status": "ROUTINE_CONTINUOUS — player_props.yml, promotion-gated by PROPS_MAX_LOGLOSS_RISE",
+        "production_status": "LIVE (prediction)",
+        "paper_status": "PAPER",
+        "notification_status": "ALLOWED, labelled PAPER",
+        "staking_status": "NEVER — real_money_enabled=false",
+        "validation_status": "PREDICTION_QUALITY validated; NO betting edge (8 tests, 2026-07-09)"
       }
     ],
-    "model_architecture": "LogReg + GradientBoosting (+ LightGBM) ensemble with Platt calibration, trained per market on a CHRONOLOGICAL walk-forward split. Never a random split."
+    "model_architecture": "LogReg + GradientBoosting (+ LightGBM) ensemble with Platt calibration, trained per market on a CHRONOLOGICAL walk-forward split. Never a random split.",
+    "existence_is_not_authorization": {
+      "rule": "Each of these is a SEPARATE field. Never infer one from another.",
+      "fields": [
+        "MODEL_EXISTS",
+        "MODEL_CAN_NOTIFY",
+        "MODEL_IS_PAPER",
+        "MODEL_CAN_BE_STAKED",
+        "MODEL_HAS_VALIDATED_EDGE",
+        "MODEL_CAN_BE_COMMERCIALISED"
+      ]
+    }
   },
   "training_contract": {
     "promotion_gate_location": "v9/pipeline.py",
@@ -740,7 +931,7 @@
       "why": "On 2026-09-24 the file went 316,157 -> 501,474 rows and 135 MB, and `git push` was REJECTED with GH001. A float32/int32 downcast plus zstd brought it to 90.6 MB (verified: same rows, same columns, ids byte-identical, worst relative float error 5.96e-08) and it pushed. That is a STOPGAP with ~9 MB of headroom on a file that grew 48 MB in one afternoon. Seasons 2023-2024 are still uncollected and would breach the limit again. Git LFS, splitting the file, or not committing it at all is an architecture decision that must be made BEFORE the next depth increase. The backfill is deliberately paused pending it."
     }
   ],
-  "supersedes": "1.0.0 (2026-09-24). v1 recorded v9 as CHANGE_CONTROLLED but did not separate ROUTINE MODEL LEARNING from ARCHITECTURAL CHANGE, and left the tier stake semantics and threshold regimes under-specified. Those are the substantive corrections in 2.0.0.",
+  "supersedes": "2.0.0 — adds the three registries the brief asks for that 2.0.0 omitted (§47 market data, §57 workflows, §58 health) and fills out the §13 model fields.",
   "v9_change_policy": {
     "headline": "V9 learns continuously from new football. Structural changes to HOW it learns or acts are validated outside production before promotion. These are two different processes and both are necessary.",
     "V9_CONTINUOUS_RETRAINING_ALLOWED": true,
@@ -883,5 +1074,550 @@
     "validator_exit_code": "0 on staleness by default; --strict is available for a REPORTING workflow only",
     "never": "Never make v9 production depend on the system-contract validator.",
     "no_auto_update": "Do NOT create CI that silently rewrites architectural truth. If the contract goes stale, REPORT it; a human or an explicit audit regenerates it."
+  },
+  "workflow_registry": {
+    "note": "Classification per §57. Inventory ONLY — this mission does not combine or change any workflow.",
+    "classifications": [
+      "COLLECT",
+      "PREDICT",
+      "TRAIN",
+      "SETTLE",
+      "NOTIFY",
+      "RESEARCH",
+      "REPORT",
+      "HEALTH",
+      "MAINTENANCE"
+    ],
+    "v9": [
+      {
+        "f": "predict.yml",
+        "cls": [
+          "PREDICT",
+          "NOTIFY"
+        ],
+        "cron": "9-59/15 8-23 Fri-Sun; 9-59/30 otherwise",
+        "timeout": 25,
+        "telegram": true,
+        "criticality": "CRITICAL_PRODUCTION",
+        "failure_cost": "no tips sent"
+      },
+      {
+        "f": "retrain.yml",
+        "cls": [
+          "TRAIN"
+        ],
+        "cron": "0 3 * * *",
+        "timeout": 240,
+        "telegram": true,
+        "criticality": "HIGH",
+        "failure_cost": "model stops refreshing",
+        "note": "DAILY until 2026-10-05, then automatically back to Sundays only. A deliberate temporary regime; it is why retrains occurred on 09-24, 09-25 and 09-26. CORRECTS the CLAUDE.md line that says 'retrain Sunday 03:00'."
+      },
+      {
+        "f": "player_props.yml",
+        "cls": [
+          "PREDICT",
+          "TRAIN",
+          "NOTIFY"
+        ],
+        "cron": "2 */2 Fri-Sun; 2 */6 Mon-Thu; +3 daily slots",
+        "timeout": 120,
+        "telegram": true,
+        "criticality": "HIGH",
+        "failure_cost": "prop tips and CLV stall"
+      },
+      {
+        "f": "player_history_extend.yml",
+        "cls": [
+          "COLLECT"
+        ],
+        "cron": "40 3 * * *",
+        "timeout": 150,
+        "telegram": false,
+        "criticality": "HIGH",
+        "failure_cost": "player history stops advancing; prop CLV cannot grade"
+      },
+      {
+        "f": "live_scanner.yml",
+        "cls": [
+          "NOTIFY"
+        ],
+        "cron": "4 8-23 * * *",
+        "timeout": 5,
+        "telegram": true,
+        "criticality": "MEDIUM",
+        "failure_cost": "no in-play alerts",
+        "note": "A SEPARATE SYSTEM from the pre-match model. Never conflate LIVE_ALERT with PREMATCH_MODEL."
+      },
+      {
+        "f": "update_results.yml",
+        "cls": [
+          "SETTLE"
+        ],
+        "cron": "30 7-23/2 * * *",
+        "timeout": 10,
+        "telegram": false,
+        "criticality": "HIGH",
+        "failure_cost": "bets never settle; P&L and CLV freeze"
+      },
+      {
+        "f": "std_odds_capture.yml",
+        "cls": [
+          "COLLECT"
+        ],
+        "cron": "5 0,6,12,18 + 23,52 0-3,9-23",
+        "timeout": 65,
+        "telegram": false,
+        "criticality": "HIGH",
+        "failure_cost": "closing prices lost forever — they cannot be backfilled"
+      },
+      {
+        "f": "nf_odds_capture.yml",
+        "cls": [
+          "COLLECT"
+        ],
+        "cron": "35 1,7,13,19 + 20,50 0-3,9-23",
+        "timeout": 55,
+        "telegram": false,
+        "criticality": "HIGH",
+        "failure_cost": "closing prices lost forever"
+      },
+      {
+        "f": "prop_odds_snapshot.yml",
+        "cls": [
+          "COLLECT"
+        ],
+        "cron": "20 */4 * * *",
+        "timeout": 20,
+        "telegram": false,
+        "criticality": "MEDIUM"
+      },
+      {
+        "f": "af_history_extend.yml",
+        "cls": [
+          "COLLECT"
+        ],
+        "cron": "0 6 * * *",
+        "timeout": 60,
+        "telegram": false,
+        "criticality": "MEDIUM"
+      },
+      {
+        "f": "injury_refresh.yml",
+        "cls": [
+          "COLLECT"
+        ],
+        "cron": "0 4 * * *",
+        "timeout": 30,
+        "telegram": false,
+        "criticality": "MEDIUM"
+      },
+      {
+        "f": "fantasy_refresh.yml",
+        "cls": [
+          "REPORT"
+        ],
+        "cron": "30 6 * * *",
+        "timeout": 20,
+        "telegram": false,
+        "criticality": "LOW"
+      },
+      {
+        "f": "warm_nf_shot_cache.yml",
+        "cls": [
+          "MAINTENANCE"
+        ],
+        "cron": "0 3 * * *",
+        "timeout": 45,
+        "telegram": false,
+        "criticality": "LOW"
+      },
+      {
+        "f": "daily_summary.yml",
+        "cls": [
+          "REPORT",
+          "NOTIFY"
+        ],
+        "cron": "0 1,3,5,7,9 * * *",
+        "timeout": 10,
+        "telegram": true,
+        "criticality": "LOW",
+        "note": "Five slots plus a send guard. Safe ONLY because the send dedups on DIGEST|<utc-date> in notified.json. Do not remove that dedup."
+      },
+      {
+        "f": "weekly_summary.yml",
+        "cls": [
+          "REPORT",
+          "NOTIFY"
+        ],
+        "cron": "0 9 * * 1",
+        "timeout": 5,
+        "telegram": true,
+        "criticality": "LOW"
+      },
+      {
+        "f": "sharp_tracker.yml",
+        "cls": [
+          "COLLECT",
+          "NOTIFY"
+        ],
+        "cron": "0 8-22/2 * * *",
+        "timeout": 10,
+        "telegram": true,
+        "criticality": "MEDIUM"
+      },
+      {
+        "f": "sharp_move_alert.yml",
+        "cls": [
+          "NOTIFY"
+        ],
+        "cron": "0 7,13,19 * * *",
+        "timeout": 10,
+        "telegram": true,
+        "criticality": "LOW"
+      },
+      {
+        "f": "af_usage_monitor.yml",
+        "cls": [
+          "HEALTH"
+        ],
+        "cron": "51 1,7,13,19 * * *",
+        "timeout": 5,
+        "telegram": false,
+        "criticality": "MEDIUM",
+        "failure_cost": "API quota exhaustion becomes invisible"
+      },
+      {
+        "f": "backtest.yml",
+        "cls": [
+          "RESEARCH"
+        ],
+        "cron": null,
+        "manual_only": true,
+        "timeout": 300,
+        "telegram": false,
+        "criticality": "LOW"
+      },
+      {
+        "f": "backtest_matrix.yml",
+        "cls": [
+          "RESEARCH"
+        ],
+        "cron": "0 3 1 * *",
+        "timeout": 120,
+        "telegram": false,
+        "criticality": "LOW"
+      },
+      {
+        "f": "preseason_retrain.yml",
+        "cls": [
+          "TRAIN"
+        ],
+        "cron": "0 2 1 8 *",
+        "timeout": 120,
+        "telegram": false,
+        "criticality": "LOW"
+      },
+      {
+        "f": "worldcup.yml",
+        "cls": [
+          "PREDICT",
+          "NOTIFY"
+        ],
+        "cron": null,
+        "manual_only": true,
+        "timeout": 10,
+        "telegram": true,
+        "criticality": "LOW"
+      }
+    ],
+    "pro": [
+      {
+        "f": "pro_collect.yml",
+        "cls": [
+          "COLLECT"
+        ],
+        "cron": "40 */2 * * * + 15 6 * * *",
+        "timeout": 20,
+        "telegram": false,
+        "criticality": "MEDIUM",
+        "note": "MUST NOT NOTIFY, and does not: it binds no Telegram secret."
+      },
+      {
+        "f": "pro_bet_builder.yml",
+        "cls": [
+          "RESEARCH",
+          "NOTIFY"
+        ],
+        "cron": "17 9,15,20 Fri-Sun + 17 15 Mon-Thu",
+        "timeout": 30,
+        "telegram": true,
+        "criticality": "LOW",
+        "note": "explicitly authorized to notify"
+      },
+      {
+        "f": "pro_paper_1x2.yml",
+        "cls": [
+          "RESEARCH",
+          "NOTIFY"
+        ],
+        "cron": "41 7 * * *",
+        "timeout": 20,
+        "telegram": true,
+        "criticality": "LOW",
+        "note": "explicitly authorized to notify"
+      },
+      {
+        "f": "pro_live_odds.yml",
+        "cls": [
+          "COLLECT"
+        ],
+        "cron": "9 11-23 * * *",
+        "timeout": 15,
+        "telegram": false,
+        "criticality": "LOW"
+      },
+      {
+        "f": "pro_team_news.yml",
+        "cls": [
+          "COLLECT"
+        ],
+        "cron": "15 */3 * * *",
+        "timeout": 12,
+        "telegram": false,
+        "criticality": "LOW"
+      },
+      {
+        "f": "pro_team_stats.yml",
+        "cls": [
+          "COLLECT"
+        ],
+        "cron": "35 4,16 * * *",
+        "timeout": 30,
+        "telegram": false,
+        "criticality": "LOW"
+      },
+      {
+        "f": "pro_backfill_results.yml",
+        "cls": [
+          "SETTLE"
+        ],
+        "cron": "25 */6 * * *",
+        "timeout": 30,
+        "telegram": false,
+        "criticality": "LOW"
+      },
+      {
+        "f": "pro_research.yml",
+        "cls": [
+          "RESEARCH"
+        ],
+        "cron": "40 5 * * *",
+        "timeout": 30,
+        "telegram": false,
+        "criticality": "LOW"
+      },
+      {
+        "f": "pro_prediction_lab.yml",
+        "cls": [
+          "RESEARCH"
+        ],
+        "cron": "40 2 * * 1",
+        "timeout": 330,
+        "telegram": false,
+        "criticality": "LOW"
+      },
+      {
+        "f": "pro_weekly_audit.yml",
+        "cls": [
+          "REPORT"
+        ],
+        "cron": "15 6 * * 1",
+        "timeout": 20,
+        "telegram": false,
+        "criticality": "LOW"
+      }
+    ],
+    "v11": [
+      {
+        "f": "v11_collect.yml",
+        "cls": [
+          "COLLECT",
+          "RESEARCH"
+        ],
+        "cron": "25 8-23 * * *",
+        "timeout": 15,
+        "telegram": false,
+        "criticality": "LOW",
+        "note": "Binds NO secrets at all — the strongest form of the v11 isolation boundary."
+      }
+    ]
+  },
+  "health_registry": {
+    "principle": "Green CI does not prove the statistical instrument is measuring anything. v11's momentum work exited 0 for four weeks while measuring nothing.",
+    "nothing_blocks_production": "No health artifact gates v9, deliberately. A health check that can stop tips is itself a new failure mode.",
+    "entries": [
+      {
+        "artifact": "v9/output/training_coverage.json",
+        "producer": "src/data_loader._report_training_coverage",
+        "tests": "per-league completeness of corners / half-time goals / O-U price",
+        "failure_means": "a league is training on thin data",
+        "blocks_production": false
+      },
+      {
+        "artifact": "v9/output/retrain_log.json",
+        "producer": "pipeline._record_retrain",
+        "tests": "per-model promote/block with logloss_old, logloss_new, comparison_basis",
+        "failure_means": "a model stopped being refreshed",
+        "blocks_production": false,
+        "note": "comparison_basis=same_holdout is the honest comparison; stored_metrics_FALLBACK is a WEAK COMPARISON across two different test sets."
+      },
+      {
+        "artifact": "v9/output/props_health.json",
+        "producer": "player_props.yml",
+        "tests": "freshness of player_history and prop outputs",
+        "failure_means": "prop CLV cannot grade",
+        "blocks_production": false
+      },
+      {
+        "artifact": "v9/output/history_extend_health.json",
+        "producer": "player_history_extend.yml",
+        "tests": "whether a collect actually ran, and the newest match date",
+        "failure_means": "player history frozen",
+        "blocks_production": false,
+        "note": "Carries last_collect_at, which the cooldown gate reads INSTEAD of git log — a shallow CI clone makes git log unusable for this."
+      },
+      {
+        "artifact": "v9/output/api_usage_log.csv",
+        "producer": "af_usage_monitor.yml",
+        "tests": "API-Football daily consumption against the 75,000 limit",
+        "failure_means": "quota exhaustion becomes invisible",
+        "blocks_production": false,
+        "recommendation_not_implemented": "alert at 45,000 and abort at 60,000"
+      },
+      {
+        "artifact": "v10/output/predict_health.json",
+        "producer": "Pro",
+        "tests": "prediction pipeline health",
+        "blocks_production": false
+      },
+      {
+        "artifact": "v10/output/collect_health.json",
+        "producer": "pro_collect",
+        "tests": "Pro collection health",
+        "blocks_production": false
+      },
+      {
+        "artifact": "v10/output/scheduler_health.json",
+        "producer": "Pro",
+        "tests": "observed vs configured cadence",
+        "blocks_production": false,
+        "note": "GitHub Actions cannot hit a clock. This measures what actually fired, not what was configured."
+      },
+      {
+        "artifact": "v10/output/ml_learning_health.json",
+        "producer": "Pro",
+        "tests": "learning-signal health",
+        "blocks_production": false
+      },
+      {
+        "artifact": "v10/output/combo_import_health.json",
+        "producer": "Pro Bet Builder",
+        "tests": "combo import integrity",
+        "blocks_production": false
+      },
+      {
+        "artifact": "wowza-v11/output/v11_research_health.json",
+        "producer": "v11_collect",
+        "tests": "research freshness, observed cadence, usable-row counts, placebo battery",
+        "failure_means": "the instrument is not measuring anything even though CI is green",
+        "blocks_production": false
+      }
+    ]
+  },
+  "market_data_registry": {
+    "note": "§47. Odds sources are NOT interchangeable. Parsing differences belong in the client modules; downstream prediction code stays source-agnostic.",
+    "sources": [
+      {
+        "source": "OddsAPI",
+        "consumer": "v9 predict, player props",
+        "role": "production input",
+        "granularity": "per-book pre-match",
+        "selected_by": "USE_ODDS_API env, with an automatic ODDS_FALLBACK chain",
+        "licensing": "UNKNOWN"
+      },
+      {
+        "source": "RapidAPI",
+        "consumer": "v9 predict (fallback)",
+        "role": "production input",
+        "granularity": "per-book pre-match",
+        "note": "Normalises to the IDENTICAL {fixture_id: (over, under)} shape as OddsAPI.",
+        "licensing": "UNKNOWN"
+      },
+      {
+        "source": "API-Football /odds",
+        "consumer": "v9 capture scripts, prop_odds_af",
+        "role": "production input + forward capture",
+        "granularity": "per-book pre-match",
+        "licensing": "UNKNOWN",
+        "CRITICAL_LIMITATION": "PRE-MATCH ONLY. Once a fixture finishes its odds are gone. Probed 3 fixtures per season 2019-2025, both with and without a bookmaker filter: 0 of 3 every time, plus 770 consecutive empty fetches across Brazil Serie A. HISTORICAL ODDS CANNOT BE BACKFILLED AT ANY PRICE. scripts/backfill_af_odds.py will happily burn 20,000 calls writing empty results — do not run it."
+      },
+      {
+        "source": "football-data.co.uk",
+        "consumer": "v9 data_loader",
+        "role": "historical training feature + settlement support",
+        "granularity": "per-fixture closing",
+        "licensing": "free, public"
+      },
+      {
+        "source": "per-book snapshots",
+        "artifact": "v9/output/book_odds_snapshots.csv",
+        "role": "research + best-price execution",
+        "CRITICAL": "This is a CHANGE-LOG, not a panel. Writers store consecutive-DISTINCT values only, so at any single timestamp only the entities that just moved are present. Carry forward per entity (LOCF) before aggregating. Failing to do so has produced three separate wrong conclusions."
+      },
+      {
+        "source": "side-market odds",
+        "artifact": "v9/output/standard_sidemarket_odds_history.csv",
+        "role": "training feature (BTTS / O1.5 / O3.5)"
+      },
+      {
+        "source": "new-format odds",
+        "artifacts": [
+          "v9/output/newformat_odds_history.csv",
+          "v9/output/newformat_odds_dense.csv"
+        ],
+        "role": "training feature",
+        "note": "dense is archived free on every predict run by drift.py"
+      },
+      {
+        "source": "player-prop odds",
+        "artifact": "v9/output/player_prop_odds_history.csv",
+        "role": "PAPER CLV only",
+        "note": "Props are paper. These prices grade paper CLV; they never price a wager."
+      },
+      {
+        "source": "closing-line capture",
+        "artifacts": [
+          "std_odds_capture.yml",
+          "nf_odds_capture.yml"
+        ],
+        "role": "forward-only accumulation",
+        "why_it_matters": "The ONLY way to obtain closing prices, because historical odds cannot be bought or backfilled. A day not captured is gone permanently."
+      }
+    ]
+  },
+  "player_props": {
+    "prediction_enabled": true,
+    "paper_enabled": true,
+    "notification_allowed": "YES — sent and labelled PAPER, deduped via player_notified.json",
+    "real_money_enabled": false,
+    "predictive_quality_claim": "SEPARATE_FROM_BETTING_EDGE",
+    "evidence_type": [
+      "OWNER_POLICY",
+      "CODE_HISTORY"
+    ],
+    "code_support": "player_model/clv_tracker.py:4 'Year-long PAPER tracking of player props (no real money)'; pnl documented as 'flat 1u on the entry price — PAPER only'; a PAPER tier exists in PLAYER_TRACKED_TIERS.",
+    "governance_note": "Player predictions MAY become valuable Wowza Product features even though betting stays permanently PAPER. 'Messi scores: 34%' is a FORECAST; 'BET Messi to score' is a betting claim. The product may expose forecasting intelligence subject to licensing and compliance WITHOUT asserting betting value.",
+    "do_not": "Improved predictive accuracy must NEVER automatically change real_money_enabled."
   }
 }

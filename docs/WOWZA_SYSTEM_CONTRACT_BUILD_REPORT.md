@@ -1,4 +1,4 @@
-# System Contract — build report (v2.0.0)
+# System Contract — build report (v2.1.0)
 
 *What was inspected at HEAD, what was found, what changed from v1, and what could not be proven.*
 
@@ -151,6 +151,38 @@ current, and they *reverse* the pre-fix conclusion, which puts them in tension w
 
 The validator gained three checks in v2 — continuous retraining allowed, architecture
 change-controlled, literal-freeze rejected — so the central correction cannot silently regress.
+
+---
+
+## Added in 2.1.0 — the three registries 2.0.0 omitted
+
+Re-checking 2.0.0 against the brief found three sections genuinely missing and the model
+registry thinner than §13 asks. Filled:
+
+| | |
+|---|---|
+| §57 workflow registry | **33 workflows** (22 v9 / 10 Pro / 1 v11) classified COLLECT · PREDICT · TRAIN · SETTLE · NOTIFY · RESEARCH · REPORT · HEALTH · MAINTENANCE, each with cron, timeout, secrets, Telegram flag, criticality and failure cost |
+| §58 health registry | **11 artifacts**, each with producer, condition tested, failure meaning, and whether it blocks production — none do |
+| §47 market data registry | **9 sources**, each with consumer, role, granularity, licensing |
+| §13 model fields | 8 → **17** per model; player models gained all of theirs |
+| §15 player props | `prediction_enabled` / `paper_enabled` / `notification_allowed` / `real_money_enabled` / `predictive_quality_claim` as separate fields |
+
+### A correction the workflow registry surfaced
+
+`retrain.yml` is `0 3 * * *` — **daily** until 2026-10-05, then automatically back to Sundays
+only. CLAUDE.md says *"retrain Sunday 03:00"*, which is currently wrong. It is also the
+explanation for retrains on 09-24, 09-25 and 09-26: a deliberate temporary regime, not drift.
+
+### Two hard warnings now recorded in the market registry
+
+**API-Football `/odds` is pre-match only.** Once a fixture finishes, its odds are gone — probed
+3 fixtures per season 2019–2025 both with and without a bookmaker filter, 0 of 3 every time,
+plus 770 consecutive empty fetches. Historical odds cannot be backfilled at any price, which is
+why forward-capture cadence matters and why `scripts/backfill_af_odds.py` must not be run.
+
+**`book_odds_snapshots.csv` is a change-log, not a panel.** Consecutive-distinct values only, so
+at any single timestamp only the entities that just moved are present. Carry forward per entity
+before aggregating; not doing so has produced three separate wrong conclusions.
 
 ---
 

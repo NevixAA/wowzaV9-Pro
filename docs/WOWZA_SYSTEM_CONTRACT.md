@@ -1,4 +1,4 @@
-# Wowza System Contract — v2.0.0
+# Wowza System Contract — v2.1.0
 
 *The authoritative map of what Wowza is **today**. Written for a new engineer, and for every
 future AI session that needs to understand the estate before changing it.*
@@ -350,11 +350,39 @@ drift, and must stay committed: `critical=true`, `move_safe=false`.
 
 ## 15. Health and canaries
 
-Training coverage (`output/training_coverage.json`), props health, history-extend health, API
-usage monitor (30 min), Pro data-quality canary, v11 research freshness.
+**11 health artifacts** — full table in the JSON under `health_registry`.
+
+| artifact | tests |
+|---|---|
+| `v9/output/training_coverage.json` | per-league completeness of corners / HT / O-U price |
+| `v9/output/retrain_log.json` | per-model promote/block + `comparison_basis` |
+| `v9/output/props_health.json` | freshness of player history and prop outputs |
+| `v9/output/history_extend_health.json` | did a collect actually run; newest match |
+| `v9/output/api_usage_log.csv` | API-Football consumption vs the 75,000 limit |
+| `v10/output/scheduler_health.json` | observed vs configured cadence |
+| `v10/output/{predict,collect,ml_learning,combo_import}_health.json` | Pro pipeline health |
+| `wowza-v11/output/v11_research_health.json` | research freshness, usable rows, placebo battery |
+
+**Nothing here gates v9, deliberately** — a health check that can stop tips is itself a new
+failure mode.
 
 > **Green CI does not prove the statistical instrument is measuring anything.** v11's momentum
 > work exited 0 for four weeks while measuring nothing.
+
+### Workflow and market-data registries
+
+`workflow_registry` in the JSON classifies all **33 workflows** (22 v9 / 10 Pro / 1 v11) as
+COLLECT · PREDICT · TRAIN · SETTLE · NOTIFY · RESEARCH · REPORT · HEALTH · MAINTENANCE, with
+cron, timeout, secrets, Telegram flag, criticality and failure cost.
+
+**Correction it surfaced:** `retrain.yml` is `0 3 * * *` — **daily** until 2026-10-05, then
+automatically back to Sundays. CLAUDE.md says "retrain Sunday 03:00"; that is currently wrong,
+and it is why retrains ran on 09-24, 09-25 and 09-26.
+
+`market_data_registry` inventories 9 odds sources. Two entries carry hard warnings:
+**API-Football /odds is pre-match only** — historical odds cannot be backfilled at any price —
+and **`book_odds_snapshots.csv` is a change-log, not a panel**; carry forward per entity before
+aggregating.
 
 ---
 
