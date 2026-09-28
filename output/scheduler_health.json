@@ -5,10 +5,10 @@
     "abort_at": 60000,
     "alert_at": 45000,
     "limit_day": 75000,
-    "pct_used": 2.7,
+    "pct_used": 12.0,
     "plan": "Ultra",
-    "requests_used": 2022,
-    "snapshot_ts": "2026-09-28T07:41:26Z",
+    "requests_used": 8998,
+    "snapshot_ts": "2026-09-28T16:01:13Z",
     "source": "/home/runner/work/wowzaV9-Pro/wowzaV9-Pro/_v9/output/api_usage_log.csv",
     "status": "OK"
   },
@@ -16,7 +16,7 @@
   "coverage_status": "PASS",
   "fixture_horizon": {
     "next_24h": 1,
-    "next_3h": 0,
+    "next_3h": 1,
     "next_6h": 1,
     "next_72h": 2
   },
@@ -24,49 +24,49 @@
   "freshness": {
     "fixtures": {
       "age_hours": 0.01,
-      "last_observed_at": "2026-09-28T14:00:04Z",
+      "last_observed_at": "2026-09-28T18:15:12Z",
       "status": "OK"
     },
     "live_odds_snapshots": {
-      "age_hours": 12.45,
+      "age_hours": 16.7,
       "last_observed_at": "2026-09-28T01:33:44Z",
       "status": "STALE"
     },
     "live_signals": {
-      "age_hours": 0.01,
+      "age_hours": 4.26,
       "last_observed_at": "2026-09-28T14:00:05Z",
       "status": "OK"
     },
     "market_snapshots": {
       "age_hours": 0.01,
-      "last_observed_at": "2026-09-28T14:00:05Z",
+      "last_observed_at": "2026-09-28T18:15:12Z",
       "status": "OK"
     },
     "model_snapshots": {
-      "age_hours": 0.23,
-      "last_observed_at": "2026-09-28T13:47:02Z",
+      "age_hours": 1.52,
+      "last_observed_at": "2026-09-28T16:44:22Z",
       "status": "OK"
     },
     "player_props": {
-      "age_hours": 0.01,
+      "age_hours": 4.26,
       "last_observed_at": "2026-09-28T14:00:05Z",
       "status": "OK"
     }
   },
-  "generated_at": "2026-09-28T14:00:41Z",
+  "generated_at": "2026-09-28T18:15:35Z",
   "observed_cadence": {
     "live_odds_snapshots": {
-      "active_median_gap_min": 196.3,
-      "active_missed_windows": 508,
-      "active_n_observations": 40,
-      "active_p90_gap_min": 247.1,
-      "first": "2026-09-14T16:56:18Z",
+      "active_median_gap_min": 196.2,
+      "active_missed_windows": 486,
+      "active_n_observations": 39,
+      "active_p90_gap_min": 247.2,
+      "first": "2026-09-14T20:54:05Z",
       "last": "2026-09-28T01:33:44Z",
       "max_gap_min": 1010.0,
-      "median_gap_min": 208.2,
-      "missed_windows": 1845,
-      "n_observations": 53,
-      "p90_gap_min": 905.5
+      "median_gap_min": 205.9,
+      "missed_windows": 1823,
+      "n_observations": 52,
+      "p90_gap_min": 909.5
     },
     "live_signals": {
       "active_median_gap_min": 1539.2,
@@ -82,30 +82,30 @@
       "p90_gap_min": 1515.3
     },
     "market_snapshots": {
-      "active_median_gap_min": 214.7,
-      "active_missed_windows": 282,
-      "active_n_observations": 54,
-      "active_p90_gap_min": 431.1,
+      "active_median_gap_min": 216.3,
+      "active_missed_windows": 289,
+      "active_n_observations": 55,
+      "active_p90_gap_min": 423.6,
       "first": "2026-09-14T19:34:45Z",
-      "last": "2026-09-28T14:00:05Z",
+      "last": "2026-09-28T18:15:12Z",
       "max_gap_min": 468.4,
-      "median_gap_min": 226.7,
-      "missed_windows": 546,
-      "n_observations": 85,
-      "p90_gap_min": 408.5
+      "median_gap_min": 227.6,
+      "missed_windows": 553,
+      "n_observations": 86,
+      "p90_gap_min": 407.7
     },
     "model_snapshots": {
-      "active_median_gap_min": 258.2,
-      "active_missed_windows": 278,
+      "active_median_gap_min": 253.4,
+      "active_missed_windows": 267,
       "active_n_observations": 44,
-      "active_p90_gap_min": 480.0,
-      "first": "2026-09-14T15:01:10Z",
-      "last": "2026-09-28T13:47:02Z",
+      "active_p90_gap_min": 469.4,
+      "first": "2026-09-14T23:06:59Z",
+      "last": "2026-09-28T16:44:22Z",
       "max_gap_min": 509.5,
-      "median_gap_min": 265.8,
-      "missed_windows": 554,
+      "median_gap_min": 265.5,
+      "missed_windows": 543,
       "n_observations": 75,
-      "p90_gap_min": 396.3
+      "p90_gap_min": 361.3
     },
     "player_props": {
       "active_median_gap_min": 1539.2,
@@ -123,24 +123,24 @@
   },
   "odds_api_budget": {
     "credits_by_league_top12": {
-      "Argentina Primera Division": 14268,
-      "Brazil Serie A": 8860,
+      "Argentina Primera Division": 14292,
+      "Brazil Serie A": 8864,
       "Bundesliga 2": 7086,
       "Championship": 11973,
-      "La Liga 2": 10435,
-      "League One": 12166,
-      "League Two": 12695,
+      "La Liga 2": 10458,
+      "League One": 12186,
+      "League Two": 12715,
       "Mexico Liga MX": 8399,
       "Norway Eliteserien": 6524,
       "Serie B": 6953,
       "Sweden Allsvenskan": 7116,
-      "USA MLS": 19803
+      "USA MLS": 19809
     },
     "credits_by_market": {
-      "BTTS": 32596,
-      "OU15": 2373,
-      "OU25": 46504,
-      "OU35": 10899,
+      "BTTS": 32641,
+      "OU15": 2379,
+      "OU25": 46549,
+      "OU35": 10903,
       "btts_no": 12535,
       "btts_yes": 12535,
       "h2h_away": 4544,
@@ -157,14 +157,14 @@
       "under25": 9928,
       "under35": 4560
     },
-    "credits_remaining_month": 12063,
-    "credits_used_month": 87937,
-    "credits_used_today": 704,
-    "estimated_month_end_usage": 94218,
+    "credits_remaining_month": 11963,
+    "credits_used_month": 88037,
+    "credits_used_today": 804,
+    "estimated_month_end_usage": 94325,
     "is_estimate": true,
-    "mean_per_day": 4015.5,
+    "mean_per_day": 4017.8,
     "monthly_allowance": 100000,
-    "pct_of_monthly_allowance": 87.94,
+    "pct_of_monthly_allowance": 88.04,
     "source": "ESTIMATED from stored market_snapshots \u2014 no credit meter exists",
     "status": "OK"
   },
@@ -182,7 +182,7 @@
       "pct": 10.8
     },
     "T-30m": {
-      "observations": 482,
+      "observations": 485,
       "pct": 0.3
     },
     "T-3h": {
@@ -194,12 +194,12 @@
       "pct": 2.5
     },
     "far": {
-      "observations": 137609,
+      "observations": 137751,
       "pct": 78.7
     },
     "post_kickoff": {
       "observations": 9532,
-      "pct": 5.5
+      "pct": 5.4
     }
   },
   "scheduler_mode": "NORMAL",
