@@ -23,6 +23,7 @@ import argparse
 import json
 import sys
 import time
+import traceback
 
 import numpy as np
 import pandas as pd
@@ -298,18 +299,40 @@ def main() -> int:
 
     manifest = {"generated_at": pd.Timestamp.utcnow().isoformat(), "rows": int(len(df)),
                 "folds": [f.describe() for f in fl], "phases": []}
+    # ONE PHASE MUST NOT DESTROY THE OTHERS.
+    #
+    # On 2026-09-28 the CURVES phase raised inside sklearn's histogram binner and took the
+    # whole run with it -- after twenty minutes in which baselines, tournament, ablation,
+    # windows, market and leagues had ALL completed successfully. Every one of those results
+    # was thrown away with the process, and the workflow reported nothing but a stack trace.
+    #
+    # Each phase now records whether it succeeded, the run continues, and the manifest is
+    # written either way so finished work is always on disk. The exit code still reflects a
+    # failure, so CI goes red and nobody mistakes a partial run for a clean one -- but the
+    # evidence survives to be read.
+    failures = []
     for p in want:
         _say(f"\n=== {p.upper()} ===")
         s = time.time()
-        if p == "curves":
-            phase_curves(df, out)
-        else:
-            PHASES[p](df, fl, out)
-        manifest["phases"].append({"phase": p, "seconds": round(time.time() - s, 1)})
+        try:
+            if p == "curves":
+                phase_curves(df, out)
+            else:
+                PHASES[p](df, fl, out)
+            manifest["phases"].append({"phase": p, "seconds": round(time.time() - s, 1),
+                                       "ok": True})
+        except Exception as e:                                       # noqa: BLE001
+            failures.append(p)
+            manifest["phases"].append({"phase": p, "seconds": round(time.time() - s, 1),
+                                       "ok": False, "error": f"{type(e).__name__}: {e}"})
+            _say(f"[lab] PHASE FAILED: {p} — {type(e).__name__}: {e}")
+            traceback.print_exc()
+    manifest["failed_phases"] = failures
     (out / "research_manifest.json").write_text(json.dumps(manifest, indent=2, default=str),
                                                 encoding="utf-8")
-    _say(f"\n[lab] done in {time.time() - t0:.0f}s -> {out}")
-    return 0
+    _say(f"\n[lab] done in {time.time() - t0:.0f}s -> {out}"
+         + (f"  ({len(failures)} phase(s) FAILED: {', '.join(failures)})" if failures else ""))
+    return 1 if failures else 0
 
 
 if __name__ == "__main__":

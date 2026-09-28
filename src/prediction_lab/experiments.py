@@ -246,7 +246,26 @@ def learning_curve(df: pd.DataFrame, target: str, feat_cols: list[str], *, model
         if s > test_start - 200:
             continue
         tr = np.arange(test_start - s, test_start)      # the s most RECENT pre-test matches
-        (p,) = FO.fit_predict(zoo[model], X[tr], y[tr], [X[te]])
+
+        # DROP COLUMNS THAT COLLAPSE AT THIS TRAINING SIZE.
+        #
+        # A learning curve deliberately trains on ever-smaller slices, and on a small enough
+        # slice some feature has only ONE distinct value. sklearn's histogram binner then calls
+        # sliding_window_view(distinct_values, 2) on a length-1 array and raises "window shape
+        # cannot be larger than input array shape" -- which is not a modelling error at all,
+        # just an empty column. It killed the whole CURVES phase, and with it the workflow,
+        # after twenty minutes of completed work: baselines, tournament, ablation, windows,
+        # market and leagues had all finished and were thrown away with the process.
+        #
+        # Columns are selected PER SIZE rather than once, because which ones collapse depends
+        # on the slice. A target with a single class is skipped outright: there is nothing to
+        # learn and the curve point would be meaningless.
+        keep = np.array([np.unique(X[tr, j][np.isfinite(X[tr, j])]).size >= 2
+                         for j in range(X.shape[1])])
+        if not keep.any() or np.unique(y[tr]).size < 2:
+            continue
+        cols = np.flatnonzero(keep)
+        (p,) = FO.fit_predict(zoo[model], X[np.ix_(tr, cols)], y[tr], [X[np.ix_(te, cols)]])
         r = M.evaluate(y[te], p, label=f"n={s}")
         r["train_n"] = s
         r["test_n"] = len(te)
