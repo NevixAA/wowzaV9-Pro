@@ -1,62 +1,66 @@
 {
-  "checked_at": "2026-10-03T11:58:29Z",
-  "watermarks_advanced": {},
+  "checked_at": "2026-10-03T16:39:52Z",
+  "watermarks_advanced": {
+    "output/book_odds_snapshots.csv": "2026-10-03T13:21:34Z"
+  },
   "season": "season_2026_27",
-  "run_id": "gh37121315364-1",
-  "v9_sha": "2b58198354d3",
-  "pro_git_sha": "07374588fa5b",
+  "run_id": "gh37137643267-1",
+  "v9_sha": "cb1ad7176445",
+  "pro_git_sha": "717d1fc7f029",
   "dry_run": false,
-  "total_rows": 847,
+  "total_rows": 1907,
   "per_importer": {
     "predictions": {
-      "rows": 847,
+      "rows": 1044,
       "tables": {
-        "fixtures": 77,
-        "model_snapshots": 370,
-        "market_snapshots": 246,
-        "feature_snapshots": 77,
-        "signals": 77
+        "fixtures": 94,
+        "model_snapshots": 462,
+        "market_snapshots": 300,
+        "feature_snapshots": 94,
+        "signals": 94
       }
     },
     "book_odds": {
-      "rows": 0,
-      "tables": {}
+      "rows": 863,
+      "tables": {
+        "book_odds_snapshots": 863
+      }
     }
   },
   "failures": [],
   "store": {
     "fixtures": {
-      "rows": 48040,
-      "partitions": 333,
-      "runs": 333,
+      "rows": 48134,
+      "partitions": 334,
+      "runs": 334,
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-03"
     },
     "model_snapshots": {
-      "rows": 232406,
-      "partitions": 333,
-      "runs": 333,
+      "rows": 232868,
+      "partitions": 334,
+      "runs": 334,
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-03"
     },
     "market_snapshots": {
-      "rows": 250390,
-      "partitions": 379,
-      "runs": 379,
+      "rows": 250690,
+      "partitions": 380,
+      "runs": 380,
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-03"
     },
     "feature_snapshots": {
-      "rows": 48040,
-      "partitions": 333,
-      "runs": 333,
+      "rows": 48134,
+      "partitions": 334,
+      "runs": 334,
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-03"
     },
     "signals": {
-      "rows": 48040,
-      "partitions": 333,
-      "runs": 333,
+      "rows": 48134,
+      "partitions": 334,
+      "runs": 334,
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-03"
     },
@@ -96,16 +100,16 @@
       "last_dt": "2026-10-03"
     },
     "live_odds_snapshots": {
-      "rows": 169586,
-      "partitions": 129,
-      "runs": 129,
+      "rows": 176741,
+      "partitions": 130,
+      "runs": 130,
       "first_dt": "2026-08-30",
       "last_dt": "2026-10-03"
     },
     "data_quality": {
-      "rows": 3517,
-      "partitions": 245,
-      "runs": 245,
+      "rows": 3532,
+      "partitions": 246,
+      "runs": 246,
       "first_dt": "2026-08-23",
       "last_dt": "2026-10-03"
     },
@@ -117,9 +121,9 @@
       "last_dt": "2026-10-03"
     },
     "team_news": {
-      "rows": 298,
-      "partitions": 40,
-      "runs": 40,
+      "rows": 300,
+      "partitions": 41,
+      "runs": 41,
       "first_dt": "2026-08-30",
       "last_dt": "2026-10-03"
     },
@@ -131,25 +135,25 @@
       "last_dt": "2026-10-03"
     },
     "book_odds_snapshots": {
-      "rows": 228725,
-      "partitions": 123,
-      "runs": 123,
+      "rows": 229588,
+      "partitions": 124,
+      "runs": 124,
       "first_dt": "2026-09-09",
       "last_dt": "2026-10-03"
     },
     "combo_candidates": {
-      "rows": 28279,
-      "partitions": 56,
-      "runs": 56,
+      "rows": 28519,
+      "partitions": 57,
+      "runs": 57,
       "first_dt": "2026-09-03",
-      "last_dt": "2026-10-02"
+      "last_dt": "2026-10-03"
     },
     "combo_legs": {
-      "rows": 73732,
-      "partitions": 56,
-      "runs": 56,
+      "rows": 74376,
+      "partitions": 57,
+      "runs": 57,
       "first_dt": "2026-09-03",
-      "last_dt": "2026-10-02"
+      "last_dt": "2026-10-03"
     },
     "combo_dependencies": {
       "rows": 1809,
@@ -159,11 +163,11 @@
       "last_dt": "2026-09-03"
     },
     "combo_settlements": {
-      "rows": 22070,
-      "partitions": 52,
-      "runs": 52,
+      "rows": 22182,
+      "partitions": 53,
+      "runs": 53,
       "first_dt": "2026-09-03",
-      "last_dt": "2026-10-02"
+      "last_dt": "2026-10-03"
     },
     "combo_price_snapshots": {
       "rows": 0,
