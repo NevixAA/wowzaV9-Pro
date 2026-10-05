@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-04T11:16:28Z",
+  "generated_at": "2026-10-05T12:35:40Z",
   "calc_version": "1.0.0",
   "worst": "NO_NEW_DATA",
   "counts": {
@@ -7,14 +7,14 @@
     "PASS": 5
   },
   "settlements_fingerprint": {
-    "rows": 57937,
-    "latest_match": "2026-10-02",
+    "rows": 59562,
+    "latest_match": "2026-10-03",
     "earliest_match": "2025-08-02",
     "leagues": 24,
-    "fingerprint": "2e62e58101f14c1c"
+    "fingerprint": "be183858e056d851"
   },
   "last_genuine_learning_event": {
-    "date": "2026-10-04",
+    "date": "2026-10-05",
     "models_decided": [
       "btts",
       "ht_over05",
@@ -24,41 +24,74 @@
       "over35",
       "standard"
     ],
-    "evidence": "7 model(s) recorded a promote/reject decision on 2026-10-04"
+    "evidence": "7 model(s) recorded a promote/reject decision on 2026-10-05"
   },
   "checks": [
     {
       "model": "standard",
       "status": "PASS",
-      "why": "challenger trained and promoted \u2014 log loss 0.68785 -> 0.68774 (-0.00011), within the 0.03000 tolerance",
+      "why": "challenger trained and REJECTED \u2014 log loss ROSE +0.00097 (0.68751 -> 0.68848) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion. A rejection is a healthy learning outcome, not a failure.",
       "model_artifact": "models/model_v9_standard.pkl",
-      "incumbent_changed_at": "2026-10-04T14:14:13+03:00",
-      "incumbent_age_days": 0.0,
+      "incumbent_changed_at": "2026-10-05T11:02:26Z",
+      "incumbent_age_days": 0.1,
       "training_input": "output/fd_history.parquet",
-      "training_input_latest_match": "2026-10-02",
-      "training_input_age_days": 2,
+      "training_input_latest_match": "2026-10-04",
+      "training_input_age_days": 1,
       "new_settled_since_incumbent": 0,
       "last_decision": {
-        "promoted": true,
-        "why": "log loss 0.68785 -> 0.68774 (-0.00011), within the 0.03000 tolerance",
-        "rows": 21441,
+        "promoted": false,
+        "why": "log loss ROSE +0.00097 (0.68751 -> 0.68848) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion",
+        "rows": 21476,
         "comparison_basis": "same_holdout",
-        "logloss_old": 0.68785,
-        "logloss_new": 0.68774,
+        "v91_gate": {
+          "available": true,
+          "status": "REJECTED",
+          "n": 4296,
+          "delta_log_loss": 0.001375,
+          "delta_brier": 0.000682,
+          "ci_log_loss": [
+            -0.000296,
+            0.00288
+          ],
+          "reasons": [
+            "log_loss_not_worse: delta +0.001375 (0.68421 -> 0.68558)",
+            "brier_not_worse: delta +0.000682",
+            "ci_excludes_zero: 95% block-bootstrap CI [-0.000296, +0.002880] includes zero",
+            "material_improvement: delta +0.001375 vs required <= -0.001000",
+            "second_period: not run"
+          ],
+          "checks": {
+            "same_dataset": true,
+            "min_sample": true,
+            "log_loss_not_worse": false,
+            "brier_not_worse": false,
+            "ci_excludes_zero": false,
+            "material_improvement": false,
+            "calibration_held": true,
+            "prediction_canary": true,
+            "no_league_regression": true,
+            "second_period": false
+          },
+          "live_gate_promoted": false,
+          "live_gate_reason": "log loss ROSE +0.00097 (0.68751 -> 0.68848) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion",
+          "agrees_with_live_gate": true
+        },
+        "logloss_old": 0.68751,
+        "logloss_new": 0.68848,
         "canary": {
           "available": true,
-          "n": 4289,
-          "std_old": 0.03838,
-          "std_new": 0.03924,
-          "spread_ratio": 1.023,
-          "mean_old": 0.53743,
-          "mean_new": 0.53744,
-          "frac_crossed_half": 0.069,
-          "frac_moved_gt_10pp": 0.0,
-          "max_abs_move": 0.0753,
+          "n": 4296,
+          "std_old": 0.03926,
+          "std_new": 0.03332,
+          "spread_ratio": 0.849,
+          "mean_old": 0.53768,
+          "mean_new": 0.5374,
+          "frac_crossed_half": 0.1192,
+          "frac_moved_gt_10pp": 0.0007,
+          "max_abs_move": 0.1282,
           "flags": []
         },
-        "at": "2026-10-04T09:33:03Z"
+        "at": "2026-10-05T10:13:30Z"
       }
     },
     {
@@ -66,148 +99,274 @@
       "status": "NO_NEW_DATA",
       "why": "only 0 new settled fixture(s) since the incumbent was built \u2014 too few to learn from. Healthy.",
       "model_artifact": "models/model_v9_newformat.pkl",
-      "incumbent_changed_at": "2026-10-04T14:14:13+03:00",
-      "incumbent_age_days": 0.0,
+      "incumbent_changed_at": "2026-10-05T11:02:26Z",
+      "incumbent_age_days": 0.1,
       "training_input": "output/fd_history.parquet",
-      "training_input_latest_match": "2026-10-02",
-      "training_input_age_days": 2,
+      "training_input_latest_match": "2026-10-04",
+      "training_input_age_days": 1,
       "new_settled_since_incumbent": 0,
       "last_decision": null
     },
     {
       "model": "btts",
       "status": "PASS",
-      "why": "challenger trained and promoted \u2014 log loss 0.68571 -> 0.68557 (-0.00014), within the 0.03000 tolerance",
+      "why": "challenger trained and promoted \u2014 log loss 0.68534 -> 0.68513 (-0.00021), within the 0.03000 tolerance",
       "model_artifact": "models/model_v9_btts.pkl",
-      "incumbent_changed_at": "2026-10-04T14:14:13+03:00",
-      "incumbent_age_days": 0.0,
+      "incumbent_changed_at": "2026-10-05T11:02:26Z",
+      "incumbent_age_days": 0.1,
       "training_input": "output/fd_history.parquet",
-      "training_input_latest_match": "2026-10-02",
-      "training_input_age_days": 2,
+      "training_input_latest_match": "2026-10-04",
+      "training_input_age_days": 1,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
-        "why": "log loss 0.68571 -> 0.68557 (-0.00014), within the 0.03000 tolerance",
-        "rows": 59895,
+        "why": "log loss 0.68534 -> 0.68513 (-0.00021), within the 0.03000 tolerance",
+        "rows": 59930,
         "comparison_basis": "same_holdout",
-        "logloss_old": 0.68571,
-        "logloss_new": 0.68557,
+        "v91_gate": {
+          "available": true,
+          "status": "CHALLENGER",
+          "n": 11986,
+          "delta_log_loss": -0.000214,
+          "delta_brier": -0.000102,
+          "ci_log_loss": [
+            -0.000819,
+            0.000361
+          ],
+          "reasons": [
+            "ci_excludes_zero: 95% block-bootstrap CI [-0.000819, +0.000361] includes zero",
+            "material_improvement: delta -0.000214 vs required <= -0.001000",
+            "second_period: not run"
+          ],
+          "checks": {
+            "same_dataset": true,
+            "min_sample": true,
+            "log_loss_not_worse": true,
+            "brier_not_worse": true,
+            "ci_excludes_zero": false,
+            "material_improvement": false,
+            "calibration_held": true,
+            "prediction_canary": true,
+            "no_league_regression": true,
+            "second_period": false
+          },
+          "live_gate_promoted": true,
+          "live_gate_reason": "log loss 0.68534 -> 0.68513 (-0.00021), within the 0.03000 tolerance",
+          "agrees_with_live_gate": false
+        },
+        "logloss_old": 0.68534,
+        "logloss_new": 0.68513,
         "canary": {
           "available": true,
-          "n": 11979,
-          "std_old": 0.03637,
-          "std_new": 0.03804,
-          "spread_ratio": 1.046,
-          "mean_old": 0.54892,
-          "mean_new": 0.54908,
-          "frac_crossed_half": 0.0384,
+          "n": 11986,
+          "std_old": 0.03774,
+          "std_new": 0.04059,
+          "spread_ratio": 1.075,
+          "mean_old": 0.54887,
+          "mean_new": 0.5493,
+          "frac_crossed_half": 0.0609,
           "frac_moved_gt_10pp": 0.0,
-          "max_abs_move": 0.0689,
+          "max_abs_move": 0.0946,
           "flags": []
         },
-        "at": "2026-10-04T09:36:22Z"
+        "at": "2026-10-05T10:16:57Z"
       }
     },
     {
       "model": "over15",
       "status": "PASS",
-      "why": "challenger trained and promoted \u2014 log loss 0.54573 -> 0.54572 (-0.00001), within the 0.03000 tolerance",
+      "why": "challenger trained and promoted \u2014 log loss 0.54550 -> 0.54503 (-0.00047), within the 0.03000 tolerance",
       "model_artifact": "models/model_v9_over15.pkl",
-      "incumbent_changed_at": "2026-10-04T14:14:13+03:00",
-      "incumbent_age_days": 0.0,
+      "incumbent_changed_at": "2026-10-05T11:02:26Z",
+      "incumbent_age_days": 0.1,
       "training_input": "output/fd_history.parquet",
-      "training_input_latest_match": "2026-10-02",
-      "training_input_age_days": 2,
+      "training_input_latest_match": "2026-10-04",
+      "training_input_age_days": 1,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
-        "why": "log loss 0.54573 -> 0.54572 (-0.00001), within the 0.03000 tolerance",
-        "rows": 59895,
+        "why": "log loss 0.54550 -> 0.54503 (-0.00047), within the 0.03000 tolerance",
+        "rows": 59930,
         "comparison_basis": "same_holdout",
-        "logloss_old": 0.54573,
-        "logloss_new": 0.54572,
+        "v91_gate": {
+          "available": true,
+          "status": "CHALLENGER",
+          "n": 11986,
+          "delta_log_loss": -0.000225,
+          "delta_brier": -6.2e-05,
+          "ci_log_loss": [
+            -0.00088,
+            0.000424
+          ],
+          "reasons": [
+            "ci_excludes_zero: 95% block-bootstrap CI [-0.000880, +0.000424] includes zero",
+            "material_improvement: delta -0.000225 vs required <= -0.001000",
+            "second_period: not run"
+          ],
+          "checks": {
+            "same_dataset": true,
+            "min_sample": true,
+            "log_loss_not_worse": true,
+            "brier_not_worse": true,
+            "ci_excludes_zero": false,
+            "material_improvement": false,
+            "calibration_held": true,
+            "prediction_canary": true,
+            "no_league_regression": true,
+            "second_period": false
+          },
+          "live_gate_promoted": true,
+          "live_gate_reason": "log loss 0.54550 -> 0.54503 (-0.00047), within the 0.03000 tolerance",
+          "agrees_with_live_gate": false
+        },
+        "logloss_old": 0.5455,
+        "logloss_new": 0.54503,
         "canary": {
           "available": true,
-          "n": 11979,
-          "std_old": 0.04351,
-          "std_new": 0.04332,
-          "spread_ratio": 0.996,
-          "mean_old": 0.76061,
-          "mean_new": 0.76071,
-          "frac_crossed_half": 0.0,
-          "frac_moved_gt_10pp": 0.0,
-          "max_abs_move": 0.0703,
+          "n": 11986,
+          "std_old": 0.04316,
+          "std_new": 0.04547,
+          "spread_ratio": 1.054,
+          "mean_old": 0.76065,
+          "mean_new": 0.76082,
+          "frac_crossed_half": 0.0003,
+          "frac_moved_gt_10pp": 0.0001,
+          "max_abs_move": 0.113,
           "flags": []
         },
-        "at": "2026-10-04T09:37:24Z"
+        "at": "2026-10-05T10:18:01Z"
       }
     },
     {
       "model": "over35",
       "status": "PASS",
-      "why": "challenger trained and promoted \u2014 log loss 0.59921 -> 0.59913 (-0.00008), within the 0.03000 tolerance",
+      "why": "challenger trained and promoted \u2014 log loss 0.60014 -> 0.59982 (-0.00032), within the 0.03000 tolerance",
       "model_artifact": "models/model_v9_over35.pkl",
-      "incumbent_changed_at": "2026-10-04T14:14:13+03:00",
-      "incumbent_age_days": 0.0,
+      "incumbent_changed_at": "2026-10-05T11:02:26Z",
+      "incumbent_age_days": 0.1,
       "training_input": "output/fd_history.parquet",
-      "training_input_latest_match": "2026-10-02",
-      "training_input_age_days": 2,
+      "training_input_latest_match": "2026-10-04",
+      "training_input_age_days": 1,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
-        "why": "log loss 0.59921 -> 0.59913 (-0.00008), within the 0.03000 tolerance",
-        "rows": 59895,
+        "why": "log loss 0.60014 -> 0.59982 (-0.00032), within the 0.03000 tolerance",
+        "rows": 59930,
         "comparison_basis": "same_holdout",
-        "logloss_old": 0.59921,
-        "logloss_new": 0.59913,
+        "v91_gate": {
+          "available": true,
+          "status": "CHALLENGER",
+          "n": 11986,
+          "delta_log_loss": -0.000722,
+          "delta_brier": -0.000299,
+          "ci_log_loss": [
+            -0.001529,
+            4.8e-05
+          ],
+          "reasons": [
+            "ci_excludes_zero: 95% block-bootstrap CI [-0.001529, +0.000048] includes zero",
+            "material_improvement: delta -0.000722 vs required <= -0.001000",
+            "second_period: not run"
+          ],
+          "checks": {
+            "same_dataset": true,
+            "min_sample": true,
+            "log_loss_not_worse": true,
+            "brier_not_worse": true,
+            "ci_excludes_zero": false,
+            "material_improvement": false,
+            "calibration_held": true,
+            "prediction_canary": true,
+            "no_league_regression": true,
+            "second_period": false
+          },
+          "live_gate_promoted": true,
+          "live_gate_reason": "log loss 0.60014 -> 0.59982 (-0.00032), within the 0.03000 tolerance",
+          "agrees_with_live_gate": false
+        },
+        "logloss_old": 0.60014,
+        "logloss_new": 0.59982,
         "canary": {
           "available": true,
-          "n": 11979,
-          "std_old": 0.06111,
-          "std_new": 0.06157,
-          "spread_ratio": 1.007,
-          "mean_old": 0.2956,
-          "mean_new": 0.29567,
-          "frac_crossed_half": 0.0031,
-          "frac_moved_gt_10pp": 0.0,
-          "max_abs_move": 0.0572,
+          "n": 11986,
+          "std_old": 0.06112,
+          "std_new": 0.06219,
+          "spread_ratio": 1.018,
+          "mean_old": 0.2954,
+          "mean_new": 0.29625,
+          "frac_crossed_half": 0.0064,
+          "frac_moved_gt_10pp": 0.0007,
+          "max_abs_move": 0.1266,
           "flags": []
         },
-        "at": "2026-10-04T09:38:26Z"
+        "at": "2026-10-05T10:19:04Z"
       }
     },
     {
       "model": "ht_over05",
       "status": "PASS",
-      "why": "challenger trained and promoted \u2014 log loss 0.60543 -> 0.60569 (+0.00026), within the 0.03000 tolerance",
+      "why": "challenger trained and promoted \u2014 log loss 0.60469 -> 0.60466 (-0.00003), within the 0.03000 tolerance",
       "model_artifact": "models/model_ht_over05.pkl",
-      "incumbent_changed_at": "2026-10-04T14:14:13+03:00",
-      "incumbent_age_days": 0.0,
+      "incumbent_changed_at": "2026-10-05T11:02:26Z",
+      "incumbent_age_days": 0.1,
       "training_input": "output/fd_history.parquet",
-      "training_input_latest_match": "2026-10-02",
-      "training_input_age_days": 2,
+      "training_input_latest_match": "2026-10-04",
+      "training_input_age_days": 1,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
-        "why": "log loss 0.60543 -> 0.60569 (+0.00026), within the 0.03000 tolerance",
-        "rows": 21051,
+        "why": "log loss 0.60469 -> 0.60466 (-0.00003), within the 0.03000 tolerance",
+        "rows": 21082,
         "comparison_basis": "same_holdout",
-        "logloss_old": 0.60543,
-        "logloss_new": 0.60569,
+        "v91_gate": {
+          "available": true,
+          "status": "CHALLENGER",
+          "n": 4217,
+          "delta_log_loss": 0.000109,
+          "delta_brier": 4.8e-05,
+          "ci_log_loss": [
+            -0.000407,
+            0.000608
+          ],
+          "reasons": [
+            "log_loss_not_worse: delta +0.000109 (0.60452 -> 0.60463)",
+            "ci_excludes_zero: 95% block-bootstrap CI [-0.000407, +0.000608] includes zero",
+            "material_improvement: delta +0.000109 vs required <= -0.001000",
+            "calibration_held: ECE 0.0044 -> 0.0145 (+0.0101)",
+            "second_period: not run"
+          ],
+          "checks": {
+            "same_dataset": true,
+            "min_sample": true,
+            "log_loss_not_worse": false,
+            "brier_not_worse": true,
+            "ci_excludes_zero": false,
+            "material_improvement": false,
+            "calibration_held": false,
+            "prediction_canary": true,
+            "no_league_regression": true,
+            "second_period": false
+          },
+          "live_gate_promoted": true,
+          "live_gate_reason": "log loss 0.60469 -> 0.60466 (-0.00003), within the 0.03000 tolerance",
+          "agrees_with_live_gate": false
+        },
+        "logloss_old": 0.60469,
+        "logloss_new": 0.60466,
         "canary": {
           "available": true,
-          "n": 4211,
-          "std_old": 0.01665,
-          "std_new": 0.01377,
-          "spread_ratio": 0.827,
+          "n": 4217,
+          "std_old": 0.0139,
+          "std_new": 0.01072,
+          "spread_ratio": 0.771,
           "mean_old": 0.70407,
-          "mean_new": 0.70407,
+          "mean_new": 0.70548,
           "frac_crossed_half": 0.0,
           "frac_moved_gt_10pp": 0.0,
-          "max_abs_move": 0.0356,
+          "max_abs_move": 0.0436,
           "flags": []
         },
-        "at": "2026-10-04T09:34:29Z"
+        "at": "2026-10-05T10:15:00Z"
       }
     },
     {
@@ -215,11 +374,11 @@
       "status": "NO_NEW_DATA",
       "why": "only 0 new settled fixture(s) since the incumbent was built \u2014 too few to learn from. Healthy.",
       "model_artifact": "models/model_player_goals.pkl",
-      "incumbent_changed_at": "2026-10-04T14:14:13+03:00",
-      "incumbent_age_days": 0.0,
+      "incumbent_changed_at": "2026-10-05T11:02:26Z",
+      "incumbent_age_days": 0.1,
       "training_input": "player_history.parquet",
-      "training_input_latest_match": "2026-10-03",
-      "training_input_age_days": 1,
+      "training_input_latest_match": "2026-10-05",
+      "training_input_age_days": 0,
       "new_settled_since_incumbent": 0,
       "last_decision": null
     }
