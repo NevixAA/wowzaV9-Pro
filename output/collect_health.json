@@ -1,18 +1,12 @@
 {
-  "checked_at": "2026-10-07T13:28:46Z",
-  "watermarks_advanced": {
-    "output/standard_odds_history.csv": "2026-10-07T13:15:28",
-    "output/newformat_odds_dense.csv": "2026-10-07T13:15:28",
-    "output/newformat_odds_history.csv": "2026-10-07T07:42:08Z",
-    "output/standard_sidemarket_odds_history.csv": "2026-10-07T12:57:48Z",
-    "output/book_odds_snapshots.csv": "2026-10-07T13:14:56Z"
-  },
+  "checked_at": "2026-10-07T13:49:51Z",
+  "watermarks_advanced": {},
   "season": "season_2026_27",
-  "run_id": "gh37628707643-1",
+  "run_id": "gh37631547852-1",
   "v9_sha": "e3ea84c4eee0",
-  "pro_git_sha": "11c7b9162198",
+  "pro_git_sha": "04213ec9deef",
   "dry_run": false,
-  "total_rows": 89154,
+  "total_rows": 2202,
   "per_importer": {
     "predictions": {
       "rows": 2202,
@@ -24,83 +18,45 @@
         "signals": 199
       }
     },
-    "odds_histories": {
-      "rows": 975,
-      "tables": {
-        "market_snapshots": 975
-      }
-    },
     "book_odds": {
-      "rows": 1308,
-      "tables": {
-        "book_odds_snapshots": 1308
-      }
-    },
-    "ledgers": {
-      "rows": 5940,
-      "tables": {
-        "settlements": 5940
-      }
-    },
-    "player_props": {
-      "rows": 13400,
-      "tables": {
-        "player_props": 13400
-      }
-    },
-    "clv": {
-      "rows": 2808,
-      "tables": {
-        "clv": 2808
-      }
-    },
-    "live_signals": {
-      "rows": 79,
-      "tables": {
-        "live_signals": 79
-      }
-    },
-    "movement_observations": {
-      "rows": 62442,
-      "tables": {
-        "movement_observations": 62442
-      }
+      "rows": 0,
+      "tables": {}
     }
   },
   "failures": [],
   "store": {
     "fixtures": {
-      "rows": 51261,
-      "partitions": 352,
-      "runs": 352,
+      "rows": 51460,
+      "partitions": 353,
+      "runs": 353,
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-07"
     },
     "model_snapshots": {
-      "rows": 247986,
-      "partitions": 352,
-      "runs": 352,
+      "rows": 248944,
+      "partitions": 353,
+      "runs": 353,
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-07"
     },
     "market_snapshots": {
-      "rows": 265229,
-      "partitions": 402,
-      "runs": 402,
+      "rows": 265876,
+      "partitions": 403,
+      "runs": 403,
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-07"
     },
     "feature_snapshots": {
-      "rows": 51261,
-      "partitions": 352,
-      "runs": 352,
+      "rows": 51460,
+      "partitions": 353,
+      "runs": 353,
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-07"
     },
     "signals": {
-      "rows": 51261,
-      "partitions": 352,
-      "runs": 352,
+      "rows": 51460,
+      "partitions": 353,
+      "runs": 353,
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-07"
     },
@@ -147,9 +103,9 @@
       "last_dt": "2026-10-07"
     },
     "data_quality": {
-      "rows": 3802,
-      "partitions": 264,
-      "runs": 264,
+      "rows": 3817,
+      "partitions": 265,
+      "runs": 265,
       "first_dt": "2026-08-23",
       "last_dt": "2026-10-07"
     },
