@@ -390,19 +390,45 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
     if not side.empty:
         d = ent.add_fixture_key(side.assign(
             match_date=side["match_date"].astype(str).str[:10]))
+        _mkt = d.get("market", "").astype(str).str.upper()
         out.append(("settlements", pd.DataFrame({
             "fixture_key": d["fixture_key"],
             "league": d.get("league", ""),
             "match_date": d["match_date"],
-            "market": d.get("market", "").str.upper(),
-            "side": "OVER",
+            "market": _mkt,
+            # SIDE DERIVED FROM THE MARKET, not hard-coded to "OVER". BTTS resolves YES/NO and
+            # was being recorded as OVER, which is not a side that market has. v9's ledger
+            # leaves the column blank for side markets because each path only ever produces one
+            # side, so the value has to be reconstructed here rather than copied.
+            "side": _mkt.map({"BTTS": "YES"}).fillna("OVER"),
+            # THE COLUMN THAT WAS MISSING, AND WHAT IT COST.
+            #
+            # This frame omitted edge_pct entirely while the main-market frame above carries it.
+            # src/validation/threshold_curves.py::load() drops rows whose edge_pct is NaN, so
+            # EVERY side-market row was discarded at load and Pro's threshold verdicts covered
+            # OU25 only -- 0% of 4,891 settled BTTS rows, 2,886 OVER15 and 158 OVER35 reached
+            # any study.
+            #
+            # The cost was not academic. Argentina BTTS carries v9's entire staked book
+            # (+33.95u of new-format's +21.12u), and it was the one cell with NO independent Pro
+            # read -- so the cross-check that is supposed to catch a v9 result Pro disagrees
+            # with could not look at the most important cell in the estate.
+            "edge_pct": num(d.get("edge_pct", pd.Series(dtype=object))),
             "odds": num(d.get("odds", pd.Series(dtype=object))),
+            # v9's side ledger has no `opening_odds` column — the opening price lives in
+            # `mv_open`, written by the market-movement tracker. Reading the name the main
+            # ledger uses gives an always-empty column; reading mv_open gives 185 of 448.
+            # Thin, but a real number beats a column that is structurally NaN and looks like
+            # missing data rather than a missing source.
+            "opening_odds": num(d.get("opening_odds",
+                                      d.get("mv_open", pd.Series(dtype=object)))),
             "closing_odds": num(d.get("closing_odds", pd.Series(dtype=object))),
             "clv_pct": num(d.get("clv_pct", pd.Series(dtype=object))),
             "signal_tier": d.get("signal_tier", ""),
             "result": d.get("result", "").fillna("").replace("", "PENDING"),
             "pnl": num(d.get("pnl", pd.Series(dtype=object))),
             "model_type": d.get("model_type", ""),
+            "notes": d.get("notes", ""),
             "quality_flags": "",
         })))
     return out

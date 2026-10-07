@@ -108,6 +108,17 @@ jobs:
         run: python -m src.validation.pick_accuracy --write | tee pickacc.txt
         continue-on-error: true
 
+      # NEVER INVOKED UNTIL 2026-10-07. src/validation/accuracy_vs_edge.py existed and was
+      # committed once on 2026-09-22, and no workflow ever ran it — so the only version of that
+      # study anyone could read was a one-off snapshot taken before the September data fixes.
+      # It is the study that asks whether the model beats a base-rate predictor at all, which
+      # is the question behind every threshold verdict below it.
+      - name: Accuracy vs edge (does a bigger claimed edge predict better?)
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: python -m src.validation.accuracy_vs_edge --write | tee accedge.txt
+        continue-on-error: true
+
       - name: Threshold curves (what edge bar would each league have needed?)
         id: thresh
         env:
@@ -210,7 +221,8 @@ jobs:
           # that silenced v9's player_props for three days and retrain for three weeks.
           for f in output/ml_learning_health.json                    output/cross_model_correlation.csv \
                    output/calibration_study.csv output/calibration_bins.csv \
-                   output/threshold_verdicts.csv output/threshold_curves.csv; do
+                   output/threshold_verdicts.csv output/threshold_curves.csv \
+                   output/pick_accuracy.json output/accuracy_vs_edge.json; do
             git add -f "$f" 2>/dev/null || echo "  (skip, not present: $f)"
           done
           echo "staged: $(git diff --staged --name-only | wc -l) file(s)"
