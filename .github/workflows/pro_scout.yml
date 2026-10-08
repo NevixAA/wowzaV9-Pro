@@ -70,8 +70,12 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/season_*/scout_results data/season_*/scout_odds data/season_*/scout_model 2>/dev/null || true
-          git add output/scout 2>/dev/null || true
+          # ONE PATH PER `git add`. A single add with several paths stages NOTHING if any one of
+          # them does not exist yet — and scout_model does not exist until the first model freeze,
+          # so the first runs would have silently persisted no odds at all.
+          for p in data/season_*/scout_results data/season_*/scout_odds data/season_*/scout_model                    output/scout/history_done.json output/scout/last_run.json                    output/scout/report.json output/scout/REPORT.md; do
+            [ -e "$p" ] && git add "$p"
+          done
           git diff --staged --quiet && { echo "nothing new"; exit 0; }
           git commit -m "pro: scout $(date -u '+%Y-%m-%d %H:%M UTC')"
           for i in 1 2 3 4 5; do

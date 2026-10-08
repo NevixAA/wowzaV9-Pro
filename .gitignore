@@ -301,3 +301,16 @@ venv/
 cache/af_stats/
 !output/news_impact.json
 !output/clv_enriched.csv
+# League scout (src/scout). Named file by file per this file's rule. history_done.json is the
+# resume state for the history backfill: if it is not committed, every run starts the backfill
+# from the first league again and never reaches the rest.
+!output/scout/
+!output/scout/history_done.json
+!output/scout/last_run.json
+!output/scout/report.json
+!output/scout/REPORT.md
+# Tip scoreboard (src/pipelines/tip_scoreboard.py). tip_scoreboard_sent.json is the once-a-day
+# send dedup; without it the recap would go out on every firing.
+!output/tip_scoreboard.json
+!output/TIP_SCOREBOARD.md
+!output/tip_scoreboard_sent.json

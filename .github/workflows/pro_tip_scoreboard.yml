@@ -41,7 +41,11 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add output/tip_scoreboard.json output/TIP_SCOREBOARD.md output/tip_scoreboard_sent.json 2>/dev/null || true
+          # One path per add: tip_scoreboard_sent.json does not exist until the first send, and a
+          # multi-path add with one missing path stages nothing.
+          for p in output/tip_scoreboard.json output/TIP_SCOREBOARD.md output/tip_scoreboard_sent.json; do
+            [ -e "$p" ] && git add "$p"
+          done
           git diff --staged --quiet && exit 0
           git commit -m "pro: tip scoreboard $(date -u '+%Y-%m-%d %H:%M UTC')"
           for i in 1 2 3 4 5; do
