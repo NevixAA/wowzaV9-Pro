@@ -1,0 +1,83 @@
+name: Pro Studies (weekly)
+
+# Re-runs the October 2026 upgrade studies every week so the evidence updates itself:
+#   argentina_btts   is the Argentina BTTS gap (realised vs implied) still open?
+#   ou_studies       does the model add anything to the market once the price is known?
+#   evidence         per-cell shrinkage, FDR, sequential CLV -> recommendations (never money)
+#   ou_challenger    market-anchored O/U 2.5 challenger + its first-sight forward record
+#   report           output/studies/REPORT.md
+# Research only. Reads v9 through a read-only checkout; never writes into v9.
+#
+# API-Football results are cached per day in experiments/upgrade_studies_2026_10 (not committed);
+# actions/cache keeps that cache between runs so a week costs ~10 calls, not ~70.
+
+on:
+  schedule:
+    - cron: '20 6 * * 1,4'          # Monday and Thursday; either landing is enough
+  workflow_dispatch:
+
+concurrency:
+  group: pro-studies
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  studies:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out v9 (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy pyarrow requests pytest
+      - name: Restore results cache
+        uses: actions/cache@v4
+        with:
+          path: experiments/upgrade_studies_2026_10
+          key: studies-results-${{ github.run_id }}
+          restore-keys: studies-results-
+      - name: Tests
+        run: python -m pytest tests/test_studies.py -q
+      - name: Run studies
+        env:
+          APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: |
+          set -o pipefail
+          # Argentina's season cache must refresh: it holds matches still being played.
+          rm -f experiments/upgrade_studies_2026_10/argentina_fixtures_2026.json
+          for m in argentina_btts ou_studies evidence ou_challenger report; do
+            python -m src.studies.$m > "studies_$m.txt" 2>&1 || { echo "::error title=$m failed::"; tail -30 "studies_$m.txt"; exit 1; }
+          done
+          cat studies_report.txt
+      - name: Commit
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # one path per add: a multi-path add stages nothing if any one is missing
+          for p in output/studies/REPORT.md output/studies/argentina_btts.json output/studies/ou_studies.json \
+                   output/studies/evidence.json output/studies/ou_challenger.json \
+                   output/studies/ou_challenger_forward.csv; do
+            [ -e "$p" ] && git add "$p"
+          done
+          git diff --staged --quiet && exit 0
+          git commit -m "pro: studies $(date -u '+%Y-%m-%d')"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main && git push && exit 0
+            sleep $((RANDOM % 5 + 3))
+          done
+          exit 1
+      - name: Summary
+        if: always()
+        run: |
+          { echo '```'; cat studies_report.txt 2>/dev/null | head -80; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

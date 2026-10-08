@@ -1,0 +1,138 @@
+{
+ "window_from": "2026-08-10",
+ "decision_fixtures": 1252,
+ "settled_matched": 921,
+ "oos_fixtures": 629,
+ "weekly_coefficients": [
+  {
+   "week": "2026-08-31/2026-09-06",
+   "n_train": 292,
+   "a": 0.157,
+   "b_market": 1.09,
+   "c_model": 0.0,
+   "c_model_unconstrained": -0.875
+  },
+  {
+   "week": "2026-09-07/2026-09-13",
+   "n_train": 484,
+   "a": 0.098,
+   "b_market": 0.875,
+   "c_model": 0.0,
+   "c_model_unconstrained": -0.18
+  },
+  {
+   "week": "2026-09-14/2026-09-20",
+   "n_train": 664,
+   "a": 0.075,
+   "b_market": 0.806,
+   "c_model": 0.0,
+   "c_model_unconstrained": -0.495
+  },
+  {
+   "week": "2026-09-21/2026-09-27",
+   "n_train": 835,
+   "a": 0.114,
+   "b_market": 0.703,
+   "c_model": 0.0,
+   "c_model_unconstrained": -0.814
+  },
+  {
+   "week": "2026-09-28/2026-10-04",
+   "n_train": 883,
+   "a": 0.106,
+   "b_market": 0.71,
+   "c_model": 0.0,
+   "c_model_unconstrained": -0.796
+  },
+  {
+   "week": "2026-10-05/2026-10-11",
+   "n_train": 914,
+   "a": 0.115,
+   "b_market": 0.697,
+   "c_model": 0.0,
+   "c_model_unconstrained": -0.866
+  }
+ ],
+ "probabilistic_oos": {
+  "market": {
+   "logloss": 0.6889,
+   "brier": 0.24802
+  },
+  "v9": {
+   "logloss": 0.69763,
+   "brier": 0.25218
+  },
+  "challenger": {
+   "logloss": 0.68883,
+   "brier": 0.24784
+  }
+ },
+ "challenger_minus_v9_logloss": {
+  "mean": -0.0088,
+  "ci90": [
+   -0.0186,
+   0.0008
+  ]
+ },
+ "tips_at_5pct_edge": {
+  "v9": {
+   "n": 109,
+   "under_share": 0.706,
+   "units": -17.97,
+   "roi": -0.1649,
+   "roi_ci90": [
+    -0.3692,
+    0.0917
+   ],
+   "mean_clv_pp": -3.75,
+   "avg_odds_taken": 2.46
+  },
+  "challenger": {
+   "n": 0
+  }
+ },
+ "tips_by_track": {
+  "new_format": {
+   "v9": {
+    "n": 65,
+    "under_share": 0.923,
+    "units": -13.71,
+    "roi": -0.211,
+    "roi_ci90": [
+     -0.4582,
+     0.098
+    ],
+    "mean_clv_pp": -3.47,
+    "avg_odds_taken": 2.617
+   },
+   "challenger": {
+    "n": 0
+   }
+  },
+  "standard": {
+   "v9": {
+    "n": 44,
+    "under_share": 0.386,
+    "units": -4.26,
+    "roi": -0.0967,
+    "roi_ci90": [
+     -0.4173,
+     0.282
+    ],
+    "mean_clv_pp": -4.18,
+    "avg_odds_taken": 2.228
+   },
+   "challenger": {
+    "n": 0
+   }
+  }
+ },
+ "current_weights": {
+  "a": 0.116,
+  "b_market": 0.694,
+  "c_model": 0.0,
+  "c_model_unconstrained": -0.865,
+  "n_train": 921
+ },
+ "forward_logged_this_run": 200
+}

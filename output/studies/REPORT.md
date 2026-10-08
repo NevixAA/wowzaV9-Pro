@@ -73,4 +73,16 @@ Negative Δ = adding the model improved the forecast. No market × track shows a
 | League One | ou25 | 14 | -35% | -6% | 0.36 | 0.94 | [-7.6, +6.2] | PAPER (n 14 < 150) |
 | Norway Eliteserien | ou25 | 12 | -84% | -17% | 0.16 | 1.00 | [-20.6, +9.6] | PAPER (n 12 < 150) |
 
+## 5. Market-anchored O/U 2.5 challenger
+
+`logit p = a + b·logit(market) + c·logit(v9)`, refitted weekly, c ≥ 0. Decision-time market only (never the close). 629 out-of-sample fixtures.
+
+| | Log loss | Brier | Tips at 5% edge | UNDER share | Units | ROI | Mean CLV (pp) |
+|---|---|---|---|---|---|---|---|
+| Market | 0.6889 | 0.24802 | – | – | – | – | – |
+| v9 | 0.69763 | 0.25218 | 109 | 0.706 | -17.97 | -16% | -3.75 |
+| Challenger | 0.68883 | 0.24784 | 0 | – | – | – | – |
+
+Current weights: c (model) = 0.0 — unconstrained fit -0.865, i.e. given the market, v9's lean points the WRONG way, so it gets no say. Forward record: `output/studies/ou_challenger_forward.csv` (first sight, never revised).
+
 Gates for a TINY_REAL review: n ≥ 150, P(edge>0) ≥ 0.80, FDR q ≤ 0.10, no CLV deterioration alarm. Recommendations only; the execution policy changes by a human-approved commit.

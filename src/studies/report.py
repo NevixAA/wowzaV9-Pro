@@ -30,6 +30,7 @@ def _cs(cs):
 
 def main() -> int:
     a, o, e = _j("argentina_btts"), _j("ou_studies"), _j("evidence")
+    ch = _j("ou_challenger") if (D / "ou_challenger.json").exists() else None
     t, rg = a["tip_period"], a["regime_by_period"].get("2026 since Aug 10 (tip period)", {})
     mv = a.get("model_vs_market", {})
     L = ["# Upgrade studies — October 2026", "",
@@ -96,6 +97,21 @@ def main() -> int:
                  f"{c['p_edge_gt_0']:.2f} | {c['q_bh']:.2f} | "
                  f"{_cs(cs)} | "
                  f"{c['recommendation']} |")
+    if ch and ch.get("probabilistic_oos"):
+        po, tv, tc, w = ch["probabilistic_oos"], ch["tips_at_5pct_edge"]["v9"], ch["tips_at_5pct_edge"]["challenger"], ch["current_weights"]
+        L += ["", "## 5. Market-anchored O/U 2.5 challenger", "",
+              f"`logit p = a + b·logit(market) + c·logit(v9)`, refitted weekly, c ≥ 0. Decision-time market only "
+              f"(never the close). {ch['oos_fixtures']} out-of-sample fixtures.", "",
+              "| | Log loss | Brier | Tips at 5% edge | UNDER share | Units | ROI | Mean CLV (pp) |",
+              "|---|---|---|---|---|---|---|---|",
+              f"| Market | {po['market']['logloss']} | {po['market']['brier']} | – | – | – | – | – |",
+              f"| v9 | {po['v9']['logloss']} | {po['v9']['brier']} | {tv.get('n')} | {tv.get('under_share', '–')} | "
+              f"{tv.get('units', '–')} | {_pct(tv.get('roi'))} | {tv.get('mean_clv_pp', '–')} |",
+              f"| Challenger | {po['challenger']['logloss']} | {po['challenger']['brier']} | {tc.get('n')} | "
+              f"{tc.get('under_share', '–')} | {tc.get('units', '–')} | {_pct(tc.get('roi'))} | {tc.get('mean_clv_pp', '–')} |",
+              "", f"Current weights: c (model) = {w['c_model']} — unconstrained fit {w['c_model_unconstrained']}, i.e. "
+              "given the market, v9's lean points the WRONG way, so it gets no say. Forward record: "
+              "`output/studies/ou_challenger_forward.csv` (first sight, never revised)."]
     L += ["", "Gates for a TINY_REAL review: n ≥ 150, P(edge>0) ≥ 0.80, FDR q ≤ 0.10, no CLV deterioration "
           "alarm. Recommendations only; the execution policy changes by a human-approved commit."]
     (D / "REPORT.md").write_text("\n".join(L) + "\n", encoding="utf-8")

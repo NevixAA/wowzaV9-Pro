@@ -26,7 +26,9 @@ import pandas as pd
 from src.data import v9_config
 from src.studies import common as C
 
-START, END = "2026-08-10", "2026-10-07"
+START = "2026-08-10"
+#: Yesterday, so a weekly run always covers everything that has finished.
+END = (pd.Timestamp.now(tz="UTC").normalize() - pd.Timedelta(days=1)).strftime("%Y-%m-%d")
 
 
 def panel(market: str, R: pd.DataFrame) -> pd.DataFrame:
