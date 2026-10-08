@@ -55,4 +55,5 @@ jobs:
           exit 1
       - name: Summary
         if: always()
-        run: { echo '```'; cat scoreboard.txt 2>/dev/null; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          { echo '```'; cat scoreboard.txt 2>/dev/null; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
