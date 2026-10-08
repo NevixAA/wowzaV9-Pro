@@ -189,12 +189,89 @@ def step_freeze(quotes: pd.DataFrame, fx: pd.DataFrame, dry: bool) -> int:
     return n
 
 
+# ── near-kickoff loop ─────────────────────────────────────────────────────────────────────────
+NEAR_WINDOW_MIN = 75       # fixtures kicking off within this many minutes are watched
+NEAR_SPACING_MIN = 10      # one look per fixture every ~10 minutes
+
+
+def near_targets(window_min: float = NEAR_WINDOW_MIN) -> pd.DataFrame:
+    """Fixtures already priced by a sweep whose kickoff is within the window."""
+    o = _read_recent("scout_odds", QUOTE_LOOKBACK_DAYS)
+    if o.empty:
+        return o
+    now = time.time()
+    f = o.drop_duplicates("fixture_id")[["fixture_id", "league_id", "kickoff_ts"]]
+    return f[(f["kickoff_ts"] > now) & (f["kickoff_ts"] <= now + window_min * 60)]
+
+
+def near_loop(c: af.Client, minutes: float, dry: bool) -> dict:
+    """Sample closing prices as kickoffs approach, inside ONE long-running job.
+
+    WHY A LOOP. GitHub does not fire crons on time (CLAUDE.md, measured 2026-09-10) — the scout's
+    own first two slots were skipped outright. A job that starts whenever and then samples against
+    REAL kickoff times is robust to that; a cron aimed at "T-10 minutes" is not.
+
+    WHY ONLY THE LAST ~75 MINUTES. Measured 2026-10-08 on 119 fixtures: API-Football's price was
+    ~4 hours old more than an hour before kickoff, and ~12 minutes old inside the final hour. Earlier
+    samples would only re-read the same number.
+
+    Every observation inside the final 3 hours is stored (parse.changed keeps them all), so the
+    close is OBSERVED with a timestamp. One /odds?fixture call per watched fixture per pass.
+    """
+    end = time.time() + minutes * 60
+    passes = stored = 0
+    calls0 = c.calls
+    seen = set()
+    while time.time() < end - 60:
+        T = near_targets()
+        if T.empty:
+            time.sleep(min(300, max(0, end - time.time() - 60)))
+            continue
+        now = int(time.time())
+        snap = cfg.utc_now_iso()
+        rows = []
+        for fid in T["fixture_id"].astype(int):
+            body = c.get("/odds", {"fixture": fid}) or {}
+            rows.extend(parse.odds_rows(body.get("response") or [], snap, now))
+            seen.add(fid)
+        prev = _read_recent("scout_odds", QUOTE_LOOKBACK_DAYS)
+        last = {}
+        if not prev.empty:
+            prev = prev.sort_values("snapshot_ts")
+            last = {(r.fixture_id, r.market, r.selection, r.bookmaker): r.odds
+                    for r in prev.drop_duplicates(["fixture_id", "market", "selection", "bookmaker"],
+                                                  keep="last").itertuples()}
+        stored += _append("scout_odds", parse.changed(rows, last), f"near{passes}", dry)
+        passes += 1
+        print(f"[scout near] pass {passes}: {len(T)} fixture(s) inside {NEAR_WINDOW_MIN} min, "
+              f"{len(rows)} quote(s), {stored} stored so far")
+        time.sleep(min(NEAR_SPACING_MIN * 60, max(0, end - time.time() - 60)))
+    return {"passes": passes, "fixtures_watched": len(seen), "rows_stored": stored,
+            "api_calls": c.calls - calls0}
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--history-budget", type=int, default=150,
                     help="max league-seasons of history fetched this run")
+    ap.add_argument("--near-loop", type=float, default=0,
+                    help="instead of a sweep, sample closing prices for N minutes")
     a = ap.parse_args()
+    if a.near_loop:
+        c = af.Client()
+        summary = {"started": cfg.utc_now_iso(), "mode": "near-kickoff loop", "minutes": a.near_loop}
+        try:
+            summary.update(near_loop(c, a.near_loop, a.dry_run))
+            summary["status"] = "ok"
+        except af.QuotaFloor as e:
+            summary["status"] = f"stopped at quota floor: {e}"
+        summary.update({"quota_remaining": c.remaining, "finished": cfg.utc_now_iso()})
+        if not a.dry_run:
+            OUT.mkdir(parents=True, exist_ok=True)
+            (OUT / "last_near_run.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
+        print(json.dumps(summary))
+        return 0
     watch = reg.load()
     ids = {x["id"] for x in watch}
     c = af.Client()

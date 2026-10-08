@@ -186,3 +186,31 @@ def test_league_status_lists_every_watched_league_with_its_stage(scratch, monkey
     assert st["Priced"]["status"] == "PRICING" and st["Priced"]["upcoming_priced"] == 1
     assert st["History only"]["status"] == "HISTORY_ONLY"
     assert st["Nothing"]["status"] == "NOT_STARTED"
+
+
+def test_near_loop_watches_only_imminent_priced_fixtures_and_keeps_every_close(scratch, monkeypatch):
+    import time as _t
+    from src.scout import collect
+    now = int(_t.time())
+    seed = pd.DataFrame([{"fixture_id": fid, "league_id": 7, "kickoff_ts": now + mins * 60, "market": "ou25",
+                          "selection": "over", "bookmaker": "bet365", "odds": 2.0,
+                          "snapshot_ts": "2026-01-01T00:00:00Z", "minutes_to_kickoff": mins, "quality_flags": ""}
+                         for fid, mins in ((1, 30), (2, 600))])
+    monkeypatch.setattr(collect, "_read_recent", lambda t, d: seed)
+    calls = []
+
+    class FakeClient:
+        calls = 0
+        remaining = 99999
+
+        def get(self, endpoint, params):
+            calls.append(params["fixture"])
+            return {"response": _odds_payload(now + 1800, [("Bet365", 2.0)])}
+    written = []
+    monkeypatch.setattr(collect, "_append", lambda t, rows, tag, dry: written.append(len(rows)) or len(rows))
+    monkeypatch.setattr(collect.time, "sleep", lambda s: None)
+    t0 = [now]
+    monkeypatch.setattr(collect.time, "time", lambda: (t0.__setitem__(0, t0[0] + 400), t0[0])[1])
+    out = collect.near_loop(FakeClient(), minutes=10, dry=True)
+    assert set(calls) == {1}, "only the fixture inside the window may be fetched"
+    assert out["passes"] >= 1 and written and written[0] > 0, "an unchanged price inside 3h is still stored"

@@ -1,0 +1,69 @@
+name: Pro League Scout — closing prices
+
+# Samples CLOSING prices for scout fixtures as kickoffs approach, inside one ~50-minute job.
+#
+# WHY A LOOP AND NOT MORE CRONS. GitHub does not fire crons on time (measured 2026-09-10; the
+# scout's own first two slots on 2026-10-08 were skipped). A job that starts whenever and then
+# samples against real kickoff times is robust to that. Each firing that lands covers every
+# kickoff in its window; the 2-hourly sweep (pro_scout.yml) keeps running independently.
+#
+# WHY ONLY THE LAST ~75 MINUTES. Measured 2026-10-08: API-Football's pre-match price was ~4 h old
+# more than an hour out, ~12 min old inside the final hour. Earlier sampling re-reads one number.
+#
+# COST. One /odds?fixture call per fixture per ~10-minute pass: on a busy hour ~40 fixtures x 6
+# = ~240 calls. The collector stops at SCOUT_MIN_QUOTA so v9's predict loop is never starved.
+
+on:
+  schedule:
+    - cron: '5 * * * *'          # hourly: Asian, European and American kickoffs all fall in some hour
+  workflow_dispatch:
+    inputs:
+      minutes:
+        description: 'Loop length in minutes (default 50)'
+        required: false
+
+concurrency:
+  group: pro-scout-near
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  near:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas pyarrow requests numpy
+      - name: Sample closing prices
+        env:
+          APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
+        run: |
+          set -o pipefail
+          M="${{ github.event.inputs.minutes }}"; [ -n "$M" ] || M=50
+          python -m src.scout.collect --near-loop "$M" 2>&1 | tee near.txt
+      - name: Commit
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # one path per add: a multi-path add stages nothing if any one path is missing
+          for p in data/season_*/scout_odds output/scout/last_near_run.json; do
+            [ -e "$p" ] && git add "$p"
+          done
+          git diff --staged --quiet && { echo "nothing new"; exit 0; }
+          git commit -m "pro: scout closing prices $(date -u '+%Y-%m-%d %H:%M UTC')"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main && git push && exit 0
+            sleep $((RANDOM % 5 + 3))
+          done
+          echo "::error title=scout near push failed::closing prices were sampled but not persisted."
+          exit 1
+      - name: Summary
+        if: always()
+        run: |
+          { echo '```'; tail -n 20 near.txt 2>/dev/null; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
