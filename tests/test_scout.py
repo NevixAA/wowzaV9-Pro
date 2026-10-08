@@ -167,3 +167,22 @@ def test_report_finds_a_model_the_market_ignores(scratch):
     assert abs(cell["market_skill_vs_base"]) < 0.02
     assert cell["residual"]["z"] > 4
     assert cell["paper_bets"] > 50 and cell["paper_roi"] > 0
+
+
+def test_league_status_lists_every_watched_league_with_its_stage(scratch, monkeypatch):
+    monkeypatch.setattr(leagues, "load", lambda: [
+        {"id": 7, "country": "X", "name": "Priced", "priority": 1},
+        {"id": 8, "country": "Y", "name": "History only", "priority": 2},
+        {"id": 9, "country": "Z", "name": "Nothing", "priority": 2}])
+    res = pd.DataFrame({"fixture_id": [1, 2], "league_id": [7, 8], "kickoff_ts": [NOW, NOW], "home_team": "a",
+                        "away_team": "b", "home_goals": 1, "away_goals": 1, "quality_flags": ""})
+    odds = pd.DataFrame({"fixture_id": [3], "league_id": [7], "kickoff_ts": [NOW * 2], "market": "ou25",
+                         "selection": "over", "bookmaker": "bet365", "odds": 2.0, "snapshot_ts": "2027-01-01T00:00:00Z",
+                         "minutes_to_kickoff": 100.0, "quality_flags": ""})
+    store.append("scout_results", res, source="t", rid="t-r", allow_local=True)
+    store.append("scout_odds", odds, source="t", rid="t-o", allow_local=True)
+    st = {r["league"]: r for r in report.league_status({"cells": []})["leagues"]}
+    assert len(st) == 3
+    assert st["Priced"]["status"] == "PRICING" and st["Priced"]["upcoming_priced"] == 1
+    assert st["History only"]["status"] == "HISTORY_ONLY"
+    assert st["Nothing"]["status"] == "NOT_STARTED"

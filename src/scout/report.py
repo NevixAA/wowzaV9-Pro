@@ -222,9 +222,74 @@ def to_md(r: dict) -> str:
     return "\n".join(lines)
 
 
+def league_status(report: dict | None = None) -> dict:
+    """One row per WATCHED league — all 200, including ones with no data yet — for the dashboard.
+
+    The dashboard is a viewer and must not read the season store's parquet partitions at render
+    time (it has ~1 GB and has died from that twice), so every count it shows is computed here.
+    """
+    import json as _json
+    watch = reg.load()
+    res, odds, mdl = store.read("scout_results"), store.read("scout_odds"), store.read("scout_model")
+    done_f = OUT / "history_done.json"
+    done = _json.loads(done_f.read_text(encoding="utf-8")) if done_f.exists() else {}
+    now = pd.Timestamp.now(tz="UTC")
+
+    def per_league(df, col="fixture_id"):
+        if df.empty or "league_id" not in df.columns:
+            return {}
+        return df.groupby("league_id")[col].nunique().to_dict()
+
+    n_res = per_league(res.drop_duplicates("fixture_id") if not res.empty else res)
+    n_px = per_league(odds)
+    n_frozen = per_league(mdl)
+    last_px = (odds.groupby("league_id")["snapshot_ts"].max().to_dict()
+               if not odds.empty and "league_id" in odds.columns else {})
+    upcoming = {}
+    if not odds.empty and "kickoff_ts" in odds.columns:
+        fut = odds[odds["kickoff_ts"] > now.timestamp()]
+        upcoming = fut.groupby("league_id")["fixture_id"].nunique().to_dict()
+    cells = {}
+    for c in (report or {}).get("cells", []):
+        cells.setdefault(c["league_id"], []).append(c)
+    rank = {"READABLE": 3, "EARLY": 2, "COLLECTING": 1}
+    rows = []
+    for lg in watch:
+        lid = lg["id"]
+        cs = cells.get(lid, [])
+        best = max(cs, key=lambda c: rank.get(c["status"], 0)) if cs else None
+        seasons = sum(1 for k in done if k.startswith(f"{lid}:"))
+        status = (best["status"] if best else
+                  "PRICING" if n_px.get(lid) else
+                  "HISTORY_ONLY" if n_res.get(lid) else "NOT_STARTED")
+        rows.append({
+            "league_id": lid, "country": lg["country"], "league": lg["name"], "priority": lg["priority"],
+            "status": status, "history_seasons": seasons, "results": int(n_res.get(lid, 0)),
+            "fixtures_priced": int(n_px.get(lid, 0)), "upcoming_priced": int(upcoming.get(lid, 0)),
+            "model_frozen": int(n_frozen.get(lid, 0)),
+            "settled_with_close": max((c["n"] for c in cs), default=0),
+            "last_price_seen": last_px.get(lid),
+            "markets": {c["market"]: {k: c.get(k) for k in ("n", "status", "rate", "market_skill_vs_base",
+                                                             "residual", "paper_bets", "paper_roi",
+                                                             "paper_first_side_share")} for c in cs},
+        })
+    return {"generated_at": cfg.utc_now_iso(), "n_leagues": len(rows),
+            "status_counts": pd.Series([r["status"] for r in rows]).value_counts().to_dict(),
+            "status_meaning": {
+                "NOT_STARTED": "nothing collected yet",
+                "HISTORY_ONLY": "past results stored; no current prices captured yet (off-season or no fixtures)",
+                "PRICING": "prices are being captured; no settled fixture with a captured close yet",
+                "COLLECTING": "fewer than 100 settled fixtures with a close — no verdict possible",
+                "EARLY": "100-299 settled — a first, noisy read",
+                "READABLE": "300+ settled — the market-skill and residual tests can be read"},
+            "leagues": rows}
+
+
 def main() -> int:
     r = build()
     OUT.mkdir(parents=True, exist_ok=True)
+    (OUT / "league_status.json").write_text(json.dumps(league_status(r), indent=1, default=str),
+                                            encoding="utf-8")
     (OUT / "report.json").write_text(json.dumps(r, indent=1, default=str), encoding="utf-8")
     (OUT / "REPORT.md").write_text(to_md(r), encoding="utf-8")
     print(f"[scout report] {len(r['cells'])} league x market cell(s); totals {r['totals']}")

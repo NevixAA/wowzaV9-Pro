@@ -73,7 +73,7 @@ jobs:
           # ONE PATH PER `git add`. A single add with several paths stages NOTHING if any one of
           # them does not exist yet — and scout_model does not exist until the first model freeze,
           # so the first runs would have silently persisted no odds at all.
-          for p in data/season_*/scout_results data/season_*/scout_odds data/season_*/scout_model                    output/scout/history_done.json output/scout/last_run.json                    output/scout/report.json output/scout/REPORT.md; do
+          for p in data/season_*/scout_results data/season_*/scout_odds data/season_*/scout_model                    output/scout/history_done.json output/scout/last_run.json                    output/scout/report.json output/scout/REPORT.md output/scout/league_status.json; do
             [ -e "$p" ] && git add "$p"
           done
           git diff --staged --quiet && { echo "nothing new"; exit 0; }
