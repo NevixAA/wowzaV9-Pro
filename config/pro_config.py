@@ -254,3 +254,9 @@ DEFAULT_DEPLOYMENT_MODE = "RESEARCH"
 #
 # Anything beyond combo tips needs its own decision, not this flag.
 PRO_MAY_NOTIFY = True
+
+# PAPER LEAGUES — mirrors v9's config.PAPER_LEAGUES (owner, 2026-10-07: USA MLS is paper only, not
+# sent, not counted in any KPI). v9 enforced it; Pro's 1X2 and Bet Builder senders did not, and
+# kept sending MLS tips (6 of the first 26 1X2 tips). tests/test_tip_scoreboard.py checks this set
+# against v9's when a v9 checkout is present, so the two cannot drift silently.
+PAPER_LEAGUES: frozenset = frozenset({"USA MLS"})

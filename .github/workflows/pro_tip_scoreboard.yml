@@ -1,0 +1,54 @@
+name: Pro Tip Scoreboard
+
+# How the 1X2 and Bet Builder tips Pro SENDS are actually doing, plus one Telegram recap a day.
+# Reads paper_1x2.csv, bet_builder_settled.csv and combo_notified.json (all committed by their own
+# workflows); writes output/tip_scoreboard.json and TIP_SCOREBOARD.md.
+#
+# Three firings for one message: once-daily crons land hours late on GitHub (CLAUDE.md, 2026-09-10),
+# so the send is idempotent on SCOREBOARD|<utc-date> and only fires inside 05:00-11:00 UTC.
+
+on:
+  schedule:
+    - cron: '25 5,7,9 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: pro-tip-scoreboard
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  scoreboard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy pyarrow requests
+      - name: Scoreboard
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          set -o pipefail
+          python -m src.pipelines.tip_scoreboard --notify 2>&1 | tee scoreboard.txt
+      - name: Commit
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/tip_scoreboard.json output/TIP_SCOREBOARD.md output/tip_scoreboard_sent.json 2>/dev/null || true
+          git diff --staged --quiet && exit 0
+          git commit -m "pro: tip scoreboard $(date -u '+%Y-%m-%d %H:%M UTC')"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main && git push && exit 0
+            sleep $((RANDOM % 5 + 3))
+          done
+          exit 1
+      - name: Summary
+        if: always()
+        run: { echo '```'; cat scoreboard.txt 2>/dev/null; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

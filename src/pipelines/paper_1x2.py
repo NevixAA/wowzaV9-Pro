@@ -370,6 +370,9 @@ def notify(d: pd.DataFrame, *, dry_run: bool = True) -> dict:
     now = dt.datetime.now(dt.timezone.utc)
     live = d[pd.to_datetime(d["kickoff_utc"], errors="coerce", utc=True) > now]
     live = live[live["notified_at"].isna()]
+    # Paper leagues are recorded and settled but never sent (owner, 2026-10-07; mirrors v9).
+    if "league" in live.columns:
+        live = live[~live["league"].astype(str).str.strip().isin(cfg.PAPER_LEAGUES)]
     out["considered"] = len(live)
     scored = []
     for i, r in live.iterrows():

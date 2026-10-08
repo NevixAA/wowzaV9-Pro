@@ -385,6 +385,9 @@ def run(candidates: pd.DataFrame, *, dry_run: bool = True,
         return out
 
     d = candidates.copy()
+    # Paper leagues are generated and settled but never sent (owner, 2026-10-07; mirrors v9).
+    if "league" in d.columns:
+        d = d[~d["league"].astype(str).str.strip().isin(cfg.PAPER_LEAGUES)]
     # ---- carry state across the combo_id fix (2026-08-30) ------------------------------
     # combo_id changed shape when it became selection-aware and order-independent, so every
     # entry recorded under the old key would otherwise miss and each already-notified combo
