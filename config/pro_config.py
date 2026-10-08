@@ -166,6 +166,17 @@ TABLES = (
     # so the product of real single prices is a real (if not builder-quoted) price. price_basis
     # records which case a row is, and it is never allowed to be blank.
     "combo_price_snapshots",
+    # ── league scout (src/scout, added 2026-10-08) ────────────────────────────────────────────
+    # Leagues Wowza does not bet yet, ~200 of them, to find out which markets are soft enough to
+    # beat. Historical odds cannot be bought back, so this is forward evidence from day one.
+    # Finished matches, current season by date sweep plus 4 past seasons of history. A fixture can
+    # appear twice (history then date sweep); readers dedupe on fixture_id.
+    "scout_results",
+    # CHANGE-LOG of Pinnacle / Bet365 / cross-book-median quotes; every observation kept in the
+    # last 3 hours before kickoff. Carry forward per key before aggregating.
+    "scout_odds",
+    # Baseline model probabilities, frozen once per fixture at first sight of odds.
+    "scout_model",
 )
 
 # Columns every row carries, added by the store itself — never by an importer.

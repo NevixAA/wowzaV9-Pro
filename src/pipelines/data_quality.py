@@ -64,7 +64,9 @@ SCAN_TABLES = ("market_snapshots", "model_snapshots", "signals", "settlements", 
                # 778 rows written and scheduled but UNMONITORED until 2026-08-26. Found by
                # an explicit table -> writer -> workflow -> monitoring audit rather than by
                # noticing, which is the only way this class of gap surfaces.
-               "settlements_backfill")
+               "settlements_backfill",
+               # League scout, monitored from the commit that creates it.
+               "scout_results", "scout_odds", "scout_model")
 
 _KEY_COLS = ("fixture_key", "fixture_id", "match", "snapshot_id")
 

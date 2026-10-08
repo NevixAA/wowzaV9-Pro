@@ -84,6 +84,12 @@ REQUIRED: dict[str, tuple[str, ...]] = {
     # price_basis is REQUIRED and is the whole point of the table: it is what stops a
     # reconstructed component product from ever being read as an executable builder price.
     "combo_price_snapshots": ("combo_id", "snapshot_ts", "price_basis"),
+    # League scout. Keyed on API-Football's fixture_id: these leagues have no canonical
+    # fixture_key, because v9 never sees them.
+    "scout_results": ("fixture_id", "league_id", "kickoff_ts", "home_team", "away_team",
+                      "home_goals", "away_goals"),
+    "scout_odds": ("fixture_id", "market", "selection", "bookmaker", "odds", "snapshot_ts"),
+    "scout_model": ("fixture_id", "model_version", "frozen_ts"),
 }
 
 

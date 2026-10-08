@@ -1,0 +1,92 @@
+name: Pro League Scout
+
+# Forward evidence for ~200 leagues Wowza does not bet yet (registry/scout_leagues.json, owner's
+# 30 lower-tier leagues first). Odds cannot be backfilled — API-Football drops them at kickoff —
+# so every day this does not run is a day of prices lost for good. See docs/LEAGUE_SCOUT.md.
+#
+# COST, measured 2026-10-08 on a live dry run: one sweep is ~272 calls (11 date calls + ~261 odds
+# pages across 197 leagues with fixtures), ~90 seconds, ~40 KB of parquet for a full snapshot and
+# far less once the change-log has a baseline. History adds up to --history-budget calls per run
+# until ~1,000 league-seasons are in (about 4-7 runs), then nothing. At 12 firings a day that is
+# ~3,300 calls/day against ~60,000/day of headroom. The collector stops at SCOUT_MIN_QUOTA (20,000
+# remaining) so it can never starve v9's predict loop, which shares the key.
+#
+# CADENCE. API-Football refreshes pre-match odds about every 3 hours, so sampling faster buys
+# nothing. Every 2 hours, off the hour; GitHub honours only part of a schedule (CLAUDE.md,
+# 2026-09-10 measurement), and a dropped run here costs one sample, not a day — the change-log and
+# the 3-hour full-capture window keep the close observable as long as some run lands near it.
+#
+# Collection only. Does not notify, does not bet, never writes into v9.
+
+on:
+  schedule:
+    - cron: '50 */2 * * *'
+  workflow_dispatch:
+    inputs:
+      history_budget:
+        description: 'League-seasons of history to fetch this run (default 250)'
+        required: false
+
+concurrency:
+  group: pro-scout
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  scout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install pandas pyarrow requests numpy
+
+      - name: Collect
+        env:
+          APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
+        run: |
+          # pipefail: `cmd | tee` otherwise reports tee's exit code and a crash looks like a pass.
+          set -o pipefail
+          HB="${{ github.event.inputs.history_budget }}"; [ -n "$HB" ] || HB=250
+          python -m src.scout.collect --history-budget "$HB" 2>&1 | tee scout.txt
+
+      - name: Report
+        if: always()
+        run: python -m src.scout.report 2>&1 | tee -a scout.txt
+
+      # Staged PER PATH, never `git add -A`: Pro's whitelist admits experiments/ and docs/, and a
+      # blanket add would sweep generated output from other jobs into this commit.
+      - name: Commit
+        if: always()
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/season_*/scout_results data/season_*/scout_odds data/season_*/scout_model 2>/dev/null || true
+          git add output/scout 2>/dev/null || true
+          git diff --staged --quiet && { echo "nothing new"; exit 0; }
+          git commit -m "pro: scout $(date -u '+%Y-%m-%d %H:%M UTC')"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main && git push && exit 0
+            echo "push race - retry $i"; sleep $((RANDOM % 5 + 3))
+          done
+          echo "::error title=scout push failed::odds were collected but nothing was persisted."
+          exit 1
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## League scout"
+            echo '```'
+            tail -n 30 scout.txt 2>/dev/null || echo "(no output — failed before printing)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
