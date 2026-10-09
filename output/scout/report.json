@@ -1,13 +1,72 @@
 {
- "generated_at": "2026-10-08T21:37:26Z",
+ "generated_at": "2026-10-09T02:39:38Z",
  "status_rule": "COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kickoff close",
  "totals": {
-  "results": 180252,
-  "odds_rows": 18588,
-  "fixtures_priced": 821,
-  "fixtures_frozen": 525
+  "results": 237078,
+  "odds_rows": 22794,
+  "fixtures_priced": 862,
+  "fixtures_frozen": 698
  },
  "cells": [
+  {
+   "league_id": 72,
+   "country": "Brazil",
+   "league": "Serie B",
+   "priority": 1,
+   "market": "ou15",
+   "n": 2,
+   "status": "COLLECTING",
+   "rate": 0.5,
+   "brier_base_rate": 0.2725,
+   "brier_market_close": 0.2526,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.073
+  },
+  {
+   "league_id": 72,
+   "country": "Brazil",
+   "league": "Serie B",
+   "priority": 1,
+   "market": "ou25",
+   "n": 2,
+   "status": "COLLECTING",
+   "rate": 0.0,
+   "brier_base_rate": 0.1427,
+   "brier_market_close": 0.2251,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.5774
+  },
+  {
+   "league_id": 72,
+   "country": "Brazil",
+   "league": "Serie B",
+   "priority": 1,
+   "market": "ou35",
+   "n": 2,
+   "status": "COLLECTING",
+   "rate": 0.0,
+   "brier_base_rate": 0.0245,
+   "brier_market_close": 0.0751,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -2.0653,
+   "paper_bets": 2,
+   "paper_roi": 0.29,
+   "paper_first_side_share": 0.0
+  },
+  {
+   "league_id": 72,
+   "country": "Brazil",
+   "league": "Serie B",
+   "priority": 1,
+   "market": "btts",
+   "n": 2,
+   "status": "COLLECTING",
+   "rate": 0.0,
+   "brier_base_rate": 0.2015,
+   "brier_market_close": 0.2665,
+   "reference": "median",
+   "market_skill_vs_base": -0.3226
+  },
   {
    "league_id": 496,
    "country": "Israel",
@@ -65,6 +124,20 @@
    "market_skill_vs_base": 0.0308
   },
   {
+   "league_id": 200,
+   "country": "Morocco",
+   "league": "Botola Pro",
+   "priority": 2,
+   "market": "ou15",
+   "n": 4,
+   "status": "COLLECTING",
+   "rate": 0.25,
+   "brier_base_rate": 0.355,
+   "brier_market_close": 0.3652,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.0287
+  },
+  {
    "league_id": 887,
    "country": "Egypt",
    "league": "Second League",
@@ -73,10 +146,24 @@
    "n": 4,
    "status": "COLLECTING",
    "rate": 0.75,
-   "brier_base_rate": 0.19,
+   "brier_base_rate": 0.2018,
    "brier_market_close": 0.2022,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0642
+   "market_skill_vs_base": -0.002
+  },
+  {
+   "league_id": 200,
+   "country": "Morocco",
+   "league": "Botola Pro",
+   "priority": 2,
+   "market": "ou25",
+   "n": 4,
+   "status": "COLLECTING",
+   "rate": 0.25,
+   "brier_base_rate": 0.2105,
+   "brier_market_close": 0.22,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.0451
   },
   {
    "league_id": 887,
@@ -87,10 +174,24 @@
    "n": 4,
    "status": "COLLECTING",
    "rate": 0.5,
-   "brier_base_rate": 0.26,
+   "brier_base_rate": 0.266,
    "brier_market_close": 0.2696,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0369
+   "market_skill_vs_base": -0.0135
+  },
+  {
+   "league_id": 200,
+   "country": "Morocco",
+   "league": "Botola Pro",
+   "priority": 2,
+   "market": "ou35",
+   "n": 4,
+   "status": "COLLECTING",
+   "rate": 0.25,
+   "brier_base_rate": 0.1935,
+   "brier_market_close": 0.1997,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.032
   },
   {
    "league_id": 887,
@@ -101,10 +202,24 @@
    "n": 4,
    "status": "COLLECTING",
    "rate": 0.5,
-   "brier_base_rate": 0.26,
+   "brier_base_rate": 0.3636,
    "brier_market_close": 0.3421,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.3158
+   "market_skill_vs_base": 0.0591
+  },
+  {
+   "league_id": 200,
+   "country": "Morocco",
+   "league": "Botola Pro",
+   "priority": 2,
+   "market": "btts",
+   "n": 4,
+   "status": "COLLECTING",
+   "rate": 0.25,
+   "brier_base_rate": 0.2389,
+   "brier_market_close": 0.2222,
+   "reference": "median",
+   "market_skill_vs_base": 0.0699
   },
   {
    "league_id": 887,
@@ -115,10 +230,10 @@
    "n": 4,
    "status": "COLLECTING",
    "rate": 0.75,
-   "brier_base_rate": 0.19,
+   "brier_base_rate": 0.2789,
    "brier_market_close": 0.2971,
    "reference": "median",
-   "market_skill_vs_base": -0.5637
+   "market_skill_vs_base": -0.0653
   },
   {
    "league_id": 186,
@@ -135,20 +250,6 @@
    "market_skill_vs_base": 0.0896
   },
   {
-   "league_id": 200,
-   "country": "Morocco",
-   "league": "Botola Pro",
-   "priority": 2,
-   "market": "ou15",
-   "n": 3,
-   "status": "COLLECTING",
-   "rate": 0.3333,
-   "brier_base_rate": 0.3289,
-   "brier_market_close": 0.362,
-   "reference": "pinnacle",
-   "market_skill_vs_base": -0.1006
-  },
-  {
    "league_id": 186,
    "country": "Algeria",
    "league": "Ligue 1",
@@ -161,20 +262,6 @@
    "brier_market_close": 0.1079,
    "reference": "pinnacle",
    "market_skill_vs_base": 0.2528
-  },
-  {
-   "league_id": 200,
-   "country": "Morocco",
-   "league": "Botola Pro",
-   "priority": 2,
-   "market": "ou25",
-   "n": 3,
-   "status": "COLLECTING",
-   "rate": 0.3333,
-   "brier_base_rate": 0.2269,
-   "brier_market_close": 0.2558,
-   "reference": "pinnacle",
-   "market_skill_vs_base": -0.1274
   },
   {
    "league_id": 186,
@@ -191,20 +278,6 @@
    "market_skill_vs_base": 0.0988
   },
   {
-   "league_id": 200,
-   "country": "Morocco",
-   "league": "Botola Pro",
-   "priority": 2,
-   "market": "ou35",
-   "n": 3,
-   "status": "COLLECTING",
-   "rate": 0.3333,
-   "brier_base_rate": 0.2481,
-   "brier_market_close": 0.2561,
-   "reference": "pinnacle",
-   "market_skill_vs_base": -0.0322
-  },
-  {
    "league_id": 186,
    "country": "Algeria",
    "league": "Ligue 1",
@@ -219,18 +292,46 @@
    "market_skill_vs_base": 0.0842
   },
   {
-   "league_id": 200,
-   "country": "Morocco",
-   "league": "Botola Pro",
+   "league_id": 240,
+   "country": "Colombia",
+   "league": "Primera B",
    "priority": 2,
-   "market": "btts",
-   "n": 3,
+   "market": "ou15",
+   "n": 2,
    "status": "COLLECTING",
-   "rate": 0.3333,
-   "brier_base_rate": 0.2429,
-   "brier_market_close": 0.2326,
-   "reference": "median",
-   "market_skill_vs_base": 0.0424
+   "rate": 1.0,
+   "brier_base_rate": 0.1195,
+   "brier_market_close": 0.1069,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.1054
+  },
+  {
+   "league_id": 243,
+   "country": "Ecuador",
+   "league": "Liga Pro Serie B",
+   "priority": 2,
+   "market": "ou15",
+   "n": 2,
+   "status": "COLLECTING",
+   "rate": 0.5,
+   "brier_base_rate": 0.2632,
+   "brier_market_close": 0.2492,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0532
+  },
+  {
+   "league_id": 281,
+   "country": "Peru",
+   "league": "Primera Divisi\u00f3n",
+   "priority": 2,
+   "market": "ou15",
+   "n": 2,
+   "status": "COLLECTING",
+   "rate": 0.5,
+   "brier_base_rate": 0.3061,
+   "brier_market_close": 0.3288,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.0742
   },
   {
    "league_id": 542,
@@ -247,6 +348,48 @@
    "market_skill_vs_base": 0.1301
   },
   {
+   "league_id": 240,
+   "country": "Colombia",
+   "league": "Primera B",
+   "priority": 2,
+   "market": "ou25",
+   "n": 2,
+   "status": "COLLECTING",
+   "rate": 0.5,
+   "brier_base_rate": 0.2605,
+   "brier_market_close": 0.2016,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.2261
+  },
+  {
+   "league_id": 243,
+   "country": "Ecuador",
+   "league": "Liga Pro Serie B",
+   "priority": 2,
+   "market": "ou25",
+   "n": 2,
+   "status": "COLLECTING",
+   "rate": 0.5,
+   "brier_base_rate": 0.2659,
+   "brier_market_close": 0.2708,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.0184
+  },
+  {
+   "league_id": 281,
+   "country": "Peru",
+   "league": "Primera Divisi\u00f3n",
+   "priority": 2,
+   "market": "ou25",
+   "n": 2,
+   "status": "COLLECTING",
+   "rate": 0.0,
+   "brier_base_rate": 0.2471,
+   "brier_market_close": 0.2862,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.1582
+  },
+  {
    "league_id": 542,
    "country": "Iraq",
    "league": "Iraqi League",
@@ -261,6 +404,48 @@
    "market_skill_vs_base": -0.0198
   },
   {
+   "league_id": 240,
+   "country": "Colombia",
+   "league": "Primera B",
+   "priority": 2,
+   "market": "ou35",
+   "n": 2,
+   "status": "COLLECTING",
+   "rate": 0.5,
+   "brier_base_rate": 0.3393,
+   "brier_market_close": 0.2507,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.2611
+  },
+  {
+   "league_id": 243,
+   "country": "Ecuador",
+   "league": "Liga Pro Serie B",
+   "priority": 2,
+   "market": "ou35",
+   "n": 2,
+   "status": "COLLECTING",
+   "rate": 0.5,
+   "brier_base_rate": 0.3419,
+   "brier_market_close": 0.3631,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.062
+  },
+  {
+   "league_id": 281,
+   "country": "Peru",
+   "league": "Primera Divisi\u00f3n",
+   "priority": 2,
+   "market": "ou35",
+   "n": 2,
+   "status": "COLLECTING",
+   "rate": 0.0,
+   "brier_base_rate": 0.073,
+   "brier_market_close": 0.1046,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.4329
+  },
+  {
    "league_id": 542,
    "country": "Iraq",
    "league": "Iraqi League",
@@ -273,6 +458,48 @@
    "brier_market_close": 0.0634,
    "reference": "pinnacle",
    "market_skill_vs_base": -0.5463
+  },
+  {
+   "league_id": 240,
+   "country": "Colombia",
+   "league": "Primera B",
+   "priority": 2,
+   "market": "btts",
+   "n": 2,
+   "status": "COLLECTING",
+   "rate": 1.0,
+   "brier_base_rate": 0.3028,
+   "brier_market_close": 0.2837,
+   "reference": "median",
+   "market_skill_vs_base": 0.0631
+  },
+  {
+   "league_id": 243,
+   "country": "Ecuador",
+   "league": "Liga Pro Serie B",
+   "priority": 2,
+   "market": "btts",
+   "n": 2,
+   "status": "COLLECTING",
+   "rate": 0.5,
+   "brier_base_rate": 0.254,
+   "brier_market_close": 0.2527,
+   "reference": "median",
+   "market_skill_vs_base": 0.0051
+  },
+  {
+   "league_id": 281,
+   "country": "Peru",
+   "league": "Primera Divisi\u00f3n",
+   "priority": 2,
+   "market": "btts",
+   "n": 2,
+   "status": "COLLECTING",
+   "rate": 0.0,
+   "brier_base_rate": 0.2567,
+   "brier_market_close": 0.2954,
+   "reference": "median",
+   "market_skill_vs_base": -0.1508
   },
   {
    "league_id": 542,
@@ -303,32 +530,32 @@
    "market_skill_vs_base": -0.4452
   },
   {
-   "league_id": 243,
-   "country": "Ecuador",
-   "league": "Liga Pro Serie B",
+   "league_id": 239,
+   "country": "Colombia",
+   "league": "Primera A",
    "priority": 2,
    "market": "ou15",
    "n": 1,
    "status": "COLLECTING",
    "rate": 0.0,
-   "brier_base_rate": 0.3778,
-   "brier_market_close": 0.3253,
+   "brier_base_rate": 0.4487,
+   "brier_market_close": 0.5543,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.139
+   "market_skill_vs_base": -0.2353
   },
   {
-   "league_id": 281,
+   "league_id": 282,
    "country": "Peru",
-   "league": "Primera Divisi\u00f3n",
+   "league": "Segunda Divisi\u00f3n",
    "priority": 2,
    "market": "ou15",
    "n": 1,
    "status": "COLLECTING",
-   "rate": 1.0,
-   "brier_base_rate": 0.069,
-   "brier_market_close": 0.0693,
+   "rate": 0.0,
+   "brier_base_rate": 0.5302,
+   "brier_market_close": 0.4939,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0043
+   "market_skill_vs_base": 0.0685
   },
   {
    "league_id": 284,
@@ -357,6 +584,20 @@
    "brier_market_close": 0.0405,
    "reference": "pinnacle",
    "market_skill_vs_base": -0.4111
+  },
+  {
+   "league_id": 322,
+   "country": "Jamaica",
+   "league": "Premier League",
+   "priority": 2,
+   "market": "ou15",
+   "n": 1,
+   "status": "COLLECTING",
+   "rate": 1.0,
+   "brier_base_rate": 0.0937,
+   "brier_market_close": 0.1059,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.1302
   },
   {
    "league_id": 387,
@@ -429,32 +670,32 @@
    "market_skill_vs_base": -0.3655
   },
   {
-   "league_id": 243,
-   "country": "Ecuador",
-   "league": "Liga Pro Serie B",
+   "league_id": 239,
+   "country": "Colombia",
+   "league": "Primera A",
    "priority": 2,
    "market": "ou25",
    "n": 1,
    "status": "COLLECTING",
    "rate": 0.0,
-   "brier_base_rate": 0.1393,
-   "brier_market_close": 0.094,
+   "brier_base_rate": 0.1657,
+   "brier_market_close": 0.2632,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.3252
+   "market_skill_vs_base": -0.5884
   },
   {
-   "league_id": 281,
+   "league_id": 282,
    "country": "Peru",
-   "league": "Primera Divisi\u00f3n",
+   "league": "Segunda Divisi\u00f3n",
    "priority": 2,
    "market": "ou25",
    "n": 1,
    "status": "COLLECTING",
    "rate": 0.0,
-   "brier_base_rate": 0.2475,
-   "brier_market_close": 0.2728,
+   "brier_base_rate": 0.2418,
+   "brier_market_close": 0.2185,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.1022
+   "market_skill_vs_base": 0.0964
   },
   {
    "league_id": 284,
@@ -483,6 +724,20 @@
    "brier_market_close": 0.1729,
    "reference": "pinnacle",
    "market_skill_vs_base": -0.4753
+  },
+  {
+   "league_id": 322,
+   "country": "Jamaica",
+   "league": "Premier League",
+   "priority": 2,
+   "market": "ou25",
+   "n": 1,
+   "status": "COLLECTING",
+   "rate": 0.0,
+   "brier_base_rate": 0.2093,
+   "brier_market_close": 0.1745,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.1663
   },
   {
    "league_id": 387,
@@ -555,32 +810,32 @@
    "market_skill_vs_base": -0.1299
   },
   {
-   "league_id": 243,
-   "country": "Ecuador",
-   "league": "Liga Pro Serie B",
+   "league_id": 239,
+   "country": "Colombia",
+   "league": "Primera A",
    "priority": 2,
    "market": "ou35",
    "n": 1,
    "status": "COLLECTING",
    "rate": 0.0,
-   "brier_base_rate": 0.0384,
-   "brier_market_close": 0.0254,
+   "brier_base_rate": 0.0373,
+   "brier_market_close": 0.0897,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.3385
+   "market_skill_vs_base": -1.4048
   },
   {
-   "league_id": 281,
+   "league_id": 282,
    "country": "Peru",
-   "league": "Primera Divisi\u00f3n",
+   "league": "Segunda Divisi\u00f3n",
    "priority": 2,
    "market": "ou35",
    "n": 1,
    "status": "COLLECTING",
    "rate": 0.0,
-   "brier_base_rate": 0.0731,
-   "brier_market_close": 0.096,
+   "brier_base_rate": 0.0785,
+   "brier_market_close": 0.0733,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.3133
+   "market_skill_vs_base": 0.0662
   },
   {
    "league_id": 284,
@@ -609,6 +864,20 @@
    "brier_market_close": 0.3937,
    "reference": "pinnacle",
    "market_skill_vs_base": -0.2223
+  },
+  {
+   "league_id": 322,
+   "country": "Jamaica",
+   "league": "Premier League",
+   "priority": 2,
+   "market": "ou35",
+   "n": 1,
+   "status": "COLLECTING",
+   "rate": 0.0,
+   "brier_base_rate": 0.0708,
+   "brier_market_close": 0.0523,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.2613
   },
   {
    "league_id": 387,
@@ -681,32 +950,32 @@
    "market_skill_vs_base": 0.2066
   },
   {
-   "league_id": 243,
-   "country": "Ecuador",
-   "league": "Liga Pro Serie B",
+   "league_id": 239,
+   "country": "Colombia",
+   "league": "Primera A",
    "priority": 2,
    "market": "btts",
    "n": 1,
    "status": "COLLECTING",
    "rate": 0.0,
-   "brier_base_rate": 0.1904,
-   "brier_market_close": 0.1604,
+   "brier_base_rate": 0.2291,
+   "brier_market_close": 0.2706,
    "reference": "median",
-   "market_skill_vs_base": 0.1576
+   "market_skill_vs_base": -0.1811
   },
   {
-   "league_id": 281,
+   "league_id": 282,
    "country": "Peru",
-   "league": "Primera Divisi\u00f3n",
+   "league": "Segunda Divisi\u00f3n",
    "priority": 2,
    "market": "btts",
    "n": 1,
    "status": "COLLECTING",
    "rate": 0.0,
-   "brier_base_rate": 0.257,
-   "brier_market_close": 0.3034,
+   "brier_base_rate": 0.243,
+   "brier_market_close": 0.2623,
    "reference": "median",
-   "market_skill_vs_base": -0.1805
+   "market_skill_vs_base": -0.0794
   },
   {
    "league_id": 284,
@@ -735,6 +1004,20 @@
    "brier_market_close": 0.3619,
    "reference": "median",
    "market_skill_vs_base": 0.03
+  },
+  {
+   "league_id": 322,
+   "country": "Jamaica",
+   "league": "Premier League",
+   "priority": 2,
+   "market": "btts",
+   "n": 1,
+   "status": "COLLECTING",
+   "rate": 1.0,
+   "brier_base_rate": 0.3044,
+   "brier_market_close": 0.252,
+   "reference": "median",
+   "market_skill_vs_base": 0.1721
   },
   {
    "league_id": 387,
