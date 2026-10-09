@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-08T12:13:47Z",
+  "generated_at": "2026-10-09T12:05:14Z",
   "calc_version": "1.0.0",
   "worst": "NO_NEW_DATA",
   "counts": {
@@ -7,11 +7,11 @@
     "PASS": 5
   },
   "settlements_fingerprint": {
-    "rows": 64490,
-    "latest_match": "2026-10-06",
+    "rows": 66146,
+    "latest_match": "2026-10-07",
     "earliest_match": "2025-08-02",
     "leagues": 24,
-    "fingerprint": "be87a21468df1401"
+    "fingerprint": "f9704f08555a37b1"
   },
   "last_genuine_learning_event": {
     "date": "2026-10-05",
@@ -32,11 +32,11 @@
       "status": "PASS",
       "why": "challenger trained and REJECTED \u2014 log loss ROSE +0.00097 (0.68751 -> 0.68848) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion. A rejection is a healthy learning outcome, not a failure.",
       "model_artifact": "models/model_v9_standard.pkl",
-      "incumbent_changed_at": "2026-10-08T14:59:58+03:00",
+      "incumbent_changed_at": "2026-10-09T11:06:09Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-06",
-      "training_input_age_days": 2,
+      "training_input_age_days": 3,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": false,
@@ -99,11 +99,11 @@
       "status": "NO_NEW_DATA",
       "why": "only 0 new settled fixture(s) since the incumbent was built \u2014 too few to learn from. Healthy.",
       "model_artifact": "models/model_v9_newformat.pkl",
-      "incumbent_changed_at": "2026-10-08T14:59:58+03:00",
+      "incumbent_changed_at": "2026-10-09T11:06:09Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-06",
-      "training_input_age_days": 2,
+      "training_input_age_days": 3,
       "new_settled_since_incumbent": 0,
       "last_decision": null
     },
@@ -112,11 +112,11 @@
       "status": "PASS",
       "why": "challenger trained and promoted \u2014 log loss 0.68534 -> 0.68513 (-0.00021), within the 0.03000 tolerance",
       "model_artifact": "models/model_v9_btts.pkl",
-      "incumbent_changed_at": "2026-10-08T14:59:58+03:00",
+      "incumbent_changed_at": "2026-10-09T11:06:09Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-06",
-      "training_input_age_days": 2,
+      "training_input_age_days": 3,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
@@ -177,11 +177,11 @@
       "status": "PASS",
       "why": "challenger trained and promoted \u2014 log loss 0.54550 -> 0.54503 (-0.00047), within the 0.03000 tolerance",
       "model_artifact": "models/model_v9_over15.pkl",
-      "incumbent_changed_at": "2026-10-08T14:59:58+03:00",
+      "incumbent_changed_at": "2026-10-09T11:06:09Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-06",
-      "training_input_age_days": 2,
+      "training_input_age_days": 3,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
@@ -242,11 +242,11 @@
       "status": "PASS",
       "why": "challenger trained and promoted \u2014 log loss 0.60014 -> 0.59982 (-0.00032), within the 0.03000 tolerance",
       "model_artifact": "models/model_v9_over35.pkl",
-      "incumbent_changed_at": "2026-10-08T14:59:58+03:00",
+      "incumbent_changed_at": "2026-10-09T11:06:09Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-06",
-      "training_input_age_days": 2,
+      "training_input_age_days": 3,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
@@ -307,11 +307,11 @@
       "status": "PASS",
       "why": "challenger trained and promoted \u2014 log loss 0.60469 -> 0.60466 (-0.00003), within the 0.03000 tolerance",
       "model_artifact": "models/model_ht_over05.pkl",
-      "incumbent_changed_at": "2026-10-08T14:59:58+03:00",
+      "incumbent_changed_at": "2026-10-09T11:06:09Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-06",
-      "training_input_age_days": 2,
+      "training_input_age_days": 3,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
@@ -374,10 +374,10 @@
       "status": "NO_NEW_DATA",
       "why": "only 0 new settled fixture(s) since the incumbent was built \u2014 too few to learn from. Healthy.",
       "model_artifact": "models/model_player_goals.pkl",
-      "incumbent_changed_at": "2026-10-08T14:59:58+03:00",
+      "incumbent_changed_at": "2026-10-09T11:06:09Z",
       "incumbent_age_days": 0.0,
       "training_input": "player_history.parquet",
-      "training_input_latest_match": "2026-10-08",
+      "training_input_latest_match": "2026-10-09",
       "training_input_age_days": 0,
       "new_settled_since_incumbent": 0,
       "last_decision": null
