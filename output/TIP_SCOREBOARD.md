@@ -1,4 +1,4 @@
-# Tip scoreboard — 2026-10-08T16:37 UTC
+# Tip scoreboard — 2026-10-09T11:58 UTC
 
 ## 1X2 tips sent
 
@@ -9,6 +9,6 @@
 
 ## Bet Builder combos sent
 
-- Sent 276, fully graded 81, with a voided leg 87 (43 of those 'won' on the remaining legs), ungraded 51
-- Won 5/81 = **6%**; the model claimed 8% on average, i.e. 6.4 expected wins (z = -0.57)
+- Sent 278, fully graded 85, with a voided leg 90 (43 of those 'won' on the remaining legs), ungraded 44
+- Won 5/85 = **6%**; the model claimed 8% on average, i.e. 6.7 expected wins (z = -0.69)
 - ROI: NOT MEASURED — no bookmaker builder price is collected (combo_price_snapshots is SOURCE_REQUIRED). Hit rate vs claimed probability is the honest measure.
