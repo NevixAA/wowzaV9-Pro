@@ -5,7 +5,7 @@
     "live_models",
     "n_live_models"
   ],
-  "carried_from": "2026-10-10T00:18:11Z",
+  "carried_from": "2026-10-10T06:20:43Z",
   "collect_health": {
     "shadow_last_run": "2026-08-19T12:31:48Z",
     "shadow_n": 564,
@@ -13,8 +13,8 @@
   },
   "deployment_note": "Season 2026/27 is a data-collection and shadow season. Pro NEVER stakes. Pro MAY notify, narrowly: bet-builder research tips only, sent by src/combo/notify.py, labelled PAPER, with a FAIR price because no bookmaker same-game-builder price exists. Collect, live and research pipelines never notify \u2014 pro_collect.py aborts if Telegram credentials are even visible to it. Anything beyond combo tips needs its own decision. Signal tier and deployment mode stay independent: a SNIPER may be PAPER.",
   "feature_health": {},
-  "generated_at": "2026-10-10T06:20:43Z",
-  "git_sha": "da42e9ae39b0",
+  "generated_at": "2026-10-10T12:36:26Z",
+  "git_sha": "fc9f8aed75bc",
   "live_models": [],
   "n_live_models": 0,
   "n_tables": 24,
@@ -34,19 +34,19 @@
       "first_dt": "2026-09-09",
       "last_dt": "2026-10-10",
       "lifecycle": "ACTIVE",
-      "partitions": 151,
-      "rows": 255578,
-      "runs": 151,
+      "partitions": 152,
+      "rows": 258111,
+      "runs": 152,
       "table": "book_odds_snapshots"
     },
     "clv": {
       "empty_reason": null,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-10-09",
+      "last_dt": "2026-10-10",
       "lifecycle": "ACTIVE",
-      "partitions": 54,
-      "rows": 94115,
-      "runs": 54,
+      "partitions": 55,
+      "rows": 97026,
+      "runs": 55,
       "table": "clv"
     },
     "combo_candidates": {
@@ -104,9 +104,9 @@
       "first_dt": "2026-08-23",
       "last_dt": "2026-10-10",
       "lifecycle": "ACTIVE",
-      "partitions": 279,
-      "rows": 4055,
-      "runs": 279,
+      "partitions": 280,
+      "rows": 4073,
+      "runs": 280,
       "table": "data_quality"
     },
     "feature_snapshots": {
@@ -114,9 +114,9 @@
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-10",
       "lifecycle": "ACTIVE",
-      "partitions": 366,
-      "rows": 54108,
-      "runs": 366,
+      "partitions": 367,
+      "rows": 54298,
+      "runs": 367,
       "table": "feature_snapshots"
     },
     "fixtures": {
@@ -124,9 +124,9 @@
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-10",
       "lifecycle": "ACTIVE",
-      "partitions": 366,
-      "rows": 54108,
-      "runs": 366,
+      "partitions": 367,
+      "rows": 54298,
+      "runs": 367,
       "table": "fixtures"
     },
     "live_odds_snapshots": {
@@ -142,11 +142,11 @@
     "live_signals": {
       "empty_reason": null,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-10-09",
+      "last_dt": "2026-10-10",
       "lifecycle": "ACTIVE",
-      "partitions": 54,
-      "rows": 3372,
-      "runs": 54,
+      "partitions": 55,
+      "rows": 3453,
+      "runs": 55,
       "table": "live_signals"
     },
     "market_snapshots": {
@@ -154,9 +154,9 @@
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-10",
       "lifecycle": "ACTIVE",
-      "partitions": 418,
-      "rows": 277493,
-      "runs": 418,
+      "partitions": 420,
+      "rows": 280239,
+      "runs": 420,
       "table": "market_snapshots"
     },
     "model_snapshots": {
@@ -164,39 +164,39 @@
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-10",
       "lifecycle": "ACTIVE",
-      "partitions": 366,
-      "rows": 261720,
-      "runs": 366,
+      "partitions": 367,
+      "rows": 262636,
+      "runs": 367,
       "table": "model_snapshots"
     },
     "movement_observations": {
       "empty_reason": null,
       "first_dt": "2026-08-23",
-      "last_dt": "2026-10-09",
+      "last_dt": "2026-10-10",
       "lifecycle": "ACTIVE",
-      "partitions": 48,
-      "rows": 2430483,
-      "runs": 48,
+      "partitions": 49,
+      "rows": 2494699,
+      "runs": 49,
       "table": "movement_observations"
     },
     "player_props": {
       "empty_reason": null,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-10-09",
+      "last_dt": "2026-10-10",
       "lifecycle": "ACTIVE",
-      "partitions": 54,
-      "rows": 408580,
-      "runs": 54,
+      "partitions": 55,
+      "rows": 422543,
+      "runs": 55,
       "table": "player_props"
     },
     "scout_model": {
       "empty_reason": null,
       "first_dt": "2026-10-08",
-      "last_dt": "2026-10-09",
+      "last_dt": "2026-10-10",
       "lifecycle": "ACTIVE",
-      "partitions": 6,
-      "rows": 983,
-      "runs": 6,
+      "partitions": 7,
+      "rows": 1028,
+      "runs": 7,
       "table": "scout_model"
     },
     "scout_odds": {
@@ -204,29 +204,29 @@
       "first_dt": "2026-10-08",
       "last_dt": "2026-10-10",
       "lifecycle": "ACTIVE",
-      "partitions": 34,
-      "rows": 37388,
-      "runs": 34,
+      "partitions": 40,
+      "rows": 43139,
+      "runs": 40,
       "table": "scout_odds"
     },
     "scout_results": {
       "empty_reason": null,
       "first_dt": "2026-10-08",
-      "last_dt": "2026-10-09",
+      "last_dt": "2026-10-10",
       "lifecycle": "ACTIVE",
-      "partitions": 11,
-      "rows": 237401,
-      "runs": 11,
+      "partitions": 12,
+      "rows": 237421,
+      "runs": 12,
       "table": "scout_results"
     },
     "settlements": {
       "empty_reason": null,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-10-09",
+      "last_dt": "2026-10-10",
       "lifecycle": "ACTIVE",
-      "partitions": 110,
-      "rows": 297376,
-      "runs": 110,
+      "partitions": 112,
+      "rows": 303364,
+      "runs": 112,
       "table": "settlements"
     },
     "settlements_backfill": {
@@ -244,19 +244,19 @@
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-10",
       "lifecycle": "ACTIVE",
-      "partitions": 366,
-      "rows": 54108,
-      "runs": 366,
+      "partitions": 367,
+      "rows": 54298,
+      "runs": 367,
       "table": "signals"
     },
     "team_match_stats": {
       "empty_reason": null,
       "first_dt": "2026-09-05",
-      "last_dt": "2026-10-09",
+      "last_dt": "2026-10-10",
       "lifecycle": "ACTIVE",
-      "partitions": 529,
-      "rows": 4315,
-      "runs": 529,
+      "partitions": 534,
+      "rows": 4324,
+      "runs": 534,
       "table": "team_match_stats"
     },
     "team_news": {
@@ -264,17 +264,17 @@
       "first_dt": "2026-08-30",
       "last_dt": "2026-10-10",
       "lifecycle": "ACTIVE",
-      "partitions": 46,
-      "rows": 320,
-      "runs": 46,
+      "partitions": 47,
+      "rows": 328,
+      "runs": 47,
       "table": "team_news"
     }
   },
-  "source_commit_sha": "da42e9ae39b0",
+  "source_commit_sha": "fc9f8aed75bc",
   "tables_expected_empty": [
     "combo_price_snapshots"
   ],
   "tables_never_written": [],
   "tables_unexpected_empty": [],
-  "total_rows": 4834515
+  "total_rows": 4934290
 }
