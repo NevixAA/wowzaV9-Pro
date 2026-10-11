@@ -15,11 +15,16 @@ name: Pro League Scout — closing prices
 
 on:
   schedule:
-    - cron: '5 * * * *'          # hourly: Asian, European and American kickoffs all fall in some hour
+    # EVERY 3 HOURS, EACH RUN LIVING ~2h45m. Hourly 50-minute runs delivered 11 of ~72 slots over
+    # 2026-10-08..11 (15%), and only 52% of scout fixtures were seen in their last 75 minutes.
+    # Long runs make coverage depend on GitHub delivering a FEW runs a day — which it does — rather
+    # than on hitting each hour. The concurrency group queues a late run behind a running one, so
+    # runs chain instead of overlapping.
+    - cron: '5 */3 * * *'
   workflow_dispatch:
     inputs:
       minutes:
-        description: 'Loop length in minutes (default 50)'
+        description: 'Loop length in minutes (default 165)'
         required: false
 
 concurrency:
@@ -32,7 +37,7 @@ permissions:
 jobs:
   near:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 185
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -44,7 +49,7 @@ jobs:
           APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
         run: |
           set -o pipefail
-          M="${{ github.event.inputs.minutes }}"; [ -n "$M" ] || M=50
+          M="${{ github.event.inputs.minutes }}"; [ -n "$M" ] || M=165
           python -m src.scout.collect --near-loop "$M" 2>&1 | tee near.txt
       - name: Commit
         if: always()

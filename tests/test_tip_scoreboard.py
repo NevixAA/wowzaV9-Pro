@@ -67,7 +67,7 @@ def test_recap_sends_once_per_day_inside_the_window(tmp_path, monkeypatch):
     morning = dt.datetime(2026, 10, 9, 6, 0, tzinfo=dt.timezone.utc)
     assert ts.maybe_notify(r, morning) == "sent"
     assert ts.maybe_notify(r, morning + dt.timedelta(hours=2)) == "already sent today"
-    assert ts.maybe_notify(r, morning.replace(hour=14)) == "outside window"
+    assert ts.maybe_notify(r, morning.replace(hour=21)) == "outside window"
     assert len(sent) == 1
 
 

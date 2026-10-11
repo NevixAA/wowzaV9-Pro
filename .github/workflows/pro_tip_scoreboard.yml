@@ -5,11 +5,12 @@ name: Pro Tip Scoreboard
 # workflows); writes output/tip_scoreboard.json and TIP_SCOREBOARD.md.
 #
 # Three firings for one message: once-daily crons land hours late on GitHub (CLAUDE.md, 2026-09-10),
-# so the send is idempotent on SCOREBOARD|<utc-date> and only fires inside 05:00-11:00 UTC.
+# so the send is idempotent on SCOREBOARD|<utc-date> and fires on the first run inside 05:00-20:00 UTC.
+# (The window was 05-11; GitHub landed every run at ~11:14 and the recap never went out.)
 
 on:
   schedule:
-    - cron: '25 5,7,9 * * *'
+    - cron: '25 5,7,9,12 * * *'
   workflow_dispatch:
 
 concurrency:

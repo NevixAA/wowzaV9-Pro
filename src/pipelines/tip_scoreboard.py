@@ -208,10 +208,14 @@ def telegram_text(r: dict) -> str:
 
 
 def maybe_notify(r: dict, now: dt.datetime | None = None) -> str:
-    """Once per UTC day, first run inside 05:00-11:00 UTC. Safe to over-schedule (CLAUDE.md:
+    """Once per UTC day, first run inside 05:00-20:00 UTC. Safe to over-schedule (CLAUDE.md:
     make a time-sensitive job idempotent first, then over-schedule it)."""
     now = now or dt.datetime.now(dt.timezone.utc)
-    if not (5 <= now.hour < 11):
+    # WINDOW WAS 05:00-11:00 AND THE RECAP NEVER WENT OUT. GitHub ran the 05:25/07:25/09:25 slots
+    # at ~11:14 UTC on 2026-10-08, 09 and 10 — after the window closed — so the scoreboard was
+    # computed and the message skipped three days running. Daily crons land hours late (CLAUDE.md,
+    # +4 to +5 h measured); the dedup key is what prevents a second send, not the window.
+    if not (5 <= now.hour < 20):
         return "outside window"
     key = f"SCOREBOARD|{now:%Y-%m-%d}"
     state = json.loads(SENT_STATE.read_text(encoding="utf-8")) if SENT_STATE.exists() else {}
