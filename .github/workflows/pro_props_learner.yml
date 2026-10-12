@@ -57,7 +57,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      # The LATEST main, not the commit that started the run: the per-market jobs take ~50 min
+      # and an earlier run's merge may have committed these same files meanwhile. Checking out
+      # the old commit turned that into an add/add rebase conflict and the 2026-10-12 merge
+      # failed on every retry with all 8 markets already computed.
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -80,7 +86,7 @@ jobs:
           git diff --staged --quiet && exit 0
           git commit -m "pro: props learner study $(date -u '+%Y-%m-%d')"
           for i in 1 2 3 4 5; do
-            git pull --rebase --autostash origin main && git push && exit 0
+            git pull --rebase --autostash -X theirs origin main && git push && exit 0
             sleep $((RANDOM % 5 + 3))
           done
           exit 1
