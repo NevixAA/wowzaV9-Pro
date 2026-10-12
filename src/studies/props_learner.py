@@ -105,6 +105,9 @@ def run_market(market: str, max_rows: int | None = None) -> dict:
     if max_rows:
         df = df.tail(max_rows).reset_index(drop=True)
     tcol = TARGETS[market]
+    # Same as v9 player_model.model.train (fixed 2026-10-12): rows with no label are dropped.
+    # target_sot4 is empty on 5,403 old rows; .astype(int) on them killed this job in 3 seconds.
+    df = df[df[tcol].notna()].reset_index(drop=True)
     y = df[tcol].astype(int).to_numpy()
     X, cols = _prep(df)
     Xv = X.to_numpy(dtype=float)
