@@ -15,6 +15,11 @@ name: Pure Prediction Research Lab
 on:
   schedule:
     - cron: "40 2 * * 1"          # Mondays 02:40 UTC -- after the weekend's results have settled
+  # Also run when the lab's code changes, so a fix proves itself on the next push instead of the
+  # next Monday (the goal-distribution step failed two Mondays running before anyone saw it).
+  push:
+    branches: [main]
+    paths: ['src/prediction_lab/**', '.github/workflows/pro_prediction_lab.yml']
   workflow_dispatch:
     inputs:
       phases:

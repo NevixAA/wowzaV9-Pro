@@ -112,12 +112,19 @@ def walk_forward_scoreline(df: pd.DataFrame, feat_cols: list[str],
     dates = pd.to_datetime(df["date"]).to_numpy()
     rows = []
     for f in fl:
-        mh, ma = _lambda_models(X[f.train], hg[f.train], ag[f.train])
-        lam_tr_h = np.clip(mh.predict(X[f.train]), 0.05, 6.0)
-        lam_tr_a = np.clip(ma.predict(X[f.train]), 0.05, 6.0)
+        # Same guard as experiments.walk_forward, which this step never got: sklearn 1.9's
+        # HistGradientBoosting binner raises "window shape cannot be larger than input array
+        # shape" on a column that is empty or single-valued in the training block. That killed
+        # this step in 2 seconds on 2026-10-05 (reproduced locally 2026-10-12). Usability is
+        # decided on TRAIN ONLY, so it cannot leak the test period.
+        keep = np.flatnonzero([E._usable(X[f.train, j]) for j in range(X.shape[1])])
+        Xf = X[:, keep]
+        mh, ma = _lambda_models(Xf[f.train], hg[f.train], ag[f.train])
+        lam_tr_h = np.clip(mh.predict(Xf[f.train]), 0.05, 6.0)
+        lam_tr_a = np.clip(ma.predict(Xf[f.train]), 0.05, 6.0)
         rho = _fit_rho(hg[f.train], ag[f.train], lam_tr_h, lam_tr_a)
-        lh = np.clip(mh.predict(X[f.test]), 0.05, 6.0)
-        la = np.clip(ma.predict(X[f.test]), 0.05, 6.0)
+        lh = np.clip(mh.predict(Xf[f.test]), 0.05, 6.0)
+        la = np.clip(ma.predict(Xf[f.test]), 0.05, 6.0)
         for tag, r in (("bipoisson", 0.0), ("bipoisson_dc", rho)):
             mk = _markets_from_matrix(_score_matrix(lh, la, r))
             base = pd.DataFrame({

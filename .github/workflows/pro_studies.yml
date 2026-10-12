@@ -1,6 +1,6 @@
-name: Pro Studies (weekly)
+name: Pro Studies (daily)
 
-# Re-runs the October 2026 upgrade studies every week so the evidence updates itself:
+# Re-runs the October 2026 upgrade studies every day so the evidence updates itself:
 #   argentina_btts   is the Argentina BTTS gap (realised vs implied) still open?
 #   ou_studies       does the model add anything to the market once the price is known?
 #   evidence         per-cell shrinkage, FDR, sequential CLV -> recommendations (never money)
@@ -13,7 +13,16 @@ name: Pro Studies (weekly)
 
 on:
   schedule:
-    - cron: '20 6 * * 1,4'          # Monday and Thursday; either landing is enough
+    # DAILY, not Mon/Thu. Added Thu 2026-10-08 after that day's slot, then GitHub never delivered
+    # the Monday 2026-10-12 slot either: four days with no run, and the O/U challenger's forward
+    # record frozen at its first 200 fixtures. Once-daily schedules are delivered ~100% of the time
+    # (CLAUDE.md, measured 2026-09-10), and with the results cache a run costs ~10 API calls.
+    - cron: '20 6 * * *'
+  # Also run when the studies or this file change, so a fix takes effect at once instead of
+  # waiting for a slot GitHub may not deliver.
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pro_studies.yml', 'src/studies/**']
   workflow_dispatch:
 
 concurrency:
