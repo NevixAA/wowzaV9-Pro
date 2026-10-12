@@ -1,21 +1,21 @@
 {
- "generated_at": "2026-10-11T14:16:35Z",
+ "generated_at": "2026-10-12T13:22:38Z",
  "one_x_two": {
-  "sent": 29,
-  "sent_excl_paper": 23,
-  "pending": 6,
+  "sent": 30,
+  "sent_excl_paper": 24,
+  "pending": 5,
   "headline": {
-   "settled": 17,
-   "won": 4,
-   "hit_rate": 0.2353,
-   "break_even": 0.3148,
-   "model_claimed": 0.401,
-   "avg_odds": 3.48,
-   "units": -5.93,
-   "roi": -0.3485,
+   "settled": 19,
+   "won": 5,
+   "hit_rate": 0.2632,
+   "break_even": 0.3126,
+   "model_claimed": 0.411,
+   "avg_odds": 3.59,
+   "units": -5.66,
+   "roi": -0.2976,
    "roi_ci90": [
-    -0.8233,
-    0.355
+    -0.7312,
+    0.3667
    ],
    "negative_ev_when_sent": 1
   },
@@ -61,41 +61,27 @@
     "roi": -0.1937,
     "roi_ci90": [
      -1.0,
-     0.6125
+     1.4188
     ],
     "negative_ev_when_sent": 1
    },
    "AWAY": {
-    "settled": 9,
-    "won": 2,
-    "hit_rate": 0.2222,
-    "break_even": 0.3063,
-    "model_claimed": 0.3869,
-    "avg_odds": 3.69,
-    "units": -3.8,
-    "roi": -0.4222,
+    "settled": 11,
+    "won": 3,
+    "hit_rate": 0.2727,
+    "break_even": 0.304,
+    "model_claimed": 0.4066,
+    "avg_odds": 3.84,
+    "units": -3.53,
+    "roi": -0.3209,
     "roi_ci90": [
-     -1.0,
-     0.5375
+     -0.8379,
+     0.457
     ],
     "negative_ev_when_sent": 0
    }
   },
   "last_10": [
-   {
-    "date": "2026-09-20",
-    "match": "Corinthians v Fluminense",
-    "pick": "AWAY",
-    "odds": 3.55,
-    "won": true
-   },
-   {
-    "date": "2026-09-26",
-    "match": "Atlanta United FC v New York City FC",
-    "pick": "AWAY",
-    "odds": 2.97,
-    "won": false
-   },
    {
     "date": "2026-09-26",
     "match": "Philadelphia Union v Orlando City SC",
@@ -151,24 +137,38 @@
     "pick": "DRAW",
     "odds": 3.2,
     "won": false
+   },
+   {
+    "date": "2026-10-10",
+    "match": "Watford v Burnley",
+    "pick": "AWAY",
+    "odds": 2.27,
+    "won": true
+   },
+   {
+    "date": "2026-10-10",
+    "match": "Rosenborg v Sandefjord",
+    "pick": "AWAY",
+    "odds": 6.805,
+    "won": false
    }
   ]
  },
  "bet_builder": {
-  "sent": 292,
-  "found_in_settled": 274,
+  "sent": 301,
+  "found_in_settled": 283,
   "not_found": 18,
-  "ungraded": 51,
+  "ungraded": 54,
   "ungraded_reasons": {
-   "NO_SCORELINE": 51
+   "NO_SCORELINE": 54
   },
   "headline": {
-   "settled": 92,
+   "settled": 98,
    "won": 5,
-   "hit_rate": 0.0543,
-   "model_claimed": 0.0762,
-   "expected_wins": 7.0,
-   "z_actual_vs_claimed": -0.8
+   "hit_rate": 0.051,
+   "model_claimed": 0.0745,
+   "expected_wins": 7.3,
+   "z_actual_vs_claimed": -0.9
   },
   "with_voided_legs": {
    "settled": 90,
@@ -185,12 +185,12 @@
   },
   "by_claimed_probability": {
    "<10%": {
-    "settled": 70,
+    "settled": 76,
     "won": 2,
-    "hit_rate": 0.0286,
-    "model_claimed": 0.0516,
-    "expected_wins": 3.6,
-    "z_actual_vs_claimed": -0.87
+    "hit_rate": 0.0263,
+    "model_claimed": 0.0514,
+    "expected_wins": 3.9,
+    "z_actual_vs_claimed": -0.99
    },
    "10-25%": {
     "settled": 22,
@@ -228,12 +228,12 @@
     "z_actual_vs_claimed": -0.1
    },
    "4": {
-    "settled": 59,
+    "settled": 65,
     "won": 1,
-    "hit_rate": 0.0169,
-    "model_claimed": 0.0528,
-    "expected_wins": 3.1,
-    "z_actual_vs_claimed": -1.25
+    "hit_rate": 0.0154,
+    "model_claimed": 0.0525,
+    "expected_wins": 3.4,
+    "z_actual_vs_claimed": -1.35
    }
   },
   "roi": "NOT MEASURED \u2014 no bookmaker builder price is collected (combo_price_snapshots is SOURCE_REQUIRED). Hit rate vs claimed probability is the honest measure."
