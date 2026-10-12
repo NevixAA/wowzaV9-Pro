@@ -25,7 +25,7 @@ improves log loss on that same target. Accuracy was the wrong instrument.
 | over15 | 28,065 | 0.7442 | 0.7438 | -0.05pp | 0.18538 | 0.55541 | 0.6016 | 0.0059 |
 | over25 | 28,065 | 0.5096 | 0.5681 | +5.85pp | 0.24160 | 0.67594 | 0.5998 | 0.0062 |
 | over35 | 28,065 | 0.7163 | 0.7174 | +0.11pp | 0.19679 | 0.58036 | 0.6072 | 0.0097 |
-| player scores | 87,756 | 0.9195 | 0.9197 | +0.02pp | 0.06825 | 0.24476 | 0.7613 | 0.0047 |
+| player scores | 250,368 | 0.9213 | 0.9214 | +0.01pp | 0.06646 | 0.23882 | 0.7692 | 0.0025 |
 
 The rock is 'always call the class that was more common **in the test period itself**', 
 which is the hard version — the naive classifier is allowed to know the answer's base 
@@ -68,26 +68,26 @@ Same folds, same features, same scoring for every family.
 
 | target | model | n | log_loss | brier | auc | lift_pp | fold_ll_spread | fit_seconds |
 |---|---|---|---|---|---|---|---|---|
-| btts | hgb | 28065 | 0.6732 | 0.2406 | 0.5889 | 3.0714 | 0.0046 | 5.8 |
-| btts | lightgbm | 28065 | 0.6791 | 0.2434 | 0.5784 | 2.3161 | 0.0067 | 14.7 |
-| btts | random_forest | 28065 | 0.681 | 0.244 | 0.5775 | 2.4479 | 0.0051 | 64.3 |
+| btts | hgb | 28065 | 0.6732 | 0.2406 | 0.5889 | 3.0714 | 0.0046 | 5.7 |
+| btts | lightgbm | 28065 | 0.6791 | 0.2434 | 0.5784 | 2.3161 | 0.0067 | 14.4 |
+| btts | random_forest | 28065 | 0.681 | 0.244 | 0.5775 | 2.4479 | 0.0051 | 64.2 |
 | btts | gboost | 28065 | 0.6832 | 0.2451 | 0.5686 | 1.6818 | 0.0035 | 17.5 |
-| btts | logreg | 28065 | 0.6842 | 0.2456 | 0.5666 | 1.892 | 0.0054 | 7.8 |
-| over15 | hgb | 28065 | 0.5554 | 0.1854 | 0.6016 | -0.0463 | 0.0267 | 4.9 |
-| over15 | random_forest | 28065 | 0.5567 | 0.1858 | 0.5979 | -0.0748 | 0.0286 | 61.6 |
-| over15 | logreg | 28065 | 0.5584 | 0.1865 | 0.5931 | -0.0356 | 0.0275 | 6.7 |
-| over15 | gboost | 28065 | 0.56 | 0.1874 | 0.5881 | -0.082 | 0.0307 | 17.4 |
+| btts | logreg | 28065 | 0.6842 | 0.2456 | 0.5666 | 1.892 | 0.0054 | 8.1 |
+| over15 | hgb | 28065 | 0.5554 | 0.1854 | 0.6016 | -0.0463 | 0.0267 | 4.8 |
+| over15 | random_forest | 28065 | 0.5567 | 0.1858 | 0.5979 | -0.0748 | 0.0286 | 62.4 |
+| over15 | logreg | 28065 | 0.5584 | 0.1865 | 0.5931 | -0.0356 | 0.0275 | 6.2 |
+| over15 | gboost | 28065 | 0.56 | 0.1874 | 0.5881 | -0.082 | 0.0307 | 17.6 |
 | over15 | lightgbm | 28065 | 0.562 | 0.1876 | 0.5911 | 0.0143 | 0.0238 | 14.8 |
-| over25 | hgb | 28065 | 0.6759 | 0.2416 | 0.5998 | 5.8543 | 0.006 | 6.4 |
-| over25 | random_forest | 28065 | 0.6779 | 0.2425 | 0.597 | 5.5015 | 0.009 | 60.9 |
+| over25 | hgb | 28065 | 0.6759 | 0.2416 | 0.5998 | 5.8543 | 0.006 | 6.3 |
+| over25 | random_forest | 28065 | 0.6779 | 0.2425 | 0.597 | 5.5015 | 0.009 | 60.8 |
 | over25 | gboost | 28065 | 0.6796 | 0.2433 | 0.5906 | 5.2307 | 0.0036 | 17.4 |
-| over25 | logreg | 28065 | 0.6805 | 0.2438 | 0.5897 | 4.0549 | 0.0056 | 6.4 |
-| over25 | lightgbm | 28065 | 0.6814 | 0.2442 | 0.5885 | 4.9207 | 0.0091 | 14.8 |
-| over35 | hgb | 28065 | 0.5804 | 0.1968 | 0.6072 | 0.1105 | 0.0244 | 5.7 |
-| over35 | random_forest | 28065 | 0.5816 | 0.1971 | 0.6054 | 0.0285 | 0.0285 | 62.4 |
-| over35 | gboost | 28065 | 0.5825 | 0.1975 | 0.6031 | 0.0 | 0.0288 | 17.5 |
-| over35 | logreg | 28065 | 0.5836 | 0.198 | 0.5994 | -0.0534 | 0.0302 | 6.6 |
-| over35 | lightgbm | 28065 | 0.5857 | 0.1987 | 0.5963 | 0.1176 | 0.0241 | 15.0 |
+| over25 | logreg | 28065 | 0.6805 | 0.2438 | 0.5897 | 4.0549 | 0.0056 | 7.4 |
+| over25 | lightgbm | 28065 | 0.6814 | 0.2442 | 0.5885 | 4.9207 | 0.0091 | 14.5 |
+| over35 | hgb | 28065 | 0.5804 | 0.1968 | 0.6072 | 0.1105 | 0.0244 | 5.5 |
+| over35 | random_forest | 28065 | 0.5816 | 0.1971 | 0.6054 | 0.0285 | 0.0285 | 62.2 |
+| over35 | gboost | 28065 | 0.5825 | 0.1975 | 0.6031 | 0.0 | 0.0288 | 17.4 |
+| over35 | logreg | 28065 | 0.5836 | 0.198 | 0.5994 | -0.0534 | 0.0302 | 6.8 |
+| over35 | lightgbm | 28065 | 0.5857 | 0.1987 | 0.5963 | 0.1176 | 0.0241 | 14.4 |
 
 
 **Winner on mean log loss: `hgb`.** The spread between families is small — a few thousandths of a nat — which is itself the finding: the ceiling here is set by the information in the features, not by the algorithm. Swapping boosters will not rescue a target that the data cannot predict.
@@ -287,18 +287,18 @@ and worthless. The baseline that matters is **the player's own prior scoring rat
 
 | population | spec | n | base_rate | log_loss | brier | auc |
 |---|---|---|---|---|---|---|
-| appeared | global_rate | 136918 | 0.0817 | 0.28295 | 0.07503 | 0.49713 |
-| appeared | position_prior | 136918 | 0.0817 | 0.27113 | 0.07353 | 0.62722 |
-| appeared | own_history | 136918 | 0.0817 | 0.26131 | 0.07134 | 0.70885 |
-| appeared | full_player_model | 136918 | 0.0817 | 0.25431 | 0.07035 | 0.73562 |
-| started | global_rate | 102296 | 0.09116 | 0.30526 | 0.08286 | 0.50024 |
-| started | position_prior | 102296 | 0.09116 | 0.28516 | 0.07984 | 0.68855 |
-| started | own_history | 102296 | 0.09116 | 0.27697 | 0.07753 | 0.72678 |
-| started | full_player_model | 102296 | 0.09116 | 0.26802 | 0.07635 | 0.75667 |
-| exp_minutes_60 | global_rate | 87756 | 0.0805 | 0.2801 | 0.07404 | 0.49807 |
-| exp_minutes_60 | position_prior | 87756 | 0.0805 | 0.26391 | 0.072 | 0.66175 |
-| exp_minutes_60 | own_history | 87756 | 0.0805 | 0.25181 | 0.06915 | 0.73812 |
-| exp_minutes_60 | full_player_model | 87756 | 0.0805 | 0.24476 | 0.06825 | 0.76127 |
+| appeared | global_rate | 384350 | 0.07963 | 0.27791 | 0.0733 | 0.49555 |
+| appeared | position_prior | 384350 | 0.07963 | 0.26456 | 0.07162 | 0.66849 |
+| appeared | own_history | 384350 | 0.07963 | 0.25567 | 0.06958 | 0.71526 |
+| appeared | full_player_model | 384350 | 0.07963 | 0.24861 | 0.06852 | 0.74156 |
+| started | global_rate | 292473 | 0.08882 | 0.29985 | 0.08094 | 0.4956 |
+| started | position_prior | 292473 | 0.08882 | 0.2797 | 0.07808 | 0.71518 |
+| started | own_history | 292473 | 0.08882 | 0.27015 | 0.07548 | 0.73474 |
+| started | full_player_model | 292473 | 0.08882 | 0.26202 | 0.07431 | 0.76084 |
+| exp_minutes_60 | global_rate | 250368 | 0.07868 | 0.27564 | 0.07251 | 0.49551 |
+| exp_minutes_60 | position_prior | 250368 | 0.07868 | 0.25524 | 0.06965 | 0.71063 |
+| exp_minutes_60 | own_history | 250368 | 0.07868 | 0.24669 | 0.06754 | 0.74292 |
+| exp_minutes_60 | full_player_model | 250368 | 0.07868 | 0.23882 | 0.06646 | 0.76916 |
 
 
 `appeared` is an explanatory upper bound only — whether a player appears is not 
@@ -386,10 +386,10 @@ OVER35_PREDICTABLE_ABOVE_BASELINE=YES
 BEST_CURRENT_OOS_ACCURACY_OVER35=0.7174
 BEST_CURRENT_OOS_BRIER_OVER35=0.19679
 PLAYER_GOAL_PREDICTABLE_ABOVE_BASELINE=YES
-BEST_CURRENT_OOS_ACCURACY_PLAYER_GOAL=0.9197
-BEST_CURRENT_OOS_AUC_PLAYER_GOAL=0.7613
-PLAYER_GOAL_BASELINE_AUC_OWN_HISTORY=0.7381
-BEST_CURRENT_OOS_BRIER_PLAYER_GOAL=0.06825
+BEST_CURRENT_OOS_ACCURACY_PLAYER_GOAL=0.9214
+BEST_CURRENT_OOS_AUC_PLAYER_GOAL=0.7692
+PLAYER_GOAL_BASELINE_AUC_OWN_HISTORY=0.7429
+BEST_CURRENT_OOS_BRIER_PLAYER_GOAL=0.06646
 BEST_PLAYER_GOAL_MODEL=hgb on prior-only player form (expected-minutes population)
 BEST_MATCH_MODEL=hgb
 GOAL_DISTRIBUTION_MODEL_BEATS_SEPARATE_CLASSIFIERS=YES
