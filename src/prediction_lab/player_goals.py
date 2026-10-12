@@ -37,6 +37,7 @@ columns so the answer is measured rather than assumed.
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -54,14 +55,21 @@ POPULATIONS = ("appeared", "started", "exp_minutes_60")
 
 
 def load_players() -> pd.DataFrame:
-    for base in ("../v9/player_history.parquet", "player_history.parquet"):
+    # V9_LOCAL first, like every other lab input. The old list was ("../v9/...", "./...") only,
+    # which exists on a laptop with sibling checkouts but NOT in CI, where v9 is checked out at
+    # `_v9/` and V9_LOCAL points there — so in CI this step always raised, the workflow's
+    # `|| echo "::warning::player track skipped"` swallowed it, and the player track never ran
+    # (found 2026-10-12). player_history.parquet is a DIRECTORY of season parts; read_parquet
+    # reads it either way.
+    cands = [p / "player_history.parquet" for p in D._v9_dirs()] + [Path("player_history.parquet")]
+    for base in cands:
         try:
             d = pd.read_parquet(base)
             break
         except Exception:
             continue
     else:
-        raise RuntimeError("player_history.parquet not found")
+        raise RuntimeError(f"player_history.parquet not found in {[str(c) for c in cands]}")
     d["date"] = pd.to_datetime(d["date"], errors="coerce")
     d = d.dropna(subset=["date", "player_id"])
     for c in ("goals", "minutes", "started", "shots_total", "shots_on_target", "assists",
