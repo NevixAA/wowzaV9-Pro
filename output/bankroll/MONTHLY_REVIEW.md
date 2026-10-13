@@ -33,7 +33,7 @@ Expected historical / stress profile (recommended policy):
 - HAIRCUT_2.5PCT: return +36.7%, max DD 7.4%
 - HAIRCUT_5PCT: return +30.1%, max DD 7.4%
 - ODDS_CAPPED_TIGHTER: return +26.6%, max DD 8.4%
-- proposed adaptive: P(DD>20%) 0.0%, median end 145.49
+- proposed adaptive: P(DD>20%) 0.0%, median end 145.23
 
 BEST_GROWTH_POLICY = G_PROPOSED_ADAPTIVE
 BEST_SURVIVAL_POLICY = E_SAFE
