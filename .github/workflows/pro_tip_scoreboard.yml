@@ -36,7 +36,10 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           set -o pipefail
-          python -m src.pipelines.tip_scoreboard --notify 2>&1 | tee scoreboard.txt
+          # NO --notify since 2026-10-13: the owner wanted one morning picture album instead of
+          # separate text messages. v9's telegram_bot/daily_pack.py reads output/tip_scoreboard.json
+          # (committed below) and draws it as a picture in the daily and weekly albums.
+          python -m src.pipelines.tip_scoreboard 2>&1 | tee scoreboard.txt
       - name: Commit
         if: always()
         run: |
