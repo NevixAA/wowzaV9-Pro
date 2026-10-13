@@ -1,21 +1,21 @@
 {
- "generated_at": "2026-10-12T13:22:38Z",
+ "generated_at": "2026-10-13T12:50:39Z",
  "one_x_two": {
-  "sent": 30,
-  "sent_excl_paper": 24,
-  "pending": 5,
+  "sent": 31,
+  "sent_excl_paper": 25,
+  "pending": 3,
   "headline": {
-   "settled": 19,
-   "won": 5,
-   "hit_rate": 0.2632,
-   "break_even": 0.3126,
-   "model_claimed": 0.411,
-   "avg_odds": 3.59,
-   "units": -5.66,
-   "roi": -0.2976,
+   "settled": 22,
+   "won": 6,
+   "hit_rate": 0.2727,
+   "break_even": 0.313,
+   "model_claimed": 0.4143,
+   "avg_odds": 3.56,
+   "units": -6.13,
+   "roi": -0.2786,
    "roi_ci90": [
-    -0.7312,
-    0.3667
+    -0.6764,
+    0.2764
    ],
    "negative_ev_when_sent": 1
   },
@@ -36,17 +36,17 @@
   },
   "by_pick": {
    "HOME": {
-    "settled": 4,
-    "won": 1,
-    "hit_rate": 0.25,
-    "break_even": 0.3403,
-    "model_claimed": 0.4944,
-    "avg_odds": 3.24,
-    "units": -1.35,
-    "roi": -0.3375,
+    "settled": 6,
+    "won": 2,
+    "hit_rate": 0.3333,
+    "break_even": 0.3488,
+    "model_claimed": 0.5004,
+    "avg_odds": 3.07,
+    "units": -0.83,
+    "roi": -0.1375,
     "roi_ci90": [
      -1.0,
-     0.7667
+     0.725
     ],
     "negative_ev_when_sent": 0
    },
@@ -61,48 +61,27 @@
     "roi": -0.1937,
     "roi_ci90": [
      -1.0,
-     1.4188
+     0.6125
     ],
     "negative_ev_when_sent": 1
    },
    "AWAY": {
-    "settled": 11,
+    "settled": 12,
     "won": 3,
-    "hit_rate": 0.2727,
-    "break_even": 0.304,
-    "model_claimed": 0.4066,
-    "avg_odds": 3.84,
-    "units": -3.53,
-    "roi": -0.3209,
+    "hit_rate": 0.25,
+    "break_even": 0.2966,
+    "model_claimed": 0.3962,
+    "avg_odds": 3.91,
+    "units": -4.53,
+    "roi": -0.3775,
     "roi_ci90": [
-     -0.8379,
-     0.457
+     -0.8625,
+     0.329
     ],
     "negative_ev_when_sent": 0
    }
   },
   "last_10": [
-   {
-    "date": "2026-09-26",
-    "match": "Philadelphia Union v Orlando City SC",
-    "pick": "AWAY",
-    "odds": 6.0,
-    "won": false
-   },
-   {
-    "date": "2026-09-27",
-    "match": "San Jose Earthquakes v Portland Timbers",
-    "pick": "HOME",
-    "odds": 2.01,
-    "won": true
-   },
-   {
-    "date": "2026-10-02",
-    "match": "Dundalk v Bohemians",
-    "pick": "HOME",
-    "odds": 3.225,
-    "won": false
-   },
    {
     "date": "2026-10-03",
     "match": "Salford City v Fleetwood Town",
@@ -151,28 +130,49 @@
     "pick": "AWAY",
     "odds": 6.805,
     "won": false
+   },
+   {
+    "date": "2026-10-11",
+    "match": "FC Midtjylland v FC Copenhagen",
+    "pick": "HOME",
+    "odds": 2.525,
+    "won": true
+   },
+   {
+    "date": "2026-10-11",
+    "match": "Lillestrom v Molde",
+    "pick": "HOME",
+    "odds": 2.98,
+    "won": false
+   },
+   {
+    "date": "2026-10-11",
+    "match": "Bahia v Mirassol",
+    "pick": "AWAY",
+    "odds": 4.65,
+    "won": false
    }
   ]
  },
  "bet_builder": {
-  "sent": 301,
-  "found_in_settled": 283,
+  "sent": 305,
+  "found_in_settled": 287,
   "not_found": 18,
-  "ungraded": 54,
+  "ungraded": 52,
   "ungraded_reasons": {
-   "NO_SCORELINE": 54
+   "NO_SCORELINE": 52
   },
   "headline": {
-   "settled": 98,
+   "settled": 100,
    "won": 5,
-   "hit_rate": 0.051,
-   "model_claimed": 0.0745,
-   "expected_wins": 7.3,
-   "z_actual_vs_claimed": -0.9
+   "hit_rate": 0.05,
+   "model_claimed": 0.0739,
+   "expected_wins": 7.4,
+   "z_actual_vs_claimed": -0.93
   },
   "with_voided_legs": {
-   "settled": 90,
-   "won": 43,
+   "settled": 94,
+   "won": 44,
    "note": "settled on the remaining legs after a leg was voided; not comparable with the claimed probability, which covers every leg"
   },
   "paper_leagues": {
@@ -185,12 +185,12 @@
   },
   "by_claimed_probability": {
    "<10%": {
-    "settled": 76,
+    "settled": 78,
     "won": 2,
-    "hit_rate": 0.0263,
-    "model_claimed": 0.0514,
-    "expected_wins": 3.9,
-    "z_actual_vs_claimed": -0.99
+    "hit_rate": 0.0256,
+    "model_claimed": 0.0512,
+    "expected_wins": 4.0,
+    "z_actual_vs_claimed": -1.03
    },
    "10-25%": {
     "settled": 22,
@@ -228,12 +228,12 @@
     "z_actual_vs_claimed": -0.1
    },
    "4": {
-    "settled": 65,
+    "settled": 67,
     "won": 1,
-    "hit_rate": 0.0154,
-    "model_claimed": 0.0525,
-    "expected_wins": 3.4,
-    "z_actual_vs_claimed": -1.35
+    "hit_rate": 0.0149,
+    "model_claimed": 0.0522,
+    "expected_wins": 3.5,
+    "z_actual_vs_claimed": -1.39
    }
   },
   "roi": "NOT MEASURED \u2014 no bookmaker builder price is collected (combo_price_snapshots is SOURCE_REQUIRED). Hit rate vs claimed probability is the honest measure."
