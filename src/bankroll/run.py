@@ -171,9 +171,19 @@ def main(as_of: str | None = None, n_paths: int = 2000) -> int:
     fresh["clv_fresh"] = fresh["clv_share_last_30d"] >= 0.5
 
     _, cur_m = S.replay(bets[bets["date"] >= as_of - pd.Timedelta(days=60)], current)
+    # The production policy's own replayed bankroll path (start 100) - what the dashboard shows as
+    # peak / drawdown / throttle until a real bankroll ledger exists.
+    prod_path, _ = S.replay(bets, current)
     dd_warning = cur_m.get("max_dd", 0) >= 0.08 or not fresh["settlement_fresh"] or not fresh["clv_fresh"]
     proposed, decisions, ev = A.propose(current, bets, as_of, v11, dd_warning=dd_warning)
-    prev_hist = sorted((OUT / "history").glob("*-proposed.json"))
+    # Previous MONTH's latest proposal, ordered by the name (month, re-run number) - never by file
+    # mtime, which a CI checkout resets on every run.
+    def _key(f):
+        stem = f.stem.split("-proposed")
+        r = stem[1].lstrip("-r") if len(stem) > 1 else ""
+        return stem[0], int(r) if r.isdigit() else 1
+    prev_hist = sorted((f for f in (OUT / "history").glob("*-proposed*.json")
+                        if f.stem[:7] < f"{as_of:%Y-%m}"), key=_key)
     prev_prop = json.loads(prev_hist[-1].read_text(encoding="utf-8")) if prev_hist else current
 
     cands = {"A_CURRENT": current, "B_FLAT_0.5": flat(current, 0.005, "flat-0.5"),
@@ -216,14 +226,22 @@ def main(as_of: str | None = None, n_paths: int = 2000) -> int:
     stamp = f"{as_of:%Y-%m}"
     (OUT / "current_policy_recommendation.json").write_text(
         json.dumps({**recommended, "review": verdict, "decisions": decisions}, indent=2, default=str), encoding="utf-8")
-    (OUT / "history" / f"{stamp}-policy.json").write_text(json.dumps(recommended, indent=2, default=str), encoding="utf-8")
-    (OUT / "history" / f"{stamp}-proposed.json").write_text(json.dumps(proposed, indent=2, default=str), encoding="utf-8")
+    # History is append-only: the month's first review keeps its file; a re-run gets -r2, -r3, ...
+    def _free(kind: str):
+        f, k = OUT / "history" / f"{stamp}-{kind}.json", 2
+        while f.exists():
+            f, k = OUT / "history" / f"{stamp}-{kind}-r{k}.json", k + 1
+        return f
+    _free("policy").write_text(json.dumps(recommended, indent=2, default=str), encoding="utf-8")
+    _free("proposed").write_text(json.dumps(proposed, indent=2, default=str), encoding="utf-8")
     (OUT / "v9_bankroll_policy.json").write_text(json.dumps(
         {k: v for k, v in recommended.items() if k not in ("review", "decisions")}, indent=2, default=str), encoding="utf-8")
     table.insert(0, "as_of", as_of.strftime("%Y-%m-%d"))
     table.to_csv(OUT / "policy_candidates.csv", index=False)
     pd.DataFrame(stress_rows).to_csv(OUT / "stress_tests.csv", index=False)
     wf.to_csv(OUT / "walk_forward.csv", index=False)
+    prod_path.assign(peak=prod_path["bankroll"].cummax(),
+                     drawdown=lambda x: 1 - x["bankroll"] / x["peak"]).to_csv(OUT / "production_policy_path.csv", index=False)
     pd.DataFrame(decisions).to_csv(OUT / "track_decisions.csv", index=False)
     pd.DataFrame(ev["convergence"]).to_csv(OUT / "convergence_leagues.csv", index=False)
     (OUT / "track_evidence.json").write_text(json.dumps(ev["tracks"], indent=2, default=str), encoding="utf-8")
