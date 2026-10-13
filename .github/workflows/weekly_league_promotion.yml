@@ -1,0 +1,75 @@
+name: Weekly League Promotion Review
+
+# Has any scouted league become observable and modelable enough to join Wowza? (src/scout/promotion)
+# Reads the scout's committed store + league_status.json, walks every league through the lifecycle,
+# validates only NEW candidates (data quality -> chronological model/market tests -> robustness ->
+# score), and writes output/scout/weekly_promotion_review.json + per-league artifacts.
+#
+# Never touches v9 or v11: no config edits, no PRs, no retraining, no money. A league that passes
+# stops at SHADOW_APPROVED with an onboarding proposal, because v9's new-format model is global and
+# the existing-league regression harness is not built yet (fail closed).
+#
+# Sunday 04:20 UTC (low traffic) with a Monday fallback; running twice is harmless: approved states
+# are sticky and a rejected league waits four weeks before it is re-validated.
+
+on:
+  schedule:
+    - cron: '20 4 * * 0'
+    - cron: '20 4 * * 1'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/weekly_league_promotion.yml', 'src/scout/promotion.py', 'src/scout/registry.py']
+
+concurrency:
+  group: weekly-league-promotion
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Check out v9 (read-only - which leagues Wowza already supports)"
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy pyarrow requests scipy scikit-learn pytest
+      - name: Tests
+        run: python -m pytest tests/test_league_promotion.py -q
+      - name: Refresh scout status
+        run: python -m src.scout.report
+      - name: Weekly promotion review
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: |
+          set -o pipefail
+          python -m src.scout.promotion | tee review.txt
+          python -m src.scout.registry | tee -a review.txt
+          cat review.txt >> "$GITHUB_STEP_SUMMARY"
+      - name: Commit
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for p in output/scout/weekly_promotion_review.json output/scout/WEEKLY_PROMOTION_REVIEW.md \
+                   registry/league_lifecycle.json registry/wowza_league_registry.json output/scout/report.json output/scout/REPORT.md \
+                   output/scout/league_status.json; do
+            [ -e "$p" ] && git add "$p"
+          done
+          [ -d output/scout/promotions ] && git add output/scout/promotions
+          git diff --staged --quiet && exit 0
+          git commit -m "scout: weekly promotion review $(date -u +%G-W%V)"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash -X theirs origin main && git push && exit 0
+            sleep $((RANDOM % 5 + 3))
+          done
+          exit 1
