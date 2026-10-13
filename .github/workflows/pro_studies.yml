@@ -5,6 +5,7 @@ name: Pro Studies (daily)
 #   ou_studies       does the model add anything to the market once the price is known?
 #   evidence         per-cell shrinkage, FDR, sequential CLV -> recommendations (never money)
 #   ou_challenger    market-anchored O/U 2.5 challenger + its first-sight forward record
+#   props_segments   pre-registered props segments (attacking D / M), forward from 2026-10-14
 #   report           output/studies/REPORT.md
 # Research only. Reads v9 through a read-only checkout; never writes into v9.
 #
@@ -55,7 +56,7 @@ jobs:
           key: studies-results-${{ github.run_id }}
           restore-keys: studies-results-
       - name: Tests
-        run: python -m pytest tests/test_studies.py -q
+        run: python -m pytest tests/test_studies.py tests/test_props_segments.py -q
       - name: Run studies
         env:
           APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
@@ -64,7 +65,7 @@ jobs:
           set -o pipefail
           # Argentina's season cache must refresh: it holds matches still being played.
           rm -f experiments/upgrade_studies_2026_10/argentina_fixtures_2026.json
-          for m in argentina_btts ou_studies evidence ou_challenger report; do
+          for m in argentina_btts ou_studies evidence ou_challenger props_segments report; do
             python -m src.studies.$m > "studies_$m.txt" 2>&1 || { echo "::error title=$m failed::"; tail -30 "studies_$m.txt"; exit 1; }
           done
           cat studies_report.txt
@@ -76,7 +77,8 @@ jobs:
           # one path per add: a multi-path add stages nothing if any one is missing
           for p in output/studies/REPORT.md output/studies/argentina_btts.json output/studies/ou_studies.json \
                    output/studies/evidence.json output/studies/ou_challenger.json \
-                   output/studies/ou_challenger_forward.csv; do
+                   output/studies/ou_challenger_forward.csv \
+                   output/studies/props_segments.json output/studies/PROPS_SEGMENTS.md; do
             [ -e "$p" ] && git add "$p"
           done
           git diff --staged --quiet && exit 0
