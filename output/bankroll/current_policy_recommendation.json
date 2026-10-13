@@ -1,0 +1,345 @@
+{
+  "policy_version": "balanced-2026-10-13+review-2026-10",
+  "name": "WOWZA BALANCED",
+  "status": "RECOMMENDED_NOT_WIRED",
+  "note": "Read by src/bankroll_policy.py only. Staking is downstream of prediction: this file never decides whether a tip exists. Updated only by a reviewed PR from the monthly Pro bankroll review.",
+  "generated_at": "2026-10-13 13:00 UTC",
+  "evidence_cutoff": "2026-10-12",
+  "source": "owner brief 2026-10-13 (initial policy); Pro src/bankroll for later versions",
+  "portfolio": {
+    "single_bet_cap": 0.02,
+    "fixture_cap": 0.02,
+    "daily_cap": 0.06,
+    "league_daily_cap": 0.03,
+    "league_market_daily_cap": 0.03,
+    "one_position_per_fixture": true,
+    "hard_max_odds": 3.0
+  },
+  "tier_multipliers": {
+    "SNIPER": 1.1,
+    "MARKSMAN": 0.9
+  },
+  "convergence": {
+    "multiplier": 1.15,
+    "leagues": []
+  },
+  "paper_leagues": [
+    "USA MLS"
+  ],
+  "tracks": {
+    "new_format|BTTS": {
+      "state": "ACTIVE",
+      "base_fraction": 0.0125,
+      "max_odds": 2.6,
+      "evidence_score": 3.0
+    },
+    "new_format|OU25": {
+      "state": "ACTIVE_LOW",
+      "base_fraction": 0.005,
+      "max_odds": 2.5,
+      "evidence_score": 1.0
+    },
+    "new_format|OVER15": {
+      "state": "ACTIVE_LOW",
+      "base_fraction": 0.005,
+      "min_odds": 1.45,
+      "max_odds": 1.9,
+      "evidence_score": 1.5
+    },
+    "standard|OU25": {
+      "state": "PAPER",
+      "base_fraction": 0.0
+    },
+    "standard|BTTS": {
+      "state": "PAPER",
+      "base_fraction": 0.0
+    },
+    "standard|OVER15": {
+      "state": "PAPER",
+      "base_fraction": 0.0
+    },
+    "new_format|OVER35": {
+      "state": "BLOCKED",
+      "base_fraction": 0.0
+    },
+    "standard|OVER35": {
+      "state": "BLOCKED",
+      "base_fraction": 0.0
+    },
+    "player_props": {
+      "state": "BLOCKED_FROM_REAL",
+      "base_fraction": 0.0
+    }
+  },
+  "drawdown_throttle": [
+    [
+      0.08,
+      0.75
+    ],
+    [
+      0.12,
+      0.5
+    ],
+    [
+      0.18,
+      0.0
+    ]
+  ],
+  "review": {
+    "calculation_version": "bankroll-1.0.0",
+    "as_of": "2026-10-13",
+    "evidence_cutoff": "2026-10-12",
+    "freshness": {
+      "last_settled": "2026-10-12",
+      "settlement_fresh": true,
+      "clv_share_last_30d": 0.985,
+      "v11_rows": 20,
+      "clv_fresh": true
+    },
+    "drawdown_warning": false,
+    "walk_forward": {
+      "months_evaluated": 2,
+      "required": 6,
+      "status": "NOT_VALIDATED_INSUFFICIENT_MONTHS"
+    },
+    "BEST_GROWTH_POLICY": "G_PROPOSED_ADAPTIVE",
+    "BEST_SURVIVAL_POLICY": "E_SAFE",
+    "RECOMMENDED_POLICY": "CURRENT_WITH_RISK_REDUCTIONS_ONLY",
+    "recommended_violations": [],
+    "POLICY_CHANGE_RECOMMENDED": "NO",
+    "changes": [],
+    "PRODUCTION_SELECTION_LOGIC_CHANGED": "NO",
+    "PREDICTION_THRESHOLDS_CHANGED": "NO",
+    "PLAYER_PROP_REAL_STAKING_ENABLED": "NO"
+  },
+  "decisions": [
+    {
+      "track": "new_format|BTTS",
+      "previous_state": "ACTIVE",
+      "previous_fraction": 0.0125,
+      "reasons": [
+        "increase blocked: median CLV >= 0 on 30+, quarter-Kelly supports the next band"
+      ],
+      "decision": "KEEP",
+      "proposed_fraction": 0.0125,
+      "proposed_state": "ACTIVE",
+      "n": 111,
+      "matchdays": 37,
+      "roi": 0.3186,
+      "shrunk_roi": 0.0612,
+      "roi_lo90": 0.1832,
+      "roi_hi90": 0.4597,
+      "clv_median": 0.0,
+      "clv_recent_median": 0.0,
+      "top_league": "Argentina Primera Division",
+      "top_league_share": 0.73,
+      "roi_last_30d": 0.339,
+      "roi_last_60d": 0.3186,
+      "roi_last_90d": 0.3186,
+      "roi_full_prospective_record": 0.3186,
+      "delta": 0.0
+    },
+    {
+      "track": "new_format|OU25",
+      "previous_state": "ACTIVE_LOW",
+      "previous_fraction": 0.005,
+      "reasons": [
+        "increase blocked: shrunk ROI >= +1%, 90% lower bound > 0, median CLV >= 0 on 30+, quarter-Kelly supports the next band"
+      ],
+      "decision": "KEEP",
+      "proposed_fraction": 0.005,
+      "proposed_state": "ACTIVE_LOW",
+      "n": 222,
+      "matchdays": 42,
+      "roi": 0.0339,
+      "shrunk_roi": -0.0126,
+      "roi_lo90": -0.1044,
+      "roi_hi90": 0.1643,
+      "clv_median": 0.0,
+      "clv_recent_median": 0.0,
+      "top_league": "Argentina Primera Division",
+      "top_league_share": 0.14,
+      "roi_last_30d": 0.0239,
+      "roi_last_60d": 0.0311,
+      "roi_last_90d": 0.0339,
+      "roi_full_prospective_record": 0.0339,
+      "delta": 0.0
+    },
+    {
+      "track": "new_format|OVER15",
+      "previous_state": "ACTIVE_LOW",
+      "previous_fraction": 0.005,
+      "reasons": [
+        "increase blocked: n >= 100, shrunk ROI >= +1%, 90% lower bound > 0, quarter-Kelly supports the next band"
+      ],
+      "decision": "KEEP",
+      "proposed_fraction": 0.005,
+      "proposed_state": "ACTIVE_LOW",
+      "n": 91,
+      "matchdays": 39,
+      "roi": 0.0354,
+      "shrunk_roi": -0.0113,
+      "roi_lo90": -0.0952,
+      "roi_hi90": 0.1629,
+      "clv_median": 0.0065,
+      "clv_recent_median": 0.0065,
+      "top_league": "Argentina Primera Division",
+      "top_league_share": 0.934,
+      "roi_last_30d": 0.0629,
+      "roi_last_60d": 0.0225,
+      "roi_last_90d": 0.0354,
+      "roi_full_prospective_record": 0.0354,
+      "delta": 0.0
+    },
+    {
+      "track": "standard|OU25",
+      "previous_state": "PAPER",
+      "previous_fraction": 0.0,
+      "reasons": [
+        "paper track; money requires owner approval"
+      ],
+      "decision": "KEEP_PAPER",
+      "proposed_fraction": 0.0,
+      "proposed_state": "PAPER",
+      "n": 117,
+      "matchdays": 31,
+      "roi": -0.1112,
+      "shrunk_roi": -0.0452,
+      "roi_lo90": -0.2853,
+      "roi_hi90": 0.0595,
+      "clv_median": 0.0,
+      "clv_recent_median": 0.0,
+      "top_league": "La Liga 2",
+      "top_league_share": 0.274,
+      "roi_last_30d": 0.0418,
+      "roi_last_60d": -0.1112,
+      "roi_last_90d": -0.1112,
+      "roi_full_prospective_record": -0.1112,
+      "delta": 0.0
+    },
+    {
+      "track": "standard|BTTS",
+      "previous_state": "PAPER",
+      "previous_fraction": 0.0,
+      "reasons": [
+        "paper track; money requires owner approval"
+      ],
+      "decision": "KEEP_PAPER",
+      "proposed_fraction": 0.0,
+      "proposed_state": "PAPER",
+      "n": 10,
+      "matchdays": 8,
+      "roi": -0.007,
+      "shrunk_roi": -0.0292,
+      "roi_lo90": -0.422,
+      "roi_hi90": 0.408,
+      "clv_median": 0.0355,
+      "clv_recent_median": 0.0355,
+      "top_league": "Serie B",
+      "top_league_share": 0.9,
+      "roi_last_30d": -0.0475,
+      "roi_last_60d": -0.007,
+      "roi_last_90d": -0.007,
+      "roi_full_prospective_record": -0.007,
+      "delta": 0.0
+    },
+    {
+      "track": "standard|OVER15",
+      "previous_state": "PAPER",
+      "previous_fraction": 0.0,
+      "reasons": [
+        "paper track; money requires owner approval"
+      ],
+      "decision": "KEEP_PAPER",
+      "proposed_fraction": 0.0,
+      "proposed_state": "PAPER",
+      "n": 1,
+      "matchdays": 1,
+      "roi": -1.0,
+      "shrunk_roi": -0.03,
+      "roi_lo90": null,
+      "roi_hi90": null,
+      "clv_median": 0.0,
+      "clv_recent_median": 0.0,
+      "top_league": "Serie B",
+      "top_league_share": 1.0,
+      "roi_last_30d": null,
+      "roi_last_60d": -1.0,
+      "roi_last_90d": -1.0,
+      "roi_full_prospective_record": -1.0,
+      "delta": 0.0
+    },
+    {
+      "track": "new_format|OVER35",
+      "previous_state": "BLOCKED",
+      "previous_fraction": 0.0,
+      "reasons": [],
+      "decision": "KEEP_BLOCKED",
+      "proposed_fraction": 0.0,
+      "proposed_state": "BLOCKED",
+      "n": 1,
+      "matchdays": 1,
+      "roi": -1.0,
+      "shrunk_roi": -0.03,
+      "roi_lo90": null,
+      "roi_hi90": null,
+      "clv_median": 0.0,
+      "clv_recent_median": 0.0,
+      "top_league": "Norway Eliteserien",
+      "top_league_share": 1.0,
+      "roi_last_30d": -1.0,
+      "roi_last_60d": -1.0,
+      "roi_last_90d": -1.0,
+      "roi_full_prospective_record": -1.0,
+      "delta": 0.0
+    },
+    {
+      "track": "standard|OVER35",
+      "previous_state": "BLOCKED",
+      "previous_fraction": 0.0,
+      "reasons": [],
+      "decision": "KEEP_BLOCKED",
+      "proposed_fraction": 0.0,
+      "proposed_state": "BLOCKED",
+      "n": null,
+      "matchdays": null,
+      "roi": null,
+      "shrunk_roi": null,
+      "roi_lo90": null,
+      "roi_hi90": null,
+      "clv_median": null,
+      "clv_recent_median": null,
+      "top_league": null,
+      "top_league_share": null,
+      "roi_last_30d": null,
+      "roi_last_60d": null,
+      "roi_last_90d": null,
+      "roi_full_prospective_record": null,
+      "delta": 0.0
+    },
+    {
+      "track": "player_props",
+      "previous_state": "BLOCKED_FROM_REAL",
+      "previous_fraction": 0.0,
+      "reasons": [],
+      "decision": "KEEP_BLOCKED",
+      "proposed_fraction": 0.0,
+      "proposed_state": "BLOCKED_FROM_REAL",
+      "n": null,
+      "matchdays": null,
+      "roi": null,
+      "shrunk_roi": null,
+      "roi_lo90": null,
+      "roi_hi90": null,
+      "clv_median": null,
+      "clv_recent_median": null,
+      "top_league": null,
+      "top_league_share": null,
+      "roi_last_30d": null,
+      "roi_last_60d": null,
+      "roi_last_90d": null,
+      "roi_full_prospective_record": null,
+      "delta": 0.0
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+name: Monthly Bankroll Policy Review
+
+# Evidence-driven bankroll allocator (src/bankroll). Once a month: rebuild the prospective record,
+# reassess every model x market track, replay + stress 8 candidate policies, walk-forward test the
+# allocator itself, write a versioned recommendation to output/bankroll/, and - only when a change
+# is justified - open/update a PR against wowza-betting that touches ONLY config/bankroll_policy.json.
+#
+# Never changes prediction logic, thresholds, model selection or eligibility. Never enables player
+# props, MLS, Cloudbet REAL, stakes > 2%, daily exposure > 7.5% or odds > 2.75. Human approval of the
+# PR is required before any policy reaches production.
+#
+# Scheduling: the 2nd (after the previous month settles), with the 3rd and 4th as fallbacks -
+# once-daily crons land hours late or not at all - made idempotent by the month's history file.
+
+on:
+  schedule:
+    - cron: '30 7 2 * *'
+    - cron: '30 7 3 * *'
+    - cron: '30 7 4 * *'
+  workflow_dispatch:
+
+concurrency:
+  group: monthly-bankroll
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Already reviewed this month?
+        id: guard
+        run: |
+          M=$(date -u +%Y-%m)
+          if [ "${{ github.event_name }}" = "schedule" ] && [ -f "output/bankroll/history/${M}-policy.json" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"; echo "review for $M already committed - skipping"
+          else
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Check out v9 (read-only evidence + policy reader)
+        if: steps.guard.outputs.run == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        if: steps.guard.outputs.run == 'true'
+        with:
+          python-version: '3.11'
+      - if: steps.guard.outputs.run == 'true'
+        run: pip install pandas numpy pyarrow requests pytest
+      - name: Tests
+        if: steps.guard.outputs.run == 'true'
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: python -m pytest tests/test_bankroll.py -q
+      - name: Monthly review
+        id: review
+        if: steps.guard.outputs.run == 'true'
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: |
+          set -o pipefail
+          python -m src.bankroll.run | tee review.txt
+          echo "change=$(grep -oP 'POLICY_CHANGE_RECOMMENDED = \K\w+' review.txt)" >> "$GITHUB_OUTPUT"
+          cat review.txt >> "$GITHUB_STEP_SUMMARY"
+      - name: Commit artifacts
+        if: steps.guard.outputs.run == 'true'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for p in output/bankroll/current_policy_recommendation.json output/bankroll/v9_bankroll_policy.json \
+                   output/bankroll/policy_candidates.csv output/bankroll/stress_tests.csv \
+                   output/bankroll/walk_forward.csv output/bankroll/track_decisions.csv \
+                   output/bankroll/convergence_leagues.csv output/bankroll/track_evidence.json \
+                   output/bankroll/MONTHLY_REVIEW.md output/bankroll/pr_body.md output/bankroll/history/*.json; do
+            [ -e "$p" ] && git add "$p"
+          done
+          git diff --staged --quiet && exit 0
+          git commit -m "bankroll: monthly review $(date -u +%Y-%m)"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash -X theirs origin main && git push && exit 0
+            sleep $((RANDOM % 5 + 3))
+          done
+          exit 1
+      # Opening a PR in ANOTHER repo needs a token with contents+pull-requests write on
+      # wowza-betting; GITHUB_TOKEN is scoped to this repo only. Without the secret the step says
+      # so and stops - the recommendation is still committed above.
+      - name: Open / update PR against wowza-betting
+        if: steps.guard.outputs.run == 'true' && steps.review.outputs.change == 'YES'
+        env:
+          GH_TOKEN: ${{ secrets.WOWZA_BETTING_PR_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::notice title=Bankroll PR skipped::Policy change recommended, but secret WOWZA_BETTING_PR_TOKEN is not set. Recommendation committed to output/bankroll/."
+            exit 0
+          fi
+          M=$(date -u +%Y-%m); BR="bankroll/policy-$M"
+          git clone --depth 1 "https://x-access-token:${GH_TOKEN}@github.com/NevixAA/wowza-betting.git" _pr
+          cd _pr
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BR"
+          cp ../output/bankroll/v9_bankroll_policy.json config/bankroll_policy.json
+          git add config/bankroll_policy.json
+          git diff --staged --quiet && { echo "policy file identical - no PR"; exit 0; }
+          git commit -m "bankroll: monthly evidence update $M"
+          git push -f origin "$BR"
+          if gh pr view "$BR" --repo NevixAA/wowza-betting >/dev/null 2>&1; then
+            gh pr edit "$BR" --repo NevixAA/wowza-betting --body-file ../output/bankroll/pr_body.md
+          else
+            gh pr create --repo NevixAA/wowza-betting --base main --head "$BR" \
+              --title "bankroll: monthly evidence update $M" --body-file ../output/bankroll/pr_body.md
+          fi
