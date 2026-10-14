@@ -28,7 +28,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
+      # ref: main, not the triggering SHA: a run queued behind another (concurrency waits) must start
+      # from the latest code and outputs (pro_studies.yml failed this way on 2026-10-14).
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - name: Check out v9 (read-only)
         uses: actions/checkout@v4
         with:
