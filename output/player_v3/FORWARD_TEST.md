@@ -2,7 +2,7 @@
 
 Registered 2026-10-14; counts props on matches from 2026-10-15. Rules frozen in src/player_v3/forward.py and registry/player_v3_forward/registration.json. EDGE needs >= 150 bets, a positive 90% ROI lower bound, positive median CLV and a beat-the-close share above the all-props baseline.
 
-Settled priced props in the window: **0** · generated 2026-10-14 11:41 UTC
+Settled priced props in the window: **0** · generated 2026-10-14 12:25 UTC
 
 | Market | Props | Log loss market / +Wowza | Bets | Hit | ROI (90%) | CLV median | Beat close (baseline) | Verdict |
 |---|---:|---|---:|---:|---|---:|---|---|
