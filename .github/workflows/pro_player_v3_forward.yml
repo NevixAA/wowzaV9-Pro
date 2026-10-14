@@ -1,0 +1,64 @@
+name: Pro Player V3 Forward Test
+
+# Pre-registered forward test of the V3 prop market-residual rule (src/player_v3/forward.py).
+# Daily: rebuild V3 features from v9's committed history (read-only), settle props on matches from
+# 2026-10-15, score them with the FROZEN models + combination, and update
+# output/player_v3/FORWARD_TEST.md. Paper only; nothing is sent and nothing reaches v9.
+#
+# scikit-learn is PINNED to the version that froze the models (registry/player_v3_forward/
+# registration.json -> "sklearn"); unpickling under a different version could silently change scores.
+
+on:
+  schedule:
+    - cron: '40 7 * * *'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pro_player_v3_forward.yml', 'src/player_v3/forward.py']
+  workflow_dispatch:
+
+concurrency:
+  group: pro-player-v3-forward
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  forward:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out v9 (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy pyarrow scipy pytest "scikit-learn==1.9.1"
+      - name: Tests
+        run: python -m pytest tests/test_player_v3_forward.py -q
+      - name: Forward test
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: |
+          set -o pipefail
+          python -m src.player_v3.forward | tee fwd.txt
+          cat fwd.txt >> "$GITHUB_STEP_SUMMARY"
+      - name: Commit
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for p in output/player_v3/forward_test.json output/player_v3/FORWARD_TEST.md; do
+            [ -e "$p" ] && git add "$p"
+          done
+          git diff --staged --quiet && exit 0
+          git commit -m "pro: player v3 forward test $(date -u +%F)"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash -X theirs origin main && git push && exit 0
+            sleep $((RANDOM % 5 + 3))
+          done
+          exit 1
