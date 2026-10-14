@@ -38,7 +38,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
+      # ref: main, not the triggering SHA. 2026-10-14: a push-triggered run and the daily run overlapped;
+      # the queued one (concurrency waits) had checked out the OLD commit, regenerated the same files,
+      # and its rebase conflicted on all 5 retries. Starting from the latest main, a queued run builds
+      # on the previous run's committed output and appends instead of colliding.
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - name: Check out v9 (read-only)
         uses: actions/checkout@v4
         with:
@@ -83,6 +89,8 @@ jobs:
           done
           git diff --staged --quiet && exit 0
           git commit -m "pro: studies $(date -u '+%Y-%m-%d')"
+          # No -X theirs on purpose: ou_challenger_forward.csv is first-sight append-only, and "newer
+          # wins" would replace another run's earlier rows. Overlap is prevented at checkout instead.
           for i in 1 2 3 4 5; do
             git pull --rebase --autostash origin main && git push && exit 0
             sleep $((RANDOM % 5 + 3))
