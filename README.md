@@ -44,7 +44,13 @@ and useful — it still gets recorded, settled and CLV-graded.
 |---|---|---|---|
 | **League Scout** — odds (Pinnacle, Bet365, cross-book median) for O/U 1.5/2.5/3.5 + BTTS, results + 4 past seasons, a baseline goals model frozen before kickoff, for ~200 leagues Wowza does not bet (owner's 30 lower tiers first) | `src/scout/` | `output/scout/REPORT.md`, `league_status.json` | every 2 h (`pro_scout.yml`) |
 | **Tip scoreboard** — how the 1X2 and Bet Builder tips Pro SENDS are doing; voided-leg combos kept separate; builder ROI not reported (no builder price exists) | `src/pipelines/tip_scoreboard.py` | `output/TIP_SCOREBOARD.md` + daily Telegram recap | 05–11 UTC (`pro_tip_scoreboard.yml`) |
-| **Upgrade studies** — Argentina BTTS controls; UNDER diagnosis; does the model add to the market (out-of-sample residual test); per-cell evidence (shrinkage, BH-FDR, reality check, sequential CLV, CUSUM); market-anchored O/U challenger with a first-sight forward record | `src/studies/` | `output/studies/REPORT.md` | Mon + Thu (`pro_studies.yml`) |
+| **Upgrade studies** — Argentina BTTS controls; UNDER diagnosis; does the model add to the market (out-of-sample residual test); per-cell evidence (shrinkage, BH-FDR, reality check, sequential CLV, CUSUM); market-anchored O/U challenger with a first-sight forward record; pre-registered props segments | `src/studies/` | `output/studies/REPORT.md` | daily (`pro_studies.yml`) |
+| **Player Model V3 / Edge Lab** — new player features (shrunk form, usage share, opponent personnel, roles), SOT count models, expected minutes, and the market-residual test on real prop prices | `src/player_v3/` | `output/player_v3/PLAYER_V3_REPORT.md` | on demand |
+| **Player V3 forward test** — the prop market-residual rule, frozen 2026-10-14 and tested only on props settled from 2026-10-15 (150 per market to decide) | `src/player_v3/forward.py` | `output/player_v3/FORWARD_TEST.md` | daily (`pro_player_v3_forward.yml`) |
+| **Calibration form** — v9's Platt (on the raw probability) vs Platt on log-odds, same models otherwise | `src/studies/calibration_form.py` | `output/studies/CALIBRATION_FORM.md` | on demand |
+| **Price Trader lab** — can a Wowza back be greened later at a real price for a profit? Hedge maths, exit rules, placebo, chronological holdout, paper engine | `src/price_trader/` | `output/price_trader/PRICE_TRADER_REPORT.md` | daily (`pro_price_trader.yml`) |
+| **Bankroll review / league promotion** — monthly staking-policy recommendation; weekly league promotion review + canonical league registry | `src/bankroll/`, `src/scout/promotion.py`, `src/scout/registry.py` | `output/bankroll/`, `output/scout/` | monthly / weekly |
+| **Research index** — every study's latest verdict in one file; the v9 dashboard's Pro page ("Latest findings") renders it, so a new result shows up without a dashboard change | `src/monitoring/research_index.py` | `output/research_index.json` | after each study run (`pro_research_index.yml`) |
 
 Findings as of 2026-10-08 (details in `output/studies/REPORT.md`):
 
@@ -55,6 +61,22 @@ Findings as of 2026-10-08 (details in `output/studies/REPORT.md`):
   UNDER "edges" are matches the market rates high-scoring — and the market is right. Adding the
   model to the market improves no market out of sample. Owner decision: no change to v9 before
   ~2026-10-29, while the challenger's forward record builds.
+
+Findings added 2026-10-14:
+
+* **Team markets and player props give different answers, and both are true.** For team O/U and BTTS
+  the model adds nothing once the price is known. For **player props**, Player V3 adds a little to
+  the price out of sample: goals, SOT 1+, 2+ and 3+ (log-loss −0.005 to −0.011). That is accuracy only.
+  No prop bet has shown a profit, so props stay **paper**. The pre-registered forward test decides
+  (~4 months to reach 150 per market).
+* **Calibration form:** Platt on log-odds beats v9's Platt-on-probability on **12 of 12** models
+  (player and team). Team models stay compressed (calibration slope > 1). Adopting it in v9 is an
+  architecture change and needs owner approval plus a shadow period.
+* **Price Trader: no tradeable edge.** Entered at Wowza's real signal, the price moved toward Wowza on
+  41.5% of 934 trades. A model-free placebo did as well. Locking in a profit lost 9.6–10.6% per trade
+  under every exit rule, because the ~5% bookmaker margin is bigger than the moves. V11's 70%+ toward
+  rates are fair-probability drift, not trades. The paper engine keeps running. Instant arbitrage
+  showed up on 1% of snapshots and stays theoretical until stake limits are known.
 
 Data traps found on the way, worth knowing before any new study:
 

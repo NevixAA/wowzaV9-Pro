@@ -1,0 +1,55 @@
+name: Pro Research Index
+
+# Rebuilds output/research_index.json — every study's LATEST verdict in one file — which the v9
+# dashboard's Pro page renders as-is (owner, 2026-10-14: "make sure it's updated every time we learn
+# new stuff"). Runs after each study workflow finishes, plus a daily fallback because GitHub does not
+# always deliver scheduled or chained runs. Reads Pro's own committed outputs only; no API calls.
+
+on:
+  workflow_run:
+    workflows: ["Pro Studies (daily)", "Pro Price Trader (paper)", "Pro Player V3 Forward Test",
+                "Monthly Bankroll Policy Review", "Weekly League Promotion Review"]
+    types: [completed]
+  schedule:
+    - cron: '30 9 * * *'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pro_research_index.yml', 'src/monitoring/research_index.py']
+  workflow_dispatch:
+
+concurrency:
+  group: pro-research-index
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main          # the study's commit, not the SHA that triggered the chained run
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas
+      - name: Build index
+        run: python -m src.monitoring.research_index | tee index.txt
+      - name: Commit
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/research_index.json
+          git diff --staged --quiet && exit 0
+          git commit -m "pro: research index $(date -u +%F)"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash -X theirs origin main && git push && exit 0
+            sleep $((RANDOM % 5 + 3))
+          done
+          exit 1
+      - name: Summary
+        if: always()
+        run: cat index.txt >> "$GITHUB_STEP_SUMMARY" || true
