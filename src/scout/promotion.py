@@ -33,11 +33,12 @@ VALIDATION (per candidate, independently)
                 candidate · >= 75 SHADOW_APPROVED
 
 INTEGRATION — FAIL CLOSED. v9's new-format model is ONE global model: adding a league changes every
-new-format league's model. The brief forbids integrating without an existing-league regression
-test, and that harness (v9 champion vs champion + new league on the old production holdout) is not
-built yet. So a passing league stops at SHADOW_APPROVED with integration_route
-"PENDING_REGRESSION_HARNESS": an onboarding proposal is written (exact v9 config entries, ids,
-season type) but NO PR is opened and NO config changes. Money deployment is never decided here.
+new-format league's model. A league reaching SHADOW_APPROVED is therefore run through the
+existing-league regression harness (src/scout/regression_harness.py, built 2026-10-14: champion vs
+champion + new league, scored on existing leagues only). integration_route becomes
+REGRESSION_PASSED_AWAITING_OWNER or REGRESSION_FAILED (any harness error fails closed). Either way an
+onboarding proposal is written (exact v9 config entries, ids, season type) but NO PR is opened and NO
+config changes. Money deployment is never decided here.
 """
 from __future__ import annotations
 
@@ -291,12 +292,27 @@ def validate(row: dict, extra: dict, res, odds, mdl, week: str) -> dict:
         hard.append("pathological model calibration (gap > 15 pts)")
     new = ("VALIDATION_FAILED" if hard or score < 50 else "REJECTED_TEMPORARILY" if score < 75 else "SHADOW_APPROVED")
     supported = [r["market"] for _, r in mm.iterrows() if r.get("verdict") in ("MODEL_ADDS_TO_MARKET", "MODEL_PREDICTS_MARKET_BETTER")]
+    # Existing-league regression harness (src/scout/regression_harness.py, built 2026-10-14): v9's
+    # new-format model is ONE global model, so a league that passes here must also not hurt the leagues
+    # already in it. Runs only for SHADOW_APPROVED leagues (~5-8 min each). Any error fails closed.
+    route, regression = "NONE", None
+    if new == "SHADOW_APPROVED":
+        try:
+            from src.scout import regression_harness as RH
+            regression = RH.run(lid)
+            RH.save(regression)
+            route = {"PASS": "REGRESSION_PASSED_AWAITING_OWNER",
+                     "FAIL": "REGRESSION_FAILED"}.get(regression["verdict"], "REGRESSION_" + regression["verdict"])
+        except Exception as e:                                       # noqa: BLE001 - fail closed
+            route, regression = "REGRESSION_HARNESS_ERROR", {"error": f"{type(e).__name__}: {e}"}
     proposal = {
         "league_id": lid, "league": f"{row['country']} {row['league']}", "week": week,
         "promotion_score": score, "score_parts": parts, "state": new,
-        "integration_route": "PENDING_REGRESSION_HARNESS" if new == "SHADOW_APPROVED" else "NONE",
-        "integration_note": "v9 new-format is one global model; adding a league needs the existing-league "
-                            "regression test first (not yet built). No PR opened, no config changed.",
+        "integration_route": route,
+        "regression": {k: v for k, v in (regression or {}).items() if k != "targets"} or None,
+        "integration_note": "v9 new-format is one global model; the existing-league regression harness "
+                            "(output/scout/regression/<id>.md) must PASS, and onboarding stays an owner "
+                            "decision. No PR opened, no config changed.",
         "v9_config_entries_needed": {"NEW_FORMAT_LEAGUES": True, "API_FOOTBALL_ONLY_LEAGUES": True,
                                      "ENABLED_LEAGUES": "paper", "PAPER_LEAGUES": True,
                                      "api_football_id": lid, "current_season": extra.get("current_season")},
@@ -309,7 +325,7 @@ def validate(row: dict, extra: dict, res, odds, mdl, week: str) -> dict:
     (out_dir / "PROMOTION_REPORT.md").write_text(report_md(row, extra, dq, mm, proposal), encoding="utf-8")
     return {"new_state": new, "data_quality": "PASS", "promotion_score": score, "score_parts": parts,
             "supported_markets": supported, "paper_markets": supported, "hard_fails": hard,
-            "reason": hard or [f"score {score}"]}
+            "integration_route": route, "reason": hard or [f"score {score}"]}
 
 
 def _md_table(df: pd.DataFrame) -> str:
@@ -431,7 +447,7 @@ def summary(r: dict) -> str:
     for name in r["promoted"]:
         d = r["details"][name]
         L += [f"PROMOTED (SHADOW): {name}", f"  Score: {d.get('promotion_score')}", f"  Paper markets: {d.get('paper_markets')}",
-              "  Deployment: PAPER · integration pending the existing-league regression harness", ""]
+              f"  Deployment: PAPER · existing-league regression: {d.get('integration_route', '?')}", ""]
     near = sorted(((n, d) for n, d in r["details"].items() if "distance" in d),
                   key=lambda kv: sum(kv[1]["distance"].values()))[:5]
     if near:

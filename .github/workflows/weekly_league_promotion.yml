@@ -31,7 +31,8 @@ permissions:
 jobs:
   review:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # 90, not 45: a SHADOW_APPROVED league now runs the existing-league regression harness (~5-8 min each).
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
       - name: "Check out v9 (read-only - which leagues Wowza already supports)"
@@ -45,7 +46,7 @@ jobs:
           python-version: '3.11'
       - run: pip install pandas numpy pyarrow requests scipy scikit-learn pytest
       - name: Tests
-        run: python -m pytest tests/test_league_promotion.py -q
+        run: python -m pytest tests/test_league_promotion.py tests/test_regression_harness.py -q
       - name: Refresh scout status
         run: python -m src.scout.report
       - name: Weekly promotion review
@@ -66,6 +67,7 @@ jobs:
             [ -e "$p" ] && git add "$p"
           done
           [ -d output/scout/promotions ] && git add output/scout/promotions
+          [ -d output/scout/regression ] && git add output/scout/regression
           git diff --staged --quiet && exit 0
           git commit -m "scout: weekly promotion review $(date -u +%G-W%V)"
           for i in 1 2 3 4 5; do

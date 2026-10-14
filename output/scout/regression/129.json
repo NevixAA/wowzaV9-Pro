@@ -1,0 +1,392 @@
+{
+ "league_id": 129,
+ "registered_on": "2026-10-14",
+ "cut_date": "2025-04-29",
+ "existing_leagues": 15,
+ "candidate_rows_total": 3320,
+ "candidate_rows_before_cut": 2307,
+ "recipe": "replica of v9 team recipe (LR C=0.5 + GB 300x4, Platt last 15%, mean); goals-only families",
+ "targets": {
+  "over25": {
+   "n_holdout": 8080,
+   "logloss_champion": 0.67319,
+   "logloss_challenger": 0.67439,
+   "pooled_delta": 0.00121,
+   "pooled_ci90": [
+    0.0001,
+    0.0024
+   ],
+   "leagues_significantly_worse": [
+    "Japan J-League"
+   ],
+   "per_league": [
+    {
+     "league": "Argentina Primera Division",
+     "n": 946,
+     "delta": -0.00178,
+     "ci90": [
+      -0.0073,
+      0.004
+     ],
+     "bonferroni_lower": -0.0104,
+     "significantly_worse": false
+    },
+    {
+     "league": "Austrian Bundesliga",
+     "n": 316,
+     "delta": -0.00022,
+     "ci90": [
+      -0.0051,
+      0.0049
+     ],
+     "bonferroni_lower": -0.0082,
+     "significantly_worse": false
+    },
+    {
+     "league": "Brazil Serie A",
+     "n": 762,
+     "delta": 0.00035,
+     "ci90": [
+      -0.0029,
+      0.0038
+     ],
+     "bonferroni_lower": -0.0052,
+     "significantly_worse": false
+    },
+    {
+     "league": "China Super League",
+     "n": 574,
+     "delta": 0.00092,
+     "ci90": [
+      -0.0021,
+      0.0041
+     ],
+     "bonferroni_lower": -0.0043,
+     "significantly_worse": false
+    },
+    {
+     "league": "Denmark Superliga",
+     "n": 285,
+     "delta": 0.00376,
+     "ci90": [
+      -0.001,
+      0.0083
+     ],
+     "bonferroni_lower": -0.0034,
+     "significantly_worse": false
+    },
+    {
+     "league": "Finland Veikkausliiga",
+     "n": 440,
+     "delta": -0.0002,
+     "ci90": [
+      -0.0027,
+      0.0023
+     ],
+     "bonferroni_lower": -0.0044,
+     "significantly_worse": false
+    },
+    {
+     "league": "Ireland Premier Division",
+     "n": 425,
+     "delta": -0.00093,
+     "ci90": [
+      -0.0051,
+      0.0034
+     ],
+     "bonferroni_lower": -0.0077,
+     "significantly_worse": false
+    },
+    {
+     "league": "Japan J-League",
+     "n": 498,
+     "delta": 0.00787,
+     "ci90": [
+      0.0041,
+      0.0117
+     ],
+     "bonferroni_lower": 0.002,
+     "significantly_worse": true
+    },
+    {
+     "league": "K-League 1",
+     "n": 325,
+     "delta": 0.00259,
+     "ci90": [
+      -0.0001,
+      0.0054
+     ],
+     "bonferroni_lower": -0.002,
+     "significantly_worse": false
+    },
+    {
+     "league": "Mexico Liga MX",
+     "n": 492,
+     "delta": 0.00322,
+     "ci90": [
+      -0.0009,
+      0.0074
+     ],
+     "bonferroni_lower": -0.0039,
+     "significantly_worse": false
+    },
+    {
+     "league": "Norway Eliteserien",
+     "n": 504,
+     "delta": -0.00234,
+     "ci90": [
+      -0.0062,
+      0.0015
+     ],
+     "bonferroni_lower": -0.0084,
+     "significantly_worse": false
+    },
+    {
+     "league": "Romanian Superliga",
+     "n": 404,
+     "delta": 0.00205,
+     "ci90": [
+      -0.0016,
+      0.006
+     ],
+     "bonferroni_lower": -0.004,
+     "significantly_worse": false
+    },
+    {
+     "league": "Saudi Pro League",
+     "n": 393,
+     "delta": -0.00042,
+     "ci90": [
+      -0.0034,
+      0.0027
+     ],
+     "bonferroni_lower": -0.0054,
+     "significantly_worse": false
+    },
+    {
+     "league": "Sweden Allsvenskan",
+     "n": 717,
+     "delta": 0.00354,
+     "ci90": [
+      0.0004,
+      0.0067
+     ],
+     "bonferroni_lower": -0.0014,
+     "significantly_worse": false
+    },
+    {
+     "league": "USA MLS",
+     "n": 999,
+     "delta": 0.00177,
+     "ci90": [
+      -0.0015,
+      0.005
+     ],
+     "bonferroni_lower": -0.0036,
+     "significantly_worse": false
+    }
+   ],
+   "bonferroni_quantile": 0.00333,
+   "seed_control": {
+    "pooled_delta": 0.00012,
+    "pooled_ci90": [
+     -0.0007,
+     0.0009
+    ],
+    "mean_abs_league_delta": 0.00112,
+    "leagues_flagged": []
+   },
+   "verdict": "FAIL"
+  },
+  "btts": {
+   "n_holdout": 8080,
+   "logloss_champion": 0.67266,
+   "logloss_challenger": 0.67318,
+   "pooled_delta": 0.00052,
+   "pooled_ci90": [
+    -0.0004,
+    0.0014
+   ],
+   "leagues_significantly_worse": [],
+   "per_league": [
+    {
+     "league": "Argentina Primera Division",
+     "n": 946,
+     "delta": -0.00161,
+     "ci90": [
+      -0.0052,
+      0.0023
+     ],
+     "bonferroni_lower": -0.0078,
+     "significantly_worse": false
+    },
+    {
+     "league": "Austrian Bundesliga",
+     "n": 316,
+     "delta": 0.00034,
+     "ci90": [
+      -0.0038,
+      0.0044
+     ],
+     "bonferroni_lower": -0.0061,
+     "significantly_worse": false
+    },
+    {
+     "league": "Brazil Serie A",
+     "n": 762,
+     "delta": 0.00251,
+     "ci90": [
+      -0.0007,
+      0.0058
+     ],
+     "bonferroni_lower": -0.0025,
+     "significantly_worse": false
+    },
+    {
+     "league": "China Super League",
+     "n": 574,
+     "delta": 0.00011,
+     "ci90": [
+      -0.0031,
+      0.0032
+     ],
+     "bonferroni_lower": -0.0052,
+     "significantly_worse": false
+    },
+    {
+     "league": "Denmark Superliga",
+     "n": 285,
+     "delta": -0.00251,
+     "ci90": [
+      -0.0066,
+      0.0014
+     ],
+     "bonferroni_lower": -0.0097,
+     "significantly_worse": false
+    },
+    {
+     "league": "Finland Veikkausliiga",
+     "n": 440,
+     "delta": 0.00132,
+     "ci90": [
+      -0.0023,
+      0.0047
+     ],
+     "bonferroni_lower": -0.0045,
+     "significantly_worse": false
+    },
+    {
+     "league": "Ireland Premier Division",
+     "n": 425,
+     "delta": 0.00454,
+     "ci90": [
+      0.0008,
+      0.0081
+     ],
+     "bonferroni_lower": -0.0011,
+     "significantly_worse": false
+    },
+    {
+     "league": "Japan J-League",
+     "n": 498,
+     "delta": 0.002,
+     "ci90": [
+      -0.0016,
+      0.0056
+     ],
+     "bonferroni_lower": -0.0039,
+     "significantly_worse": false
+    },
+    {
+     "league": "K-League 1",
+     "n": 325,
+     "delta": -0.00162,
+     "ci90": [
+      -0.0046,
+      0.0013
+     ],
+     "bonferroni_lower": -0.0067,
+     "significantly_worse": false
+    },
+    {
+     "league": "Mexico Liga MX",
+     "n": 492,
+     "delta": -0.00311,
+     "ci90": [
+      -0.0069,
+      0.0008
+     ],
+     "bonferroni_lower": -0.0094,
+     "significantly_worse": false
+    },
+    {
+     "league": "Norway Eliteserien",
+     "n": 504,
+     "delta": 0.00296,
+     "ci90": [
+      -0.0001,
+      0.0061
+     ],
+     "bonferroni_lower": -0.0022,
+     "significantly_worse": false
+    },
+    {
+     "league": "Romanian Superliga",
+     "n": 404,
+     "delta": -0.0007,
+     "ci90": [
+      -0.0036,
+      0.0023
+     ],
+     "bonferroni_lower": -0.0059,
+     "significantly_worse": false
+    },
+    {
+     "league": "Saudi Pro League",
+     "n": 393,
+     "delta": -0.00254,
+     "ci90": [
+      -0.0056,
+      0.0006
+     ],
+     "bonferroni_lower": -0.0076,
+     "significantly_worse": false
+    },
+    {
+     "league": "Sweden Allsvenskan",
+     "n": 717,
+     "delta": 0.00092,
+     "ci90": [
+      -0.002,
+      0.0038
+     ],
+     "bonferroni_lower": -0.004,
+     "significantly_worse": false
+    },
+    {
+     "league": "USA MLS",
+     "n": 999,
+     "delta": 0.00203,
+     "ci90": [
+      -0.0009,
+      0.005
+     ],
+     "bonferroni_lower": -0.0028,
+     "significantly_worse": false
+    }
+   ],
+   "bonferroni_quantile": 0.00333,
+   "seed_control": {
+    "pooled_delta": 0.00043,
+    "pooled_ci90": [
+     -0.0005,
+     0.0013
+    ],
+    "mean_abs_league_delta": 0.00176,
+    "leagues_flagged": []
+   },
+   "verdict": "PASS"
+  }
+ },
+ "verdict": "FAIL"
+}
