@@ -1,0 +1,96 @@
+{
+ "calculation_version": "price_trader-1.0.0",
+ "generated_at": "2026-10-14 12:04 UTC",
+ "trades": 1256,
+ "tradable": 1002,
+ "status": {
+  "OK": 1002,
+  "NO_ENTRY_PRICE": 253,
+  "NO_PRICE_DATA": 1
+ },
+ "chronological": {
+  "train_until": "2026-09-07",
+  "validation_until": "2026-09-26",
+  "selected_league_markets": [],
+  "exit_rule_chosen_on_validation": "POLICY_V1",
+  "holdout_all_signals": {
+   "set": "holdout, all signals",
+   "n_signals": 323,
+   "n_greened": 290,
+   "green_rate": 0.0379,
+   "avg_locked_roi": -0.10727,
+   "median_locked_roi": -0.1,
+   "total_locked_units": -31.108,
+   "avg_roi_on_capital": -0.04565,
+   "avg_hours_held": 91.1,
+   "worst_trade": -0.3667,
+   "roi_p05_p50_p95": [
+    -0.11262,
+    -0.10724,
+    -0.10197
+   ]
+  },
+  "holdout_selected": {
+   "set": "holdout, train-selected league x markets",
+   "n_signals": 0,
+   "n_greened": 0,
+   "green_rate": null,
+   "avg_locked_roi": null,
+   "median_locked_roi": null,
+   "total_locked_units": 0.0,
+   "avg_roi_on_capital": null,
+   "avg_hours_held": null,
+   "worst_trade": null,
+   "roi_p05_p50_p95": [
+    null,
+    null,
+    null
+   ]
+  }
+ },
+ "instant_arb": {
+  "snapshots_checked": 48466,
+  "INSTANT_ARB_AVAILABLE_share": 0.01,
+  "arb_snapshots": 486,
+  "median_margin": 0.0084,
+  "note": "bookmaker-only, before stake limits; THEORETICAL_ONLY on capacity"
+ },
+ "primary": {
+  "rule": "POLICY_V1",
+  "direction": "WOWZA",
+  "n_signals": 1001,
+  "n_greened": 934,
+  "green_rate": 0.0749,
+  "avg_locked_roi": -0.09666,
+  "median_locked_roi": -0.09173,
+  "total_locked_units": -90.282,
+  "avg_roi_on_capital": -0.04174,
+  "avg_hours_held": 99.3,
+  "worst_trade": -0.38,
+  "roi_p05_p50_p95": [
+   -0.10198,
+   -0.09671,
+   -0.09119
+  ]
+ },
+ "movement_all": [
+  {
+   "league": "ALL",
+   "market": "ALL",
+   "n": 934,
+   "wowza_toward_rate": 0.4154,
+   "wowza_green_rate": 0.0675,
+   "anchor_green_rate": 0.0632,
+   "net_locked_wowza": -89.834,
+   "net_locked_anchor": -86.531,
+   "net_locked_random": -84.164,
+   "wowza_minus_anchor_per_trade": -0.00354,
+   "ci90": [
+    -0.00645,
+    -0.00078
+   ],
+   "avg_favourable": 0.0366,
+   "avg_adverse": -0.1058
+  }
+ ]
+}

@@ -1,0 +1,59 @@
+name: Pro Price Trader (paper)
+
+# Price Trader / Arbitrage Lab (src/price_trader). Daily: rebuild trades + price paths from v9's
+# recorded per-book quotes (read-only), re-run the lab, advance the PAPER engine (policy V1). No money,
+# no Telegram, nothing reaches v9.
+
+on:
+  schedule:
+    - cron: '50 7 * * *'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pro_price_trader.yml', 'src/price_trader/**']
+  workflow_dispatch:
+
+concurrency:
+  group: pro-price-trader
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out v9 (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy pyarrow pytest
+      - name: Tests
+        run: python -m pytest tests/test_price_trader_hedge.py -q
+      - name: Lab + paper engine
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: |
+          set -o pipefail
+          python -m src.price_trader.lab > lab.txt
+          python -m src.price_trader.paper | tee paper.txt
+          cat paper.txt >> "$GITHUB_STEP_SUMMARY"
+      - name: Commit
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/price_trader
+          git diff --staged --quiet && exit 0
+          git commit -m "pro: price trader $(date -u +%F)"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash -X theirs origin main && git push && exit 0
+            sleep $((RANDOM % 5 + 3))
+          done
+          exit 1

@@ -24,7 +24,7 @@ from config import pro_config as cfg
 OUT = cfg.REGISTRY_DIR / "wowza_league_registry.json"
 V9_NAMES = ("STANDARD_FORMAT_LEAGUES", "NEW_FORMAT_LEAGUES", "ENABLED_LEAGUES", "PAPER_LEAGUES",
             "API_FOOTBALL_ONLY_LEAGUES", "API_FOOTBALL_EXTRA_SEASONS", "FOOTBALL_DATA_LEAGUES",
-            "API_FOOTBALL_IDS", "ODDS_API_SPORT_KEYS")
+            "API_FOOTBALL_IDS", "ODDS_API_SPORT_KEYS", "PROVIDER_UNSUPPORTED")
 
 
 def literal_assignments(path, names) -> dict:
@@ -55,6 +55,9 @@ def build() -> dict:
     af_only, fd = set(v9.get("API_FOOTBALL_ONLY_LEAGUES", ())), v9.get("FOOTBALL_DATA_LEAGUES", {})
     ids, odds_keys = v9.get("API_FOOTBALL_IDS", {}), v9.get("ODDS_API_SPORT_KEYS", {})
     props = pm.get("PROP_LEAGUES", {})
+    # Leagues v9 documents as NOT offered by a provider (e.g. OddsAPI has no Romanian competition at
+    # any tier, config.PROVIDER_UNSUPPORTED). A missing key there is a known fact, not a divergence.
+    unsupported = v9.get("PROVIDER_UNSUPPORTED", {}) or {}
     leagues = sorted(std | nf | enabled | paper | af_only | set(ids) | set(odds_keys) | set(props))
     rows = []
     for lg in leagues:
@@ -85,7 +88,10 @@ def build() -> dict:
         if (r["standard_supported"] or r["new_format_supported"]) and r["api_football_id"] is None:
             div.append(f"{lg}: model league with no API-Football id")
         if lg in enabled and lg not in paper and r["odds_api_key"] is None and r["source"] != "api_football_only":
-            div.append(f"{lg}: live league with no OddsAPI sport key")
+            if lg in unsupported:
+                r["provider_note"] = str(unsupported[lg].get("reason", "provider does not offer it"))
+            else:
+                div.append(f"{lg}: live league with no OddsAPI sport key")
         if lg in paper and lg not in enabled:
             div.append(f"{lg}: PAPER but not ENABLED (would stop collection)")
     return {"generated_from": "v9 config.py + player_model/config.py (ast, read-only) + scout lifecycle",
