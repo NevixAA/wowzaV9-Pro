@@ -76,6 +76,20 @@ def _cal_shadow():
             "date": c.get("generated_at"), "key": fam, "report": "output/studies/CALIBRATION_SHADOW.md"}
 
 
+def _fantasy_v3():
+    f = _j("studies/fantasy_v3.json")
+    if not f:
+        return None
+    fair = (f.get("fair_slice") or {}).get("variants", {})
+    v3, v9 = fair.get("V3_FULL", {}), fair.get("V9", {})
+    return {"status": f"Fantasy (FPL): V3 vs v9 on players who played last week - V3 {v3.get('verdict')}, "
+                      f"top-11 {v9.get('top11_pts')} -> {v3.get('top11_pts')} pts/week {v3.get('top11_diff_ci90')}",
+            "date": f.get("generated_at"),
+            "key": {v: f"{e.get('verdict', 'baseline')} · MAE {e['mae']} · top-11 {e['top11_pts']} · captain {e['captain_pts']}"
+                    for v, e in fair.items()},
+            "report": "output/studies/FANTASY_V3.md"}
+
+
 def _segments():
     s = _j("studies/props_segments.json")
     if not s:
@@ -142,6 +156,7 @@ def _ou_studies():
 STUDIES = [
     ("player_v3", "Player Model V3 / Edge Lab", "players", _player_v3),
     ("player_v3_forward", "Player V3 forward test (pre-registered)", "players", _forward),
+    ("fantasy_v3", "Fantasy (FPL): v9 vs Player V3 projections", "players", _fantasy_v3),
     ("calibration_form", "Calibration form: v9 vs log-odds Platt", "models", _calibration),
     ("calibration_shadow", "Calibration shadow in v9 (pre-registered)", "models", _cal_shadow),
     ("props_segments", "Props segments: attacking D / M (pre-registered)", "players", _segments),
