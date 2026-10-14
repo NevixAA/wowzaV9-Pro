@@ -1,0 +1,30 @@
+{
+ "calculation_version": "player_v3-0.1.0",
+ "generated_at": "2026-10-14 11:26 UTC",
+ "artifacts": {
+  "CURRENT_STATE.md": true,
+  "minutes_validation.csv": true,
+  "feature_variants.csv": true,
+  "usage_share_study.csv": true,
+  "matchup_study.csv": true,
+  "role_study.csv": true,
+  "sot_distribution_comparison.csv": true,
+  "feature_family_ablation.csv": true,
+  "player_calibration.csv": true,
+  "player_market_residual.csv": true,
+  "player_market_residual_by_league.csv": true,
+  "player_market_residual_by_role.csv": true,
+  "player_edge_cells.csv": true,
+  "player_strategy_check.csv": true
+ },
+ "not_evaluated": [
+  "assists and cards markets (targets not in the feature cache this pass)",
+  "goals count model (GOAL_COUNT_MODEL_BEATS_BINARY = INSUFFICIENT_DATA)",
+  "side-specific attacker-vs-defender matchups (no LW/RB positions in the data)"
+ ],
+ "leakage_tests": [
+  "tests/test_player_v3_data.py",
+  "tests/test_player_v3_features.py",
+  "tests/test_player_v3_minutes.py"
+ ]
+}
