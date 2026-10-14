@@ -1,6 +1,6 @@
-# League scout — 2026-10-13T21:36 UTC
+# League scout — 2026-10-14T01:29 UTC
 
-Results stored: 238,711 · fixtures priced: 1,646 · model frozen: 1,570
+Results stored: 238,714 · fixtures priced: 1,672 · model frozen: 1,596
 
 COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kickoff close
 
@@ -19,20 +19,20 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 1 | Turkey 1. Lig | ou35 | 13 | COLLECTING | -0.009 | – | -22.8% (5) |
 | 1 | Turkey 1. Lig | btts | 13 | COLLECTING | +0.022 | – | -61.8% (5) |
 | 1 | England National League | ou15 | 12 | COLLECTING | +0.040 | – | -100.0% (1) |
-| 1 | USA USL Championship | ou15 | 12 | COLLECTING | +0.019 | – | +175.0% (4) |
+| 1 | Brazil Serie B | ou15 | 12 | COLLECTING | +0.061 | – | +63.3% (3) |
+| 1 | USA USL Championship | ou15 | 12 | COLLECTING | +0.015 | – | +175.0% (4) |
 | 1 | England National League | ou25 | 12 | COLLECTING | +0.027 | – | +33.8% (4) |
-| 1 | USA USL Championship | ou25 | 12 | COLLECTING | -0.030 | – | +7.9% (7) |
+| 1 | Brazil Serie B | ou25 | 12 | COLLECTING | +0.005 | – | +36.7% (3) |
+| 1 | USA USL Championship | ou25 | 12 | COLLECTING | -0.034 | – | +7.9% (7) |
 | 1 | England National League | ou35 | 12 | COLLECTING | +0.030 | – | -16.8% (4) |
-| 1 | USA USL Championship | ou35 | 12 | COLLECTING | +0.056 | – | -36.2% (6) |
+| 1 | Brazil Serie B | ou35 | 12 | COLLECTING | +0.191 | – | -13.5% (6) |
+| 1 | USA USL Championship | ou35 | 12 | COLLECTING | +0.052 | – | -36.2% (6) |
 | 1 | England National League | btts | 12 | COLLECTING | -0.046 | – | -100.0% (1) |
-| 1 | USA USL Championship | btts | 12 | COLLECTING | -0.074 | – | +43.5% (4) |
-| 1 | Brazil Serie B | ou15 | 11 | COLLECTING | +0.055 | – | +75.0% (2) |
+| 1 | Brazil Serie B | btts | 12 | COLLECTING | -0.067 | – | +91.0% (1) |
+| 1 | USA USL Championship | btts | 12 | COLLECTING | -0.076 | – | +43.5% (4) |
 | 1 | Italy Serie C - Girone A | ou15 | 11 | COLLECTING | -0.034 | – | -66.8% (4) |
-| 1 | Brazil Serie B | ou25 | 11 | COLLECTING | -0.021 | – | -7.5% (2) |
 | 1 | Italy Serie C - Girone A | ou25 | 11 | COLLECTING | -0.120 | – | +22.7% (3) |
-| 1 | Brazil Serie B | ou35 | 11 | COLLECTING | +0.201 | – | -13.5% (6) |
 | 1 | Italy Serie C - Girone A | ou35 | 11 | COLLECTING | -0.072 | – | -100.0% (2) |
-| 1 | Brazil Serie B | btts | 11 | COLLECTING | -0.088 | – | – |
 | 1 | Italy Serie C - Girone A | btts | 11 | COLLECTING | -0.016 | – | -8.5% (2) |
 | 1 | Netherlands Eerste Divisie | ou15 | 10 | COLLECTING | -0.079 | – | -100.0% (1) |
 | 1 | Japan J2 League | ou15 | 10 | COLLECTING | -0.022 | – | +240.0% (1) |
@@ -80,31 +80,31 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 1 | Greece Super League 2 | btts | 8 | COLLECTING | -0.088 | – | – |
 | 1 | Belgium Challenger Pro League | ou15 | 7 | COLLECTING | +0.023 | – | -100.0% (3) |
 | 1 | Austria 2. Liga | ou15 | 7 | COLLECTING | +0.053 | – | -100.0% (2) |
+| 1 | Mexico Liga de Expansión MX | ou15 | 7 | COLLECTING | +0.385 | – | – |
 | 1 | Italy Serie C - Girone C | ou15 | 7 | COLLECTING | -0.106 | – | -37.5% (2) |
 | 1 | Belgium Challenger Pro League | ou25 | 7 | COLLECTING | -0.035 | – | -100.0% (3) |
 | 1 | Austria 2. Liga | ou25 | 7 | COLLECTING | +0.064 | – | -100.0% (3) |
+| 1 | Mexico Liga de Expansión MX | ou25 | 7 | COLLECTING | +0.059 | – | +19.0% (2) |
 | 1 | Italy Serie C - Girone C | ou25 | 7 | COLLECTING | +0.003 | – | +53.8% (4) |
 | 1 | Belgium Challenger Pro League | ou35 | 7 | COLLECTING | +0.012 | – | -4.7% (3) |
 | 1 | Austria 2. Liga | ou35 | 7 | COLLECTING | +0.107 | – | -100.0% (3) |
+| 1 | Mexico Liga de Expansión MX | ou35 | 7 | COLLECTING | +0.081 | – | – |
 | 1 | Italy Serie C - Girone C | ou35 | 7 | COLLECTING | +0.059 | – | +112.5% (2) |
 | 1 | Belgium Challenger Pro League | btts | 7 | COLLECTING | -0.024 | – | +36.7% (3) |
 | 1 | Austria 2. Liga | btts | 7 | COLLECTING | +0.211 | – | -100.0% (3) |
+| 1 | Mexico Liga de Expansión MX | btts | 7 | COLLECTING | +0.291 | – | – |
 | 1 | Italy Serie C - Girone C | btts | 7 | COLLECTING | -0.037 | – | -4.5% (2) |
 | 1 | Denmark 1. Division | ou15 | 6 | COLLECTING | +0.227 | – | -100.0% (2) |
 | 1 | Scotland Championship | ou15 | 6 | COLLECTING | -0.075 | – | -100.0% (2) |
-| 1 | Mexico Liga de Expansión MX | ou15 | 6 | COLLECTING | +0.348 | – | – |
 | 1 | Italy Serie C - Girone B | ou15 | 6 | COLLECTING | +0.200 | – | -100.0% (3) |
 | 1 | Denmark 1. Division | ou25 | 6 | COLLECTING | +0.041 | – | +122.5% (2) |
 | 1 | Scotland Championship | ou25 | 6 | COLLECTING | +0.026 | – | +17.7% (3) |
-| 1 | Mexico Liga de Expansión MX | ou25 | 6 | COLLECTING | -0.022 | – | +19.0% (2) |
 | 1 | Italy Serie C - Girone B | ou25 | 6 | COLLECTING | +0.103 | – | -11.2% (4) |
 | 1 | Denmark 1. Division | ou35 | 6 | COLLECTING | -0.042 | – | +50.5% (2) |
 | 1 | Scotland Championship | ou35 | 6 | COLLECTING | -0.166 | – | +32.5% (2) |
-| 1 | Mexico Liga de Expansión MX | ou35 | 6 | COLLECTING | -0.016 | – | – |
 | 1 | Italy Serie C - Girone B | ou35 | 6 | COLLECTING | +0.035 | – | -15.0% (3) |
 | 1 | Denmark 1. Division | btts | 6 | COLLECTING | +0.001 | – | +98.3% (3) |
 | 1 | Scotland Championship | btts | 6 | COLLECTING | +0.078 | – | -100.0% (1) |
-| 1 | Mexico Liga de Expansión MX | btts | 6 | COLLECTING | +0.286 | – | – |
 | 1 | Italy Serie C - Girone B | btts | 6 | COLLECTING | +0.144 | – | +80.0% (1) |
 | 1 | Scotland League One | ou15 | 5 | COLLECTING | -0.074 | – | +17.0% (1) |
 | 1 | Scotland League Two | ou15 | 5 | COLLECTING | +0.089 | – | -100.0% (1) |
@@ -160,31 +160,31 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Argentina Torneo Federal A | btts | 12 | COLLECTING | +0.049 | – | -22.0% (4) |
 | 2 | Wales FAW Championship | ou15 | 11 | COLLECTING | +0.047 | – | – |
 | 2 | Argentina Primera B Metropolitana | ou15 | 11 | COLLECTING | +0.137 | – | +162.0% (1) |
+| 2 | Morocco Botola Pro | ou15 | 11 | COLLECTING | -0.035 | – | – |
 | 2 | Wales FAW Championship | ou25 | 11 | COLLECTING | +0.075 | – | -5.7% (3) |
 | 2 | Argentina Primera B Metropolitana | ou25 | 11 | COLLECTING | +0.106 | – | +53.0% (1) |
+| 2 | Morocco Botola Pro | ou25 | 11 | COLLECTING | +0.000 | – | – |
 | 2 | Wales FAW Championship | ou35 | 11 | COLLECTING | +0.023 | – | – |
 | 2 | Argentina Primera B Metropolitana | ou35 | 11 | COLLECTING | +0.140 | – | +17.0% (1) |
+| 2 | Morocco Botola Pro | ou35 | 11 | COLLECTING | +0.071 | – | – |
 | 2 | Wales FAW Championship | btts | 11 | COLLECTING | -0.004 | – | – |
 | 2 | Argentina Primera B Metropolitana | btts | 11 | COLLECTING | +0.016 | – | +67.0% (1) |
+| 2 | Morocco Botola Pro | btts | 11 | COLLECTING | -0.021 | – | +10.0% (2) |
 | 2 | Japan J3 League | ou15 | 10 | COLLECTING | +0.033 | – | – |
 | 2 | Poland Ekstraklasa | ou15 | 10 | COLLECTING | +0.250 | – | -100.0% (1) |
 | 2 | Algeria Ligue 1 | ou15 | 10 | COLLECTING | -0.022 | – | +100.0% (3) |
-| 2 | Morocco Botola Pro | ou15 | 10 | COLLECTING | -0.010 | – | – |
 | 2 | Romania Liga II | ou15 | 10 | COLLECTING | -0.039 | – | – |
 | 2 | Japan J3 League | ou25 | 10 | COLLECTING | -0.003 | – | +20.0% (3) |
 | 2 | Poland Ekstraklasa | ou25 | 10 | COLLECTING | +0.220 | – | +2.5% (2) |
 | 2 | Algeria Ligue 1 | ou25 | 10 | COLLECTING | +0.017 | – | +47.2% (4) |
-| 2 | Morocco Botola Pro | ou25 | 10 | COLLECTING | -0.027 | – | – |
 | 2 | Romania Liga II | ou25 | 10 | COLLECTING | +0.013 | – | -10.0% (2) |
 | 2 | Japan J3 League | ou35 | 10 | COLLECTING | -0.026 | – | – |
 | 2 | Poland Ekstraklasa | ou35 | 10 | COLLECTING | +0.103 | – | -30.0% (2) |
 | 2 | Algeria Ligue 1 | ou35 | 10 | COLLECTING | -0.065 | – | +94.3% (3) |
-| 2 | Morocco Botola Pro | ou35 | 10 | COLLECTING | +0.069 | – | – |
 | 2 | Romania Liga II | ou35 | 10 | COLLECTING | +0.091 | – | – |
 | 2 | Japan J3 League | btts | 10 | COLLECTING | +0.007 | – | – |
 | 2 | Poland Ekstraklasa | btts | 10 | COLLECTING | +0.090 | – | – |
 | 2 | Algeria Ligue 1 | btts | 10 | COLLECTING | +0.071 | – | +10.0% (2) |
-| 2 | Morocco Botola Pro | btts | 10 | COLLECTING | +0.009 | – | +10.0% (2) |
 | 2 | Romania Liga II | btts | 10 | COLLECTING | -0.071 | – | – |
 | 2 | France Ligue 2 | ou15 | 9 | COLLECTING | -0.065 | – | -100.0% (3) |
 | 2 | Netherlands Eredivisie | ou15 | 9 | COLLECTING | +0.063 | – | – |
