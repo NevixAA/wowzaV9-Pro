@@ -66,6 +66,16 @@ def _calibration():
             "report": "output/studies/CALIBRATION_FORM.md"}
 
 
+def _cal_shadow():
+    c = _j("studies/calibration_shadow.json")
+    if not c:
+        return None
+    fam = {f"{k} {m}": f"{x['verdict']} (n {x['n']}/{x['n_min']}, Δ {x['delta_logloss']:+.5f})"
+           for k in ("team", "props") for m, x in (c.get(k) or {}).items()}
+    return {"status": f"Live shadow of log-odds calibration in v9: {c.get('overall')}",
+            "date": c.get("generated_at"), "key": fam, "report": "output/studies/CALIBRATION_SHADOW.md"}
+
+
 def _segments():
     s = _j("studies/props_segments.json")
     if not s:
@@ -133,6 +143,7 @@ STUDIES = [
     ("player_v3", "Player Model V3 / Edge Lab", "players", _player_v3),
     ("player_v3_forward", "Player V3 forward test (pre-registered)", "players", _forward),
     ("calibration_form", "Calibration form: v9 vs log-odds Platt", "models", _calibration),
+    ("calibration_shadow", "Calibration shadow in v9 (pre-registered)", "models", _cal_shadow),
     ("props_segments", "Props segments: attacking D / M (pre-registered)", "players", _segments),
     ("props_learner", "Props learner: classic GB vs HGB", "players", _props_learner),
     ("price_trader", "Price Trader / back-to-lay lab", "market", _price_trader),

@@ -62,7 +62,7 @@ jobs:
           key: studies-results-${{ github.run_id }}
           restore-keys: studies-results-
       - name: Tests
-        run: python -m pytest tests/test_studies.py tests/test_props_segments.py -q
+        run: python -m pytest tests/test_studies.py tests/test_props_segments.py tests/test_calibration_shadow.py -q
       - name: Run studies
         env:
           APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
@@ -71,7 +71,7 @@ jobs:
           set -o pipefail
           # Argentina's season cache must refresh: it holds matches still being played.
           rm -f experiments/upgrade_studies_2026_10/argentina_fixtures_2026.json
-          for m in argentina_btts ou_studies evidence ou_challenger props_segments report; do
+          for m in argentina_btts ou_studies evidence ou_challenger props_segments calibration_shadow report; do
             python -m src.studies.$m > "studies_$m.txt" 2>&1 || { echo "::error title=$m failed::"; tail -30 "studies_$m.txt"; exit 1; }
           done
           cat studies_report.txt
@@ -84,7 +84,8 @@ jobs:
           for p in output/studies/REPORT.md output/studies/argentina_btts.json output/studies/ou_studies.json \
                    output/studies/evidence.json output/studies/ou_challenger.json \
                    output/studies/ou_challenger_forward.csv \
-                   output/studies/props_segments.json output/studies/PROPS_SEGMENTS.md; do
+                   output/studies/props_segments.json output/studies/PROPS_SEGMENTS.md \
+                   output/studies/calibration_shadow.json output/studies/CALIBRATION_SHADOW.md; do
             [ -e "$p" ] && git add "$p"
           done
           git diff --staged --quiet && exit 0

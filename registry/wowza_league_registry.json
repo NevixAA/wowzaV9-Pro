@@ -545,7 +545,7 @@
   },
   {
    "league_name": "Scottish League One",
-   "api_football_id": null,
+   "api_football_id": 183,
    "odds_api_key": null,
    "football_data_code": "SC2",
    "season_type": "split_season",
@@ -560,7 +560,7 @@
   },
   {
    "league_name": "Scottish League Two",
-   "api_football_id": null,
+   "api_football_id": 184,
    "odds_api_key": null,
    "football_data_code": "SC3",
    "season_type": "split_season",
@@ -739,9 +739,6 @@
    "scout_state": null
   }
  ],
- "divergences": [
-  "Scottish League One: model league with no API-Football id",
-  "Scottish League Two: model league with no API-Football id"
- ],
+ "divergences": [],
  "proposal": "Have v9 derive these lists from one committed registry file in a reviewed PR; a test then asserts every derived list equals today's literal (behaviour-identical)."
 }
