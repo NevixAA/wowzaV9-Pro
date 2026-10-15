@@ -1,6 +1,6 @@
-# League scout — 2026-10-15T05:22 UTC
+# League scout — 2026-10-15T12:12 UTC
 
-Results stored: 238,772 · fixtures priced: 1,878 · model frozen: 1,802
+Results stored: 238,774 · fixtures priced: 1,891 · model frozen: 1,815
 
 COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kickoff close
 
@@ -688,7 +688,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Turkey 3. Lig - Group 2 | ou15 | 1 | COLLECTING | +0.113 | – | – |
 | 2 | Hungary NB III - Northwest | ou15 | 1 | COLLECTING | -0.084 | – | – |
 | 2 | Slovakia 3. liga - East | ou15 | 1 | COLLECTING | +0.273 | – | – |
-| 2 | Mongolia Premier League | ou15 | 1 | COLLECTING | -0.157 | – | – |
+| 2 | Mongolia Premier League | ou15 | 1 | COLLECTING | -0.168 | – | – |
 | 2 | Philippines PFL | ou15 | 1 | COLLECTING | -0.037 | – | – |
 | 2 | New-Zealand National League - National | ou15 | 1 | COLLECTING | -1.148 | – | – |
 | 2 | Belgium Second Amateur Division - ACFF | ou25 | 1 | COLLECTING | -0.367 | – | -100.0% (1) |
@@ -706,7 +706,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Spain Tercera División RFEF - Group 17 | ou25 | 1 | COLLECTING | +0.405 | – | +95.0% (1) |
 | 2 | Turkey 3. Lig - Group 2 | ou25 | 1 | COLLECTING | +0.120 | – | – |
 | 2 | Slovakia 3. liga - East | ou25 | 1 | COLLECTING | +0.334 | – | +50.0% (1) |
-| 2 | Mongolia Premier League | ou25 | 1 | COLLECTING | -0.416 | – | -100.0% (1) |
+| 2 | Mongolia Premier League | ou25 | 1 | COLLECTING | -0.429 | – | -100.0% (1) |
 | 2 | Philippines PFL | ou25 | 1 | COLLECTING | +0.152 | – | +162.0% (1) |
 | 2 | New-Zealand National League - National | ou25 | 1 | COLLECTING | -1.191 | – | +44.0% (1) |
 | 2 | Belgium Second Amateur Division - ACFF | ou35 | 1 | COLLECTING | -0.707 | – | – |
@@ -724,7 +724,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Spain Tercera División RFEF - Group 17 | ou35 | 1 | COLLECTING | -1.500 | – | – |
 | 2 | Turkey 3. Lig - Group 2 | ou35 | 1 | COLLECTING | -0.182 | – | – |
 | 2 | Slovakia 3. liga - East | ou35 | 1 | COLLECTING | -0.639 | – | – |
-| 2 | Mongolia Premier League | ou35 | 1 | COLLECTING | +0.241 | – | – |
+| 2 | Mongolia Premier League | ou35 | 1 | COLLECTING | +0.245 | – | – |
 | 2 | Philippines PFL | ou35 | 1 | COLLECTING | +0.375 | – | – |
 | 2 | New-Zealand National League - National | ou35 | 1 | COLLECTING | -0.379 | – | – |
 | 2 | Belgium Second Amateur Division - ACFF | btts | 1 | COLLECTING | -0.228 | – | – |
@@ -742,6 +742,6 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Spain Tercera División RFEF - Group 17 | btts | 1 | COLLECTING | -0.383 | – | – |
 | 2 | Turkey 3. Lig - Group 2 | btts | 1 | COLLECTING | +0.214 | – | – |
 | 2 | Slovakia 3. liga - East | btts | 1 | COLLECTING | -0.300 | – | – |
-| 2 | Mongolia Premier League | btts | 1 | COLLECTING | +0.545 | – | – |
+| 2 | Mongolia Premier League | btts | 1 | COLLECTING | +0.541 | – | – |
 | 2 | Philippines PFL | btts | 1 | COLLECTING | -0.756 | – | – |
 | 2 | New-Zealand National League - National | btts | 1 | COLLECTING | -0.152 | – | – |
