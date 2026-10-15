@@ -90,6 +90,18 @@ def _fantasy_v3():
             "report": "output/studies/FANTASY_V3.md"}
 
 
+def _props_cal():
+    r = _j("studies/props_calibration.json")
+    if not r:
+        return None
+    l30 = r.get("last_30_days", {})
+    return {"status": "Live props model vs reality (30 days): " + ", ".join(
+                f"{m} predicted {c['predicted']:.0%} / happened {c['hit']:.0%}" for m, c in l30.items() if c["n"] >= 100),
+            "date": r.get("generated_at"),
+            "key": {m: f"{r['status'].get(m)} · gap {c['gap']:+.1%} {c['gap_ci90']} · n {c['n']}" for m, c in l30.items()},
+            "report": "output/studies/PROPS_CALIBRATION.md"}
+
+
 def _segments():
     s = _j("studies/props_segments.json")
     if not s:
@@ -157,6 +169,7 @@ STUDIES = [
     ("player_v3", "Player Model V3 / Edge Lab", "players", _player_v3),
     ("player_v3_forward", "Player V3 forward test (pre-registered)", "players", _forward),
     ("fantasy_v3", "Fantasy (FPL): v9 vs Player V3 projections", "players", _fantasy_v3),
+    ("props_calibration", "Props calibration monitor (daily)", "players", _props_cal),
     ("calibration_form", "Calibration form: v9 vs log-odds Platt", "models", _calibration),
     ("calibration_shadow", "Calibration shadow in v9 (pre-registered)", "models", _cal_shadow),
     ("props_segments", "Props segments: attacking D / M (pre-registered)", "players", _segments),
