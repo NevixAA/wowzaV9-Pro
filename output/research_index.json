@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-10-15 08:01 UTC",
+ "generated_at": "2026-10-15 08:05 UTC",
  "items": [
   {
    "id": "props_calibration",
    "title": "Props calibration monitor (daily)",
    "area": "players",
    "status": "Live props model vs reality (30 days): cards predicted 17% / happened 22%, goals predicted 24% / happened 28%, sot predicted 29% / happened 42%",
-   "date": "2026-10-15 08:00 UTC",
+   "date": "2026-10-15 08:04 UTC",
    "key": {
     "assists": "INSUFFICIENT \u00b7 gap -1.9% [-0.0715, 0.0524] \u00b7 n 93",
     "cards": "UNDER_PREDICTS \u00b7 gap +4.9% [0.0236, 0.0749] \u00b7 n 787",
@@ -15,6 +15,36 @@
    },
    "report": "output/studies/PROPS_CALIBRATION.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/PROPS_CALIBRATION.md"
+  },
+  {
+   "id": "calibration_shadow",
+   "title": "Calibration shadow in v9 (pre-registered)",
+   "area": "models",
+   "status": "Live shadow of log-odds calibration in v9: WAITING_FOR_SHADOW_ROWS",
+   "date": "2026-10-15 08:04 UTC",
+   "key": {},
+   "report": "output/studies/CALIBRATION_SHADOW.md",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/CALIBRATION_SHADOW.md"
+  },
+  {
+   "id": "props_segments",
+   "title": "Props segments: attacking D / M (pre-registered)",
+   "area": "players",
+   "status": "0 qualifying props since 2026-10-14; 0 EDGE cells",
+   "date": "2026-10-15 08:04 UTC",
+   "key": {
+    "ATT_DEF|goals": "COLLECTING (0/150)",
+    "ATT_DEF|sot": "COLLECTING (0/150)",
+    "ATT_DEF|assists": "COLLECTING (0/150)",
+    "ATT_MID|goals": "COLLECTING (0/150)",
+    "ATT_MID|sot": "COLLECTING (0/150)",
+    "ATT_MID|assists": "COLLECTING (0/150)",
+    "CONTROL|goals": "COLLECTING (0/150)",
+    "CONTROL|sot": "COLLECTING (0/150)",
+    "CONTROL|assists": "COLLECTING (0/150)"
+   },
+   "report": "output/studies/PROPS_SEGMENTS.md",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/PROPS_SEGMENTS.md"
   },
   {
    "id": "league_promotion",
@@ -54,36 +84,6 @@
    },
    "report": "output/studies/CALIBRATION_FORM.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/CALIBRATION_FORM.md"
-  },
-  {
-   "id": "calibration_shadow",
-   "title": "Calibration shadow in v9 (pre-registered)",
-   "area": "models",
-   "status": "Live shadow of log-odds calibration in v9: WAITING_FOR_SHADOW_ROWS",
-   "date": "2026-10-14 13:44 UTC",
-   "key": {},
-   "report": "output/studies/CALIBRATION_SHADOW.md",
-   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/CALIBRATION_SHADOW.md"
-  },
-  {
-   "id": "props_segments",
-   "title": "Props segments: attacking D / M (pre-registered)",
-   "area": "players",
-   "status": "0 qualifying props since 2026-10-14; 0 EDGE cells",
-   "date": "2026-10-14 13:44 UTC",
-   "key": {
-    "ATT_DEF|goals": "COLLECTING (0/150)",
-    "ATT_DEF|sot": "COLLECTING (0/150)",
-    "ATT_DEF|assists": "COLLECTING (0/150)",
-    "ATT_MID|goals": "COLLECTING (0/150)",
-    "ATT_MID|sot": "COLLECTING (0/150)",
-    "ATT_MID|assists": "COLLECTING (0/150)",
-    "CONTROL|goals": "COLLECTING (0/150)",
-    "CONTROL|sot": "COLLECTING (0/150)",
-    "CONTROL|assists": "COLLECTING (0/150)"
-   },
-   "report": "output/studies/PROPS_SEGMENTS.md",
-   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/PROPS_SEGMENTS.md"
   },
   {
    "id": "fantasy_v3",
