@@ -1,6 +1,6 @@
-# League scout — 2026-10-16T21:49 UTC
+# League scout — 2026-10-17T00:51 UTC
 
-Results stored: 238,926 · fixtures priced: 2,185 · model frozen: 2,102
+Results stored: 238,938 · fixtures priced: 2,192 · model frozen: 2,139
 
 COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kickoff close
 
@@ -30,23 +30,23 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 1 | USA USL Championship | ou35 | 14 | COLLECTING | +0.021 | – | -36.2% (6) |
 | 1 | Netherlands Eerste Divisie | btts | 14 | COLLECTING | -0.134 | – | -15.0% (4) |
 | 1 | USA USL Championship | btts | 14 | COLLECTING | -0.060 | – | +43.5% (4) |
+| 1 | Brazil Serie B | ou15 | 13 | COLLECTING | +0.083 | – | +63.3% (3) |
+| 1 | Brazil Serie B | ou25 | 13 | COLLECTING | -0.057 | – | +54.5% (4) |
+| 1 | Brazil Serie B | ou35 | 13 | COLLECTING | +0.158 | – | -5.9% (7) |
+| 1 | Brazil Serie B | btts | 13 | COLLECTING | -0.061 | – | +91.0% (1) |
 | 1 | England National League | ou15 | 12 | COLLECTING | +0.040 | – | -100.0% (1) |
-| 1 | Brazil Serie B | ou15 | 12 | COLLECTING | +0.061 | – | +63.3% (3) |
 | 1 | Poland I Liga | ou15 | 12 | COLLECTING | +0.013 | – | +159.0% (2) |
 | 1 | Italy Serie C - Girone A | ou15 | 12 | COLLECTING | -0.019 | – | -66.8% (4) |
 | 1 | Spain Primera División RFEF - Group 2 | ou15 | 12 | COLLECTING | +0.078 | – | +50.0% (4) |
 | 1 | England National League | ou25 | 12 | COLLECTING | +0.027 | – | +33.8% (4) |
-| 1 | Brazil Serie B | ou25 | 12 | COLLECTING | +0.005 | – | +36.7% (3) |
 | 1 | Poland I Liga | ou25 | 12 | COLLECTING | +0.051 | – | +40.5% (4) |
 | 1 | Italy Serie C - Girone A | ou25 | 12 | COLLECTING | -0.073 | – | +22.7% (3) |
 | 1 | Spain Primera División RFEF - Group 2 | ou25 | 12 | COLLECTING | +0.084 | – | +50.0% (5) |
 | 1 | England National League | ou35 | 12 | COLLECTING | +0.030 | – | -16.8% (4) |
-| 1 | Brazil Serie B | ou35 | 12 | COLLECTING | +0.191 | – | -13.5% (6) |
 | 1 | Poland I Liga | ou35 | 12 | COLLECTING | -0.016 | – | -30.0% (4) |
 | 1 | Italy Serie C - Girone A | ou35 | 12 | COLLECTING | +0.012 | – | -100.0% (2) |
 | 1 | Spain Primera División RFEF - Group 2 | ou35 | 12 | COLLECTING | +0.090 | – | +32.3% (3) |
 | 1 | England National League | btts | 12 | COLLECTING | -0.046 | – | -100.0% (1) |
-| 1 | Brazil Serie B | btts | 12 | COLLECTING | -0.067 | – | +91.0% (1) |
 | 1 | Poland I Liga | btts | 12 | COLLECTING | +0.052 | – | +85.0% (2) |
 | 1 | Italy Serie C - Girone A | btts | 12 | COLLECTING | -0.040 | – | -8.5% (2) |
 | 1 | Spain Primera División RFEF - Group 2 | btts | 12 | COLLECTING | +0.141 | – | +67.0% (1) |
@@ -154,20 +154,20 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | England Non League Premier - Isthmian | ou25 | 16 | COLLECTING | +0.004 | – | +15.9% (7) |
 | 2 | England Non League Premier - Isthmian | ou35 | 16 | COLLECTING | -0.055 | – | – |
 | 2 | England Non League Premier - Isthmian | btts | 16 | COLLECTING | -0.013 | – | – |
+| 2 | Colombia Primera B | ou15 | 15 | COLLECTING | -0.041 | – | – |
+| 2 | Colombia Primera B | ou25 | 15 | COLLECTING | +0.007 | – | +64.7% (3) |
+| 2 | Colombia Primera B | ou35 | 15 | COLLECTING | +0.098 | – | – |
+| 2 | Colombia Primera B | btts | 15 | COLLECTING | +0.011 | – | – |
 | 2 | France Ligue 2 | ou15 | 14 | COLLECTING | -0.001 | – | -100.0% (3) |
-| 2 | Colombia Primera B | ou15 | 14 | COLLECTING | -0.021 | – | – |
 | 2 | Czech-Republic FNL | ou15 | 14 | COLLECTING | +0.057 | – | +100.0% (3) |
 | 2 | Belgium First Amateur Division | ou15 | 14 | COLLECTING | -0.075 | – | – |
 | 2 | France Ligue 2 | ou25 | 14 | COLLECTING | +0.003 | – | -16.2% (4) |
-| 2 | Colombia Primera B | ou25 | 14 | COLLECTING | +0.027 | – | +64.7% (3) |
 | 2 | Czech-Republic FNL | ou25 | 14 | COLLECTING | +0.048 | – | -16.1% (7) |
 | 2 | Belgium First Amateur Division | ou25 | 14 | COLLECTING | -0.050 | – | -8.2% (4) |
 | 2 | France Ligue 2 | ou35 | 14 | COLLECTING | +0.032 | – | -18.3% (3) |
-| 2 | Colombia Primera B | ou35 | 14 | COLLECTING | +0.111 | – | – |
 | 2 | Czech-Republic FNL | ou35 | 14 | COLLECTING | -0.006 | – | -66.6% (5) |
 | 2 | Belgium First Amateur Division | ou35 | 14 | COLLECTING | -0.050 | – | – |
 | 2 | France Ligue 2 | btts | 14 | COLLECTING | +0.030 | – | -55.0% (4) |
-| 2 | Colombia Primera B | btts | 14 | COLLECTING | +0.028 | – | – |
 | 2 | Czech-Republic FNL | btts | 14 | COLLECTING | +0.004 | – | -100.0% (2) |
 | 2 | Belgium First Amateur Division | btts | 14 | COLLECTING | -0.076 | – | – |
 | 2 | England National League - South | ou15 | 13 | COLLECTING | +0.046 | – | +146.7% (3) |
@@ -212,15 +212,19 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Uzbekistan Super League | btts | 12 | COLLECTING | +0.112 | – | – |
 | 2 | Wales FAW Championship | ou15 | 11 | COLLECTING | +0.047 | – | – |
 | 2 | Argentina Primera B Metropolitana | ou15 | 11 | COLLECTING | +0.137 | – | +162.0% (1) |
+| 2 | Peru Primera División | ou15 | 11 | COLLECTING | -0.036 | – | -100.0% (1) |
 | 2 | Slovenia 2. SNL | ou15 | 11 | COLLECTING | +0.083 | – | – |
 | 2 | Wales FAW Championship | ou25 | 11 | COLLECTING | +0.075 | – | -5.7% (3) |
 | 2 | Argentina Primera B Metropolitana | ou25 | 11 | COLLECTING | +0.106 | – | +53.0% (1) |
+| 2 | Peru Primera División | ou25 | 11 | COLLECTING | -0.065 | – | -100.0% (3) |
 | 2 | Slovenia 2. SNL | ou25 | 11 | COLLECTING | +0.015 | – | +85.0% (1) |
 | 2 | Wales FAW Championship | ou35 | 11 | COLLECTING | +0.023 | – | – |
 | 2 | Argentina Primera B Metropolitana | ou35 | 11 | COLLECTING | +0.140 | – | +17.0% (1) |
+| 2 | Peru Primera División | ou35 | 11 | COLLECTING | -0.144 | – | – |
 | 2 | Slovenia 2. SNL | ou35 | 11 | COLLECTING | +0.039 | – | – |
 | 2 | Wales FAW Championship | btts | 11 | COLLECTING | -0.004 | – | – |
 | 2 | Argentina Primera B Metropolitana | btts | 11 | COLLECTING | +0.016 | – | +67.0% (1) |
+| 2 | Peru Primera División | btts | 11 | COLLECTING | -0.026 | – | -100.0% (2) |
 | 2 | Slovenia 2. SNL | btts | 11 | COLLECTING | +0.127 | – | – |
 | 2 | Netherlands Eredivisie | ou15 | 10 | COLLECTING | +0.068 | – | – |
 | 2 | Japan J3 League | ou15 | 10 | COLLECTING | +0.033 | – | – |
@@ -228,7 +232,6 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Costa-Rica Primera División | ou15 | 10 | COLLECTING | -0.016 | – | +62.5% (2) |
 | 2 | Turkey Süper Lig | ou15 | 10 | COLLECTING | +0.127 | – | -36.0% (2) |
 | 2 | Colombia Primera A | ou15 | 10 | COLLECTING | +0.002 | – | – |
-| 2 | Peru Primera División | ou15 | 10 | COLLECTING | -0.042 | – | -100.0% (1) |
 | 2 | Romania Liga II | ou15 | 10 | COLLECTING | -0.039 | – | – |
 | 2 | Czech-Republic 3. liga - MSFL | ou15 | 10 | COLLECTING | -0.073 | – | – |
 | 2 | Northern-Ireland Championship | ou15 | 10 | COLLECTING | +0.021 | – | -100.0% (1) |
@@ -241,7 +244,6 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Turkey Süper Lig | ou25 | 10 | COLLECTING | +0.151 | – | +33.0% (4) |
 | 2 | Colombia Primera A | ou25 | 10 | COLLECTING | -0.076 | – | +15.7% (3) |
 | 2 | Indonesia Liga 2 | ou25 | 10 | COLLECTING | +0.028 | – | -18.4% (5) |
-| 2 | Peru Primera División | ou25 | 10 | COLLECTING | -0.087 | – | -100.0% (3) |
 | 2 | Romania Liga II | ou25 | 10 | COLLECTING | +0.013 | – | -10.0% (2) |
 | 2 | Czech-Republic 3. liga - MSFL | ou25 | 10 | COLLECTING | -0.088 | – | -58.3% (6) |
 | 2 | Northern-Ireland Championship | ou25 | 10 | COLLECTING | +0.113 | – | +16.7% (3) |
@@ -254,7 +256,6 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Turkey Süper Lig | ou35 | 10 | COLLECTING | +0.006 | – | -50.0% (3) |
 | 2 | Colombia Primera A | ou35 | 10 | COLLECTING | +0.034 | – | +25.0% (1) |
 | 2 | Indonesia Liga 2 | ou35 | 10 | COLLECTING | -0.024 | – | – |
-| 2 | Peru Primera División | ou35 | 10 | COLLECTING | -0.129 | – | – |
 | 2 | Romania Liga II | ou35 | 10 | COLLECTING | +0.091 | – | – |
 | 2 | Czech-Republic 3. liga - MSFL | ou35 | 10 | COLLECTING | +0.030 | – | – |
 | 2 | Northern-Ireland Championship | ou35 | 10 | COLLECTING | +0.110 | – | +124.0% (2) |
@@ -267,7 +268,6 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Turkey Süper Lig | btts | 10 | COLLECTING | -0.035 | – | -100.0% (2) |
 | 2 | Colombia Primera A | btts | 10 | COLLECTING | +0.064 | – | -100.0% (1) |
 | 2 | Indonesia Liga 2 | btts | 10 | COLLECTING | +0.084 | – | – |
-| 2 | Peru Primera División | btts | 10 | COLLECTING | -0.054 | – | -100.0% (2) |
 | 2 | Romania Liga II | btts | 10 | COLLECTING | -0.071 | – | – |
 | 2 | Czech-Republic 3. liga - MSFL | btts | 10 | COLLECTING | -0.056 | – | – |
 | 2 | Northern-Ireland Championship | btts | 10 | COLLECTING | -0.051 | – | -100.0% (1) |
@@ -276,6 +276,10 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Portugal Primeira Liga | ou15 | 9 | COLLECTING | +0.090 | – | – |
 | 2 | Belgium Jupiler Pro League | ou15 | 9 | COLLECTING | +0.094 | – | -100.0% (1) |
 | 2 | Austria Regionalliga - Ost | ou15 | 9 | COLLECTING | +0.021 | – | – |
+| 2 | Ecuador Liga Pro | ou15 | 9 | COLLECTING | -0.012 | – | -100.0% (1) |
+| 2 | Paraguay Division Intermedia | ou15 | 9 | COLLECTING | +0.059 | – | – |
+| 2 | Chile Primera B | ou15 | 9 | COLLECTING | -0.056 | – | – |
+| 2 | Uruguay Primera División | ou15 | 9 | COLLECTING | -0.035 | – | -100.0% (1) |
 | 2 | Indonesia Liga 1 | ou15 | 9 | COLLECTING | -0.019 | – | – |
 | 2 | Indonesia Liga 2 | ou15 | 9 | COLLECTING | +0.348 | – | – |
 | 2 | Serbia Prva Liga | ou15 | 9 | COLLECTING | +0.041 | – | – |
@@ -292,6 +296,10 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Portugal Primeira Liga | ou25 | 9 | COLLECTING | -0.055 | – | -7.5% (2) |
 | 2 | Belgium Jupiler Pro League | ou25 | 9 | COLLECTING | +0.177 | – | +35.0% (2) |
 | 2 | Austria Regionalliga - Ost | ou25 | 9 | COLLECTING | -0.070 | – | +26.6% (5) |
+| 2 | Ecuador Liga Pro | ou25 | 9 | COLLECTING | -0.036 | – | -40.0% (3) |
+| 2 | Paraguay Division Intermedia | ou25 | 9 | COLLECTING | +0.097 | – | +41.2% (4) |
+| 2 | Chile Primera B | ou25 | 9 | COLLECTING | +0.018 | – | +2.5% (2) |
+| 2 | Uruguay Primera División | ou25 | 9 | COLLECTING | -0.073 | – | +70.0% (1) |
 | 2 | Indonesia Liga 1 | ou25 | 9 | COLLECTING | -0.041 | – | -39.2% (6) |
 | 2 | Serbia Prva Liga | ou25 | 9 | COLLECTING | +0.029 | – | +40.5% (4) |
 | 2 | Czech-Republic Czech Liga | ou25 | 9 | COLLECTING | -0.018 | – | +36.0% (3) |
@@ -307,6 +315,10 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Portugal Primeira Liga | ou35 | 9 | COLLECTING | -0.061 | – | +50.0% (2) |
 | 2 | Belgium Jupiler Pro League | ou35 | 9 | COLLECTING | +0.096 | – | -16.5% (2) |
 | 2 | Austria Regionalliga - Ost | ou35 | 9 | COLLECTING | -0.083 | – | – |
+| 2 | Ecuador Liga Pro | ou35 | 9 | COLLECTING | -0.122 | – | +25.0% (1) |
+| 2 | Paraguay Division Intermedia | ou35 | 9 | COLLECTING | +0.040 | – | – |
+| 2 | Chile Primera B | ou35 | 9 | COLLECTING | -0.100 | – | – |
+| 2 | Uruguay Primera División | ou35 | 9 | COLLECTING | -0.054 | – | +25.0% (1) |
 | 2 | Indonesia Liga 1 | ou35 | 9 | COLLECTING | +0.070 | – | – |
 | 2 | Serbia Prva Liga | ou35 | 9 | COLLECTING | +0.006 | – | – |
 | 2 | Czech-Republic Czech Liga | ou35 | 9 | COLLECTING | -0.205 | – | +10.8% (4) |
@@ -321,6 +333,10 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Portugal Primeira Liga | btts | 9 | COLLECTING | -0.004 | – | -100.0% (2) |
 | 2 | Belgium Jupiler Pro League | btts | 9 | COLLECTING | +0.097 | – | -33.3% (3) |
 | 2 | Austria Regionalliga - Ost | btts | 9 | COLLECTING | +0.106 | – | – |
+| 2 | Ecuador Liga Pro | btts | 9 | COLLECTING | -0.036 | – | – |
+| 2 | Paraguay Division Intermedia | btts | 9 | COLLECTING | +0.064 | – | – |
+| 2 | Chile Primera B | btts | 9 | COLLECTING | +0.050 | – | – |
+| 2 | Uruguay Primera División | btts | 9 | COLLECTING | -0.061 | – | – |
 | 2 | Indonesia Liga 1 | btts | 9 | COLLECTING | -0.013 | – | – |
 | 2 | Serbia Prva Liga | btts | 9 | COLLECTING | -0.021 | – | – |
 | 2 | Czech-Republic Czech Liga | btts | 9 | COLLECTING | -0.083 | – | +33.3% (3) |
@@ -337,10 +353,6 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Denmark 2. Division | ou15 | 8 | COLLECTING | +0.087 | – | – |
 | 2 | Argentina Primera C | ou15 | 8 | COLLECTING | +0.094 | – | +110.0% (1) |
 | 2 | Iceland Úrvalsdeild | ou15 | 8 | COLLECTING | +0.159 | – | +350.0% (1) |
-| 2 | Ecuador Liga Pro | ou15 | 8 | COLLECTING | -0.001 | – | -100.0% (1) |
-| 2 | Paraguay Division Intermedia | ou15 | 8 | COLLECTING | +0.037 | – | – |
-| 2 | Chile Primera B | ou15 | 8 | COLLECTING | -0.056 | – | – |
-| 2 | Uruguay Primera División | ou15 | 8 | COLLECTING | -0.024 | – | -100.0% (1) |
 | 2 | Czech-Republic 3. liga - CFL A | ou15 | 8 | COLLECTING | +0.124 | – | – |
 | 2 | Nigeria NPFL | ou15 | 8 | COLLECTING | +0.082 | – | – |
 | 2 | Italy Serie D - Girone A | ou15 | 8 | COLLECTING | +0.028 | – | – |
@@ -353,10 +365,6 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Denmark 2. Division | ou25 | 8 | COLLECTING | +0.140 | – | +0.0% (2) |
 | 2 | Argentina Primera C | ou25 | 8 | COLLECTING | +0.148 | – | -55.7% (3) |
 | 2 | Iceland Úrvalsdeild | ou25 | 8 | COLLECTING | +0.318 | – | -21.7% (3) |
-| 2 | Ecuador Liga Pro | ou25 | 8 | COLLECTING | -0.022 | – | -40.0% (3) |
-| 2 | Paraguay Division Intermedia | ou25 | 8 | COLLECTING | +0.068 | – | +41.2% (4) |
-| 2 | Chile Primera B | ou25 | 8 | COLLECTING | +0.025 | – | +2.5% (2) |
-| 2 | Uruguay Primera División | ou25 | 8 | COLLECTING | -0.103 | – | +70.0% (1) |
 | 2 | Czech-Republic 3. liga - CFL A | ou25 | 8 | COLLECTING | +0.127 | – | -56.7% (3) |
 | 2 | Nigeria NPFL | ou25 | 8 | COLLECTING | +0.035 | – | -100.0% (1) |
 | 2 | Italy Serie D - Girone A | ou25 | 8 | COLLECTING | +0.034 | – | – |
@@ -369,10 +377,6 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Denmark 2. Division | ou35 | 8 | COLLECTING | +0.133 | – | +40.0% (2) |
 | 2 | Argentina Primera C | ou35 | 8 | COLLECTING | -0.057 | – | +20.0% (1) |
 | 2 | Iceland Úrvalsdeild | ou35 | 8 | COLLECTING | -0.024 | – | -49.0% (3) |
-| 2 | Ecuador Liga Pro | ou35 | 8 | COLLECTING | -0.131 | – | +25.0% (1) |
-| 2 | Paraguay Division Intermedia | ou35 | 8 | COLLECTING | +0.060 | – | – |
-| 2 | Chile Primera B | ou35 | 8 | COLLECTING | -0.231 | – | – |
-| 2 | Uruguay Primera División | ou35 | 8 | COLLECTING | -0.062 | – | +25.0% (1) |
 | 2 | Czech-Republic 3. liga - CFL A | ou35 | 8 | COLLECTING | +0.065 | – | – |
 | 2 | Nigeria NPFL | ou35 | 8 | COLLECTING | +0.062 | – | – |
 | 2 | Italy Serie D - Girone A | ou35 | 8 | COLLECTING | +0.037 | – | – |
@@ -386,10 +390,6 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Denmark 2. Division | btts | 8 | COLLECTING | +0.095 | – | – |
 | 2 | Argentina Primera C | btts | 8 | COLLECTING | +0.022 | – | -28.0% (2) |
 | 2 | Iceland Úrvalsdeild | btts | 8 | COLLECTING | +0.106 | – | +20.0% (1) |
-| 2 | Ecuador Liga Pro | btts | 8 | COLLECTING | -0.021 | – | – |
-| 2 | Paraguay Division Intermedia | btts | 8 | COLLECTING | +0.041 | – | – |
-| 2 | Chile Primera B | btts | 8 | COLLECTING | +0.053 | – | – |
-| 2 | Uruguay Primera División | btts | 8 | COLLECTING | -0.050 | – | – |
 | 2 | Czech-Republic 3. liga - CFL A | btts | 8 | COLLECTING | +0.158 | – | – |
 | 2 | Nigeria NPFL | btts | 8 | COLLECTING | +0.017 | – | – |
 | 2 | Italy Serie D - Girone A | btts | 8 | COLLECTING | +0.024 | – | – |
@@ -402,6 +402,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Bulgaria First League | ou15 | 7 | COLLECTING | -0.018 | – | +40.0% (1) |
 | 2 | Greece Super League 1 | ou15 | 7 | COLLECTING | +0.040 | – | +134.5% (2) |
 | 2 | Turkey 2. Lig | ou15 | 7 | COLLECTING | -0.054 | – | – |
+| 2 | Paraguay Division Profesional - Clausura | ou15 | 7 | COLLECTING | -0.062 | – | -100.0% (2) |
 | 2 | Chile Primera División | ou15 | 7 | COLLECTING | +0.237 | – | -100.0% (1) |
 | 2 | Hungary NB I | ou15 | 7 | COLLECTING | -0.042 | – | – |
 | 2 | South-Korea K3 League | ou15 | 7 | COLLECTING | +0.011 | – | – |
@@ -417,6 +418,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Bulgaria First League | ou25 | 7 | COLLECTING | +0.046 | – | +130.0% (1) |
 | 2 | Greece Super League 1 | ou25 | 7 | COLLECTING | +0.204 | – | +70.0% (1) |
 | 2 | Turkey 2. Lig | ou25 | 7 | COLLECTING | +0.070 | – | +100.0% (1) |
+| 2 | Paraguay Division Profesional - Clausura | ou25 | 7 | COLLECTING | -0.143 | – | -38.3% (3) |
 | 2 | Chile Primera División | ou25 | 7 | COLLECTING | +0.099 | – | – |
 | 2 | Hungary NB I | ou25 | 7 | COLLECTING | -0.093 | – | +81.7% (3) |
 | 2 | South-Korea K3 League | ou25 | 7 | COLLECTING | -0.037 | – | -12.5% (2) |
@@ -432,6 +434,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Bulgaria First League | ou35 | 7 | COLLECTING | +0.073 | – | +333.0% (1) |
 | 2 | Greece Super League 1 | ou35 | 7 | COLLECTING | +0.163 | – | +25.0% (1) |
 | 2 | Turkey 2. Lig | ou35 | 7 | COLLECTING | +0.106 | – | – |
+| 2 | Paraguay Division Profesional - Clausura | ou35 | 7 | COLLECTING | -0.189 | – | -67.5% (4) |
 | 2 | Chile Primera División | ou35 | 7 | COLLECTING | +0.135 | – | – |
 | 2 | Hungary NB I | ou35 | 7 | COLLECTING | -0.422 | – | +12.0% (3) |
 | 2 | South-Korea K3 League | ou35 | 7 | COLLECTING | -0.022 | – | – |
@@ -447,6 +450,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Bulgaria First League | btts | 7 | COLLECTING | +0.051 | – | +91.0% (1) |
 | 2 | Greece Super League 1 | btts | 7 | COLLECTING | -0.022 | – | +100.5% (2) |
 | 2 | Turkey 2. Lig | btts | 7 | COLLECTING | +0.104 | – | – |
+| 2 | Paraguay Division Profesional - Clausura | btts | 7 | COLLECTING | -0.124 | – | -100.0% (4) |
 | 2 | Chile Primera División | btts | 7 | COLLECTING | +0.049 | – | -100.0% (1) |
 | 2 | Hungary NB I | btts | 7 | COLLECTING | -0.186 | – | +150.0% (1) |
 | 2 | South-Korea K3 League | btts | 7 | COLLECTING | +0.011 | – | – |
@@ -463,7 +467,6 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Croatia HNL | ou15 | 6 | COLLECTING | +0.073 | – | – |
 | 2 | Ecuador Liga Pro Serie B | ou15 | 6 | COLLECTING | +0.141 | – | – |
 | 2 | Finland Ykkönen | ou15 | 6 | COLLECTING | +0.027 | – | – |
-| 2 | Paraguay Division Profesional - Clausura | ou15 | 6 | COLLECTING | -0.032 | – | -100.0% (1) |
 | 2 | Uruguay Segunda División | ou15 | 6 | COLLECTING | +0.025 | – | – |
 | 2 | South-Korea K League 1 | ou15 | 6 | COLLECTING | -0.020 | – | – |
 | 2 | Slovakia Super Liga | ou15 | 6 | COLLECTING | +0.040 | – | – |
@@ -482,7 +485,6 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Croatia HNL | ou25 | 6 | COLLECTING | +0.172 | – | -35.0% (3) |
 | 2 | Ecuador Liga Pro Serie B | ou25 | 6 | COLLECTING | +0.234 | – | +69.0% (2) |
 | 2 | Finland Ykkönen | ou25 | 6 | COLLECTING | +0.229 | – | +3.3% (3) |
-| 2 | Paraguay Division Profesional - Clausura | ou25 | 6 | COLLECTING | -0.121 | – | -7.5% (2) |
 | 2 | Uruguay Segunda División | ou25 | 6 | COLLECTING | +0.031 | – | – |
 | 2 | South-Korea K League 1 | ou25 | 6 | COLLECTING | +0.096 | – | -100.0% (1) |
 | 2 | Slovakia Super Liga | ou25 | 6 | COLLECTING | -0.089 | – | – |
@@ -501,7 +503,6 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Croatia HNL | ou35 | 6 | COLLECTING | +0.000 | – | – |
 | 2 | Ecuador Liga Pro Serie B | ou35 | 6 | COLLECTING | +0.305 | – | – |
 | 2 | Finland Ykkönen | ou35 | 6 | COLLECTING | +0.200 | – | – |
-| 2 | Paraguay Division Profesional - Clausura | ou35 | 6 | COLLECTING | -0.161 | – | -56.7% (3) |
 | 2 | Uruguay Segunda División | ou35 | 6 | COLLECTING | -0.112 | – | – |
 | 2 | South-Korea K League 1 | ou35 | 6 | COLLECTING | +0.090 | – | – |
 | 2 | Slovakia Super Liga | ou35 | 6 | COLLECTING | -0.070 | – | – |
@@ -519,7 +520,6 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Croatia HNL | btts | 6 | COLLECTING | +0.152 | – | +5.0% (2) |
 | 2 | Ecuador Liga Pro Serie B | btts | 6 | COLLECTING | +0.043 | – | – |
 | 2 | Finland Ykkönen | btts | 6 | COLLECTING | -0.179 | – | +225.0% (1) |
-| 2 | Paraguay Division Profesional - Clausura | btts | 6 | COLLECTING | -0.095 | – | -100.0% (3) |
 | 2 | Uruguay Segunda División | btts | 6 | COLLECTING | +0.074 | – | – |
 | 2 | South-Korea K League 1 | btts | 6 | COLLECTING | +0.104 | – | – |
 | 2 | Slovakia Super Liga | btts | 6 | COLLECTING | +0.069 | – | – |
@@ -630,7 +630,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Spain Tercera División RFEF - Group 2 | ou15 | 2 | COLLECTING | +0.100 | – | – |
 | 2 | Switzerland 1. Liga Promotion | ou15 | 2 | COLLECTING | -0.004 | – | – |
 | 2 | Turkey 3. Lig - Group 3 | ou15 | 2 | COLLECTING | -0.119 | – | – |
-| 2 | Slovakia 3. liga - West | ou15 | 2 | COLLECTING | +0.449 | – | – |
+| 2 | Slovakia 3. liga - West | ou15 | 2 | COLLECTING | +0.452 | – | – |
 | 2 | Mexico Liga Premier Serie A | ou15 | 2 | COLLECTING | +0.470 | – | – |
 | 2 | Dominican-Republic Liga Mayor | ou15 | 2 | COLLECTING | -0.053 | – | – |
 | 2 | Norway 3. Division - Girone 4 | ou15 | 2 | COLLECTING | +0.041 | – | – |
@@ -657,7 +657,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Switzerland 1. Liga Promotion | ou35 | 2 | COLLECTING | -0.171 | – | – |
 | 2 | Turkey 3. Lig - Group 3 | ou35 | 2 | COLLECTING | +0.233 | – | – |
 | 2 | Hungary NB III - Northwest | ou35 | 2 | COLLECTING | -0.478 | – | – |
-| 2 | Slovakia 3. liga - West | ou35 | 2 | COLLECTING | +0.174 | – | – |
+| 2 | Slovakia 3. liga - West | ou35 | 2 | COLLECTING | +0.175 | – | – |
 | 2 | Czech-Republic 4. liga - Divizie F | ou35 | 2 | COLLECTING | -0.393 | – | – |
 | 2 | Mexico Liga Premier Serie A | ou35 | 2 | COLLECTING | +0.376 | – | – |
 | 2 | Dominican-Republic Liga Mayor | ou35 | 2 | COLLECTING | +0.112 | – | – |
@@ -673,7 +673,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Hungary NB III - Northwest | btts | 2 | COLLECTING | -0.155 | – | – |
 | 2 | Slovakia 3. liga - West | btts | 2 | COLLECTING | +0.139 | – | – |
 | 2 | Czech-Republic 4. liga - Divizie F | btts | 2 | COLLECTING | +0.096 | – | – |
-| 2 | Mexico Liga Premier Serie A | btts | 2 | COLLECTING | -0.202 | – | – |
+| 2 | Mexico Liga Premier Serie A | btts | 2 | COLLECTING | -0.203 | – | – |
 | 2 | Dominican-Republic Liga Mayor | btts | 2 | COLLECTING | -0.197 | – | – |
 | 2 | Norway 3. Division - Girone 4 | btts | 2 | COLLECTING | -0.135 | – | – |
 | 2 | Belgium Second Amateur Division - ACFF | ou15 | 1 | COLLECTING | +0.102 | – | – |
@@ -696,6 +696,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Slovakia 3. liga - East | ou15 | 1 | COLLECTING | +0.273 | – | – |
 | 2 | Mongolia Premier League | ou15 | 1 | COLLECTING | -0.168 | – | – |
 | 2 | Philippines PFL | ou15 | 1 | COLLECTING | -0.037 | – | – |
+| 2 | Mexico Liga Premier Serie B | ou15 | 1 | COLLECTING | -0.160 | – | – |
 | 2 | New-Zealand National League - National | ou15 | 1 | COLLECTING | -1.148 | – | – |
 | 2 | Belgium Second Amateur Division - ACFF | ou25 | 1 | COLLECTING | -0.367 | – | -100.0% (1) |
 | 2 | Czech-Republic 4. liga - Divizie A | ou25 | 1 | COLLECTING | +0.087 | – | +44.0% (1) |
@@ -716,6 +717,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Slovakia 3. liga - East | ou25 | 1 | COLLECTING | +0.334 | – | +50.0% (1) |
 | 2 | Mongolia Premier League | ou25 | 1 | COLLECTING | -0.429 | – | -100.0% (1) |
 | 2 | Philippines PFL | ou25 | 1 | COLLECTING | +0.152 | – | +162.0% (1) |
+| 2 | Mexico Liga Premier Serie B | ou25 | 1 | COLLECTING | -0.152 | – | – |
 | 2 | New-Zealand National League - National | ou25 | 1 | COLLECTING | -1.191 | – | +44.0% (1) |
 | 2 | Belgium Second Amateur Division - ACFF | ou35 | 1 | COLLECTING | -0.707 | – | – |
 | 2 | Czech-Republic 4. liga - Divizie A | ou35 | 1 | COLLECTING | +0.029 | – | – |
@@ -736,6 +738,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Slovakia 3. liga - East | ou35 | 1 | COLLECTING | -0.639 | – | – |
 | 2 | Mongolia Premier League | ou35 | 1 | COLLECTING | +0.245 | – | – |
 | 2 | Philippines PFL | ou35 | 1 | COLLECTING | +0.375 | – | – |
+| 2 | Mexico Liga Premier Serie B | ou35 | 1 | COLLECTING | -0.287 | – | – |
 | 2 | New-Zealand National League - National | ou35 | 1 | COLLECTING | -0.379 | – | – |
 | 2 | Belgium Second Amateur Division - ACFF | btts | 1 | COLLECTING | -0.228 | – | – |
 | 2 | Czech-Republic 4. liga - Divizie A | btts | 1 | COLLECTING | +0.407 | – | – |
@@ -756,4 +759,5 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Slovakia 3. liga - East | btts | 1 | COLLECTING | -0.300 | – | – |
 | 2 | Mongolia Premier League | btts | 1 | COLLECTING | +0.541 | – | – |
 | 2 | Philippines PFL | btts | 1 | COLLECTING | -0.756 | – | – |
+| 2 | Mexico Liga Premier Serie B | btts | 1 | COLLECTING | -0.447 | – | – |
 | 2 | New-Zealand National League - National | btts | 1 | COLLECTING | -0.152 | – | – |
