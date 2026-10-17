@@ -5,7 +5,7 @@
     "live_models",
     "n_live_models"
   ],
-  "carried_from": "2026-10-16T18:19:57Z",
+  "carried_from": "2026-10-16T21:39:19Z",
   "collect_health": {
     "shadow_last_run": "2026-08-19T12:31:48Z",
     "shadow_n": 564,
@@ -13,8 +13,8 @@
   },
   "deployment_note": "Season 2026/27 is a data-collection and shadow season. Pro NEVER stakes. Pro MAY notify, narrowly: bet-builder research tips only, sent by src/combo/notify.py, labelled PAPER, with a FAIR price because no bookmaker same-game-builder price exists. Collect, live and research pipelines never notify \u2014 pro_collect.py aborts if Telegram credentials are even visible to it. Anything beyond combo tips needs its own decision. Signal tier and deployment mode stay independent: a SNIPER may be PAPER.",
   "feature_health": {},
-  "generated_at": "2026-10-16T21:39:19Z",
-  "git_sha": "42e35fa857ac",
+  "generated_at": "2026-10-17T00:45:35Z",
+  "git_sha": "728542aa5dcc",
   "live_models": [],
   "n_live_models": 0,
   "n_tables": 24,
@@ -32,11 +32,11 @@
     "book_odds_snapshots": {
       "empty_reason": null,
       "first_dt": "2026-09-09",
-      "last_dt": "2026-10-16",
+      "last_dt": "2026-10-17",
       "lifecycle": "ACTIVE",
-      "partitions": 180,
-      "rows": 292162,
-      "runs": 180,
+      "partitions": 181,
+      "rows": 292899,
+      "runs": 181,
       "table": "book_odds_snapshots"
     },
     "clv": {
@@ -54,9 +54,9 @@
       "first_dt": "2026-09-03",
       "last_dt": "2026-10-16",
       "lifecycle": "ACTIVE",
-      "partitions": 78,
-      "rows": 48547,
-      "runs": 78,
+      "partitions": 79,
+      "rows": 50316,
+      "runs": 79,
       "table": "combo_candidates"
     },
     "combo_dependencies": {
@@ -74,9 +74,9 @@
       "first_dt": "2026-09-03",
       "last_dt": "2026-10-16",
       "lifecycle": "ACTIVE",
-      "partitions": 78,
-      "rows": 130094,
-      "runs": 78,
+      "partitions": 79,
+      "rows": 135035,
+      "runs": 79,
       "table": "combo_legs"
     },
     "combo_price_snapshots": {
@@ -94,39 +94,39 @@
       "first_dt": "2026-09-03",
       "last_dt": "2026-10-16",
       "lifecycle": "ACTIVE",
-      "partitions": 73,
-      "rows": 31062,
-      "runs": 73,
+      "partitions": 74,
+      "rows": 31164,
+      "runs": 74,
       "table": "combo_settlements"
     },
     "data_quality": {
       "empty_reason": null,
       "first_dt": "2026-08-23",
-      "last_dt": "2026-10-16",
+      "last_dt": "2026-10-17",
       "lifecycle": "ACTIVE",
-      "partitions": 313,
-      "rows": 4667,
-      "runs": 313,
+      "partitions": 314,
+      "rows": 4685,
+      "runs": 314,
       "table": "data_quality"
     },
     "feature_snapshots": {
       "empty_reason": null,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-10-16",
+      "last_dt": "2026-10-17",
       "lifecycle": "ACTIVE",
-      "partitions": 400,
-      "rows": 61117,
-      "runs": 400,
+      "partitions": 401,
+      "rows": 61338,
+      "runs": 401,
       "table": "feature_snapshots"
     },
     "fixtures": {
       "empty_reason": null,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-10-16",
+      "last_dt": "2026-10-17",
       "lifecycle": "ACTIVE",
-      "partitions": 400,
-      "rows": 61117,
-      "runs": 400,
+      "partitions": 401,
+      "rows": 61338,
+      "runs": 401,
       "table": "fixtures"
     },
     "live_odds_snapshots": {
@@ -134,9 +134,9 @@
       "first_dt": "2026-08-30",
       "last_dt": "2026-10-16",
       "lifecycle": "ACTIVE",
-      "partitions": 169,
-      "rows": 221181,
-      "runs": 169,
+      "partitions": 170,
+      "rows": 221668,
+      "runs": 170,
       "table": "live_odds_snapshots"
     },
     "live_signals": {
@@ -152,11 +152,11 @@
     "market_snapshots": {
       "empty_reason": null,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-10-16",
+      "last_dt": "2026-10-17",
       "lifecycle": "ACTIVE",
-      "partitions": 459,
-      "rows": 313170,
-      "runs": 459,
+      "partitions": 460,
+      "rows": 313884,
+      "runs": 460,
       "table": "market_snapshots"
     },
     "model_snapshots": {
@@ -164,9 +164,9 @@
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-16",
       "lifecycle": "ACTIVE",
-      "partitions": 400,
-      "rows": 295722,
-      "runs": 400,
+      "partitions": 401,
+      "rows": 296798,
+      "runs": 401,
       "table": "model_snapshots"
     },
     "movement_observations": {
@@ -194,9 +194,9 @@
       "first_dt": "2026-10-08",
       "last_dt": "2026-10-16",
       "lifecycle": "ACTIVE",
-      "partitions": 32,
-      "rows": 2085,
-      "runs": 32,
+      "partitions": 33,
+      "rows": 2102,
+      "runs": 33,
       "table": "scout_model"
     },
     "scout_odds": {
@@ -204,9 +204,9 @@
       "first_dt": "2026-10-08",
       "last_dt": "2026-10-16",
       "lifecycle": "ACTIVE",
-      "partitions": 315,
-      "rows": 142618,
-      "runs": 315,
+      "partitions": 332,
+      "rows": 145946,
+      "runs": 332,
       "table": "scout_odds"
     },
     "scout_results": {
@@ -214,9 +214,9 @@
       "first_dt": "2026-10-08",
       "last_dt": "2026-10-16",
       "lifecycle": "ACTIVE",
-      "partitions": 38,
-      "rows": 238993,
-      "runs": 38,
+      "partitions": 39,
+      "rows": 239066,
+      "runs": 39,
       "table": "scout_results"
     },
     "settlements": {
@@ -242,11 +242,11 @@
     "signals": {
       "empty_reason": null,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-10-16",
+      "last_dt": "2026-10-17",
       "lifecycle": "ACTIVE",
-      "partitions": 400,
-      "rows": 61117,
-      "runs": 400,
+      "partitions": 401,
+      "rows": 61338,
+      "runs": 401,
       "table": "signals"
     },
     "team_match_stats": {
@@ -270,11 +270,11 @@
       "table": "team_news"
     }
   },
-  "source_commit_sha": "42e35fa857ac",
+  "source_commit_sha": "728542aa5dcc",
   "tables_expected_empty": [
     "combo_price_snapshots"
   ],
   "tables_never_written": [],
   "tables_unexpected_empty": [],
-  "total_rows": 5789945
+  "total_rows": 5803870
 }
