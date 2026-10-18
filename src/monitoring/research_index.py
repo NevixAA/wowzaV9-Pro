@@ -118,6 +118,22 @@ def _top_picks():
             "report": "output/studies/TOP_PICKS_WEEKLY.md"}
 
 
+def _leagues():
+    p = OUT / "studies" / "league_results_weekly.csv"
+    if not p.exists():
+        return None
+    h = pd.read_csv(p)
+    cur = h[(h["week"] == h["week"].max()) & (h["window"] == "season")].sort_values("rank")
+    if cur.empty:
+        return None
+    lab = cur.groupby("label")["league"].apply(lambda s: ", ".join(s)).to_dict()
+    status = ("Best leagues (season): proven " + (lab.get("PROVEN") or "none")
+              + " · losing " + (lab.get("LOSING") or "none"))
+    key = {r.league: f"{r.label} · {int(r.tips)} tips · {r.hit_rate:.0%} hit @ {r.avg_odds:.2f} · ROI {r.roi:+.0%} (shrunk {r.shrunk_roi:+.0%})"
+           for r in cur.itertuples()}
+    return {"status": status, "date": str(cur["updated_at"].iloc[0]), "key": key, "report": "output/studies/LEAGUE_RESULTS.md"}
+
+
 def _segments():
     s = _j("studies/props_segments.json")
     if not s:
@@ -187,6 +203,7 @@ STUDIES = [
     ("fantasy_v3", "Fantasy (FPL): v9 vs Player V3 projections", "players", _fantasy_v3),
     ("props_calibration", "Props calibration monitor (daily)", "players", _props_cal),
     ("top_picks_weekly", "Top picks — weekly table", "tips", _top_picks),
+    ("league_results", "Best leagues — results by league", "tips", _leagues),
     ("calibration_form", "Calibration form: v9 vs log-odds Platt", "models", _calibration),
     ("calibration_shadow", "Calibration shadow in v9 (pre-registered)", "models", _cal_shadow),
     ("props_segments", "Props segments: attacking D / M (pre-registered)", "players", _segments),

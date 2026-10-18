@@ -49,6 +49,7 @@ def live_rows(week: str) -> list[dict]:
             per_day = x.groupby("day")["win"].sum()
             rows.append({"list": name, "kind": f"live_{scope}", "days": int(per_day.size), "picks": int(len(x)),
                          "hit_rate": round(float(x["win"].mean()), 3), "roi": round(float(x["ret"].mean()), 3),
+                         "avg_odds": round(float(x["odds"].mean()), 2),
                          "zero_days": round(float((per_day == 0).mean()), 3)})
     return rows
 
@@ -61,7 +62,8 @@ def backtest_rows() -> list[dict]:
         if not e:
             continue
         rows.append({"list": name, "kind": "backtest", "days": e["days"], "picks": e["picks"],
-                     "hit_rate": e["hit_rate"], "roi": e["roi"], "zero_days": e["zero_days"]})
+                     "hit_rate": e["hit_rate"], "roi": e["roi"], "zero_days": e["zero_days"],
+                     "avg_odds": e.get("avg_odds")})
     return rows
 
 
@@ -77,7 +79,8 @@ def build(now: pd.Timestamp | None = None) -> pd.DataFrame:
 
 
 def _fmt(r) -> str:
-    return (f"{r['hit_rate']:.0%} hit, {r['roi']:+.0%} ROI, {r['zero_days']:.0%} 0/5 days "
+    odds = f", avg odds {r['avg_odds']:.2f}" if pd.notna(r.get("avg_odds")) else ""
+    return (f"{r['hit_rate']:.0%} hit{odds}, {r['roi']:+.0%} ROI, {r['zero_days']:.0%} 0/5 days "
             f"({int(r['days'])} days, {int(r['picks'])} picks)")
 
 
@@ -96,9 +99,9 @@ def to_md(hist: pd.DataFrame) -> str:
             x = cur[(cur["list"] == name) & (cur["kind"] == kind)]
             cell[kind] = _fmt(x.iloc[0]) if len(x) else "—"
         L.append(f"| {LABEL[name]} | {how[name]} | {cell['live_this_week']} | {cell['live_to_date']} | {cell['backtest']} |")
-    L += ["", "## Week by week (live picks)", "", "| Week | List | Hit | ROI | 0/5 days | Picks |", "|---|---|---|---|---|---|"]
+    L += ["", "## Week by week (live picks)", "", "| Week | List | Hit | Avg odds | ROI | 0/5 days | Picks |", "|---|---|---|---|---|---|---|"]
     lw = hist[hist["kind"] == "live_this_week"].sort_values(["week", "list"], ascending=[False, True])
-    L += [f"| {r.week} | {LABEL[r.list]} | {r.hit_rate:.0%} | {r.roi:+.0%} | {r.zero_days:.0%} | {int(r.picks)} |"
+    L += [f"| {r.week} | {LABEL[r.list]} | {r.hit_rate:.0%} | {r.avg_odds:.2f} | {r.roi:+.0%} | {r.zero_days:.0%} | {int(r.picks)} |"
           for r in lw.itertuples()] or ["| — | live record starts with the first frozen day | | | | |"]
     L += ["", "Live = the lists users were shown (frozen each morning), graded from results. Backtest = the "
               "walk-forward test re-run on all history; it moves as new days arrive."]

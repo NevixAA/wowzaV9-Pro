@@ -137,10 +137,12 @@ def score_days(d: pd.DataFrame) -> pd.DataFrame:
             p = _pick(g, how)
             u = np.where(p["win"] == 1, p["odds"] - 1, -1.0)
             r.update({f"{how}_n": len(p), f"{how}_hits": int(p["win"].sum()), f"{how}_units": float(u.sum()),
+                      f"{how}_odds": float(p["odds"].sum()),
                       f"{how}_zero": float(len(p) > 0 and p["win"].sum() == 0),
                       f"{how}_four_plus": float(p["win"].sum() >= 4)})
         rr = _random_day(g)
         r.update({"RANDOM_5_n": rr["n"], "RANDOM_5_hits": rr["hits"], "RANDOM_5_units": rr["units"],
+                  "RANDOM_5_odds": rr["n"] * float(g["odds"].mean()),
                   "RANDOM_5_zero": rr["zero"], "RANDOM_5_four_plus": rr["four_plus"]})
         rows.append(r)
     return pd.DataFrame(rows)
@@ -161,6 +163,7 @@ def summarise(S: pd.DataFrame) -> dict:
         e = {"days": int(len(S)), "picks": float(n),
              "hit_rate": round(float(S[f"{how}_hits"].sum() / n), 3) if n else None,
              "roi": round(float(S[f"{how}_units"].sum() / n), 3) if n else None,
+             "avg_odds": round(float(S[f"{how}_odds"].sum() / n), 2) if n else None,
              "zero_days": round(float(S[f"{how}_zero"].mean()), 3),
              "four_plus_days": round(float(S[f"{how}_four_plus"].mean()), 3),
              "hits_per_day": round(float(S[f"{how}_hits"].mean()), 2)}
