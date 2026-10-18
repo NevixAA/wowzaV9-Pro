@@ -1,12 +1,27 @@
 {
- "generated_at": "2026-10-18 08:44 UTC",
+ "generated_at": "2026-10-18 08:47 UTC",
  "items": [
+  {
+   "id": "props_calibration",
+   "title": "Props calibration monitor (daily)",
+   "area": "players",
+   "status": "Live props model vs reality (30 days): assists predicted 21% / happened 19%, cards predicted 17% / happened 20%, goals predicted 23% / happened 29%, sot predicted 29% / happened 42%",
+   "date": "2026-10-18 08:47 UTC",
+   "key": {
+    "assists": "CALIBRATED \u00b7 gap -1.5% [-0.0764, 0.0392] \u00b7 n 167",
+    "cards": "UNDER_PREDICTS \u00b7 gap +2.6% [0.0055, 0.0573] \u00b7 n 1368",
+    "goals": "UNDER_PREDICTS \u00b7 gap +5.2% [0.0193, 0.0859] \u00b7 n 497",
+    "sot": "UNDER_PREDICTS \u00b7 gap +12.7% [0.1131, 0.1483] \u00b7 n 2696"
+   },
+   "report": "output/studies/PROPS_CALIBRATION.md",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/PROPS_CALIBRATION.md"
+  },
   {
    "id": "top_picks_weekly",
    "title": "Top picks \u2014 weekly table",
    "area": "tips",
    "status": "Top picks 2026-W42: live record not started; backtest in the table",
-   "date": "2026-10-18 08:43 UTC",
+   "date": "2026-10-18 08:47 UTC",
    "key": {
     "BEST_BETS (backtest)": "55% hit \u00b7 +9% ROI \u00b7 6% 0/5 days \u00b7 176 picks",
     "CURRENT (backtest)": "50% hit \u00b7 +5% ROI \u00b7 8% 0/5 days \u00b7 180 picks",
@@ -18,26 +33,11 @@
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/TOP_PICKS_WEEKLY.md"
   },
   {
-   "id": "props_calibration",
-   "title": "Props calibration monitor (daily)",
-   "area": "players",
-   "status": "Live props model vs reality (30 days): assists predicted 20% / happened 18%, cards predicted 17% / happened 20%, goals predicted 23% / happened 28%, sot predicted 29% / happened 42%",
-   "date": "2026-10-18 07:39 UTC",
-   "key": {
-    "assists": "CALIBRATED \u00b7 gap -2.9% [-0.0817, 0.0298] \u00b7 n 160",
-    "cards": "UNDER_PREDICTS \u00b7 gap +2.9% [0.0109, 0.0573] \u00b7 n 1339",
-    "goals": "UNDER_PREDICTS \u00b7 gap +5.1% [0.0191, 0.0856] \u00b7 n 486",
-    "sot": "UNDER_PREDICTS \u00b7 gap +12.6% [0.1113, 0.1474] \u00b7 n 2665"
-   },
-   "report": "output/studies/PROPS_CALIBRATION.md",
-   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/PROPS_CALIBRATION.md"
-  },
-  {
    "id": "calibration_shadow",
    "title": "Calibration shadow in v9 (pre-registered)",
    "area": "models",
    "status": "Live shadow of log-odds calibration in v9: WAITING_FOR_SHADOW_ROWS",
-   "date": "2026-10-18 07:39 UTC",
+   "date": "2026-10-18 08:47 UTC",
    "key": {},
    "report": "output/studies/CALIBRATION_SHADOW.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/CALIBRATION_SHADOW.md"
@@ -47,7 +47,7 @@
    "title": "Props segments: attacking D / M (pre-registered)",
    "area": "players",
    "status": "8 qualifying props since 2026-10-14; 0 EDGE cells",
-   "date": "2026-10-18 07:39 UTC",
+   "date": "2026-10-18 08:47 UTC",
    "key": {
     "ATT_DEF|goals": "COLLECTING (0/150)",
     "ATT_DEF|sot": "COLLECTING (0/150)",
