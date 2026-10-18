@@ -76,6 +76,46 @@ def table(d: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values("shrunk_roi", ascending=False).reset_index(drop=True)
 
 
+RATINGS_JSON = OUT / "league_ratings.json"
+
+
+def rating(shrunk_roi: float, label: str) -> int:
+    """League rating 1-10 (owner 2026-10-18: 10 = best league = max bet allowed, 1 = worst = min bet).
+
+    Base: 5.5 + shrunk ROI / 4 points, i.e. every +4% of shrunk ROI is one step (shrunk -18% -> 1,
+    +18% -> 10). Evidence gates on top, so a rating cannot outrun the data:
+      PROVEN      at least 8          (only a proven league can reach 10)
+      PROMISING   at most 9
+      NOT_ENOUGH  at most 5           (no league earns a big stake on thin data)
+      NEUTRAL     between 3 and 6
+      LOSING      at most 2
+    Consumers (v9 stake plan, wowza-exec) only scale stakes DOWN from today's maximum: 10 = today's max."""
+    r = int(np.clip(np.floor(5.5 + shrunk_roi / 0.04 + 0.5), 1, 10))
+    if label == "PROVEN":
+        r = max(r, 8)
+    elif label == "PROMISING":
+        r = min(r, 9)
+    elif label == "NOT_ENOUGH":
+        r = min(r, 5)
+    elif label == "NEUTRAL":
+        r = int(np.clip(r, 3, 6))
+    elif label == "LOSING":
+        r = min(r, 2)
+    return min(r, 9) if label != "PROVEN" else r
+
+
+def write_ratings(cur: pd.DataFrame, now: pd.Timestamp) -> dict:
+    s = cur[cur["window"] == "season"]
+    out = {"generated_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "window": f"season since {SEASON_FROM}",
+           "method": "5.5 + shrunk ROI/4pts, gated by label (see src/studies/league_results.rating)",
+           "ratings": {r["league"]: {"rating": int(r["rating"]), "label": r["label"], "tips": int(r["tips"]),
+                                     "shrunk_roi": float(r["shrunk_roi"]), "roi": float(r["roi"]),
+                                     "avg_odds": float(r["avg_odds"])}
+                       for _, r in s.iterrows()}}
+    RATINGS_JSON.write_text(__import__("json").dumps(out, indent=1), encoding="utf-8")
+    return out
+
+
 def build(now: pd.Timestamp | None = None) -> pd.DataFrame:
     now = now or pd.Timestamp.now(tz="UTC")
     week = now.strftime("%G-W%V")
@@ -85,6 +125,7 @@ def build(now: pd.Timestamp | None = None) -> pd.DataFrame:
     for window, x in (("season", d[d["day"] >= SEASON_FROM]), ("last_30_days", d[d["day"] >= last30])):
         t = table(x)
         if len(t):
+            t["rating"] = [rating(s, lab) for s, lab in zip(t["shrunk_roi"], t["label"])]
             parts.append(t.assign(window=window, rank=range(1, len(t) + 1)))
     cur = pd.concat(parts, ignore_index=True) if parts else pd.DataFrame()
     cur.insert(0, "week", week)
@@ -103,9 +144,10 @@ def to_md(hist: pd.DataFrame) -> str:
          f"of zero at a Bonferroni-corrected level (one-sided 5% / number of leagues), and PROVEN >= 100 tips.", ""]
     for window, title in (("season", f"Season (since {SEASON_FROM})"), ("last_30_days", "Last 30 days")):
         t = cur[cur["window"] == window].sort_values("rank")
-        L += [f"## {title}", "", "| # | League | Tips | Hit | Avg odds | ROI | 90% CI | Shrunk ROI | Best market | Label |",
-              "|---|---|---|---|---|---|---|---|---|---|"]
-        L += [f"| {int(r['rank'])} | {r['league']} | {int(r['tips'])} | {r['hit_rate']:.0%} | {r['avg_odds']:.2f} | "
+        L += [f"## {title}", "", "| # | League | Rating | Tips | Hit | Avg odds | ROI | 90% CI | Shrunk ROI | Best market | Label |",
+              "|---|---|---|---|---|---|---|---|---|---|---|"]
+        L += [f"| {int(r['rank'])} | {r['league']} | {int(r['rating']) if pd.notna(r.get('rating')) else '—'}/10 | "
+              f"{int(r['tips'])} | {r['hit_rate']:.0%} | {r['avg_odds']:.2f} | "
               f"{r['roi']:+.0%} | {r['roi_ci90']} | {r['shrunk_roi']:+.0%} | {r['best_market']} | {r['label']} |"
               for _, r in t.iterrows()]
         L.append("")
@@ -113,9 +155,11 @@ def to_md(hist: pd.DataFrame) -> str:
 
 
 def main() -> int:
-    hist = build()
+    now = pd.Timestamp.now(tz="UTC")
+    hist = build(now)
     OUT.mkdir(parents=True, exist_ok=True)
     hist.to_csv(CSV, index=False)
+    write_ratings(hist[hist["week"] == hist["week"].max()], now)
     (OUT / "LEAGUE_RESULTS.md").write_text(to_md(hist), encoding="utf-8")
     print(to_md(hist))
     return 0

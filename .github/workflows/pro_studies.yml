@@ -89,7 +89,8 @@ jobs:
                    output/studies/props_calibration.json output/studies/PROPS_CALIBRATION.md \
                    output/studies/tip_ranker.json output/studies/TIP_RANKER.md \
                    output/studies/top_picks_weekly.csv output/studies/TOP_PICKS_WEEKLY.md \
-                   output/studies/league_results_weekly.csv output/studies/LEAGUE_RESULTS.md; do
+                   output/studies/league_results_weekly.csv output/studies/LEAGUE_RESULTS.md \
+                   output/studies/league_ratings.json; do
             [ -e "$p" ] && git add "$p"
           done
           git diff --staged --quiet && exit 0
