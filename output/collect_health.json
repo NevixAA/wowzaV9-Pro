@@ -1,75 +1,115 @@
 {
-  "checked_at": "2026-10-18T05:04:04Z",
+  "checked_at": "2026-10-18T11:11:06Z",
   "watermarks_advanced": {
-    "output/book_odds_snapshots.csv": "2026-10-18T04:25:16Z"
+    "output/standard_odds_history.csv": "2026-10-18T09:05:50",
+    "output/newformat_odds_dense.csv": "2026-10-18T09:05:50",
+    "output/newformat_odds_history.csv": "2026-10-18T07:16:27Z",
+    "output/standard_sidemarket_odds_history.csv": "2026-10-18T10:39:56Z",
+    "output/book_odds_snapshots.csv": "2026-10-18T09:05:18Z"
   },
   "season": "season_2026_27",
-  "run_id": "gh39099220817-1",
-  "v9_sha": "14571c12120a",
-  "pro_git_sha": "555039d5faef",
+  "run_id": "gh39122159883-1",
+  "v9_sha": "80fb5ede035d",
+  "pro_git_sha": "5601b9699a0e",
   "dry_run": false,
-  "total_rows": 3964,
+  "total_rows": 106920,
   "per_importer": {
     "predictions": {
-      "rows": 2317,
+      "rows": 2295,
       "tables": {
-        "fixtures": 206,
-        "model_snapshots": 1018,
-        "market_snapshots": 681,
-        "feature_snapshots": 206,
-        "signals": 206
+        "fixtures": 204,
+        "model_snapshots": 1010,
+        "market_snapshots": 673,
+        "feature_snapshots": 204,
+        "signals": 204
+      }
+    },
+    "odds_histories": {
+      "rows": 2142,
+      "tables": {
+        "market_snapshots": 2142
       }
     },
     "book_odds": {
-      "rows": 1647,
+      "rows": 1401,
       "tables": {
-        "book_odds_snapshots": 1647
+        "book_odds_snapshots": 1401
+      }
+    },
+    "ledgers": {
+      "rows": 6251,
+      "tables": {
+        "settlements": 6251
+      }
+    },
+    "player_props": {
+      "rows": 20335,
+      "tables": {
+        "player_props": 20335
+      }
+    },
+    "clv": {
+      "rows": 4477,
+      "tables": {
+        "clv": 4477
+      }
+    },
+    "live_signals": {
+      "rows": 150,
+      "tables": {
+        "live_signals": 150
+      }
+    },
+    "movement_observations": {
+      "rows": 69869,
+      "tables": {
+        "movement_observations": 69869
       }
     }
   },
   "failures": [],
   "store": {
     "fixtures": {
-      "rows": 62993,
-      "partitions": 409,
-      "runs": 409,
+      "rows": 63197,
+      "partitions": 410,
+      "runs": 410,
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-18"
     },
     "model_snapshots": {
-      "rows": 304922,
-      "partitions": 409,
-      "runs": 409,
+      "rows": 305932,
+      "partitions": 410,
+      "runs": 410,
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-18"
     },
     "market_snapshots": {
-      "rows": 321205,
-      "partitions": 469,
-      "runs": 469,
+      "rows": 324020,
+      "partitions": 471,
+      "runs": 471,
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-18"
     },
     "feature_snapshots": {
-      "rows": 62993,
-      "partitions": 409,
-      "runs": 409,
+      "rows": 63197,
+      "partitions": 410,
+      "runs": 410,
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-18"
     },
     "signals": {
-      "rows": 62993,
-      "partitions": 409,
-      "runs": 409,
+      "rows": 63197,
+      "partitions": 410,
+      "runs": 410,
       "first_dt": "2026-08-17",
       "last_dt": "2026-10-18"
     },
     "settlements": {
-      "rows": 346301,
-      "partitions": 126,
-      "runs": 126,
+      "rows": 352552,
+      "partitions": 128,
+      "runs": 128,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-10-17"
+      "last_dt": "2026-10-18"
     },
     "settlements_backfill": {
       "rows": 778,
@@ -79,25 +119,25 @@
       "last_dt": "2026-05-21"
     },
     "clv": {
-      "rows": 121369,
-      "partitions": 62,
-      "runs": 62,
+      "rows": 125846,
+      "partitions": 63,
+      "runs": 63,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-10-17"
+      "last_dt": "2026-10-18"
     },
     "player_props": {
-      "rows": 543281,
-      "partitions": 62,
-      "runs": 62,
+      "rows": 563616,
+      "partitions": 63,
+      "runs": 63,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-10-17"
+      "last_dt": "2026-10-18"
     },
     "live_signals": {
-      "rows": 4100,
-      "partitions": 62,
-      "runs": 62,
+      "rows": 4250,
+      "partitions": 63,
+      "runs": 63,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-10-17"
+      "last_dt": "2026-10-18"
     },
     "live_odds_snapshots": {
       "rows": 240645,
@@ -107,37 +147,37 @@
       "last_dt": "2026-10-18"
     },
     "data_quality": {
-      "rows": 4811,
-      "partitions": 321,
-      "runs": 321,
+      "rows": 4829,
+      "partitions": 322,
+      "runs": 322,
       "first_dt": "2026-08-23",
       "last_dt": "2026-10-18"
     },
     "team_match_stats": {
-      "rows": 4859,
-      "partitions": 716,
-      "runs": 716,
+      "rows": 4905,
+      "partitions": 735,
+      "runs": 735,
       "first_dt": "2026-09-05",
-      "last_dt": "2026-10-17"
+      "last_dt": "2026-10-18"
     },
     "team_news": {
-      "rows": 418,
-      "partitions": 60,
-      "runs": 60,
+      "rows": 424,
+      "partitions": 61,
+      "runs": 61,
       "first_dt": "2026-08-30",
       "last_dt": "2026-10-18"
     },
     "movement_observations": {
-      "rows": 2961584,
-      "partitions": 56,
-      "runs": 56,
+      "rows": 3031453,
+      "partitions": 57,
+      "runs": 57,
       "first_dt": "2026-08-23",
-      "last_dt": "2026-10-17"
+      "last_dt": "2026-10-18"
     },
     "book_odds_snapshots": {
-      "rows": 304004,
-      "partitions": 189,
-      "runs": 189,
+      "rows": 305405,
+      "partitions": 190,
+      "runs": 190,
       "first_dt": "2026-09-09",
       "last_dt": "2026-10-18"
     },
@@ -177,23 +217,23 @@
       "last_dt": null
     },
     "scout_results": {
-      "rows": 239682,
-      "partitions": 46,
-      "runs": 46,
+      "rows": 239721,
+      "partitions": 47,
+      "runs": 47,
       "first_dt": "2026-10-08",
       "last_dt": "2026-10-18"
     },
     "scout_odds": {
-      "rows": 191719,
-      "partitions": 400,
-      "runs": 400,
+      "rows": 193958,
+      "partitions": 417,
+      "runs": 417,
       "first_dt": "2026-10-08",
       "last_dt": "2026-10-18"
     },
     "scout_model": {
-      "rows": 2323,
-      "partitions": 40,
-      "runs": 40,
+      "rows": 2338,
+      "partitions": 41,
+      "runs": 41,
       "first_dt": "2026-10-08",
       "last_dt": "2026-10-18"
     }
