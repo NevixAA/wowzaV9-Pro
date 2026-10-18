@@ -323,8 +323,28 @@ def build_tables(I: dict) -> dict[str, pd.DataFrame]:
     T["Player_V3"] = pd.DataFrame([{"field": k, "value": json.dumps(v) if isinstance(v, (dict, list)) else v}
                                    for k, v in (I["player_v3"] or {}).items()]) if I["player_v3"] else _insufficient()
     T["League_Scout"] = scout_table(I)
+    T.update(lineage_tables())
     T["_meta"] = pd.DataFrame([{"window": win_txt}])
     return T
+
+
+#: Champion high-water mark (owner 2026-10-18): sheet -> model_lineage output.
+LINEAGE_SHEETS = {"Model_Lineage": "current_champions_view", "Retrain_Batches": "retrain_batch_results",
+                  "Champion_History": "champion_live_performance",
+                  "Challenger_Results": "challenger_shadow_results",
+                  "Live_By_Model_Version": "model_version_live_results",
+                  "Model_High_Water": "champion_health", "Model_Churn": "model_churn"}
+
+
+def lineage_tables() -> dict[str, pd.DataFrame]:
+    """The seven lineage sheets. Never blocks the workbook: a failure becomes INSUFFICIENT_DATA."""
+    try:
+        from src.analytics import model_lineage as ML
+        r = ML.build(cfg.V9_LOCAL, results=ML.load_results())
+        return {sheet: r[key] for sheet, key in LINEAGE_SHEETS.items()}
+    except Exception as e:                                             # noqa: BLE001
+        return {sheet: _insufficient(f"model_lineage failed: {type(e).__name__}: {e}")
+                for sheet in LINEAGE_SHEETS}
 
 
 def _insufficient(msg: str = "source missing") -> pd.DataFrame:
@@ -501,6 +521,8 @@ SHEETS = ["Dashboard", "Methodology", "Overall", "Market_Model", "Tier", "Model_
           "Detailed_Cells", "Odds_Bands", "Edge_Bands", "OU25_Side", "Monthly", "Weekly", "Daily", "Rolling",
           "Profit_Curves", "Drawdown", "V11_League", "V11_Global", "CLV", "Calibration", "Season_Projection",
           "Current_Policy", "Top_Picks", "Pure_Prediction", "Retrain_Health", "Player_V3", "League_Scout",
+          "Model_Lineage", "Retrain_Batches", "Champion_History", "Challenger_Results",
+          "Live_By_Model_Version", "Model_High_Water", "Model_Churn",
           "System_Health", "Data_Quality", "Definitions"]
 
 

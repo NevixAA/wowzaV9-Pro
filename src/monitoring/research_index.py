@@ -170,6 +170,21 @@ def _longshot():
             "report": f"output/longshot_plan/{days[-1]}/WOWZA_LONGSHOT_PROFIT_ENGINE_MASTER_PLAN.md"}
 
 
+def _lineage():
+    a = _j("model_lineage/answers.json")
+    if not a:
+        return None
+    h = a.get("CHAMPION_HEALTH", {})
+    return {"status": f"Champion high-water mark: {a.get('RETRAIN_ATTEMPTS_ANALYZED')} retrains, "
+                      f"{a.get('PROMOTIONS')} promoted, churn {a.get('MODEL_CHURN_RATE')}; "
+                      f"health " + ", ".join(f"{k} {v}" for k, v in sorted(h.items())),
+            "date": a.get("GENERATED_AT"),
+            "key": {"best proven improvement": a.get("BEST_PROVEN_CHAMPION_IMPROVEMENT"),
+                    "head-to-head graded": a.get("H2H_GRADED"),
+                    **{f"champion {k}": v for k, v in (a.get("CURRENT_CHAMPION_BY_MODEL") or {}).items()}},
+            "report": "output/model_lineage/MODEL_LINEAGE_REPORT.md"}
+
+
 def _segments():
     s = _j("studies/props_segments.json")
     if not s:
@@ -242,6 +257,7 @@ STUDIES = [
     ("league_results", "Best leagues — results by league", "tips", _leagues),
     ("deep_analytics", "Deep analytics snapshot (weekly)", "tips", _deep),
     ("longshot_plan", "Longshot Profit Engine — BET_ENABLED plan", "money", _longshot),
+    ("model_lineage", "Model lineage — champion high-water mark", "models", _lineage),
     ("calibration_form", "Calibration form: v9 vs log-odds Platt", "models", _calibration),
     ("calibration_shadow", "Calibration shadow in v9 (pre-registered)", "models", _cal_shadow),
     ("props_segments", "Props segments: attacking D / M (pre-registered)", "players", _segments),

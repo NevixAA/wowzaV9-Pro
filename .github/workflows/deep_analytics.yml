@@ -40,7 +40,15 @@ jobs:
           python-version: '3.11'
       - run: pip install pandas numpy pyarrow requests openpyxl pytest
       - name: Tests
-        run: python -m pytest tests/test_deep_analytics.py -q
+        run: python -m pytest tests/test_deep_analytics.py tests/test_model_lineage.py -q
+      # Champion high-water mark (2026-10-18): what every retrain and champion did afterwards.
+      # Monday 05:40 follows the Sunday retrain. Reads v9's lineage records + ledgers, grades the
+      # champion-vs-challenger shadow log from Pro's own scorelines. Read-only against v9.
+      - name: Model lineage
+        run: |
+          set -o pipefail
+          python -m src.analytics.model_lineage --v9 _v9 | tee lineage.txt
+          { echo '### Model lineage'; echo '```'; cat lineage.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - name: Build snapshot
         env:
           V9_LOCAL: ${{ github.workspace }}/_v9
@@ -60,7 +68,8 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          for f in output/deep_analytics/*/*.csv output/deep_analytics/*/*.md output/deep_analytics/*/answers.json output/research_index.json; do
+          for f in output/deep_analytics/*/*.csv output/deep_analytics/*/*.md output/deep_analytics/*/answers.json output/research_index.json \
+                   output/model_lineage/*.csv output/model_lineage/*.md output/model_lineage/answers.json; do
             [ -e "$f" ] && git add -f "$f"
           done
           git diff --staged --quiet && exit 0
