@@ -104,6 +104,8 @@ def settle(d: pd.DataFrame) -> pd.DataFrame:
     """Flat 1u results; keeps settled rows only (WIN / LOSS / VOID / PUSH)."""
     s = d[d["result"].isin(["WIN", "LOSS", "VOID", "PUSH"])].copy()
     s = s[s["odds"] > 1.0]
+    # side "AVOID" is the model declining the fixture, not a bet (122 such O/U rows, all VOID): never a bet.
+    s = s[s["side"].astype(str).str.upper() != "AVOID"]
     s["win"] = (s["result"] == "WIN").astype(int)
     s["loss"] = (s["result"] == "LOSS").astype(int)
     s["void"] = s["result"].isin(["VOID", "PUSH"]).astype(int)

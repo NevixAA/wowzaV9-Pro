@@ -1,0 +1,173 @@
+{
+ "_status": "PROPOSED - NOT WIRED. Read only by the staking layer (v9 stake plan, wowza-exec) once approved; collection, prediction, settlement, research and retraining never read it.",
+ "generated_from": "2026-10-17",
+ "leagues": {
+  "Serie B": {
+   "bet_enabled": true,
+   "candidate": "TRUE",
+   "reason": "N 79, shrunk ROI +0.099, PES 88.2",
+   "review_after_retrain": true
+  },
+  "Brazil Serie A": {
+   "bet_enabled": true,
+   "candidate": "TRUE",
+   "reason": "N 130, shrunk ROI +0.082, PES 77.5",
+   "review_after_retrain": true
+  },
+  "Finland Veikkausliiga": {
+   "bet_enabled": true,
+   "candidate": "TRUE",
+   "reason": "N 66, shrunk ROI +0.065, PES 76.2",
+   "review_after_retrain": true
+  },
+  "Mexico Liga MX": {
+   "bet_enabled": true,
+   "candidate": "TRUE",
+   "reason": "N 77, shrunk ROI +0.023, PES 70.3",
+   "review_after_retrain": true
+  },
+  "Denmark Superliga": {
+   "bet_enabled": true,
+   "candidate": "TRUE",
+   "reason": "N 44, shrunk ROI +0.039, PES 69.9",
+   "review_after_retrain": true
+  },
+  "Argentina Primera Division": {
+   "bet_enabled": true,
+   "candidate": "TRUE",
+   "reason": "N 287, shrunk ROI +0.069, PES 69.5",
+   "review_after_retrain": true
+  },
+  "Japan J-League": {
+   "bet_enabled": true,
+   "candidate": "TRUE",
+   "reason": "N 91, shrunk ROI +0.019, PES 68.7",
+   "review_after_retrain": true
+  },
+  "Sweden Allsvenskan": {
+   "bet_enabled": true,
+   "candidate": "TRUE",
+   "reason": "N 86, shrunk ROI +0.008, PES 65.6",
+   "review_after_retrain": true
+  },
+  "Bundesliga 2": {
+   "bet_enabled": true,
+   "candidate": "REVIEW",
+   "reason": "N 55, shrunk ROI -0.003, PES 57.9",
+   "review_after_retrain": true
+  },
+  "Championship": {
+   "bet_enabled": true,
+   "candidate": "REVIEW",
+   "reason": "N 77, shrunk ROI -0.022, PES 50.0",
+   "review_after_retrain": true
+  },
+  "La Liga 2": {
+   "bet_enabled": false,
+   "candidate": "FALSE",
+   "reason": "N 77, shrunk ROI -0.053, PES 48.8",
+   "review_after_retrain": true
+  },
+  "China Super League": {
+   "bet_enabled": true,
+   "candidate": "REVIEW",
+   "reason": "N 71, shrunk ROI -0.054, PES 48.1",
+   "review_after_retrain": true
+  },
+  "Ligue 2": {
+   "bet_enabled": true,
+   "candidate": "REVIEW",
+   "reason": "N 25, shrunk ROI -0.022, PES 47.5",
+   "review_after_retrain": true
+  },
+  "Dutch Eredivisie": {
+   "bet_enabled": true,
+   "candidate": "REVIEW",
+   "reason": "N 2, shrunk ROI +0.009, PES 46.5",
+   "review_after_retrain": true
+  },
+  "Austrian Bundesliga": {
+   "bet_enabled": true,
+   "candidate": "REVIEW",
+   "reason": "N 41, shrunk ROI -0.025, PES 44.1",
+   "review_after_retrain": true
+  },
+  "Belgian First Division A": {
+   "bet_enabled": true,
+   "candidate": "REVIEW",
+   "reason": "N 1, shrunk ROI -0.010, PES 43.3",
+   "review_after_retrain": true
+  },
+  "Turkish Super Lig": {
+   "bet_enabled": true,
+   "candidate": "REVIEW",
+   "reason": "N 3, shrunk ROI -0.011, PES 43.1",
+   "review_after_retrain": true
+  },
+  "Ireland Premier Division": {
+   "bet_enabled": true,
+   "candidate": "REVIEW",
+   "reason": "N 47, shrunk ROI -0.041, PES 40.5",
+   "review_after_retrain": true
+  },
+  "Poland Ekstraklasa": {
+   "bet_enabled": true,
+   "candidate": "REVIEW",
+   "reason": "N 3, shrunk ROI -0.029, PES 37.5",
+   "review_after_retrain": true
+  },
+  "Norway Eliteserien": {
+   "bet_enabled": false,
+   "candidate": "FALSE",
+   "reason": "N 65, shrunk ROI -0.089, PES 31.5",
+   "review_after_retrain": true
+  },
+  "League Two": {
+   "bet_enabled": false,
+   "candidate": "FALSE",
+   "reason": "N 43, shrunk ROI -0.117, PES 20.9",
+   "review_after_retrain": true
+  },
+  "League One": {
+   "bet_enabled": false,
+   "candidate": "FALSE",
+   "reason": "N 58, shrunk ROI -0.149, PES 17.1",
+   "review_after_retrain": true
+  }
+ },
+ "gates_false": {
+  "league": [
+   "La Liga 2",
+   "Norway Eliteserien",
+   "League Two",
+   "League One"
+  ],
+  "model": [
+   "standard"
+  ],
+  "market": [
+   "standard | OU25"
+  ],
+  "side": [
+   "standard | OU25 | OVER",
+   "standard | OU25 | UNDER"
+  ],
+  "odds": [
+   "new_format | OVER15 | 1.60-1.79",
+   "new_format | OU25 | 2.50-2.74",
+   "standard | OU25 | 1.80-1.99",
+   "new_format | OU25 | 3.00-3.49",
+   "standard | OU25 | 2.00-2.24"
+  ],
+  "cell": [
+   "La Liga 2 | standard | OU25 | OVER",
+   "Championship | standard | OU25 | UNDER",
+   "Argentina Primera Division | new_format | OU25 | OVER",
+   "Norway Eliteserien | new_format | OU25 | UNDER",
+   "League One | standard | OU25 | OVER",
+   "Ireland Premier Division | new_format | OU25 | UNDER",
+   "League Two | standard | OU25 | OVER",
+   "League One | standard | OU25 | UNDER"
+  ]
+ }
+}

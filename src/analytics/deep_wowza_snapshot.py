@@ -487,6 +487,7 @@ def data_quality(I: dict) -> pd.DataFrame:
              {"item": "missing closing odds (settled first-sight)", "value": int(I["s"]["closing_odds"].isna().sum())},
              {"item": "CLV coverage (settled first-sight)", "value": f"{I['s']['clv'].notna().mean():.1%}"},
              {"item": "missing model type", "value": int((live["model"] == "unknown").sum())},
+             {"item": "side=AVOID rows (model declined; excluded, never a bet)", "value": int((live["side"] == "AVOID").sum())},
              {"item": "missing tier", "value": int(live["tier"].isna().sum())},
              {"item": "rows by source", "value": json.dumps(raw["source"].value_counts().to_dict())},
              {"item": "market names", "value": json.dumps(fs["market"].value_counts().to_dict())},

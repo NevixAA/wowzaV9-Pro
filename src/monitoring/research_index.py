@@ -151,6 +151,25 @@ def _deep():
             "report": f"output/deep_analytics/{days[-1]}/WOWZA_Deep_Analytics_{days[-1]}.md"}
 
 
+def _longshot():
+    base = OUT / "longshot_plan"
+    days = sorted(p.name for p in base.glob("20*")) if base.exists() else []
+    if not days:
+        return None
+    d = base / days[-1]
+    try:
+        wf = pd.read_csv(d / "baselines.csv")
+        prop = json.loads((d / "betting_eligibility_PROPOSED.json").read_text(encoding="utf-8"))
+    except Exception:                                                # noqa: BLE001
+        return None
+    lg = prop.get("leagues", {})
+    return {"status": "Longshot plan (BET_ENABLED candidates, plan only): FALSE " +
+                      ", ".join(k for k, v in lg.items() if v.get("candidate") == "FALSE"),
+            "date": prop.get("generated_from"),
+            "key": {r.strategy: f"N {r.N} · PnL {r.PnL:+.1f}u · ROI {r.ROI:+.1%}" for r in wf.itertuples() if r.PnL == r.PnL},
+            "report": f"output/longshot_plan/{days[-1]}/WOWZA_LONGSHOT_PROFIT_ENGINE_MASTER_PLAN.md"}
+
+
 def _segments():
     s = _j("studies/props_segments.json")
     if not s:
@@ -222,6 +241,7 @@ STUDIES = [
     ("top_picks_weekly", "Top picks — weekly table", "tips", _top_picks),
     ("league_results", "Best leagues — results by league", "tips", _leagues),
     ("deep_analytics", "Deep analytics snapshot (weekly)", "tips", _deep),
+    ("longshot_plan", "Longshot Profit Engine — BET_ENABLED plan", "money", _longshot),
     ("calibration_form", "Calibration form: v9 vs log-odds Platt", "models", _calibration),
     ("calibration_shadow", "Calibration shadow in v9 (pre-registered)", "models", _cal_shadow),
     ("props_segments", "Props segments: attacking D / M (pre-registered)", "players", _segments),
