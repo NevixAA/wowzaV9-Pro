@@ -102,6 +102,22 @@ def _props_cal():
             "report": "output/studies/PROPS_CALIBRATION.md"}
 
 
+def _top_picks():
+    p = OUT / "studies" / "top_picks_weekly.csv"
+    if not p.exists():
+        return None
+    h = pd.read_csv(p)
+    wk = h["week"].max()
+    cur = h[h["week"] == wk]
+    key = {f"{r.list} ({r.kind})": f"{r.hit_rate:.0%} hit · {r.roi:+.0%} ROI · {r.zero_days:.0%} 0/5 days · {int(r.picks)} picks"
+           for r in cur.itertuples()}
+    live = cur[cur["kind"] == "live_to_date"]
+    status = (f"Top picks {wk}: live to date " + ", ".join(f"{r.list} {r.hit_rate:.0%}/{r.roi:+.0%}" for r in live.itertuples())
+              if len(live) else f"Top picks {wk}: live record not started; backtest in the table")
+    return {"status": status, "date": str(cur["updated_at"].iloc[0]), "key": key,
+            "report": "output/studies/TOP_PICKS_WEEKLY.md"}
+
+
 def _segments():
     s = _j("studies/props_segments.json")
     if not s:
@@ -170,6 +186,7 @@ STUDIES = [
     ("player_v3_forward", "Player V3 forward test (pre-registered)", "players", _forward),
     ("fantasy_v3", "Fantasy (FPL): v9 vs Player V3 projections", "players", _fantasy_v3),
     ("props_calibration", "Props calibration monitor (daily)", "players", _props_cal),
+    ("top_picks_weekly", "Top picks — weekly table", "tips", _top_picks),
     ("calibration_form", "Calibration form: v9 vs log-odds Platt", "models", _calibration),
     ("calibration_shadow", "Calibration shadow in v9 (pre-registered)", "models", _cal_shadow),
     ("props_segments", "Props segments: attacking D / M (pre-registered)", "players", _segments),

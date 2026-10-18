@@ -54,7 +54,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install pandas numpy pyarrow requests pytest
+      - run: pip install pandas numpy pyarrow requests pytest scikit-learn
       - name: Restore results cache
         uses: actions/cache@v4
         with:
@@ -71,7 +71,7 @@ jobs:
           set -o pipefail
           # Argentina's season cache must refresh: it holds matches still being played.
           rm -f experiments/upgrade_studies_2026_10/argentina_fixtures_2026.json
-          for m in argentina_btts ou_studies evidence ou_challenger props_segments calibration_shadow props_calibration report; do
+          for m in argentina_btts ou_studies evidence ou_challenger props_segments calibration_shadow props_calibration tip_ranker top_picks_weekly report; do
             python -m src.studies.$m > "studies_$m.txt" 2>&1 || { echo "::error title=$m failed::"; tail -30 "studies_$m.txt"; exit 1; }
           done
           cat studies_report.txt
@@ -86,7 +86,9 @@ jobs:
                    output/studies/ou_challenger_forward.csv \
                    output/studies/props_segments.json output/studies/PROPS_SEGMENTS.md \
                    output/studies/calibration_shadow.json output/studies/CALIBRATION_SHADOW.md \
-                   output/studies/props_calibration.json output/studies/PROPS_CALIBRATION.md; do
+                   output/studies/props_calibration.json output/studies/PROPS_CALIBRATION.md \
+                   output/studies/tip_ranker.json output/studies/TIP_RANKER.md \
+                   output/studies/top_picks_weekly.csv output/studies/TOP_PICKS_WEEKLY.md; do
             [ -e "$p" ] && git add "$p"
           done
           git diff --staged --quiet && exit 0
