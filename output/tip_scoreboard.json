@@ -1,21 +1,21 @@
 {
- "generated_at": "2026-10-18T09:45:46Z",
+ "generated_at": "2026-10-18T16:02:30Z",
  "one_x_two": {
-  "sent": 36,
-  "sent_excl_paper": 30,
-  "pending": 6,
+  "sent": 37,
+  "sent_excl_paper": 31,
+  "pending": 5,
   "headline": {
-   "settled": 24,
-   "won": 6,
-   "hit_rate": 0.25,
-   "break_even": 0.3173,
-   "model_claimed": 0.4133,
-   "avg_odds": 3.49,
-   "units": -8.13,
-   "roi": -0.3388,
+   "settled": 26,
+   "won": 7,
+   "hit_rate": 0.2692,
+   "break_even": 0.318,
+   "model_claimed": 0.4174,
+   "avg_odds": 3.48,
+   "units": -6.03,
+   "roi": -0.2319,
    "roi_ci90": [
-    -0.7097,
-    0.1352
+    -0.6214,
+    0.2635
    ],
    "negative_ev_when_sent": 1
   },
@@ -36,17 +36,17 @@
   },
   "by_pick": {
    "HOME": {
-    "settled": 7,
-    "won": 2,
-    "hit_rate": 0.2857,
-    "break_even": 0.3539,
-    "model_claimed": 0.4913,
-    "avg_odds": 3.01,
-    "units": -1.83,
-    "roi": -0.2607,
+    "settled": 9,
+    "won": 3,
+    "hit_rate": 0.3333,
+    "break_even": 0.3479,
+    "model_claimed": 0.4858,
+    "avg_odds": 3.07,
+    "units": 0.27,
+    "roi": 0.0306,
     "roi_ci90": [
-     -1.0,
-     0.4786
+     -0.6844,
+     0.7205
     ],
     "negative_ev_when_sent": 0
    },
@@ -61,7 +61,7 @@
     "roi": -0.1937,
     "roi_ci90": [
      -1.0,
-     0.6125
+     1.4188
     ],
     "negative_ev_when_sent": 1
    },
@@ -75,27 +75,13 @@
     "units": -5.53,
     "roi": -0.4254,
     "roi_ci90": [
-     -0.8731,
-     0.2082
+     -0.8625,
+     0.2142
     ],
     "negative_ev_when_sent": 0
    }
   },
   "last_10": [
-   {
-    "date": "2026-10-03",
-    "match": "Newells Old Boys v Lanus",
-    "pick": "AWAY",
-    "odds": 2.65,
-    "won": false
-   },
-   {
-    "date": "2026-10-06",
-    "match": "Banfield v Rosario Central",
-    "pick": "DRAW",
-    "odds": 3.225,
-    "won": true
-   },
    {
     "date": "2026-10-07",
     "match": "Internacional v Corinthians",
@@ -151,6 +137,20 @@
     "pick": "AWAY",
     "odds": 2.9,
     "won": false
+   },
+   {
+    "date": "2026-10-17",
+    "match": "Carrarese v Modena",
+    "pick": "HOME",
+    "odds": 4.1,
+    "won": true
+   },
+   {
+    "date": "2026-10-17",
+    "match": "Barnsley v Cambridge United",
+    "pick": "HOME",
+    "odds": 2.44,
+    "won": false
    }
   ]
  },
@@ -158,20 +158,20 @@
   "sent": 342,
   "found_in_settled": 324,
   "not_found": 18,
-  "ungraded": 74,
+  "ungraded": 63,
   "ungraded_reasons": {
-   "NO_SCORELINE": 74
+   "NO_SCORELINE": 63
   },
   "headline": {
-   "settled": 110,
+   "settled": 115,
    "won": 6,
-   "hit_rate": 0.0545,
-   "model_claimed": 0.0732,
-   "expected_wins": 8.0,
-   "z_actual_vs_claimed": -0.76
+   "hit_rate": 0.0522,
+   "model_claimed": 0.0718,
+   "expected_wins": 8.3,
+   "z_actual_vs_claimed": -0.83
   },
   "with_voided_legs": {
-   "settled": 99,
+   "settled": 105,
    "won": 45,
    "note": "settled on the remaining legs after a leg was voided; not comparable with the claimed probability, which covers every leg"
   },
@@ -185,12 +185,12 @@
   },
   "by_claimed_probability": {
    "<10%": {
-    "settled": 86,
+    "settled": 91,
     "won": 2,
-    "hit_rate": 0.0233,
-    "model_claimed": 0.0503,
-    "expected_wins": 4.3,
-    "z_actual_vs_claimed": -1.15
+    "hit_rate": 0.022,
+    "model_claimed": 0.0499,
+    "expected_wins": 4.5,
+    "z_actual_vs_claimed": -1.23
    },
    "10-25%": {
     "settled": 24,
@@ -228,12 +228,12 @@
     "z_actual_vs_claimed": -0.15
    },
    "4": {
-    "settled": 74,
+    "settled": 79,
     "won": 1,
-    "hit_rate": 0.0135,
-    "model_claimed": 0.0508,
-    "expected_wins": 3.8,
-    "z_actual_vs_claimed": -1.47
+    "hit_rate": 0.0127,
+    "model_claimed": 0.0503,
+    "expected_wins": 4.0,
+    "z_actual_vs_claimed": -1.54
    }
   },
   "roi": "NOT MEASURED \u2014 no bookmaker builder price is collected (combo_price_snapshots is SOURCE_REQUIRED). Hit rate vs claimed probability is the honest measure."
