@@ -134,6 +134,23 @@ def _leagues():
     return {"status": status, "date": str(cur["updated_at"].iloc[0]), "key": key, "report": "output/studies/LEAGUE_RESULTS.md"}
 
 
+def _deep():
+    base = OUT / "deep_analytics"
+    days = sorted(p.name for p in base.glob("20*") if (p / "answers.json").exists()) if base.exists() else []
+    if not days:
+        return None
+    a = _j(f"deep_analytics/{days[-1]}/answers.json")
+    keep = ("CORE_N", "CORE_PNL", "CORE_ROI", "RECENT_CORE_ROI", "NEW_FORMAT_ROI", "STANDARD_ROI", "BEST_LARGE_TRACK",
+            "WORST_LARGE_TRACK", "BEST_ODDS_BAND", "WORST_ODDS_BAND", "BEST_TIER", "EDGE_IS_MONOTONIC_WITH_ROI",
+            "WOWZA_ADDS_TO_MARKET_V11", "GLOBAL_MOVEMENT_BEATS_PLACEBO", "RECONCILIATION_STATUS")
+    conv = a.get("_convergence") or {}
+    return {"status": f"Deep analytics {a.get('ANALYSIS_END')}: core {a.get('CORE_N')} bets, {a.get('CORE_PNL')}u, "
+                      f"ROI {float(a.get('CORE_ROI') or 0):+.1%} (recent {float(a.get('RECENT_CORE_ROI') or 0):+.1%}); "
+                      f"strong convergence: {', '.join(conv.get('STRONG_CONVERGENCE', [])) or 'none'}",
+            "date": a.get("ANALYSIS_END"), "key": {k: a.get(k) for k in keep},
+            "report": f"output/deep_analytics/{days[-1]}/WOWZA_Deep_Analytics_{days[-1]}.md"}
+
+
 def _segments():
     s = _j("studies/props_segments.json")
     if not s:
@@ -204,6 +221,7 @@ STUDIES = [
     ("props_calibration", "Props calibration monitor (daily)", "players", _props_cal),
     ("top_picks_weekly", "Top picks — weekly table", "tips", _top_picks),
     ("league_results", "Best leagues — results by league", "tips", _leagues),
+    ("deep_analytics", "Deep analytics snapshot (weekly)", "tips", _deep),
     ("calibration_form", "Calibration form: v9 vs log-odds Platt", "models", _calibration),
     ("calibration_shadow", "Calibration shadow in v9 (pre-registered)", "models", _cal_shadow),
     ("props_segments", "Props segments: attacking D / M (pre-registered)", "players", _segments),

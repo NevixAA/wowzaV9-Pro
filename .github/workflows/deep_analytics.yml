@@ -1,0 +1,72 @@
+name: Deep Analytics (weekly)
+
+# WOWZA deep analytics snapshot (src/analytics/deep_wowza_snapshot.py, owner brief 2026-10-18).
+# READ ONLY: reads v9's ledgers/policy (read-only checkout), Pro's research artifacts and V11's public
+# outputs; writes only output/deep_analytics/<date>/. Never touches selection, thresholds, models,
+# staking or production.
+#
+# STORAGE CHOICE: the .xlsx (~0.5 MB, binary) is uploaded as a workflow ARTIFACT (90 days) - committing a
+# new binary every week would grow the repo for no reason. The small CSVs, the Markdown report and
+# answers.json ARE committed, so the weekly history is in git and other studies can learn from it.
+
+on:
+  schedule:
+    - cron: '40 5 * * 1'      # Mondays; once-weekly schedules are reliably delivered
+  workflow_dispatch:
+
+concurrency:
+  group: deep-analytics
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Check out v9 (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy pyarrow requests openpyxl pytest
+      - name: Tests
+        run: python -m pytest tests/test_deep_analytics.py -q
+      - name: Build snapshot
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: |
+          set -o pipefail
+          python -m src.analytics.deep_wowza_snapshot | tee deep.txt
+          { echo '```'; cat deep.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload workbook
+        uses: actions/upload-artifact@v4
+        with:
+          name: wowza-deep-analytics
+          path: output/deep_analytics/*/WOWZA_Deep_Analytics_*.xlsx
+          retention-days: 90
+      - name: Refresh research index
+        run: python -m src.monitoring.research_index
+      - name: Commit CSVs + report (not the workbook)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for f in output/deep_analytics/*/*.csv output/deep_analytics/*/*.md output/deep_analytics/*/answers.json output/research_index.json; do
+            [ -e "$f" ] && git add -f "$f"
+          done
+          git diff --staged --quiet && exit 0
+          git commit -m "pro: deep analytics $(date -u +%F)"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash -X theirs origin main && git push && exit 0
+            sleep $((RANDOM % 5 + 3))
+          done
+          exit 1

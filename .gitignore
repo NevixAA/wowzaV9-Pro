@@ -403,3 +403,10 @@ experiments/upgrade_studies_2026_10/
 !output/price_trader/*.parquet
 # Research index (src/monitoring/research_index.py) - read by the v9 dashboard's Pro page.
 !output/research_index.json
+
+# Deep analytics (src/analytics): CSVs, report and answers committed; the .xlsx is a workflow artifact.
+!output/deep_analytics/
+!output/deep_analytics/*/
+!output/deep_analytics/*/*.csv
+!output/deep_analytics/*/*.md
+!output/deep_analytics/*/answers.json
