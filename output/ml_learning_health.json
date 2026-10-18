@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-17T09:39:08Z",
+  "generated_at": "2026-10-18T09:52:04Z",
   "calc_version": "1.0.0",
   "worst": "NO_NEW_DATA",
   "counts": {
@@ -7,14 +7,14 @@
     "PASS": 5
   },
   "settlements_fingerprint": {
-    "rows": 80366,
-    "latest_match": "2026-10-15",
+    "rows": 82228,
+    "latest_match": "2026-10-16",
     "earliest_match": "2025-08-02",
     "leagues": 24,
-    "fingerprint": "1c87f1f39f07c62d"
+    "fingerprint": "2f09b4eb3fd87f26"
   },
   "last_genuine_learning_event": {
-    "date": "2026-10-11",
+    "date": "2026-10-18",
     "models_decided": [
       "btts",
       "ht_over05",
@@ -24,47 +24,45 @@
       "over35",
       "standard"
     ],
-    "evidence": "7 model(s) recorded a promote/reject decision on 2026-10-11"
+    "evidence": "7 model(s) recorded a promote/reject decision on 2026-10-18"
   },
   "checks": [
     {
       "model": "standard",
       "status": "PASS",
-      "why": "challenger trained and REJECTED \u2014 log loss ROSE +0.00038 (0.68770 -> 0.68808) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion. A rejection is a healthy learning outcome, not a failure.",
+      "why": "challenger trained and promoted \u2014 log loss 0.68845 -> 0.68826 (-0.00018), within the 0.03000 tolerance",
       "model_artifact": "models/model_v9_standard.pkl",
-      "incumbent_changed_at": "2026-10-17T09:06:23Z",
+      "incumbent_changed_at": "2026-10-18T12:50:20+03:00",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-16",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
-        "promoted": false,
-        "why": "log loss ROSE +0.00038 (0.68770 -> 0.68808) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion",
-        "rows": 21477,
+        "promoted": true,
+        "why": "log loss 0.68845 -> 0.68826 (-0.00018), within the 0.03000 tolerance",
+        "rows": 21631,
         "comparison_basis": "same_holdout",
         "v91_gate": {
           "available": true,
-          "status": "REJECTED",
-          "n": 4296,
-          "delta_log_loss": 0.000668,
-          "delta_brier": 0.00033,
+          "status": "CHALLENGER",
+          "n": 4327,
+          "delta_log_loss": -0.00017,
+          "delta_brier": -8.3e-05,
           "ci_log_loss": [
-            -0.000475,
-            0.001917
+            -0.001193,
+            0.000761
           ],
           "reasons": [
-            "log_loss_not_worse: delta +0.000668 (0.68445 -> 0.68512)",
-            "brier_not_worse: delta +0.000330",
-            "ci_excludes_zero: 95% block-bootstrap CI [-0.000475, +0.001917] includes zero",
-            "material_improvement: delta +0.000668 vs required <= -0.001000",
+            "ci_excludes_zero: 95% block-bootstrap CI [-0.001193, +0.000761] includes zero",
+            "material_improvement: delta -0.000170 vs required <= -0.001000",
             "second_period: not run"
           ],
           "checks": {
             "same_dataset": true,
             "min_sample": true,
-            "log_loss_not_worse": false,
-            "brier_not_worse": false,
+            "log_loss_not_worse": true,
+            "brier_not_worse": true,
             "ci_excludes_zero": false,
             "material_improvement": false,
             "calibration_held": true,
@@ -72,26 +70,26 @@
             "no_league_regression": true,
             "second_period": false
           },
-          "live_gate_promoted": false,
-          "live_gate_reason": "log loss ROSE +0.00038 (0.68770 -> 0.68808) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion",
-          "agrees_with_live_gate": true
+          "live_gate_promoted": true,
+          "live_gate_reason": "log loss 0.68845 -> 0.68826 (-0.00018), within the 0.03000 tolerance",
+          "agrees_with_live_gate": false
         },
-        "logloss_old": 0.6877,
-        "logloss_new": 0.68808,
+        "logloss_old": 0.68845,
+        "logloss_new": 0.68826,
         "canary": {
           "available": true,
-          "n": 4296,
-          "std_old": 0.03927,
-          "std_new": 0.03637,
-          "spread_ratio": 0.926,
-          "mean_old": 0.53759,
-          "mean_new": 0.53746,
-          "frac_crossed_half": 0.101,
+          "n": 4327,
+          "std_old": 0.0392,
+          "std_new": 0.03556,
+          "spread_ratio": 0.907,
+          "mean_old": 0.53778,
+          "mean_new": 0.53802,
+          "frac_crossed_half": 0.0964,
           "frac_moved_gt_10pp": 0.0,
-          "max_abs_move": 0.0933,
+          "max_abs_move": 0.0874,
           "flags": []
         },
-        "at": "2026-10-11T09:56:18Z"
+        "at": "2026-10-18T07:59:46Z"
       }
     },
     {
@@ -99,49 +97,50 @@
       "status": "NO_NEW_DATA",
       "why": "only 0 new settled fixture(s) since the incumbent was built \u2014 too few to learn from. Healthy.",
       "model_artifact": "models/model_v9_newformat.pkl",
-      "incumbent_changed_at": "2026-10-17T09:06:23Z",
+      "incumbent_changed_at": "2026-10-18T12:50:20+03:00",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-16",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": null
     },
     {
       "model": "btts",
       "status": "PASS",
-      "why": "challenger trained and REJECTED \u2014 log loss ROSE +0.00001 (0.68543 -> 0.68544) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion. A rejection is a healthy learning outcome, not a failure.",
+      "why": "challenger trained and REJECTED \u2014 log loss ROSE +0.00022 (0.68575 -> 0.68597) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion. A rejection is a healthy learning outcome, not a failure.",
       "model_artifact": "models/model_v9_btts.pkl",
-      "incumbent_changed_at": "2026-10-17T09:06:23Z",
+      "incumbent_changed_at": "2026-10-18T12:50:20+03:00",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-16",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": false,
-        "why": "log loss ROSE +0.00001 (0.68543 -> 0.68544) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion",
-        "rows": 59963,
+        "why": "log loss ROSE +0.00022 (0.68575 -> 0.68597) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion",
+        "rows": 60237,
         "comparison_basis": "same_holdout",
         "v91_gate": {
           "available": true,
           "status": "CHALLENGER",
-          "n": 11993,
-          "delta_log_loss": -0.000147,
-          "delta_brier": -7.8e-05,
+          "n": 12048,
+          "delta_log_loss": 0.000179,
+          "delta_brier": 9.1e-05,
           "ci_log_loss": [
-            -0.000847,
-            0.000456
+            -0.000537,
+            0.000946
           ],
           "reasons": [
-            "ci_excludes_zero: 95% block-bootstrap CI [-0.000847, +0.000456] includes zero",
-            "material_improvement: delta -0.000147 vs required <= -0.001000",
+            "log_loss_not_worse: delta +0.000179 (0.68465 -> 0.68483)",
+            "ci_excludes_zero: 95% block-bootstrap CI [-0.000537, +0.000946] includes zero",
+            "material_improvement: delta +0.000179 vs required <= -0.001000",
             "second_period: not run"
           ],
           "checks": {
             "same_dataset": true,
             "min_sample": true,
-            "log_loss_not_worse": true,
+            "log_loss_not_worse": false,
             "brier_not_worse": true,
             "ci_excludes_zero": false,
             "material_improvement": false,
@@ -151,56 +150,56 @@
             "second_period": false
           },
           "live_gate_promoted": false,
-          "live_gate_reason": "log loss ROSE +0.00001 (0.68543 -> 0.68544) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion",
+          "live_gate_reason": "log loss ROSE +0.00022 (0.68575 -> 0.68597) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion",
           "agrees_with_live_gate": true
         },
-        "logloss_old": 0.68543,
-        "logloss_new": 0.68544,
+        "logloss_old": 0.68575,
+        "logloss_new": 0.68597,
         "canary": {
           "available": true,
-          "n": 11993,
-          "std_old": 0.04056,
-          "std_new": 0.03926,
-          "spread_ratio": 0.968,
-          "mean_old": 0.54931,
-          "mean_new": 0.54897,
-          "frac_crossed_half": 0.0673,
-          "frac_moved_gt_10pp": 0.0001,
-          "max_abs_move": 0.1226,
+          "n": 12048,
+          "std_old": 0.04069,
+          "std_new": 0.03603,
+          "spread_ratio": 0.886,
+          "mean_old": 0.5495,
+          "mean_new": 0.54837,
+          "frac_crossed_half": 0.0644,
+          "frac_moved_gt_10pp": 0.0,
+          "max_abs_move": 0.0982,
           "flags": []
         },
-        "at": "2026-10-11T09:59:43Z"
+        "at": "2026-10-18T08:02:36Z"
       }
     },
     {
       "model": "over15",
       "status": "PASS",
-      "why": "challenger trained and promoted \u2014 log loss 0.54510 -> 0.54503 (-0.00007), within the 0.03000 tolerance",
+      "why": "challenger trained and promoted \u2014 log loss 0.54486 -> 0.54480 (-0.00006), within the 0.03000 tolerance",
       "model_artifact": "models/model_v9_over15.pkl",
-      "incumbent_changed_at": "2026-10-17T09:06:23Z",
+      "incumbent_changed_at": "2026-10-18T12:50:20+03:00",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-16",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
-        "why": "log loss 0.54510 -> 0.54503 (-0.00007), within the 0.03000 tolerance",
-        "rows": 59963,
+        "why": "log loss 0.54486 -> 0.54480 (-0.00006), within the 0.03000 tolerance",
+        "rows": 60237,
         "comparison_basis": "same_holdout",
         "v91_gate": {
           "available": true,
           "status": "CHALLENGER",
-          "n": 11993,
-          "delta_log_loss": -0.000348,
-          "delta_brier": -0.000139,
+          "n": 12048,
+          "delta_log_loss": -0.000133,
+          "delta_brier": -6.9e-05,
           "ci_log_loss": [
-            -0.000956,
-            0.000327
+            -0.000791,
+            0.000571
           ],
           "reasons": [
-            "ci_excludes_zero: 95% block-bootstrap CI [-0.000956, +0.000327] includes zero",
-            "material_improvement: delta -0.000348 vs required <= -0.001000",
+            "ci_excludes_zero: 95% block-bootstrap CI [-0.000791, +0.000571] includes zero",
+            "material_improvement: delta -0.000133 vs required <= -0.001000",
             "second_period: not run"
           ],
           "checks": {
@@ -216,62 +215,63 @@
             "second_period": false
           },
           "live_gate_promoted": true,
-          "live_gate_reason": "log loss 0.54510 -> 0.54503 (-0.00007), within the 0.03000 tolerance",
+          "live_gate_reason": "log loss 0.54486 -> 0.54480 (-0.00006), within the 0.03000 tolerance",
           "agrees_with_live_gate": false
         },
-        "logloss_old": 0.5451,
-        "logloss_new": 0.54503,
+        "logloss_old": 0.54486,
+        "logloss_new": 0.5448,
         "canary": {
           "available": true,
-          "n": 11993,
-          "std_old": 0.04572,
-          "std_new": 0.04541,
-          "spread_ratio": 0.993,
-          "mean_old": 0.7608,
-          "mean_new": 0.76089,
-          "frac_crossed_half": 0.0003,
-          "frac_moved_gt_10pp": 0.0003,
-          "max_abs_move": 0.1289,
+          "n": 12048,
+          "std_old": 0.04517,
+          "std_new": 0.0434,
+          "spread_ratio": 0.961,
+          "mean_old": 0.76124,
+          "mean_new": 0.7615,
+          "frac_crossed_half": 0.0001,
+          "frac_moved_gt_10pp": 0.0002,
+          "max_abs_move": 0.1129,
           "flags": []
         },
-        "at": "2026-10-11T10:00:46Z"
+        "at": "2026-10-18T08:03:28Z"
       }
     },
     {
       "model": "over35",
       "status": "PASS",
-      "why": "challenger trained and REJECTED \u2014 log loss ROSE +0.00013 (0.60102 -> 0.60115) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion. A rejection is a healthy learning outcome, not a failure.",
+      "why": "challenger trained and REJECTED \u2014 log loss ROSE +0.00030 (0.60125 -> 0.60155) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion. A rejection is a healthy learning outcome, not a failure.",
       "model_artifact": "models/model_v9_over35.pkl",
-      "incumbent_changed_at": "2026-10-17T09:06:23Z",
+      "incumbent_changed_at": "2026-10-18T12:50:20+03:00",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-16",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": false,
-        "why": "log loss ROSE +0.00013 (0.60102 -> 0.60115) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion",
-        "rows": 59963,
+        "why": "log loss ROSE +0.00030 (0.60125 -> 0.60155) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion",
+        "rows": 60237,
         "comparison_basis": "same_holdout",
         "v91_gate": {
           "available": true,
           "status": "CHALLENGER",
-          "n": 11993,
-          "delta_log_loss": -0.000408,
-          "delta_brier": -0.000171,
+          "n": 12048,
+          "delta_log_loss": 5e-05,
+          "delta_brier": 1.6e-05,
           "ci_log_loss": [
-            -0.00092,
-            7.3e-05
+            -0.000439,
+            0.000549
           ],
           "reasons": [
-            "ci_excludes_zero: 95% block-bootstrap CI [-0.000920, +0.000073] includes zero",
-            "material_improvement: delta -0.000408 vs required <= -0.001000",
+            "log_loss_not_worse: delta +0.000050 (0.59916 -> 0.59921)",
+            "ci_excludes_zero: 95% block-bootstrap CI [-0.000439, +0.000549] includes zero",
+            "material_improvement: delta +0.000050 vs required <= -0.001000",
             "second_period: not run"
           ],
           "checks": {
             "same_dataset": true,
             "min_sample": true,
-            "log_loss_not_worse": true,
+            "log_loss_not_worse": false,
             "brier_not_worse": true,
             "ci_excludes_zero": false,
             "material_improvement": false,
@@ -281,56 +281,56 @@
             "second_period": false
           },
           "live_gate_promoted": false,
-          "live_gate_reason": "log loss ROSE +0.00013 (0.60102 -> 0.60115) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion",
+          "live_gate_reason": "log loss ROSE +0.00030 (0.60125 -> 0.60155) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion",
           "agrees_with_live_gate": true
         },
-        "logloss_old": 0.60102,
-        "logloss_new": 0.60115,
+        "logloss_old": 0.60125,
+        "logloss_new": 0.60155,
         "canary": {
           "available": true,
-          "n": 11993,
-          "std_old": 0.06203,
-          "std_new": 0.05952,
-          "spread_ratio": 0.96,
-          "mean_old": 0.29623,
-          "mean_new": 0.29639,
-          "frac_crossed_half": 0.0039,
-          "frac_moved_gt_10pp": 0.0,
-          "max_abs_move": 0.0957,
+          "n": 12048,
+          "std_old": 0.06263,
+          "std_new": 0.05796,
+          "spread_ratio": 0.925,
+          "mean_old": 0.29677,
+          "mean_new": 0.29695,
+          "frac_crossed_half": 0.0046,
+          "frac_moved_gt_10pp": 0.0001,
+          "max_abs_move": 0.1119,
           "flags": []
         },
-        "at": "2026-10-11T10:01:49Z"
+        "at": "2026-10-18T08:04:20Z"
       }
     },
     {
       "model": "ht_over05",
       "status": "PASS",
-      "why": "challenger trained and promoted \u2014 log loss 0.60519 -> 0.60480 (-0.00039), within the 0.03000 tolerance",
+      "why": "challenger trained and promoted \u2014 log loss 0.60402 -> 0.60378 (-0.00024), within the 0.03000 tolerance",
       "model_artifact": "models/model_ht_over05.pkl",
-      "incumbent_changed_at": "2026-10-17T09:06:23Z",
+      "incumbent_changed_at": "2026-10-18T12:50:20+03:00",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-16",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
-        "why": "log loss 0.60519 -> 0.60480 (-0.00039), within the 0.03000 tolerance",
-        "rows": 21087,
+        "why": "log loss 0.60402 -> 0.60378 (-0.00024), within the 0.03000 tolerance",
+        "rows": 21236,
         "comparison_basis": "same_holdout",
         "v91_gate": {
           "available": true,
           "status": "CHALLENGER",
-          "n": 4218,
-          "delta_log_loss": -0.000174,
-          "delta_brier": -7.2e-05,
+          "n": 4248,
+          "delta_log_loss": -0.000171,
+          "delta_brier": -7e-05,
           "ci_log_loss": [
-            -0.000625,
-            0.000256
+            -0.000634,
+            0.000311
           ],
           "reasons": [
-            "ci_excludes_zero: 95% block-bootstrap CI [-0.000625, +0.000256] includes zero",
-            "material_improvement: delta -0.000174 vs required <= -0.001000",
+            "ci_excludes_zero: 95% block-bootstrap CI [-0.000634, +0.000311] includes zero",
+            "material_improvement: delta -0.000171 vs required <= -0.001000",
             "second_period: not run"
           ],
           "checks": {
@@ -346,25 +346,25 @@
             "second_period": false
           },
           "live_gate_promoted": true,
-          "live_gate_reason": "log loss 0.60519 -> 0.60480 (-0.00039), within the 0.03000 tolerance",
+          "live_gate_reason": "log loss 0.60402 -> 0.60378 (-0.00024), within the 0.03000 tolerance",
           "agrees_with_live_gate": false
         },
-        "logloss_old": 0.60519,
-        "logloss_new": 0.6048,
+        "logloss_old": 0.60402,
+        "logloss_new": 0.60378,
         "canary": {
           "available": true,
-          "n": 4218,
-          "std_old": 0.01081,
-          "std_new": 0.01186,
-          "spread_ratio": 1.097,
-          "mean_old": 0.70541,
-          "mean_new": 0.70557,
+          "n": 4248,
+          "std_old": 0.01196,
+          "std_new": 0.00967,
+          "spread_ratio": 0.809,
+          "mean_old": 0.70566,
+          "mean_new": 0.70647,
           "frac_crossed_half": 0.0,
           "frac_moved_gt_10pp": 0.0,
-          "max_abs_move": 0.0323,
+          "max_abs_move": 0.0354,
           "flags": []
         },
-        "at": "2026-10-11T09:57:47Z"
+        "at": "2026-10-18T08:01:00Z"
       }
     },
     {
@@ -372,10 +372,10 @@
       "status": "NO_NEW_DATA",
       "why": "only 0 new settled fixture(s) since the incumbent was built \u2014 too few to learn from. Healthy.",
       "model_artifact": "models/model_player_goals.pkl",
-      "incumbent_changed_at": "2026-10-17T09:06:23Z",
+      "incumbent_changed_at": "2026-10-18T12:50:20+03:00",
       "incumbent_age_days": 0.0,
       "training_input": "player_history.parquet",
-      "training_input_latest_match": "2026-10-17",
+      "training_input_latest_match": "2026-10-18",
       "training_input_age_days": 0,
       "new_settled_since_incumbent": 0,
       "last_decision": null
