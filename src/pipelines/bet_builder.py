@@ -436,7 +436,7 @@ def settle_finished() -> pd.DataFrame:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--mode", choices=("generate", "notify", "settle", "all"), default="all")
+    ap.add_argument("--mode", choices=("generate", "notify", "daily", "settle", "all"), default="all")
     ap.add_argument("--days", type=int, default=DEFAULT_DAYS)
     ap.add_argument("--dry-run", action="store_true",
                     help="build and format, send nothing")
@@ -485,6 +485,15 @@ def main() -> int:
                 # independent of whether today's tips were delivered, and skipping it would turn
                 # one problem into two.
                 failed = True
+
+    # The morning-album selection (owner 2026-10-18): written every run, sent by v9's daily pack.
+    if args.mode in ("daily", "all"):
+        cand = pd.read_csv(CAND_FILE, low_memory=False) if CAND_FILE.exists() else pd.DataFrame()
+        sel = cn.daily_selection(cand)
+        OUT.mkdir(exist_ok=True)
+        sel.to_csv(cn.DAILY_FILE, index=False, encoding="utf-8")
+        print(f"[builder] daily selection: {len(sel)} combo(s) over "
+              f"{sel['match_date'].nunique() if len(sel) else 0} day(s) -> {cn.DAILY_FILE.name}")
 
     if args.mode in ("settle", "all"):
         s = settle_finished()

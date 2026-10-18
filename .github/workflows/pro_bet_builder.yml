@@ -88,32 +88,15 @@ jobs:
       # this check the run builds combos, formats messages, fails every send and exits green —
       # the "green workflow, no data" pattern behind every incident in this project. Checked as
       # a length only; the values are never printed, logged or echoed.
-      - name: Check Telegram credentials are configured
-        if: github.event.inputs.dry_run != 'true'
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: |
-          MISSING=""
-          [ -n "$TELEGRAM_TOKEN" ]   || MISSING="$MISSING TELEGRAM_TOKEN"
-          [ -n "$TELEGRAM_CHAT_ID" ] || MISSING="$MISSING TELEGRAM_CHAT_ID"
-          if [ -n "$MISSING" ]; then
-            echo "::error title=Combo tips cannot be sent::Missing repository secret(s):$MISSING. \
-          Add them to NevixAA/wowzaV9-Pro (Settings > Secrets and variables > Actions). \
-          Secrets configured on v9 do NOT apply to this repository."
-            exit 1
-          fi
-          echo "Telegram credentials are configured."
-
-      - name: Notify
-        env:
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      # NO MORE SEPARATE TELEGRAM SENDS (owner 2026-10-18: "too spammy"). Bet Builder now goes out
+      # once a day inside v9's morning photo album: this step writes the day's selection - the same
+      # quality gates the old notifier used, one combo per match, <= 6 per day - to
+      # output/bet_builder_daily.csv, which v9's telegram_bot/daily_pack.py renders.
+      # `--mode notify` still exists for a manual run; nothing schedules it.
+      - name: Daily selection for v9's morning album
         run: |
           set -o pipefail
-          FLAG=""
-          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then FLAG="--dry-run"; fi
-          python -m src.pipelines.bet_builder --mode notify $FLAG | tee -a build.txt
+          python -m src.pipelines.bet_builder --mode daily | tee -a build.txt
 
       # Settlement runs every time, not on its own schedule: a combo becomes gradeable the moment
       # its fixture finishes, and a result recorded late is a result missing from the dashboard.
@@ -155,7 +138,8 @@ jobs:
           for f in output/bet_builder_candidates.csv \
                    output/bet_builder_settled.csv \
                    output/combo_import_health.json \
-                   output/combo_notified.json; do
+                   output/combo_notified.json \
+                   output/bet_builder_daily.csv; do
             git add -f "$f" 2>/dev/null || echo "  (skip, not present: $f)"
           done
           git diff --staged --quiet && { echo "no change"; exit 0; }

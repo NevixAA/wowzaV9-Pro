@@ -368,6 +368,59 @@ def send(text: str, *, timeout: int = 20) -> tuple[bool, str]:
         return False, f"{type(e).__name__}"
 
 
+DAILY_FILE = Path(__file__).resolve().parents[2] / "output" / "bet_builder_daily.csv"
+MAX_PER_DAY = 6
+
+
+def daily_selection(candidates: pd.DataFrame, max_per_day: int = MAX_PER_DAY) -> pd.DataFrame:
+    """The combos for v9's morning album, per match date (owner 2026-10-18: Telegram was "spammy",
+    Bet Builder moves into the one daily photo pack and Pro stops sending its own messages).
+
+    EXACTLY the quality gates of should_notify() - goal-family rule, no near-certain filler, the
+    per-leg-count probability floor, the ceiling, the fair-odds floor, the independence edge - with
+    an EMPTY state, because "was it sent before" no longer applies: each day shows its best. Paper
+    leagues out, ranked by independence edge, one combo per match, at most `max_per_day` per date.
+    """
+    import config.pro_config as cfg
+    cols = ["match_date", "league", "match", "legs", "n_legs", "joint_probability", "fair_odds",
+            "independence_edge", "combo_id"]
+    if candidates is None or candidates.empty:
+        return pd.DataFrame(columns=cols)
+    d = candidates.copy()
+    if "league" in d.columns:
+        d = d[~d["league"].astype(str).str.strip().isin(cfg.PAPER_LEAGUES)]
+    pcol = "joint_probability" if "joint_probability" in d.columns else "conservative_joint_probability"
+    d = d[pd.to_numeric(d[pcol], errors="coerce").notna()]
+    d["_edge"] = d.apply(independence_edge, axis=1)
+    d = d.sort_values(["_edge", pcol], ascending=[False, False])
+    rows, per_day, seen_fx = [], {}, set()
+    for _, row in d.iterrows():
+        ok, _ = should_notify(row, {}, time.time())
+        if not ok:
+            continue
+        day = str(row.get("match_date") or "")[:10]
+        fx = str(row.get("fixture_key") or row.get("match") or "")
+        if per_day.get(day, 0) >= max_per_day or (fx and fx in seen_fx):
+            continue
+        legs = []
+        for i in (1, 2, 3, 4, 5):
+            label = row.get(f"leg{i}_label")
+            if label is None or (isinstance(label, float) and pd.isna(label)):
+                continue
+            lp = _first_num(row, f"leg{i}_p", f"leg{i}_model_p")
+            legs.append(f"{label} ({lp:.0%})" if lp is not None else str(label))
+        rows.append({"match_date": day, "league": row.get("league"), "match": row.get("match"),
+                     "legs": " · ".join(legs), "n_legs": len(legs),
+                     "joint_probability": round(float(row.get(pcol)), 4),
+                     "fair_odds": _first_num(row, "fair_combo_odds", "fair_odds", "combined_odds"),
+                     "independence_edge": None if row["_edge"] is None or pd.isna(row["_edge"]) else round(float(row["_edge"]), 4),
+                     "combo_id": fingerprint(row)})
+        per_day[day] = per_day.get(day, 0) + 1
+        if fx:
+            seen_fx.add(fx)
+    return pd.DataFrame(rows, columns=cols)
+
+
 def run(candidates: pd.DataFrame, *, dry_run: bool = True,
         max_per_run: int = MAX_PER_RUN) -> dict:
     """Evaluate every candidate, send only what changed meaningfully, record what was sent.
