@@ -221,7 +221,8 @@ def main(as_of: str | None = None, n_paths: int = 2000) -> int:
                "RECOMMENDED_POLICY": rec_name, "recommended_violations": violations,
                "POLICY_CHANGE_RECOMMENDED": "YES" if changes else "NO", "changes": changes,
                "PRODUCTION_SELECTION_LOGIC_CHANGED": "NO", "PREDICTION_THRESHOLDS_CHANGED": "NO",
-               "PLAYER_PROP_REAL_STAKING_ENABLED": "NO"}
+               "PLAYER_PROP_REAL_STAKING_ENABLED": "NO",
+               "evidence_panel": evidence_panel(bets, v11)}
 
     stamp = f"{as_of:%Y-%m}"
     (OUT / "current_policy_recommendation.json").write_text(
@@ -253,6 +254,48 @@ def main(as_of: str | None = None, n_paths: int = 2000) -> int:
     return 0
 
 
+def evidence_panel(bets: pd.DataFrame, v11: pd.DataFrame) -> dict:
+    """Owner brief 2026-10-19 §22: the evidence a reviewer needs next to the policy, REPORTED ONLY —
+    nothing here feeds the allocator. Price Trader and Player V3 can never enter a money policy until
+    their own forward gates pass, and no rating may raise a stake above today's base policy."""
+    out = {"PRICE_TRADER_STAKES_ALLOWED": "NO", "PLAYER_V3_STAKES_ALLOWED": "NO",
+           "RATING_MAY_INCREASE_STAKE_ABOVE_BASE": "NO (league rating scales down only; any increase needs owner approval)"}
+    if bets is None or bets.empty:
+        return {**out, "status": "no settled bets"}
+    n = len(bets)
+    # BD.load_bets carries the flat 1-unit result as `unit`; other callers may pass `pnl`
+    pnl = pd.to_numeric(bets["pnl"] if "pnl" in bets.columns else bets["unit"], errors="coerce")
+    roi = float(pnl.mean())
+    curve = pnl.fillna(0).cumsum()
+    dd = float((curve.cummax().clip(lower=0) - curve).max())
+    by_lg = bets.assign(pnl=pnl).groupby("league")["pnl"].sum() if "league" in bets else pd.Series(dtype=float)
+    mk = "market" if "market" in bets.columns else ("track" if "track" in bets.columns else None)
+    by_mk = bets.assign(pnl=pnl).groupby(mk)["pnl"].sum() if mk else pd.Series(dtype=float)
+
+    def _share(s):
+        pos = s[s > 0]
+        return round(float(pos.max() / pos.sum()), 3) if len(pos) else None
+    pt = {}
+    try:
+        pt = json.loads((cfg.OUTPUT_DIR / "price_trader" / "v2" / "verdict_v2.json").read_text(encoding="utf-8"))
+    except Exception:                                                  # noqa: BLE001
+        pass
+    v3 = {}
+    try:
+        v3 = json.loads((cfg.OUTPUT_DIR / "player_v3" / "forward_test.json").read_text(encoding="utf-8"))
+    except Exception:                                                  # noqa: BLE001
+        pass
+    out.update({
+        "N": n, "realized_ROI": round(roi, 4), "shrunk_ROI_K200": round(n / (n + 200) * roi, 4),
+        "avg_CLV": round(float(pd.to_numeric(bets.get("clv"), errors="coerce").mean()), 4) if "clv" in bets else None,
+        "max_drawdown_units": round(dd, 2), "risk_adjusted_PnL_over_DD": round(float(pnl.sum()) / dd, 3) if dd > 0 else None,
+        "league_concentration_top_share": _share(by_lg), "market_concentration_top_share": _share(by_mk),
+        "v11_residual_rows": int(len(v11)) if v11 is not None else 0,
+        "price_trader_state": pt.get("EVIDENCE_STATE", "unknown"),
+        "player_v3_forward_state": v3.get("status") or v3.get("STATUS") or "COLLECTING"})
+    return out
+
+
 def _pct(x):
     return "0" if not x else f"{100 * float(x):.2f}%"
 
@@ -280,6 +323,10 @@ def render_summary(v, cur, rec, decisions, table, stress) -> str:
               f"POLICY_CHANGE_RECOMMENDED = {v['POLICY_CHANGE_RECOMMENDED']}"]
     if v["changes"]:
         lines += ["Changes:"] + [f"  - {c}" for c in v["changes"]]
+    ep = v.get("evidence_panel") or {}
+    if ep:
+        lines += ["", "Evidence panel (reported only - does not feed the allocator):"]
+        lines += [f"- {k}: {val}" for k, val in ep.items()]
     lines += ["", "PRODUCTION_SELECTION_LOGIC_CHANGED = NO", "PREDICTION_THRESHOLDS_CHANGED = NO",
               "PLAYER_PROP_REAL_STAKING_ENABLED = NO"]
     return "\n".join(lines) + "\n"
