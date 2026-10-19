@@ -1,0 +1,95 @@
+{
+ "calculation_version": "research_integrity-1.0.0",
+ "generated_at": "2026-10-19 09:18 UTC",
+ "summary": {
+  "PASS": 12,
+  "FAIL": 0,
+  "WARNING": 2,
+  "NOT_APPLICABLE": 0
+ },
+ "EDGE_VERDICTS_BLOCKED_FOR": [],
+ "checks": {
+  "POST_KICKOFF_QUOTE_USED": {
+   "status": "PASS",
+   "detail": "0 entries after kickoff",
+   "blocks": []
+  },
+  "FUTURE_DATA_IN_FEATURES": {
+   "status": "PASS",
+   "detail": "0 fixed-horizon entries priced after their horizon",
+   "blocks": []
+  },
+  "CLOSING_ODDS_USED_FOR_ENTRY": {
+   "status": "PASS",
+   "detail": "entries are taken from the as-of path (entry_row); the close is read only for CLV/move",
+   "blocks": []
+  },
+  "REGISTRATION_MUTATED": {
+   "status": "PASS",
+   "detail": {
+    "price_trader_v1": true,
+    "player_v3_v2": true,
+    "player_v3_v1_bytes": true
+   },
+   "blocks": []
+  },
+  "RULE_CHANGED_AFTER_FORWARD_START": {
+   "status": "PASS",
+   "detail": "rules live inside the frozen registrations above",
+   "blocks": []
+  },
+  "SYNTHETIC_ODDS_IN_ROI_TEST": {
+   "status": "PASS",
+   "detail": "price trader SYNTHETIC_ODDS_USED=NO",
+   "blocks": []
+  },
+  "FALLBACK_ODDS_IN_ROI_TEST": {
+   "status": "WARNING",
+   "detail": "44 settled HT ledger rows have no market entry price (settled on model fair odds); any HT ROI must exclude them",
+   "blocks": [
+    "ht_roi"
+   ]
+  },
+  "DUPLICATE_BETS": {
+   "status": "PASS",
+   "detail": "0 repeated (fixture, side) rows in bets_ledger; every analysis must apply first-sight (core.first_sight) before counting",
+   "blocks": []
+  },
+  "SIDE_FLIP_DOUBLE_COUNTED": {
+   "status": "PASS",
+   "detail": "67 fixtures carry both sides in the raw ledger; after first-sight 0 remain double-counted",
+   "blocks": []
+  },
+  "FIRST_SIGHT_VIOLATION": {
+   "status": "PASS",
+   "detail": {
+    "RAW_ROWS": 6371,
+    "UNIQUE_FIRST_SIGHT_ROWS": 2184,
+    "DUPLICATES_REMOVED": 72
+   },
+   "blocks": []
+  },
+  "LEAGUE_CONCENTRATION": {
+   "status": "PASS",
+   "detail": "top league Argentina Primera Division = 48% of positive core P/L",
+   "blocks": []
+  },
+  "MISSINGNESS_HIDDEN": {
+   "status": "PASS",
+   "detail": "settled rows without odds are excluded and counted: 0; legacy rows without model_version are labelled UNKNOWN_LEGACY",
+   "blocks": []
+  },
+  "BOOK_CONCENTRATION": {
+   "status": "WARNING",
+   "detail": "two-sided prop pairs come from 1 book(s): ['Pinnacle']",
+   "blocks": [
+    "player_v3_v2"
+   ]
+  },
+  "NEGATIVE_RESULT_DROPPED": {
+   "status": "PASS",
+   "detail": "all known negative verdicts present",
+   "blocks": []
+  }
+ }
+}

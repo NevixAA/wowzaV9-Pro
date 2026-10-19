@@ -50,12 +50,14 @@ jobs:
           python -m src.price_trader.paper | tee paper.txt
           # v2 (2026-10-19): fixed horizons, A/B/C labels, state machine, controls, breakeven, lineage
           python -m src.price_trader.research > research_v2.txt
+          # research integrity (anti-cherry-picking checks; any FAIL blocks an EDGE verdict)
+          python -m src.monitoring.research_integrity | tee integrity.txt
           cat paper.txt >> "$GITHUB_STEP_SUMMARY"
       - name: Commit
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add output/price_trader registry/price_trader
+          git add output/price_trader registry/price_trader output/research_integrity.json
           git diff --staged --quiet && exit 0
           git commit -m "pro: price trader $(date -u +%F)"
           for i in 1 2 3 4 5; do
