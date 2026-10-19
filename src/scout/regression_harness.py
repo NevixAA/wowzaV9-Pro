@@ -134,13 +134,27 @@ def run(league_id: int, *, existing: pd.DataFrame | None = None) -> dict:
     n_tested = sum(1 for m in groups.values() if len(m) >= LEAGUE_MIN_N) or 1
     q_lo = 0.05 / n_tested                                           # Bonferroni, one-sided 5%
 
-    def _per_league(diff):
+    def _per_league(diff, pa=None, pb=None, y=None):
+        """Per existing league. The extra columns (owner brief 2026-10-19 §21) describe HOW the league
+        changed; the FAIL rule itself is unchanged (Bonferroni lower bound on the log-loss delta).
+        selection_count_delta is a PROXY: fixtures where the model holds a strong opinion
+        (|p - 0.5| >= 0.08) — the holdout has no prices, so real tip counts cannot be computed."""
         per = []
         for lg, m in groups.items():
             ci = block_ci(diff[m], day[m]) if len(m) >= 30 else [None, None]
             lo = block_ci(diff[m], day[m], q=(q_lo, 1 - q_lo))[0] if len(m) >= LEAGUE_MIN_N else None
-            per.append({"league": lg, "n": int(len(m)), "delta": round(float(diff[m].mean()), 5), "ci90": ci,
-                        "bonferroni_lower": lo, "significantly_worse": bool(lo is not None and lo > 0)})
+            rec = {"league": lg, "n": int(len(m)), "delta": round(float(diff[m].mean()), 5), "ci90": ci,
+                   "bonferroni_lower": lo, "significantly_worse": bool(lo is not None and lo > 0)}
+            if pa is not None:
+                ym, a, b = y[m].astype(float), pa[m], pb[m]
+                rec.update({
+                    "incumbent_logloss": round(float(logloss(a, ym).mean()), 5),
+                    "challenger_logloss": round(float(logloss(b, ym).mean()), 5),
+                    "brier_delta": round(float(((b - ym) ** 2).mean() - ((a - ym) ** 2).mean()), 5),
+                    "calibration_delta": round(float(abs(b.mean() - ym.mean()) - abs(a.mean() - ym.mean())), 5),
+                    "selection_count_delta": int((np.abs(b - 0.5) >= 0.08).sum() - (np.abs(a - 0.5) >= 0.08).sum()),
+                    "pass_fail": "FAIL" if rec["significantly_worse"] else "PASS"})
+            per.append(rec)
         return per
 
     for t in TARGETS:
@@ -151,7 +165,7 @@ def run(league_id: int, *, existing: pd.DataFrame | None = None) -> dict:
         diff = logloss(pb, y) - logloss(pa, y)                       # + = challenger worse
         noise = logloss(ps, y) - logloss(pa, y)
         pooled_ci = block_ci(diff, day)
-        per = _per_league(diff)
+        per = _per_league(diff, pa, pb, y)
         noise_per = _per_league(noise)
         worse = [p["league"] for p in per if p["significantly_worse"]]
         fail = (pooled_ci[1] is not None and pooled_ci[1] > POOLED_MARGIN) or bool(worse)
