@@ -49,6 +49,32 @@ def lay_equivalent_back(lay_odds: float) -> float:
     return lay_odds / (lay_odds - 1.0)
 
 
+def back_to_lay(back_stake: float, back_odds: float, lay_odds: float, commission: float = 0.0) -> dict:
+    """BACK `back_stake` at a bookmaker at `back_odds`, then LAY the SAME selection on an exchange at
+    `lay_odds`, with exchange commission charged on NET exchange winnings only (Betfair-style: one bet
+    per market, so the lay's net win IS the market's net win).
+
+        selection wins : back wins  B(Ob-1); lay loses its liability S(Ol-1); no commission
+        selection loses: back loses B;        lay wins S, commission c on S
+        equal when B(Ob-1) - S(Ol-1) = S(1-c) - B   =>   S = B * Ob / (Ol - c)
+
+    No blanket (1-c) on every branch: commission only ever touches the branch where the exchange leg
+    WINS. `FULL_GREEN` only when BOTH outcomes are strictly positive after commission.
+    """
+    if back_odds <= 1 or lay_odds <= 1 or back_stake <= 0:
+        raise ValueError("odds must exceed 1 and stake must be positive")
+    if not 0 <= commission < 1:
+        raise ValueError("commission must be in [0, 1)")
+    s = back_stake * back_odds / (lay_odds - commission)
+    win = back_stake * (back_odds - 1.0) - s * (lay_odds - 1.0)
+    lose = s * (1.0 - commission) - back_stake
+    locked = min(win, lose)
+    return {"lay_stake": s, "required_exchange_liability": s * (lay_odds - 1.0),
+            "profit_if_selection_wins": win, "profit_if_selection_loses": lose,
+            "minimum_locked_profit": locked, "roi_on_back_stake": locked / back_stake,
+            "full_green": bool(win > 0 and lose > 0)}
+
+
 def instant_arb_margin(best_side: float, best_opposite: float) -> float:
     """1 - (1/O + 1/U): > 0 means both sides can be covered now for a guaranteed profit
     (before limits and commission). The return on total stake is margin / (1 - margin)."""
