@@ -1,0 +1,76 @@
+{
+ "EVIDENCE_STATE": "COLLECTING",
+ "PRICE_EDGE": "NO",
+ "EXECUTABLE_EDGE": "NOT_TESTABLE (no lay ladder / size)",
+ "ARBITRAGE_PROVEN": "NOT_TESTABLE (no simultaneous sized quotes)",
+ "historical_primary": {
+  "n": 667,
+  "mean_pnl_per_unit": -0.08958,
+  "full_green_rate": 0.0642,
+  "status": "EXPLORATORY (pre-registration history)"
+ },
+ "forward_gates": {
+  "N_completed_forward": 0,
+  "N_required": 150,
+  "match_days": 0,
+  "days_required": 30,
+  "mean_pnl": null,
+  "ci90": [
+   null,
+   null
+  ],
+  "median_clv": null,
+  "beats_all_controls_historical": false,
+  "max_league_profit_share": null
+ },
+ "states_primary": {
+  "CLOSED_STOP": 603,
+  "CLOSED_GREEN": 64
+ },
+ "labels_primary": {
+  "EXECUTABLE_BACK_TO_LAY": 667,
+  "PREDICTED_PRICE_EDGE": 330
+ },
+ "data_status": {
+  "BOOKMAKER_QUOTES_REAL": "YES",
+  "EXCHANGE_BACK_PRICES_RECORDED": "YES",
+  "exchange_opposite_coverage_of_path_rows": 0.5575,
+  "EXCHANGE_LAY_LADDER_AVAILABLE": "NO",
+  "EXECUTABLE_EXCHANGE_DATA_AVAILABLE": "NO",
+  "EXECUTABLE_EXCHANGE_NOTE": "exchange BACK prices on the opposite side exist (== a lay price) but with no matched/available size, so executability is unverified",
+  "STRICT_ARBITRAGE_TESTABLE": "NO",
+  "CAPACITY_UNKNOWN": "YES",
+  "SYNTHETIC_ODDS_USED": "NO"
+ },
+ "capacity": {
+  "CAPACITY_UNKNOWN": "YES",
+  "available_back_size": "UNKNOWN",
+  "available_lay_size": "UNKNOWN",
+  "max_executable_stake": "UNKNOWN",
+  "expected_pnl_per_trade_at_10": -0.9,
+  "expected_pnl_per_trade_at_100": -8.96,
+  "expected_pnl_per_trade_at_500": -44.79,
+  "expected_pnl_per_trade_at_1000": -89.58,
+  "note": "linear in stake ONLY because no size data exists; real limits would cut this"
+ },
+ "PRODUCTION_SELECTION_CHANGED": "NO",
+ "PRODUCTION_THRESHOLDS_CHANGED": "NO",
+ "PRODUCTION_STAKING_CHANGED": "NO",
+ "REAL_BETTING_ENABLED": "NO",
+ "lineage": {
+  "generated_at": "2026-10-19 09:02 UTC",
+  "source_git_sha": {
+   "pro": "unknown",
+   "v9": "unknown"
+  },
+  "calculation_version": "price_trader-2.0.0",
+  "data_start": "2026-08-19 09:23:27",
+  "data_end": "2026-10-18 09:05:18",
+  "number_of_rows": 596600,
+  "registration_version": "price_trader_registration_v1",
+  "input_hashes": {
+   "trades.parquet": "d8c75815345f9ea9",
+   "price_paths.parquet": "cda7600804a19666"
+  }
+ }
+}

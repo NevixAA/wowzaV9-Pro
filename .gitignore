@@ -424,3 +424,7 @@ experiments/upgrade_studies_2026_10/
 !output/studies/ou_info_inputs.csv
 !output/studies/injury_snapshots.parquet
 !output/studies/ou_info_inputs_forward_check.json
+# Price Trader v2 (src/price_trader/research.py) - small reports only; sim_rows.parquet stays local (~600k rows).
+!output/price_trader/v2/
+!output/price_trader/v2/*.csv
+!output/price_trader/v2/*.json

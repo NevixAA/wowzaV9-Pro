@@ -40,7 +40,7 @@ jobs:
           python-version: '3.11'
       - run: pip install pandas numpy pyarrow pytest
       - name: Tests
-        run: python -m pytest tests/test_price_trader_hedge.py -q
+        run: python -m pytest tests/test_price_trader_hedge.py tests/test_price_trader_v2.py -q
       - name: Lab + paper engine
         env:
           V9_LOCAL: ${{ github.workspace }}/_v9
@@ -48,12 +48,14 @@ jobs:
           set -o pipefail
           python -m src.price_trader.lab > lab.txt
           python -m src.price_trader.paper | tee paper.txt
+          # v2 (2026-10-19): fixed horizons, A/B/C labels, state machine, controls, breakeven, lineage
+          python -m src.price_trader.research > research_v2.txt
           cat paper.txt >> "$GITHUB_STEP_SUMMARY"
       - name: Commit
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add output/price_trader
+          git add output/price_trader registry/price_trader
           git diff --staged --quiet && exit 0
           git commit -m "pro: price trader $(date -u +%F)"
           for i in 1 2 3 4 5; do

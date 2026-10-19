@@ -1,0 +1,85 @@
+{
+ "commission_assumptions": {
+  "book": 0.0,
+  "exchange_2pct": 0.02,
+  "exchange_5pct": 0.05
+ },
+ "controls": [
+  "OPPOSITE",
+  "RANDOM_DIRECTION",
+  "SHUFFLED_RESIDUAL",
+  "MARKET_ONLY",
+  "LONG_MOMENTUM",
+  "MEAN_REVERSION"
+ ],
+ "eligible_leagues": "every non-paper league Wowza tips (paper league USA MLS excluded)",
+ "entry_horizons": [
+  "EARLIEST",
+  "T-48h",
+  "T-24h",
+  "T-12h",
+  "T-6h",
+  "T-3h",
+  "T-1h",
+  "T-30m"
+ ],
+ "exit_rules": [
+  "GREEN_1PCT",
+  "GREEN_2PCT",
+  "GREEN_3PCT",
+  "PROB_1PP",
+  "PROB_2PP",
+  "PROB_3PP",
+  "STOP_1PP",
+  "STOP_2PP",
+  "STOP_3PP",
+  "TIME_T-1h"
+ ],
+ "forward_window_start": "2026-10-20",
+ "markets": [
+  "OU15",
+  "OU25",
+  "OU35",
+  "BTTS"
+ ],
+ "minimum_liquidity": "UNKNOWN \u2014 no size data; CAPACITY_UNKNOWN until an exchange ladder is captured",
+ "primary_setup": {
+  "commission": 0.0,
+  "horizon": "EARLIEST",
+  "rule": "GREEN_2PCT",
+  "slippage": 0.0,
+  "venue": "book"
+ },
+ "registered_at": "2026-10-19",
+ "slippage_assumptions": [
+  0.0,
+  0.01
+ ],
+ "status": "PAPER_SHADOW_ONLY",
+ "success_gates": {
+  "ARBITRAGE_PROVEN": [
+   "simultaneous executable prices",
+   "both outcomes positive",
+   "sufficient quoted size",
+   "no hypothetical leg"
+  ],
+  "EXECUTABLE_EDGE": [
+   "PRICE_EDGE",
+   "real exchange lay quotes with size",
+   "commission + slippage included",
+   ">= 80% of intended hedge volume executable",
+   "positive P/L after all costs"
+  ],
+  "PRICE_EDGE": [
+   "N >= 150 completed paper trades",
+   ">= 30 match days",
+   "positive mean net P/L",
+   "90% lower bound > 0",
+   "median price improvement (CLV) > 0",
+   "beats every control at the same entries",
+   "no league > 50% of profit"
+  ]
+ },
+ "time_exit": "last quote at or before T-1h, else last pre-kickoff quote",
+ "version": "price_trader_registration_v1"
+}
