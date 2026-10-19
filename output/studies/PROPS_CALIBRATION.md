@@ -1,4 +1,4 @@
-# Props calibration — live v9 model vs what happened (2026-10-18 11:19 UTC)
+# Props calibration — live v9 model vs what happened (2026-10-19 07:22 UTC)
 
 Settled prop tips to 2026-10-17. Gap = realised hit rate minus the model's probability (positive = the model under-predicts). 90% CI by match day.
 
