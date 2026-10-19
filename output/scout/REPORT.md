@@ -1,6 +1,6 @@
-# League scout — 2026-10-19T10:03 UTC
+# League scout — 2026-10-19T14:05 UTC
 
-Results stored: 240,152 · fixtures priced: 2,590 · model frozen: 2,550
+Results stored: 240,156 · fixtures priced: 2,612 · model frozen: 2,572
 
 COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kickoff close
 
@@ -44,12 +44,16 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 1 | Poland I Liga | btts | 18 | COLLECTING | +0.015 | – | +85.0% (2) |
 | 1 | Netherlands Eerste Divisie | ou15 | 17 | COLLECTING | -0.028 | – | -100.0% (1) |
 | 1 | Italy Serie C - Girone A | ou15 | 17 | COLLECTING | +0.004 | – | -66.8% (4) |
+| 1 | Greece Super League 2 | ou15 | 17 | COLLECTING | +0.015 | – | – |
 | 1 | Netherlands Eerste Divisie | ou25 | 17 | COLLECTING | -0.052 | – | +1.0% (4) |
 | 1 | Italy Serie C - Girone A | ou25 | 17 | COLLECTING | -0.009 | – | +22.7% (3) |
+| 1 | Greece Super League 2 | ou25 | 17 | COLLECTING | +0.075 | – | -9.0% (7) |
 | 1 | Netherlands Eerste Divisie | ou35 | 17 | COLLECTING | -0.303 | – | -8.2% (4) |
 | 1 | Italy Serie C - Girone A | ou35 | 17 | COLLECTING | +0.071 | – | -100.0% (2) |
+| 1 | Greece Super League 2 | ou35 | 17 | COLLECTING | -0.120 | – | – |
 | 1 | Netherlands Eerste Divisie | btts | 17 | COLLECTING | -0.089 | – | -15.0% (4) |
 | 1 | Italy Serie C - Girone A | btts | 17 | COLLECTING | -0.007 | – | -8.5% (2) |
+| 1 | Greece Super League 2 | btts | 17 | COLLECTING | -0.036 | – | – |
 | 1 | China League One | ou15 | 16 | COLLECTING | +0.124 | – | +100.0% (3) |
 | 1 | South-Korea K League 2 | ou15 | 16 | COLLECTING | +0.011 | – | -100.0% (1) |
 | 1 | China League One | ou25 | 16 | COLLECTING | +0.124 | – | -1.2% (5) |
@@ -59,13 +63,9 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 1 | China League One | btts | 16 | COLLECTING | +0.004 | – | +81.5% (2) |
 | 1 | South-Korea K League 2 | btts | 16 | COLLECTING | -0.022 | – | – |
 | 1 | Austria 2. Liga | ou15 | 15 | COLLECTING | -0.005 | – | -100.0% (2) |
-| 1 | Greece Super League 2 | ou15 | 15 | COLLECTING | +0.026 | – | – |
 | 1 | Austria 2. Liga | ou25 | 15 | COLLECTING | -0.004 | – | -34.5% (4) |
-| 1 | Greece Super League 2 | ou25 | 15 | COLLECTING | +0.062 | – | -9.0% (7) |
 | 1 | Austria 2. Liga | ou35 | 15 | COLLECTING | +0.071 | – | -56.8% (4) |
-| 1 | Greece Super League 2 | ou35 | 15 | COLLECTING | -0.131 | – | – |
 | 1 | Austria 2. Liga | btts | 15 | COLLECTING | +0.036 | – | -40.5% (4) |
-| 1 | Greece Super League 2 | btts | 15 | COLLECTING | -0.069 | – | – |
 | 1 | Sweden Superettan | ou15 | 14 | COLLECTING | +0.066 | – | – |
 | 1 | Mexico Liga de Expansión MX | ou15 | 14 | COLLECTING | +0.418 | – | – |
 | 1 | Sweden Superettan | ou25 | 14 | COLLECTING | -0.004 | – | +36.0% (3) |
@@ -154,14 +154,14 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Argentina Torneo Federal A | ou35 | 24 | COLLECTING | +0.060 | – | -5.2% (5) |
 | 2 | England Non League Premier - Isthmian | btts | 24 | COLLECTING | -0.005 | – | – |
 | 2 | Argentina Torneo Federal A | btts | 24 | COLLECTING | +0.013 | – | -20.5% (8) |
+| 2 | Israel Liga Alef | ou15 | 23 | COLLECTING | +0.005 | – | – |
+| 2 | Israel Liga Alef | ou25 | 23 | COLLECTING | +0.023 | – | -0.0% (4) |
+| 2 | Israel Liga Alef | ou35 | 23 | COLLECTING | -0.043 | – | – |
+| 2 | Israel Liga Alef | btts | 23 | COLLECTING | -0.007 | – | – |
 | 2 | Argentina Primera B Metropolitana | ou15 | 22 | COLLECTING | +0.086 | – | +60.7% (3) |
-| 2 | Israel Liga Alef | ou15 | 22 | COLLECTING | +0.004 | – | – |
 | 2 | Argentina Primera B Metropolitana | ou25 | 22 | COLLECTING | +0.048 | – | +34.4% (5) |
-| 2 | Israel Liga Alef | ou25 | 22 | COLLECTING | +0.019 | – | -0.0% (4) |
 | 2 | Argentina Primera B Metropolitana | ou35 | 22 | COLLECTING | +0.097 | – | +17.0% (2) |
-| 2 | Israel Liga Alef | ou35 | 22 | COLLECTING | -0.035 | – | – |
 | 2 | Argentina Primera B Metropolitana | btts | 22 | COLLECTING | +0.034 | – | +39.5% (4) |
-| 2 | Israel Liga Alef | btts | 22 | COLLECTING | -0.017 | – | – |
 | 2 | Japan J3 League | ou15 | 20 | COLLECTING | -0.029 | – | – |
 | 2 | Japan J3 League | ou25 | 20 | COLLECTING | -0.092 | – | +8.0% (5) |
 | 2 | Japan J3 League | ou35 | 20 | COLLECTING | -0.067 | – | – |
@@ -736,7 +736,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Spain Tercera División RFEF - Group 13 | ou25 | 1 | COLLECTING | -0.093 | – | – |
 | 2 | Spain Tercera División RFEF - Group 16 | ou25 | 1 | COLLECTING | -0.100 | – | – |
 | 2 | Spain Tercera División RFEF - Group 17 | ou25 | 1 | COLLECTING | +0.403 | – | +95.0% (1) |
-| 2 | Mongolia Premier League | ou25 | 1 | COLLECTING | -0.413 | – | -100.0% (1) |
+| 2 | Mongolia Premier League | ou25 | 1 | COLLECTING | -0.419 | – | -100.0% (1) |
 | 2 | Philippines PFL | ou25 | 1 | COLLECTING | +0.151 | – | +162.0% (1) |
 | 2 | Mexico Liga Premier Serie B | ou25 | 1 | COLLECTING | -0.156 | – | – |
 | 2 | New-Zealand National League - National | ou25 | 1 | COLLECTING | -1.054 | – | +44.0% (1) |
@@ -752,7 +752,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Spain Tercera División RFEF - Group 13 | ou35 | 1 | COLLECTING | -0.038 | – | – |
 | 2 | Spain Tercera División RFEF - Group 16 | ou35 | 1 | COLLECTING | -0.040 | – | – |
 | 2 | Spain Tercera División RFEF - Group 17 | ou35 | 1 | COLLECTING | -1.455 | – | – |
-| 2 | Mongolia Premier League | ou35 | 1 | COLLECTING | +0.244 | – | – |
+| 2 | Mongolia Premier League | ou35 | 1 | COLLECTING | +0.245 | – | – |
 | 2 | Philippines PFL | ou35 | 1 | COLLECTING | +0.377 | – | – |
 | 2 | Mexico Liga Premier Serie B | ou35 | 1 | COLLECTING | -0.287 | – | – |
 | 2 | New-Zealand National League - National | ou35 | 1 | COLLECTING | -0.339 | – | – |
@@ -768,7 +768,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Spain Tercera División RFEF - Group 13 | btts | 1 | COLLECTING | +0.135 | – | – |
 | 2 | Spain Tercera División RFEF - Group 16 | btts | 1 | COLLECTING | +0.194 | – | – |
 | 2 | Spain Tercera División RFEF - Group 17 | btts | 1 | COLLECTING | -0.379 | – | – |
-| 2 | Mongolia Premier League | btts | 1 | COLLECTING | +0.542 | – | – |
+| 2 | Mongolia Premier League | btts | 1 | COLLECTING | +0.541 | – | – |
 | 2 | Philippines PFL | btts | 1 | COLLECTING | -0.746 | – | – |
 | 2 | Mexico Liga Premier Serie B | btts | 1 | COLLECTING | -0.451 | – | – |
 | 2 | New-Zealand National League - National | btts | 1 | COLLECTING | -0.052 | – | – |
