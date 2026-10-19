@@ -71,7 +71,7 @@ jobs:
           set -o pipefail
           # Argentina's season cache must refresh: it holds matches still being played.
           rm -f experiments/upgrade_studies_2026_10/argentina_fixtures_2026.json
-          for m in argentina_btts ou_studies evidence ou_challenger props_segments calibration_shadow props_calibration tip_ranker top_picks_weekly league_results report; do
+          for m in argentina_btts ou_studies evidence ou_challenger props_segments calibration_shadow props_calibration tip_ranker top_picks_weekly league_results fantasy_benchmark report; do
             python -m src.studies.$m > "studies_$m.txt" 2>&1 || { echo "::error title=$m failed::"; tail -30 "studies_$m.txt"; exit 1; }
           done
           cat studies_report.txt
@@ -90,7 +90,8 @@ jobs:
                    output/studies/tip_ranker.json output/studies/TIP_RANKER.md \
                    output/studies/top_picks_weekly.csv output/studies/TOP_PICKS_WEEKLY.md \
                    output/studies/league_results_weekly.csv output/studies/LEAGUE_RESULTS.md \
-                   output/studies/league_ratings.json; do
+                   output/studies/league_ratings.json \
+                   output/studies/fantasy_benchmark.json output/studies/fantasy_challenger_log.csv; do
             [ -e "$p" ] && git add "$p"
           done
           git diff --staged --quiet && exit 0

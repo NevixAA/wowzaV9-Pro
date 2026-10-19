@@ -1,0 +1,263 @@
+{
+ "calculation_version": "fantasy_benchmark-1.0.0",
+ "generated_at": "2026-10-19 09:17 UTC",
+ "gameweeks": [
+  4,
+  5,
+  6
+ ],
+ "player_gameweeks": 724,
+ "champion": "FPL_EP_NEXT",
+ "pooled_all_gws": {
+  "FPL_EP_NEXT": {
+   "n": 724,
+   "mae": 1.357,
+   "rmse": 2.4028,
+   "spearman": 0.7313,
+   "bias": -0.093
+  },
+  "WOWZA": {
+   "n": 724,
+   "mae": 2.0375,
+   "rmse": 2.8432,
+   "spearman": 0.5761,
+   "bias": 1.0118
+  },
+  "BLEND_50": {
+   "n": 724,
+   "mae": 1.598,
+   "rmse": 2.3969,
+   "spearman": 0.7183,
+   "bias": 0.4594
+  }
+ },
+ "pooled_out_of_sample": {
+  "FPL_EP_NEXT": {
+   "n": 437,
+   "mae": 1.2387,
+   "rmse": 2.2647,
+   "spearman": 0.7433,
+   "bias": -0.1078
+  },
+  "WOWZA": {
+   "n": 437,
+   "mae": 1.9012,
+   "rmse": 2.7349,
+   "spearman": 0.5904,
+   "bias": 0.9871
+  },
+  "BLEND_50": {
+   "n": 437,
+   "mae": 1.4709,
+   "rmse": 2.2753,
+   "spearman": 0.73,
+   "bias": 0.4397
+  },
+  "BLEND_WF": {
+   "n": 437,
+   "mae": 1.2387,
+   "rmse": 2.2647,
+   "spearman": 0.7433,
+   "bias": -0.1078
+  },
+  "RESIDUAL_WF": {
+   "n": 437,
+   "mae": 1.3156,
+   "rmse": 2.1932,
+   "spearman": 0.7364,
+   "bias": 0.0103
+  }
+ },
+ "vs_fpl_out_of_sample": {
+  "WOWZA": {
+   "mae_minus_fpl": 0.6625,
+   "ci90": [
+    0.5223,
+    0.8009
+   ]
+  },
+  "BLEND_50": {
+   "mae_minus_fpl": 0.2322,
+   "ci90": [
+    0.1601,
+    0.3051
+   ]
+  },
+  "BLEND_WF": {
+   "mae_minus_fpl": 0.0,
+   "ci90": [
+    0.0,
+    0.0
+   ]
+  },
+  "RESIDUAL_WF": {
+   "mae_minus_fpl": 0.0769,
+   "ci90": [
+    0.03,
+    0.1242
+   ]
+  }
+ },
+ "residual_coefficient_wowza_in_sample": {
+  "coef": 0.2585,
+  "ci90_player_bootstrap": [
+   0.1799,
+   0.3358
+  ],
+  "note": "descriptive; the out-of-sample rows decide"
+ },
+ "V3_CHALLENGER": "NOT_AVAILABLE (fantasy-v3 branch unmerged; no published V3 projection to score)",
+ "WOWZA_ADDS_INFORMATION_BEYOND_FPL": "NO / NOT SHOWN",
+ "by_gameweek": [
+  {
+   "gw": 4,
+   "n": 287,
+   "FPL_EP_NEXT": {
+    "n": 287,
+    "mae": 1.5373,
+    "rmse": 2.5988,
+    "spearman": 0.7057,
+    "bias": -0.0704
+   },
+   "WOWZA": {
+    "n": 287,
+    "mae": 2.245,
+    "rmse": 3.0005,
+    "spearman": 0.5486,
+    "bias": 1.0495
+   },
+   "BLEND_50": {
+    "n": 287,
+    "mae": 1.7916,
+    "rmse": 2.571,
+    "spearman": 0.6959,
+    "bias": 0.4896
+   },
+   "BLEND_WF": {
+    "n": 0
+   },
+   "RESIDUAL_WF": {
+    "n": 0
+   },
+   "blend_weight_used": null
+  },
+  {
+   "gw": 5,
+   "n": 288,
+   "FPL_EP_NEXT": {
+    "n": 288,
+    "mae": 1.533,
+    "rmse": 2.578,
+    "spearman": 0.7036,
+    "bias": -0.1663
+   },
+   "WOWZA": {
+    "n": 288,
+    "mae": 2.0837,
+    "rmse": 2.9307,
+    "spearman": 0.5386,
+    "bias": 0.9365
+   },
+   "BLEND_50": {
+    "n": 288,
+    "mae": 1.6992,
+    "rmse": 2.5258,
+    "spearman": 0.6996,
+    "bias": 0.3851
+   },
+   "BLEND_WF": {
+    "n": 288,
+    "mae": 1.533,
+    "rmse": 2.578,
+    "spearman": 0.7036,
+    "bias": -0.1663
+   },
+   "RESIDUAL_WF": {
+    "n": 288,
+    "mae": 1.5759,
+    "rmse": 2.4743,
+    "spearman": 0.7147,
+    "bias": -0.1008
+   },
+   "blend_weight_used": 0.0
+  },
+  {
+   "gw": 6,
+   "n": 149,
+   "FPL_EP_NEXT": {
+    "n": 149,
+    "mae": 0.6698,
+    "rmse": 1.4822,
+    "spearman": 0.7312,
+    "bias": 0.0054
+   },
+   "WOWZA": {
+    "n": 149,
+    "mae": 1.5486,
+    "rmse": 2.3099,
+    "spearman": 0.5777,
+    "bias": 1.0849
+   },
+   "BLEND_50": {
+    "n": 149,
+    "mae": 1.0295,
+    "rmse": 1.6887,
+    "spearman": 0.6832,
+    "bias": 0.5451
+   },
+   "BLEND_WF": {
+    "n": 149,
+    "mae": 0.6698,
+    "rmse": 1.4822,
+    "spearman": 0.7312,
+    "bias": 0.0054
+   },
+   "RESIDUAL_WF": {
+    "n": 149,
+    "mae": 0.8125,
+    "rmse": 1.508,
+    "spearman": 0.6965,
+    "bias": 0.2251
+   },
+   "blend_weight_used": 0.0
+  }
+ ],
+ "component_lineage": [
+  {
+   "component": "fpl_ep_next",
+   "status": "OFFICIAL_FPL",
+   "source": "FPL bootstrap-static ep_next"
+  },
+  {
+   "component": "attack_pts (goals/assists)",
+   "status": "MODELLED",
+   "source": "Wowza player model probabilities x FPL scoring"
+  },
+  {
+   "component": "p_start / minutes",
+   "status": "MODELLED",
+   "source": "Wowza minutes/availability model"
+  },
+  {
+   "component": "cs_pts (clean sheet)",
+   "status": "HEURISTIC",
+   "source": "FDR-derived adjustment, not a calibrated clean-sheet probability"
+  },
+  {
+   "component": "dc_pts (defensive contribution)",
+   "status": "APPROXIMATION",
+   "source": "proxy from tackles/interceptions history; not calibrated"
+  },
+  {
+   "component": "bonus_pts",
+   "status": "APPROXIMATION",
+   "source": "expected bonus proxy; not calibrated"
+  },
+  {
+   "component": "proj_fixture_adj (total)",
+   "status": "MODELLED + APPROXIMATION",
+   "source": "sum of the above with fixture difficulty"
+  }
+ ],
+ "sample_note": "3 settled gameweeks \u2014 far too few to promote anything"
+}
