@@ -20,6 +20,20 @@ OUT = cfg.OUTPUT_DIR / "research_integrity.json"
 CALC = "research_integrity-1.0.0"
 
 
+TEXT_SUFFIXES = (".json", ".md", ".csv", ".py", ".txt", ".yml")
+
+
+def content_sha256(path) -> str:
+    """SHA-256 that a Windows checkout (CRLF) and a CI checkout (LF) agree on: text files are hashed
+    with CRLF normalised to LF; binaries (.pkl, .parquet) byte for byte. Found 2026-10-19 when the
+    first LOCK_v1 hashed CRLF bytes and failed every CI run."""
+    from pathlib import Path
+    b = Path(path).read_bytes()
+    if Path(path).suffix.lower() in TEXT_SUFFIXES:
+        b = b.replace(b"\r\n", b"\n")
+    return hashlib.sha256(b).hexdigest()
+
+
 def _r(status, detail, blocks=()):
     return {"status": status, "detail": detail, "blocks": list(blocks)}
 
@@ -72,7 +86,7 @@ def check_registrations() -> dict:
     if lock.exists():
         L = json.loads(lock.read_text(encoding="utf-8"))
         out["player_v3_v1_bytes"] = all(
-            hashlib.sha256((cfg.BASE_DIR / k).read_bytes()).hexdigest() == v for k, v in L["sha256"].items())
+            content_sha256(cfg.BASE_DIR / k) == v for k, v in L["sha256"].items())
     bad = [k for k, v in out.items() if v is not True]
     st = "FAIL" if bad else "PASS"
     blocks = ["price_trader" if "price" in k else "player_v3" for k in bad]

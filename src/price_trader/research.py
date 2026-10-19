@@ -63,8 +63,8 @@ CONTROLS = ("OPPOSITE", "RANDOM_DIRECTION", "SHUFFLED_RESIDUAL", "MARKET_ONLY", 
 # ── lineage ──────────────────────────────────────────────────────────────────────────────────
 def _git(path) -> str:
     import os
-    if os.getenv(GITHUB_SHA) and str(path) == str(cfg.BASE_DIR):
-        return os.getenv(GITHUB_SHA)[:12]
+    if os.getenv("GITHUB_SHA") and str(path) == str(cfg.BASE_DIR):
+        return os.getenv("GITHUB_SHA")[:12]
     try:
         return subprocess.run(["git", "rev-parse", "--short=12", "HEAD"], cwd=path, capture_output=True,
                                text=True, timeout=20).stdout.strip() or "unknown"
