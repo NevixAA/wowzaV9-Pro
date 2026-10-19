@@ -33,31 +33,43 @@
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/scout/WEEKLY_PROMOTION_REVIEW.md"
   },
   {
-   "id": "model_lineage",
-   "title": "Model lineage \u2014 champion high-water mark",
-   "area": "models",
-   "status": "Champion high-water mark: 112 retrains, 98 promoted, churn 0.875; health btts HEALTHY, ht_over05 HEALTHY, ht_over15 HEALTHY, newformat HEALTHY, over15 HEALTHY, over35 HEALTHY, standard HEALTHY",
-   "date": "2026-10-18 09:54:07",
+   "id": "player_v3_forward",
+   "title": "Player V3 forward test (pre-registered)",
+   "area": "players",
+   "status": "6122 settled props since 2026-10-15: goals COLLECTING (23/150), sot COLLECTING (6/150), sot2 COLLECTING (5/150), sot3 COLLECTING (2/150)",
+   "date": "2026-10-18 12:13 UTC",
    "key": {
-    "best proven improvement": "NONE \u2014 no promotion so far was backed by a same-holdout CI excluding zero; strongest CI-backed gain was newformat 2026-10-11 -0.00313 (CI hi -0.00111), NOT promoted by the old rule",
-    "head-to-head graded": 0,
-    "champion btts": "btts_20261005T101905Z_238e3419",
-    "champion ht_over05": "ht_over05_20261018T080423Z_359b491a",
-    "champion ht_over15": "ht_over15_20261004T093828Z_6f370f63",
-    "champion newformat": "newformat_20261018T080423Z_9eb6b4b4",
-    "champion over15": "over15_20261018T080423Z_da4743a2",
-    "champion over35": "over35_20261005T101905Z_f546ce72",
-    "champion standard": "standard_20261018T080423Z_64313878"
+    "goals": "COLLECTING (23/150)",
+    "sot": "COLLECTING (6/150)",
+    "sot2": "COLLECTING (5/150)",
+    "sot3": "COLLECTING (2/150)"
    },
-   "report": "output/model_lineage/MODEL_LINEAGE_REPORT.md",
-   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/model_lineage/MODEL_LINEAGE_REPORT.md"
+   "report": "output/player_v3/FORWARD_TEST.md",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/player_v3/FORWARD_TEST.md"
+  },
+  {
+   "id": "price_trader",
+   "title": "Price Trader / back-to-lay lab",
+   "area": "market",
+   "status": "Price-trading edge: movement beats placebo UNCLEAR, full green profitable NO, prospective INSUFFICIENT_DATA",
+   "date": "2026-10-18 12:13 UTC",
+   "key": {
+    "MOVEMENT_SIGNAL_EXISTS": "NO",
+    "MOVEMENT_BEATS_PLACEBO": "UNCLEAR",
+    "FULL_GREEN_PROFITABLE_AFTER_COSTS": "NO",
+    "TRADING_BEATS_HOLD": "NO",
+    "EXECUTABLE_PRICE_DATA_SUFFICIENT": "NO",
+    "PROSPECTIVE_CONFIRMATION": "INSUFFICIENT_DATA"
+   },
+   "report": "output/price_trader/PRICE_TRADER_REPORT.md",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/price_trader/PRICE_TRADER_REPORT.md"
   },
   {
    "id": "props_calibration",
    "title": "Props calibration monitor (daily)",
    "area": "players",
    "status": "Live props model vs reality (30 days): assists predicted 21% / happened 19%, cards predicted 17% / happened 20%, goals predicted 23% / happened 29%, sot predicted 29% / happened 42%",
-   "date": "2026-10-18 08:55 UTC",
+   "date": "2026-10-18 11:19 UTC",
    "key": {
     "assists": "CALIBRATED \u00b7 gap -1.5% [-0.0764, 0.0392] \u00b7 n 167",
     "cards": "UNDER_PREDICTS \u00b7 gap +2.6% [0.0055, 0.0573] \u00b7 n 1368",
@@ -72,7 +84,7 @@
    "title": "Top picks \u2014 weekly table",
    "area": "tips",
    "status": "Top picks 2026-W42: live record not started; backtest in the table",
-   "date": "2026-10-18 08:55 UTC",
+   "date": "2026-10-18 11:19 UTC",
    "key": {
     "BEST_BETS (backtest)": "55% hit \u00b7 +9% ROI \u00b7 6% 0/5 days \u00b7 176 picks",
     "CURRENT (backtest)": "50% hit \u00b7 +5% ROI \u00b7 8% 0/5 days \u00b7 180 picks",
@@ -88,7 +100,7 @@
    "title": "Best leagues \u2014 results by league",
    "area": "tips",
    "status": "Best leagues (season): proven Brazil Serie A \u00b7 losing League Two, League One",
-   "date": "2026-10-18 08:55 UTC",
+   "date": "2026-10-18 11:19 UTC",
    "key": {
     "Brazil Serie A": "PROVEN \u00b7 107 tips \u00b7 64% hit @ 2.00 \u00b7 ROI +27% (shrunk +19%)",
     "Serie B": "PROMISING \u00b7 80 tips \u00b7 60% hit @ 2.01 \u00b7 ROI +21% (shrunk +14%)",
@@ -117,7 +129,7 @@
    "title": "Calibration shadow in v9 (pre-registered)",
    "area": "models",
    "status": "Live shadow of log-odds calibration in v9: WAITING_FOR_SHADOW_ROWS",
-   "date": "2026-10-18 08:55 UTC",
+   "date": "2026-10-18 11:19 UTC",
    "key": {},
    "report": "output/studies/CALIBRATION_SHADOW.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/CALIBRATION_SHADOW.md"
@@ -127,7 +139,7 @@
    "title": "Props segments: attacking D / M (pre-registered)",
    "area": "players",
    "status": "8 qualifying props since 2026-10-14; 0 EDGE cells",
-   "date": "2026-10-18 08:55 UTC",
+   "date": "2026-10-18 11:19 UTC",
    "key": {
     "ATT_DEF|goals": "COLLECTING (0/150)",
     "ATT_DEF|sot": "COLLECTING (0/150)",
@@ -143,36 +155,24 @@
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/PROPS_SEGMENTS.md"
   },
   {
-   "id": "price_trader",
-   "title": "Price Trader / back-to-lay lab",
-   "area": "market",
-   "status": "Price-trading edge: movement beats placebo NO, full green profitable NO, prospective INSUFFICIENT_DATA",
-   "date": "2026-10-17 11:47 UTC",
+   "id": "model_lineage",
+   "title": "Model lineage \u2014 champion high-water mark",
+   "area": "models",
+   "status": "Champion high-water mark: 112 retrains, 98 promoted, churn 0.875; health btts HEALTHY, ht_over05 HEALTHY, ht_over15 HEALTHY, newformat HEALTHY, over15 HEALTHY, over35 HEALTHY, standard HEALTHY",
+   "date": "2026-10-18 09:54:07",
    "key": {
-    "MOVEMENT_SIGNAL_EXISTS": "NO",
-    "MOVEMENT_BEATS_PLACEBO": "NO",
-    "FULL_GREEN_PROFITABLE_AFTER_COSTS": "NO",
-    "TRADING_BEATS_HOLD": "NO",
-    "EXECUTABLE_PRICE_DATA_SUFFICIENT": "NO",
-    "PROSPECTIVE_CONFIRMATION": "INSUFFICIENT_DATA"
+    "best proven improvement": "NONE \u2014 no promotion so far was backed by a same-holdout CI excluding zero; strongest CI-backed gain was newformat 2026-10-11 -0.00313 (CI hi -0.00111), NOT promoted by the old rule",
+    "head-to-head graded": 0,
+    "champion btts": "btts_20261005T101905Z_238e3419",
+    "champion ht_over05": "ht_over05_20261018T080423Z_359b491a",
+    "champion ht_over15": "ht_over15_20261004T093828Z_6f370f63",
+    "champion newformat": "newformat_20261018T080423Z_9eb6b4b4",
+    "champion over15": "over15_20261018T080423Z_da4743a2",
+    "champion over35": "over35_20261005T101905Z_f546ce72",
+    "champion standard": "standard_20261018T080423Z_64313878"
    },
-   "report": "output/price_trader/PRICE_TRADER_REPORT.md",
-   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/price_trader/PRICE_TRADER_REPORT.md"
-  },
-  {
-   "id": "player_v3_forward",
-   "title": "Player V3 forward test (pre-registered)",
-   "area": "players",
-   "status": "1336 settled props since 2026-10-15: goals COLLECTING (3/150), sot COLLECTING (2/150), sot2 COLLECTING (2/150), sot3 COLLECTING (0/150)",
-   "date": "2026-10-17 11:46 UTC",
-   "key": {
-    "goals": "COLLECTING (3/150)",
-    "sot": "COLLECTING (2/150)",
-    "sot2": "COLLECTING (2/150)",
-    "sot3": "COLLECTING (0/150)"
-   },
-   "report": "output/player_v3/FORWARD_TEST.md",
-   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/player_v3/FORWARD_TEST.md"
+   "report": "output/model_lineage/MODEL_LINEAGE_REPORT.md",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/model_lineage/MODEL_LINEAGE_REPORT.md"
   },
   {
    "id": "deep_analytics",
