@@ -4,9 +4,9 @@
  "EXECUTABLE_EDGE": "NOT_TESTABLE (no lay ladder / size)",
  "ARBITRAGE_PROVEN": "NOT_TESTABLE (no simultaneous sized quotes)",
  "historical_primary": {
-  "n": 695,
-  "mean_pnl_per_unit": -0.0894,
-  "full_green_rate": 0.0632,
+  "n": 705,
+  "mean_pnl_per_unit": -0.09003,
+  "full_green_rate": 0.0623,
   "status": "EXPLORATORY (pre-registration history)"
  },
  "forward_gates": {
@@ -24,17 +24,17 @@
   "max_league_profit_share": null
  },
  "states_primary": {
-  "CLOSED_STOP": 629,
+  "CLOSED_STOP": 639,
   "CLOSED_GREEN": 66
  },
  "labels_primary": {
-  "EXECUTABLE_BACK_TO_LAY": 695,
-  "PREDICTED_PRICE_EDGE": 349
+  "EXECUTABLE_BACK_TO_LAY": 705,
+  "PREDICTED_PRICE_EDGE": 354
  },
  "data_status": {
   "BOOKMAKER_QUOTES_REAL": "YES",
   "EXCHANGE_BACK_PRICES_RECORDED": "YES",
-  "exchange_opposite_coverage_of_path_rows": 0.5545,
+  "exchange_opposite_coverage_of_path_rows": 0.5527,
   "EXCHANGE_LAY_LADDER_AVAILABLE": "NO",
   "EXECUTABLE_EXCHANGE_DATA_AVAILABLE": "NO",
   "EXECUTABLE_EXCHANGE_NOTE": "exchange BACK prices on the opposite side exist (== a lay price) but with no matched/available size, so executability is unverified",
@@ -47,10 +47,10 @@
   "available_back_size": "UNKNOWN",
   "available_lay_size": "UNKNOWN",
   "max_executable_stake": "UNKNOWN",
-  "expected_pnl_per_trade_at_10": -0.89,
-  "expected_pnl_per_trade_at_100": -8.94,
-  "expected_pnl_per_trade_at_500": -44.7,
-  "expected_pnl_per_trade_at_1000": -89.4,
+  "expected_pnl_per_trade_at_10": -0.9,
+  "expected_pnl_per_trade_at_100": -9.0,
+  "expected_pnl_per_trade_at_500": -45.01,
+  "expected_pnl_per_trade_at_1000": -90.03,
   "note": "linear in stake ONLY because no size data exists; real limits would cut this"
  },
  "PRODUCTION_SELECTION_CHANGED": "NO",
@@ -58,19 +58,19 @@
  "PRODUCTION_STAKING_CHANGED": "NO",
  "REAL_BETTING_ENABLED": "NO",
  "lineage": {
-  "generated_at": "2026-10-19 10:05 UTC",
+  "generated_at": "2026-10-19 15:02 UTC",
   "source_git_sha": {
-   "pro": "16ea984fad73",
-   "v9": "f2f1bae0f8b6"
+   "pro": "937a271d264c",
+   "v9": "4d2786e41353"
   },
   "calculation_version": "price_trader-2.0.0",
   "data_start": "2026-08-19 09:23:27",
-  "data_end": "2026-10-19 04:34:29",
-  "number_of_rows": 619500,
+  "data_end": "2026-10-19 10:45:02",
+  "number_of_rows": 622400,
   "registration_version": "price_trader_registration_v1",
   "input_hashes": {
-   "trades.parquet": "1ad04b19afddba5f",
-   "price_paths.parquet": "058fb204c1795e84"
+   "trades.parquet": "36b1a3085d47102a",
+   "price_paths.parquet": "57535bf1e7aeceeb"
   }
  }
 }
