@@ -7,7 +7,7 @@ Research only. Nothing here changes v9, a threshold or a stake.
 - BTTS rate, all Argentina matches: 2025 **38%**, 2026 47%, since 10 Aug **55%**.
 - Tip period, 112 matches with a clean Bet365 price: BTTS happened 57% while the de-vigged price implied 42% (gap 14.7 points).
 - **B, blind YES on every match: +25%** [+9%, +43%], n 112.
-- A, matches Wowza picked: +39%; matches it did not pick: +13%. Difference +26% [+0%, +51%] — **not distinguishable from zero**.
+- A, matches Wowza picked: +36%; matches it did not pick: +15%. Difference +22% [-4%, +48%] — **not distinguishable from zero**.
 - Model vs market on the same matches: Brier 0.2451 vs 0.2816; residual z 0.38 (no fixture-level signal beyond the level).
 - C, a cheap bookmaker: no book's YES price ever beat the others' de-vigged consensus (102 fixtures). The whole market is behind, not one book.
 - 51 Bet365 price pairs were the FIRST-HALF BTTS market and were dropped (YES 8.00 / NO 1.08 passes a margin check).
@@ -50,29 +50,29 @@ Negative Δ = adding the model improved the forecast. No market × track shows a
 
 ## 4. Evidence per cell (staked tips since 10 Aug)
 
-19 cells tested (of 29; the rest are too small). Pooled prior +4.8%, between-cell sd 0.16. Reality-check p for the best cell: **0.044**.
+19 cells tested (of 30; the rest are too small). Pooled prior +3.9%, between-cell sd 0.15. Reality-check p for the best cell: **0.058**.
 
 | League | Market | n | Raw ROI | Shrunk ROI | P(edge>0) | FDR q | CLV 90% CS | Recommendation |
 |---|---|---|---|---|---|---|---|---|
-| Argentina Primera Division | btts | 84 | +33% | +23% | 0.99 | 0.06 | [-5.8, +2.1] | PAPER (n 84 < 150) |
-| Brazil Serie A | ou25 | 22 | +58% | +21% | 0.94 | 0.06 | [-7.6, +4.0] | PAPER (n 22 < 150) |
-| Serie B | ou25 | 22 | +25% | +11% | 0.79 | 0.77 | [-1.3, +11.8] | PAPER (n 22 < 150) |
-| Sweden Allsvenskan | ou25 | 28 | +19% | +9% | 0.75 | 0.77 | [-5.6, +4.7] | PAPER (n 28 < 150) |
-| Brazil Serie A | btts | 19 | +19% | +9% | 0.73 | 0.77 | [-23.0, +19.4] | PAPER (n 19 < 150) |
-| Argentina Primera Division | ou25 | 32 | +10% | +6% | 0.67 | 0.77 | [-4.4, +5.6] | PAPER (n 32 < 150) |
-| Japan J-League | ou25 | 26 | +8% | +6% | 0.67 | 0.77 | [-4.8, +11.7] | PAPER (n 26 < 150) |
-| Denmark Superliga | ou25 | 17 | +10% | +6% | 0.66 | 0.77 | [-6.7, +7.2] | PAPER (n 17 < 150) |
-| Mexico Liga MX | ou25 | 26 | +7% | +6% | 0.66 | 0.77 | [-0.3, +8.4] | PAPER (n 26 < 150) |
-| Finland Veikkausliiga | ou25 | 18 | +6% | +5% | 0.64 | 0.77 | [-7.3, +7.0] | PAPER (n 18 < 150) |
-| La Liga 2 | ou25 | 33 | -2% | +3% | 0.59 | 0.83 | [-2.9, +4.3] | PAPER (n 33 < 150) |
-| Argentina Primera Division | over15 | 87 | +1% | +3% | 0.60 | 0.79 | [-0.2, +2.7] | PAPER (n 87 < 150) |
-| Ireland Premier Division | ou25 | 15 | -15% | +0% | 0.51 | 0.98 | [-13.4, +3.6] | PAPER (n 15 < 150) |
-| Austrian Bundesliga | ou25 | 17 | -18% | -1% | 0.48 | 0.98 | [-15.6, +2.4] | PAPER (n 17 < 150) |
-| Bundesliga 2 | ou25 | 14 | -31% | -3% | 0.43 | 0.98 | [-14.4, +9.4] | PAPER (n 14 < 150) |
-| China Super League | ou25 | 24 | -27% | -4% | 0.40 | 0.98 | [-11.8, +4.5] | PAPER (n 24 < 150) |
-| Championship | ou25 | 24 | -29% | -6% | 0.32 | 0.98 | [-7.8, +5.9] | PAPER (n 24 < 150) |
-| League One | ou25 | 20 | -41% | -8% | 0.27 | 0.98 | [-7.5, +4.6] | PAPER (n 20 < 150) |
-| Norway Eliteserien | ou25 | 18 | -54% | -11% | 0.23 | 0.98 | [-14.2, +8.5] | PAPER (n 18 < 150) |
+| Argentina Primera Division | btts | 85 | +32% | +21% | 0.98 | 0.08 | [-5.7, +2.1] | PAPER (n 85 < 150) |
+| Brazil Serie A | ou25 | 25 | +47% | +18% | 0.92 | 0.15 | [-6.5, +3.3] | PAPER (n 25 < 150) |
+| Sweden Allsvenskan | ou25 | 31 | +24% | +10% | 0.78 | 0.69 | [-4.7, +4.4] | PAPER (n 31 < 150) |
+| Serie B | ou25 | 22 | +25% | +10% | 0.77 | 0.69 | [-1.3, +11.8] | PAPER (n 22 < 150) |
+| Brazil Serie A | btts | 19 | +19% | +8% | 0.72 | 0.75 | [-23.0, +19.4] | PAPER (n 19 < 150) |
+| Argentina Primera Division | ou25 | 33 | +15% | +7% | 0.68 | 0.75 | [-4.2, +5.4] | PAPER (n 33 < 150) |
+| Finland Veikkausliiga | ou25 | 19 | +11% | +6% | 0.66 | 0.75 | [-6.6, +7.1] | PAPER (n 19 < 150) |
+| Japan J-League | ou25 | 26 | +8% | +5% | 0.66 | 0.75 | [-4.8, +11.7] | PAPER (n 26 < 150) |
+| Mexico Liga MX | ou25 | 26 | +7% | +5% | 0.65 | 0.75 | [-0.3, +8.4] | PAPER (n 26 < 150) |
+| Argentina Primera Division | over15 | 90 | +3% | +3% | 0.64 | 0.75 | [-0.2, +2.7] | PAPER (n 90 < 150) |
+| La Liga 2 | ou25 | 36 | -4% | +2% | 0.55 | 0.95 | [-2.7, +4.2] | PAPER (n 36 < 150) |
+| Denmark Superliga | ou25 | 20 | -7% | +1% | 0.53 | 0.95 | [-5.1, +7.6] | PAPER (n 20 < 150) |
+| Ireland Premier Division | ou25 | 15 | -15% | -0% | 0.49 | 0.97 | [-13.4, +3.6] | PAPER (n 15 < 150) |
+| Austrian Bundesliga | ou25 | 19 | -15% | -1% | 0.47 | 0.97 | [-14.3, +5.0] | PAPER (n 19 < 150) |
+| Bundesliga 2 | ou25 | 15 | -35% | -5% | 0.37 | 0.98 | [-13.2, +9.9] | PAPER (n 15 < 150) |
+| Championship | ou25 | 24 | -29% | -7% | 0.30 | 0.98 | [-7.8, +5.9] | PAPER (n 24 < 150) |
+| China Super League | ou25 | 26 | -33% | -7% | 0.30 | 0.98 | [-10.6, +4.1] | PAPER (n 26 < 150) |
+| League One | ou25 | 20 | -41% | -9% | 0.26 | 0.98 | [-7.5, +4.6] | PAPER (n 20 < 150) |
+| Norway Eliteserien | ou25 | 21 | -49% | -12% | 0.20 | 0.98 | [-11.9, +6.6] | PAPER (n 21 < 150) |
 
 ## 5. Market-anchored O/U 2.5 challenger
 

@@ -1,12 +1,12 @@
-# Top picks — weekly table (2026-W43, updated 2026-10-19 07:22 UTC)
+# Top picks — weekly table (2026-W43, updated 2026-10-19 09:19 UTC)
 
 | List | How it's ranked | Live, this week | Live, to date | Backtest (all days with >= 10 tips) |
 |---|---|---|---|---|
-| Best bets | most expected profit, at least a 45% chance | — | — | 55% hit, avg odds 1.98, +9% ROI, 6% 0/5 days (36 days, 176 picks) |
-| Safest | the 5 shortest prices | — | — | 63% hit, avg odds 1.72, +9% ROI, 0% 0/5 days (36 days, 180 picks) |
-| Value | most expected profit | — | — | 55% hit, avg odds 2.03, +12% ROI, 6% 0/5 days (36 days, 180 picks) |
-| Random 5 | 5 random tips (what users did before) | — | — | 47% hit, avg odds 2.15, -2% ROI, 4% 0/5 days (36 days, 180 picks) |
-| Current order | tier, then edge (the old order) | — | — | 50% hit, avg odds 2.23, +5% ROI, 8% 0/5 days (36 days, 180 picks) |
+| Best bets | most expected profit, at least a 45% chance | — | — | 55% hit, avg odds 1.99, +10% ROI, 5% 0/5 days (37 days, 181 picks) |
+| Safest | the 5 shortest prices | — | — | 64% hit, avg odds 1.71, +10% ROI, 0% 0/5 days (37 days, 185 picks) |
+| Value | most expected profit | — | — | 55% hit, avg odds 2.03, +12% ROI, 5% 0/5 days (37 days, 185 picks) |
+| Random 5 | 5 random tips (what users did before) | — | — | 48% hit, avg odds 2.15, -1% ROI, 4% 0/5 days (37 days, 185 picks) |
+| Current order | tier, then edge (the old order) | — | — | 49% hit, avg odds 2.24, +4% ROI, 8% 0/5 days (37 days, 185 picks) |
 
 ## Week by week (live picks)
 
