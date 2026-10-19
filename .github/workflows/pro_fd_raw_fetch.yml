@@ -1,0 +1,48 @@
+name: Pro fetch football-data raw files (one-off)
+
+# One-off for the O/U information-inputs study (src/studies/ou_info_inputs.py, 2026-10-19): v9 keeps one
+# coalesced O/U price per match, but football-data's raw files carry the OPENING and CLOSING average
+# prices, which is what the price-movement test needs. The owner's laptop network blocks
+# football-data.co.uk (SSL inspection), so the files are fetched here and committed (public data, ~2 MB).
+# Runs when this file is pushed, or on demand.
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pro_fd_raw_fetch.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Download
+        run: |
+          mkdir -p experiments/ou_info_inputs_2026_10/fd_raw
+          for code in E1 E2 E3 EC D2 F2 SP2 I2 G1 P1 SC1 SC2 SC3 SC0 B1 N1 T1; do
+            for s in 2223 2324 2425 2526 2627; do
+              f="experiments/ou_info_inputs_2026_10/fd_raw/${code}_${s}.csv"
+              curl -sfL --max-time 60 "https://www.football-data.co.uk/mmz4281/${s}/${code}.csv" -o "$f" \
+                && echo "ok $code $s" || { echo "miss $code $s"; rm -f "$f"; }
+              sleep 0.3
+            done
+          done
+      - name: Commit
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -f experiments/ou_info_inputs_2026_10/fd_raw/*.csv
+          git diff --staged --quiet && exit 0
+          git commit -m "pro: football-data raw O/U files for the movement study"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash -X theirs origin main && git push && exit 0
+            sleep $((RANDOM % 5 + 3))
+          done
+          exit 1
