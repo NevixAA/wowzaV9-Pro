@@ -45,7 +45,7 @@ VARS = ["temperature_2m", "precipitation", "wind_speed_10m"]
 HOURLY = VARS + [f"{v}_previous_day1" for v in VARS]
 BUDGET = 8000                      # weighted calls per run (free tier: 10,000/day per IP)
 WALL_SECONDS = 45 * 60             # stop and commit before the 60-minute job timeout
-WORKERS = 4                        # parallel requests (free tier allows 600/min)
+WORKERS = 8                        # parallel requests; ~800 weighted calls per 45 min at 4 -> service latency, not quota, is the limit (free tier allows 600/min)
 SLEEP = 0.25
 CALC = "weather_surprise-1.0.0"
 
