@@ -10,7 +10,7 @@ def test_panel_never_allows_research_stakes():
     p = R.evidence_panel(b, pd.DataFrame())
     assert p["PRICE_TRADER_STAKES_ALLOWED"] == "NO" and p["PLAYER_V3_STAKES_ALLOWED"] == "NO"
     assert p["RATING_MAY_INCREASE_STAKE_ABOVE_BASE"].startswith("NO")
-    assert p["N"] == 3 and abs(p["realized_ROI"] - 0.3 / 3) < 1e-9
+    assert p["N"] == 3 and abs(p["realized_ROI"] - 0.3) < 1e-9   # mean of +1.0, -1.0, +0.9
 
 
 def test_panel_handles_no_bets():
