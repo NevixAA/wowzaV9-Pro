@@ -185,6 +185,21 @@ def _lineage():
             "report": "output/model_lineage/MODEL_LINEAGE_REPORT.md"}
 
 
+def _ou_info():
+    r = _j("studies/ou_info_inputs.json")
+    if not r:
+        return None
+    fc = _j("studies/ou_info_inputs_forward_check.json") or {}
+    cov = {f"{x['track']} covered": f"{x.get('verdict')} (Δ log loss {x['delta']:+.4f}, n {x['n']})"
+           for x in r.get("results", []) if x.get("scope") == "covered"}
+    return {"status": "Injuries as O/U model inputs (v9 trainer, walk-forward): " +
+                      "; ".join(f"{k}: {v.split(' (')[0]}" for k, v in cov.items()),
+            "date": r.get("generated_at"),
+            "key": {**cov, "duplicate match rows removed from v9 frame": (r.get("dedup") or {}).get("duplicates_dropped"),
+                    "prospective leak check": fc.get("verdict")},
+            "report": "output/studies/ou_info_inputs.json"}
+
+
 def _segments():
     s = _j("studies/props_segments.json")
     if not s:
@@ -258,6 +273,7 @@ STUDIES = [
     ("deep_analytics", "Deep analytics snapshot (weekly)", "tips", _deep),
     ("longshot_plan", "Longshot Profit Engine — BET_ENABLED plan", "money", _longshot),
     ("model_lineage", "Model lineage — champion high-water mark", "models", _lineage),
+    ("ou_info_inputs", "O/U inputs: injuries (lineups / news / movement next)", "models", _ou_info),
     ("calibration_form", "Calibration form: v9 vs log-odds Platt", "models", _calibration),
     ("calibration_shadow", "Calibration shadow in v9 (pre-registered)", "models", _cal_shadow),
     ("props_segments", "Props segments: attacking D / M (pre-registered)", "players", _segments),

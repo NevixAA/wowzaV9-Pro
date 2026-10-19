@@ -1,0 +1,239 @@
+{
+ "pre_registered_rule": "delta <= -0.001 and 90% CI upper < 0 on covered fixtures",
+ "tracks": {},
+ "results": [
+  {
+   "track": "new_format",
+   "scope": "covered",
+   "n": 4053,
+   "ll_base": 0.67967,
+   "ll_inj": 0.68244,
+   "delta": 0.00277,
+   "ci90": [
+    -0.0001,
+    0.0057
+   ],
+   "brier_delta": 0.00134,
+   "spread_base": 0.0771,
+   "spread_inj": 0.0811,
+   "n_priced": 1709,
+   "ll_market": 0.68938,
+   "ll_base_priced": 0.67701,
+   "ll_inj_priced": 0.68037,
+   "verdict": "NO MEASURABLE EFFECT"
+  },
+  {
+   "track": "new_format",
+   "scope": "all",
+   "n": 13584,
+   "ll_base": 0.67611,
+   "ll_inj": 0.67812,
+   "delta": 0.00201,
+   "ci90": [
+    0.0009,
+    0.0031
+   ],
+   "brier_delta": 0.00096,
+   "spread_base": 0.0838,
+   "spread_inj": 0.0799,
+   "n_priced": 4427,
+   "ll_market": 0.68662,
+   "ll_base_priced": 0.67697,
+   "ll_inj_priced": 0.67831
+  },
+  {
+   "track": "new_format",
+   "scope": "league:Brazil Serie A",
+   "n": 985,
+   "delta": 0.0021,
+   "ci90": [
+    -0.0049,
+    0.0093
+   ]
+  },
+  {
+   "track": "new_format",
+   "scope": "league:Denmark Superliga",
+   "n": 535,
+   "delta": 0.00621,
+   "ci90": [
+    -0.0011,
+    0.013
+   ]
+  },
+  {
+   "track": "new_format",
+   "scope": "league:Norway Eliteserien",
+   "n": 657,
+   "delta": 0.00017,
+   "ci90": [
+    -0.0056,
+    0.0061
+   ]
+  },
+  {
+   "track": "new_format",
+   "scope": "league:Sweden Allsvenskan",
+   "n": 665,
+   "delta": 0.00411,
+   "ci90": [
+    -0.0027,
+    0.0108
+   ]
+  },
+  {
+   "track": "new_format",
+   "scope": "league:USA MLS",
+   "n": 1211,
+   "delta": 0.00246,
+   "ci90": [
+    -0.0019,
+    0.0071
+   ]
+  },
+  {
+   "track": "standard",
+   "scope": "covered",
+   "n": 3596,
+   "ll_base": 0.69217,
+   "ll_inj": 0.69171,
+   "delta": -0.00046,
+   "ci90": [
+    -0.001,
+    0.0001
+   ],
+   "brier_delta": -0.00023,
+   "spread_base": 0.0235,
+   "spread_inj": 0.0239,
+   "n_priced": 3440,
+   "ll_market": 0.67144,
+   "ll_base_priced": 0.69194,
+   "ll_inj_priced": 0.69149,
+   "verdict": "NO MEASURABLE EFFECT"
+  },
+  {
+   "track": "standard",
+   "scope": "all",
+   "n": 15724,
+   "ll_base": 0.69275,
+   "ll_inj": 0.6927,
+   "delta": -5e-05,
+   "ci90": [
+    -0.0002,
+    0.0002
+   ],
+   "brier_delta": -2e-05,
+   "spread_base": 0.0246,
+   "spread_inj": 0.024,
+   "n_priced": 14992,
+   "ll_market": 0.67717,
+   "ll_base_priced": 0.6927,
+   "ll_inj_priced": 0.69266
+  },
+  {
+   "track": "standard",
+   "scope": "league:Championship",
+   "n": 1483,
+   "delta": 0.00042,
+   "ci90": [
+    -0.0004,
+    0.0013
+   ]
+  },
+  {
+   "track": "standard",
+   "scope": "league:Dutch Eredivisie",
+   "n": 844,
+   "delta": -0.00086,
+   "ci90": [
+    -0.0016,
+    -0.0001
+   ]
+  },
+  {
+   "track": "standard",
+   "scope": "league:League One",
+   "n": 556,
+   "delta": -0.00059,
+   "ci90": [
+    -0.0019,
+    0.0006
+   ]
+  },
+  {
+   "track": "standard",
+   "scope": "league:Turkish Super Lig",
+   "n": 713,
+   "delta": -0.0017,
+   "ci90": [
+    -0.0026,
+    -0.0008
+   ]
+  }
+ ],
+ "audit": {
+  "join_goal_agreement": 0.9999,
+  "duplicate_listings": 6207,
+  "missing_listed_but_played": 0.0121,
+  "questionable_listed_and_played": 0.0069,
+  "listings_checkable_in_player_history": 49250,
+  "live_vs_history": "unavailable: You are trying to merge on str and int64 columns for key 'fixture_id'. If you wish to proceed you should use pd.concat",
+  "feature_ranges": {
+   "away_inj_n_missing": [
+    0.0,
+    2.0,
+    14.0
+   ],
+   "home_inj_n_missing": [
+    0.0,
+    2.0,
+    14.0
+   ],
+   "away_inj_n_questionable": [
+    0.0,
+    0.0,
+    10.0
+   ],
+   "home_inj_n_questionable": [
+    0.0,
+    0.0,
+    7.0
+   ],
+   "away_inj_minutes_share": [
+    0.0,
+    0.0,
+    8.813
+   ],
+   "home_inj_minutes_share": [
+    0.0,
+    0.0,
+    5.164
+   ],
+   "away_inj_goal_share": [
+    0.0,
+    0.0,
+    1.5
+   ],
+   "home_inj_goal_share": [
+    0.0,
+    0.0,
+    1.294
+   ],
+   "total_inj_minutes_share": [
+    0.0,
+    0.0,
+    10.31
+   ],
+   "total_inj_goal_share": [
+    0.0,
+    0.0,
+    1.767
+   ]
+  }
+ },
+ "dedup": {
+  "rows_before": 60237,
+  "duplicates_dropped": 7134
+ },
+ "generated_at": "2026-10-19 07:19 UTC"
+}

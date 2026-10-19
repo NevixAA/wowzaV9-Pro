@@ -1,0 +1,62 @@
+name: Pro injury list capture (leak check)
+
+# Prospective check for the O/U information-inputs study (src/studies/ou_info_inputs.py, 2026-10-19).
+# API-Football keeps an injury list per fixture. Whether those lists are revised AFTER the match
+# cannot be told from history, so this captures the live list for every not-yet-played fixture in the
+# covered bet leagues, stamped with capture time; forward_check compares it with the final list.
+# ~6 calls per run. Read-only against v9 (only v9's config.py is read, for league ids).
+# Timing does not need to be punctual: lists appear a day or more ahead, and any pre-kickoff capture
+# is a valid "before" observation.
+
+on:
+  schedule:
+    - cron: '23 */6 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: pro-injury-capture
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Check out v9 (read-only, for league ids)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9
+          fetch-depth: 1
+          sparse-checkout: config.py
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy pyarrow requests
+      - name: Capture and check
+        env:
+          APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: |
+          python -m src.studies.ou_info_inputs forward
+          python -m src.studies.ou_info_inputs forward_check
+      - name: Commit
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for f in output/studies/injury_snapshots.parquet output/studies/ou_info_inputs_forward_check.json; do
+            [ -e "$f" ] && git add -f "$f"
+          done
+          git diff --staged --quiet && exit 0
+          git commit -m "pro: injury list capture $(date -u '+%F %H:%M')"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash -X theirs origin main && git push && exit 0
+            sleep $((RANDOM % 5 + 3))
+          done
+          exit 1
