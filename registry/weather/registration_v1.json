@@ -1,0 +1,30 @@
+{
+ "version": "weather_surprise_registration_v1",
+ "registered_at": "2026-10-19",
+ "registered_before_any_forecast_data_was_seen": true,
+ "owner_hypothesis": "Teams and the price prepare for the FORECAST weather. When the day differs from the forecast (e.g. heavy rain expected, dry day), tactics are set for the wrong match and scoring may differ from what the closing price expected.",
+ "data": {
+  "matches": "output/studies/weather/match_venues.csv (v9 O/U frame matches since 2023-07-01 with a geocoded home venue and kickoff time)",
+  "weather": "Open-Meteo Previous Runs API at the stadium: expected = forecast as of 1 day before (*_previous_day1); actual = same service day-of value; window kickoff hour..+2h",
+  "variables": ["precipitation (sum)", "wind_speed_10m (mean)", "temperature_2m (mean)"],
+  "outcome": "over25 from v9's frame; closing price = v9 frame odds_over25/odds_under25, de-vigged proportionally",
+  "exclusions_fixed_now": ["matches not played at the home venue (at_home_venue == 0)", "v9 near-duplicate rows (v9_dup_same_fixture) keep the first", "rows with no forecast (before the API archive) are excluded, never filled"]
+ },
+ "derived_inputs": {
+  "surprise_precip_mm": "actual - expected precipitation",
+  "surprise_wind_kmh": "actual - expected wind",
+  "rain_expected_but_dry": "expected precipitation >= 1.0 mm and actual < 0.2 mm",
+  "dry_expected_but_rain": "expected precipitation < 0.2 mm and actual >= 1.0 mm"
+ },
+ "questions": {
+  "Q1_forecast_as_pre_match_input": "v9 trainer with vs without expected weather inputs, quarterly walk-forward, same rows",
+  "Q2_actual_weather_upper_bound": "same as Q1 with actual weather (known only at kickoff; an upper bound, not usable pre-match)",
+  "Q3_surprise_beyond_the_price": "on matches with a closing price: logistic over25 ~ logit(p_close) vs logit(p_close) + surprise inputs, walk-forward by quarter, out-of-sample log loss"
+ },
+ "success_rule_each_question": "out-of-sample log-loss improvement of at least 0.001 with a 90% match-day block-bootstrap interval entirely below zero",
+ "multiplicity": "three questions are reported together; none is promoted on its own if only one of several variants passes",
+ "descriptive_only": "goals and over-2.5 rate by surprise bucket vs the closing price's expectation (never a verdict)",
+ "use_if_positive": "Q1 -> Pro challenger for the pre-match model; Q3 -> live-scanner research (the surprise is only visible at kickoff). No production change without owner approval and the v9 champion gate.",
+ "PRODUCTION_SELECTION_CHANGED": "NO",
+ "REAL_BETTING_ENABLED": "NO"
+}
