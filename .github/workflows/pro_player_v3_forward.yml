@@ -44,7 +44,7 @@ jobs:
           python-version: '3.11'
       - run: pip install pandas numpy pyarrow scipy pytest "scikit-learn==1.9.1"
       - name: Tests
-        run: python -m pytest tests/test_player_v3_forward.py -q
+        run: python -m pytest tests/test_player_v3_forward.py tests/test_prop_consensus.py tests/test_registrations_frozen.py -q
       - name: Forward test
         env:
           V9_LOCAL: ${{ github.workspace }}/_v9
@@ -52,11 +52,15 @@ jobs:
           set -o pipefail
           python -m src.player_v3.forward | tee fwd.txt
           cat fwd.txt >> "$GITHUB_STEP_SUMMARY"
+          # two-sided prop market consensus (forward-only research dataset, 2026-10-19)
+          python -m src.player_v3.consensus | tee cons.txt
       - name: Commit
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          for p in output/player_v3/forward_test.json output/player_v3/FORWARD_TEST.md; do
+          for p in output/player_v3/forward_test.json output/player_v3/FORWARD_TEST.md \
+                   output/player_v3/consensus/coverage.json output/player_v3/consensus/two_sided_pairs.csv \
+                   output/player_v3/consensus/consensus.csv registry/player_v3_forward/registration_v2.json; do
             [ -e "$p" ] && git add "$p"
           done
           git diff --staged --quiet && exit 0

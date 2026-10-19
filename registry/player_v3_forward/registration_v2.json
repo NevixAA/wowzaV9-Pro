@@ -1,0 +1,30 @@
+{
+ "PLAYER_PROP_REAL_STAKING": "NO (paper-only, permanently, per CLAUDE.md invariant 2)",
+ "SAFE_TO_PROMOTE_V3": "NO",
+ "arms": [
+  "MARKET_CONSENSUS_ONLY",
+  "MARKET_CONSENSUS + WOWZA_V3",
+  "MARKET_CONSENSUS + EXPECTED_MINUTES_ONLY",
+  "MARKET_CONSENSUS + FULL_V3"
+ ],
+ "ev_rule": "bet the side whose arm probability x best price >= 1.05; flat 1u; paper only",
+ "forward_window_start": "2026-10-20",
+ "gates": {
+  "min_bets_for_roi": 150,
+  "min_match_days": 30,
+  "min_two_sided_props": 500,
+  "promotion": "an arm beats MARKET_CONSENSUS_ONLY on log loss with a 90% CI excluding zero AND positive CLV; ROI only as confirmation"
+ },
+ "market_reference": "two-sided de-vigged fair probability from consensus.py (same book, line, player, fixture, <=10 min apart); median across books",
+ "primary_metrics": [
+  "log_loss",
+  "brier",
+  "calibration_ece",
+  "clv_vs_last_pre_kickoff_consensus",
+  "roi_of_preregistered_ev_rule"
+ ],
+ "registered_at": "2026-10-19",
+ "relationship_to_v1": "ADDITIONAL experiment; registration.json (V1) is unchanged and keeps running",
+ "same_fixtures_rule": "every arm is scored only on props where ALL arms have a prediction and a consensus",
+ "version": "player_v3_forward_v2"
+}
