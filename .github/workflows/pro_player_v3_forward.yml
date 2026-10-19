@@ -13,7 +13,9 @@ on:
     - cron: '40 7 * * *'
   push:
     branches: [main]
-    paths: ['.github/workflows/pro_player_v3_forward.yml', 'src/player_v3/forward.py']
+    paths: ['.github/workflows/pro_player_v3_forward.yml', 'src/player_v3/forward.py',
+            'src/player_v3/consensus.py', 'registry/player_v3_forward/**', 'tests/test_prop_consensus.py',
+            'tests/test_registrations_frozen.py']
   workflow_dispatch:
 
 concurrency:
