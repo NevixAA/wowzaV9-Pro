@@ -1,6 +1,26 @@
 {
- "generated_at": "2026-10-19 09:22 UTC",
+ "generated_at": "2026-10-19 09:29 UTC",
  "items": [
+  {
+   "id": "bankroll",
+   "title": "Monthly bankroll review",
+   "area": "money",
+   "status": "Recommended: CURRENT_WITH_RISK_REDUCTIONS_ONLY \u00b7 change NO \u00b7 allocator NOT_VALIDATED_INSUFFICIENT_MONTHS",
+   "date": "2026-10-19 09:28 UTC",
+   "key": {
+    "new_format|BTTS": "ACTIVE 1.25%",
+    "new_format|OU25": "ACTIVE_LOW 0.50%",
+    "new_format|OVER15": "ACTIVE_LOW 0.50%",
+    "standard|OU25": "PAPER 0.00%",
+    "standard|BTTS": "PAPER 0.00%",
+    "standard|OVER15": "PAPER 0.00%",
+    "new_format|OVER35": "BLOCKED 0.00%",
+    "standard|OVER35": "BLOCKED 0.00%",
+    "player_props": "BLOCKED_FROM_REAL 0.00%"
+   },
+   "report": "output/bankroll/MONTHLY_REVIEW.md",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/bankroll/MONTHLY_REVIEW.md"
+  },
   {
    "id": "props_calibration",
    "title": "Props calibration monitor (daily)",
@@ -178,27 +198,27 @@
    "id": "deep_analytics",
    "title": "Deep analytics snapshot (weekly)",
    "area": "tips",
-   "status": "Deep analytics 2026-10-17: core 492 bets, 17.7u, ROI +3.6% (recent +7.6%); strong convergence: Brazil Serie A, Japan J-League, Mexico Liga MX, Serie B",
-   "date": "2026-10-17",
+   "status": "Deep analytics 2026-10-18: core 520 bets, 15.95u, ROI +3.1% (recent +5.8%); strong convergence: Brazil Serie A, Japan J-League, Mexico Liga MX, Serie B, Sweden Allsvenskan",
+   "date": "2026-10-18",
    "key": {
-    "CORE_N": 492,
-    "CORE_PNL": 17.7,
-    "CORE_ROI": 0.036,
-    "RECENT_CORE_ROI": 0.0762,
-    "NEW_FORMAT_ROI": 0.0963,
-    "STANDARD_ROI": -0.122,
-    "BEST_LARGE_TRACK": "new_format|BTTS (+26.4%)",
-    "WORST_LARGE_TRACK": "standard|OU25 (-13.8%)",
-    "BEST_ODDS_BAND": "2.25-2.49 (+19.7%)",
-    "WORST_ODDS_BAND": "2.75-2.99 (-14.4%)",
-    "BEST_TIER": "SNIPER (+10.3%)",
+    "CORE_N": 520,
+    "CORE_PNL": 15.95,
+    "CORE_ROI": 0.0307,
+    "RECENT_CORE_ROI": 0.0581,
+    "NEW_FORMAT_ROI": 0.0907,
+    "STANDARD_ROI": -0.1323,
+    "BEST_LARGE_TRACK": "new_format|BTTS (+25.7%)",
+    "WORST_LARGE_TRACK": "standard|OU25 (-14.9%)",
+    "BEST_ODDS_BAND": "2.25-2.49 (+19.0%)",
+    "WORST_ODDS_BAND": "1.60-1.79 (-3.0%)",
+    "BEST_TIER": "SNIPER (+9.2%)",
     "EDGE_IS_MONOTONIC_WITH_ROI": "NO",
     "WOWZA_ADDS_TO_MARKET_V11": "YES",
     "GLOBAL_MOVEMENT_BEATS_PLACEBO": "NO",
     "RECONCILIATION_STATUS": "PASS"
    },
-   "report": "output/deep_analytics/2026-10-17/WOWZA_Deep_Analytics_2026-10-17.md",
-   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/deep_analytics/2026-10-17/WOWZA_Deep_Analytics_2026-10-17.md"
+   "report": "output/deep_analytics/2026-10-18/WOWZA_Deep_Analytics_2026-10-18.md",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/deep_analytics/2026-10-18/WOWZA_Deep_Analytics_2026-10-18.md"
   },
   {
    "id": "longshot_plan",
@@ -275,26 +295,6 @@
    },
    "report": "output/player_v3/PLAYER_V3_REPORT.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/player_v3/PLAYER_V3_REPORT.md"
-  },
-  {
-   "id": "bankroll",
-   "title": "Monthly bankroll review",
-   "area": "money",
-   "status": "Recommended: CURRENT_WITH_RISK_REDUCTIONS_ONLY \u00b7 change NO \u00b7 allocator NOT_VALIDATED_INSUFFICIENT_MONTHS",
-   "date": "2026-10-13 13:07 UTC",
-   "key": {
-    "new_format|BTTS": "ACTIVE 1.25%",
-    "new_format|OU25": "ACTIVE_LOW 0.50%",
-    "new_format|OVER15": "ACTIVE_LOW 0.50%",
-    "standard|OU25": "PAPER 0.00%",
-    "standard|BTTS": "PAPER 0.00%",
-    "standard|OVER15": "PAPER 0.00%",
-    "new_format|OVER35": "BLOCKED 0.00%",
-    "standard|OVER35": "BLOCKED 0.00%",
-    "player_props": "BLOCKED_FROM_REAL 0.00%"
-   },
-   "report": "output/bankroll/MONTHLY_REVIEW.md",
-   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/bankroll/MONTHLY_REVIEW.md"
   },
   {
    "id": "props_learner",
