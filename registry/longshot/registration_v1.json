@@ -1,0 +1,47 @@
+{
+ "baselines": [
+  "ALL_NEW_FORMAT",
+  "NEW_FORMAT_BTTS",
+  "CURRENT_BALANCED_POLICY",
+  "SNIPER_ONLY",
+  "SHORTEST_ODDS",
+  "RANDOM_MATCHED"
+ ],
+ "eligibility": "a bet is kept unless any gate it belongs to is FALSE, flags computed on data before the month (walk_forward)",
+ "forward_from_month": "2026-11",
+ "frozen_at": "2026-10-19",
+ "gate_logic_file": "src/analytics/longshot_plan.py",
+ "gate_logic_sha256": "b4fda311e3b4019893fb2b36f113f5a4f707a5261201f711bee5ae1549052722",
+ "gates": {
+  "cell": [
+   "league",
+   "model",
+   "market",
+   "side"
+  ],
+  "league": [
+   "league"
+  ],
+  "market": [
+   "model",
+   "market"
+  ],
+  "model": [
+   "model"
+  ],
+  "odds": [
+   "model",
+   "market",
+   "odds_band"
+  ],
+  "side": [
+   "model",
+   "market",
+   "side"
+  ]
+ },
+ "historical_result_at_freeze": "FILTER_BEATS_SIMPLE_BASELINES = NO (2026-10-17 plan)",
+ "min_forward_months_before_production_use": 6,
+ "shrink_K": 100,
+ "version": "longshot-1.0.0"
+}
