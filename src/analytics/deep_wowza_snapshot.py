@@ -324,8 +324,87 @@ def build_tables(I: dict) -> dict[str, pd.DataFrame]:
                                    for k, v in (I["player_v3"] or {}).items()]) if I["player_v3"] else _insufficient()
     T["League_Scout"] = scout_table(I)
     T.update(lineage_tables())
+    try:
+        T["Evidence_Matrix"] = evidence_matrix({**I, "v11_placebo": I.get("v11_placebo")})
+    except Exception as e:                                             # noqa: BLE001
+        T["Evidence_Matrix"] = _insufficient(f"evidence matrix failed: {type(e).__name__}: {e}")
     T["_meta"] = pd.DataFrame([{"window": win_txt}])
     return T
+
+
+def evidence_matrix(I: dict) -> pd.DataFrame:
+    """TOP-LEVEL EVIDENCE MATRIX (owner brief 2026-10-19 §19). Keeps six different things apart:
+    live betting results, predictive skill, market-relative skill, price movement, CLV and executable
+    economic edge. A cell can only become EXECUTABLE_EDGE with real economic validation — no row can
+    reach it today, and the rules below make that structural rather than a matter of judgement."""
+    s = I["s"]
+    pool = s[~s["league"].isin(cfg.PAPER_LEAGUES) & s["tier"].isin(C.TIERS)]
+    end = I["end"]
+    resid = (_json(cfg.OUTPUT_DIR / "studies" / "ou_studies.json") or {}).get("residual", {})
+    mk = {"OU25": "OU25", "OVER15": "OU15", "OVER35": "OU35", "BTTS": "BTTS"}
+    plc = I.get("v11_placebo")
+    move_txt = "n/a"
+    if plc is not None and len(plc) and "variant" in plc.columns:
+        try:
+            v9r = float(plc.loc[plc["variant"] == "v9_residual", "toward_rate"].iloc[0])
+            fx = float(plc.loc[plc["variant"] == "PLACEBO_fixed_anchor", "toward_rate"].iloc[0])
+            move_txt = f"toward {v9r:.3f} vs fixed-anchor {fx:.3f} ({(v9r - fx) * 100:+.1f}pp)"
+        except Exception:                                              # noqa: BLE001
+            pass
+    rows = []
+    for (model, market), g in pool.groupby(["model", "market"]):
+        if len(g) < 30:
+            continue
+        sm = C.summarize(g)
+        lo, hi = sm.get("roi_ci_lo_90"), sm.get("roi_ci_hi_90")
+        r = (resid.get(mk.get(market, market)) or {}).get(model, {})
+        verdict = r.get("verdict") or r.get("status") or "NOT_TESTED"
+        econ = ("INSUFFICIENT" if len(g) < 100 else "NEGATIVE" if (hi is not None and hi < 0) else
+                "INTERESTING" if sm["roi"] > 0 else "NEGATIVE")
+        mrel = {"MODEL_HURTS": "NEGATIVE", "NO_DETECTABLE_GAIN": "NONE_DETECTED",
+                "TOO_FEW": "INSUFFICIENT"}.get(verdict, "MARKET_RELATIVE_SIGNAL" if "GAIN" in verdict else verdict)
+        rows.append({"track": f"{model} | {market}", "N": len(g), "ROI": sm["roi"],
+                     "ROI_CI90": f"[{lo:+.3f}, {hi:+.3f}]" if lo is not None else "n/a",
+                     "CLV": sm.get("avg_clv"), "predictive_gain_vs_baseline":
+                     "PREDICTIVE_SIGNAL (models beat base rate, AUC .57-.64 - Prediction Lab)",
+                     "gain_vs_market": f"{mrel} ({verdict}, OOS dLL {r.get('oos_delta_logloss', 'n/a')})",
+                     "movement_vs_placebo": move_txt if market == "OU25" else "not measured for this market",
+                     "forward_test_status": "no registered forward test for this track",
+                     "economic_status": econ,
+                     "confidence": C.confidence_label(len(g))})
+    pt = _json(cfg.OUTPUT_DIR / "price_trader" / "v2" / "verdict_v2.json") or {}
+    hp = pt.get("historical_primary", {})
+    rows.append({"track": "Price Trader (back-to-lay, paper)", "N": hp.get("n"), "ROI": hp.get("mean_pnl_per_unit"),
+                 "ROI_CI90": "see output/price_trader/v2", "CLV": None, "predictive_gain_vs_baseline": "n/a",
+                 "gain_vs_market": "n/a", "movement_vs_placebo": "Wowza side moves LESS often than every control",
+                 "forward_test_status": pt.get("EVIDENCE_STATE", "n/a"),
+                 "economic_status": "NEGATIVE" if (hp.get("mean_pnl_per_unit") or 0) < 0 else "INSUFFICIENT",
+                 "confidence": "historical exploratory; forward from 2026-10-20"})
+    v3 = _json(cfg.OUTPUT_DIR / "player_v3" / "forward_test.json") or {}
+    rows.append({"track": "Player props V3 (paper only, permanently)", "N": v3.get("settled_props"),
+                 "ROI": None, "ROI_CI90": "per market in FORWARD_TEST.md", "CLV": None,
+                 "predictive_gain_vs_baseline": "PREDICTIVE_SIGNAL (AUC 0.62-0.85)",
+                 "gain_vs_market": "MARKET_RELATIVE_SIGNAL in probability (Player V3 lab); not in money",
+                 "movement_vs_placebo": "n/a", "forward_test_status": "COLLECTING (V1); V2 two-sided registered",
+                 "economic_status": "INSUFFICIENT", "confidence": "forward bets < 150 in every market"})
+    fb = _json(cfg.OUTPUT_DIR / "studies" / "fantasy_benchmark.json") or {}
+    fpl = (fb.get("pooled_all_gws") or {})
+    rows.append({"track": "Fantasy (vs FPL ep_next)", "N": fb.get("player_gameweeks"), "ROI": None,
+                 "ROI_CI90": "n/a (points, not money)", "CLV": None,
+                 "predictive_gain_vs_baseline": (f"MAE Wowza {fpl.get('WOWZA', {}).get('mae')} vs FPL "
+                                                 f"{fpl.get('FPL_EP_NEXT', {}).get('mae')}"),
+                 "gain_vs_market": f"adds beyond FPL: {fb.get('WOWZA_ADDS_INFORMATION_BEYOND_FPL', 'n/a')}",
+                 "movement_vs_placebo": "n/a", "forward_test_status": "prospective challenger log running",
+                 "economic_status": "NEGATIVE (FPL is the champion)", "confidence": "3 gameweeks"})
+    ls = _json(cfg.OUTPUT_DIR / "longshot_plan" / "forward_status.json") or {}
+    rows.append({"track": "Longshot BET_ENABLED filter v1", "N": None, "ROI": None,
+                 "ROI_CI90": "see pre_freeze_months_EXPLORATORY.csv", "CLV": None,
+                 "predictive_gain_vs_baseline": "n/a", "gain_vs_market": "n/a", "movement_vs_placebo": "n/a",
+                 "forward_test_status": ls.get("STATUS", "n/a"),
+                 "economic_status": "NEGATIVE (does not beat simple baselines)", "confidence": "frozen 2026-10-19"})
+    out = pd.DataFrame(rows)
+    out["EXECUTABLE_EDGE"] = "NO"          # no row has real executable economic validation
+    return out
 
 
 #: Champion high-water mark (owner 2026-10-18): sheet -> model_lineage output.
@@ -517,7 +596,7 @@ def data_quality(I: dict) -> pd.DataFrame:
 
 
 # ── workbook ─────────────────────────────────────────────────────────────────────────────────
-SHEETS = ["Dashboard", "Methodology", "Overall", "Market_Model", "Tier", "Model_Market_Tier", "League", "League_Market",
+SHEETS = ["Dashboard", "Evidence_Matrix", "Methodology", "Overall", "Market_Model", "Tier", "Model_Market_Tier", "League", "League_Market",
           "Detailed_Cells", "Odds_Bands", "Edge_Bands", "OU25_Side", "Monthly", "Weekly", "Daily", "Rolling",
           "Profit_Curves", "Drawdown", "V11_League", "V11_Global", "CLV", "Calibration", "Season_Projection",
           "Current_Policy", "Top_Picks", "Pure_Prediction", "Retrain_Health", "Player_V3", "League_Scout",
@@ -612,6 +691,10 @@ def write_workbook(path: Path, T: dict, I: dict, A: dict, recon: pd.DataFrame, d
                 ws.cell(row=r, column=j, value=None if isinstance(v, float) and np.isnan(v) else v)
         r += 2
 
+    put("Evidence_Matrix", T.get("Evidence_Matrix"),
+        note=("Six different things, kept apart: live betting ROI / predictive skill / market-relative skill / "
+              "price movement vs placebo / forward-test status / economic status. EXECUTABLE_EDGE requires real "
+              "economic validation - no row has it."))
     put("Methodology", A["methodology"], note="How every number in this workbook is produced")
     for name in SHEETS[2:]:
         if name in ("System_Health", "Data_Quality", "Definitions", "Methodology"):
