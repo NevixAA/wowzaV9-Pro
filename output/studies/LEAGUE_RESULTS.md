@@ -1,4 +1,4 @@
-# Best leagues — results by league (2026-W42, updated 2026-10-18 11:19 UTC)
+# Best leagues — results by league (2026-W43, updated 2026-10-19 07:23 UTC)
 
 All settled live tips, paper leagues out. Ranked by shrunk ROI (pulled toward the all-league average by 50 pseudo-tips). The 90% CI is shown for reading; PROVEN / LOSING need the interval clear of zero at a Bonferroni-corrected level (one-sided 5% / number of leagues), and PROVEN >= 100 tips.
 
@@ -29,22 +29,22 @@ All settled live tips, paper leagues out. Ranked by shrunk ROI (pulled toward th
 
 | # | League | Rating | Tips | Hit | Avg odds | ROI | 90% CI | Shrunk ROI | Best market | Label |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 1 | Japan J-League | 5/10 | 21 | 71% | 2.13 | +51% | [0.191, 0.799] | +20% | — | NOT_ENOUGH |
-| 2 | Bundesliga 2 | 5/10 | 15 | 60% | 2.61 | +51% | [-0.022, 1.106] | +17% | Under 2.5 (+51%) | NOT_ENOUGH |
-| 3 | Serie B | 5/10 | 31 | 68% | 1.93 | +31% | [-0.026, 0.588] | +16% | Over 2.5 (+26%) | NOT_ENOUGH |
-| 4 | Mexico Liga MX | 5/10 | 28 | 64% | 2.03 | +24% | [-0.001, 0.479] | +13% | Under 2.5 (+20%) | NOT_ENOUGH |
-| 5 | Brazil Serie A | 8/10 | 40 | 57% | 1.99 | +15% | [-0.033, 0.299] | +10% | Under 2.5 (+22%) | PROMISING |
-| 6 | La Liga 2 | 5/10 | 35 | 54% | 2.06 | +13% | [-0.106, 0.388] | +10% | Over 2.5 (+13%) | NOT_ENOUGH |
-| 7 | Finland Veikkausliiga | 5/10 | 20 | 55% | 2.08 | +16% | [-0.114, 0.572] | +10% | Under 2.5 (+40%) | NOT_ENOUGH |
-| 8 | Argentina Primera Division | 8/10 | 102 | 55% | 2.07 | +9% | [-0.106, 0.337] | +8% | BTTS (+18%) | PROMISING |
-| 9 | Sweden Allsvenskan | 5/10 | 17 | 47% | 2.26 | +7% | [-0.212, 0.449] | +7% | — | NOT_ENOUGH |
-| 10 | Ligue 2 | 5/10 | 12 | 50% | 2.05 | -0% | [-0.6, 0.395] | +6% | — | NOT_ENOUGH |
-| 11 | China Super League | 5/10 | 8 | 38% | 2.62 | -12% | [-0.597, 0.166] | +4% | — | NOT_ENOUGH |
-| 12 | Denmark Superliga | 5/10 | 8 | 38% | 2.37 | -15% | [-1.0, 0.536] | +4% | — | NOT_ENOUGH |
-| 13 | Ireland Premier Division | 5/10 | 16 | 50% | 2.02 | -6% | [-0.418, 0.33] | +4% | — | NOT_ENOUGH |
-| 14 | Championship | 5/10 | 38 | 50% | 1.99 | -3% | [-0.315, 0.257] | +3% | Over 2.5 (-26%) | NOT_ENOUGH |
-| 15 | Norway Eliteserien | 5/10 | 18 | 39% | 2.58 | -11% | [-0.56, 0.386] | +2% | — | NOT_ENOUGH |
-| 16 | Austrian Bundesliga | 5/10 | 11 | 36% | 2.41 | -20% | [-0.595, 0.359] | +2% | — | NOT_ENOUGH |
-| 17 | League Two | 5/10 | 32 | 41% | 2.01 | -19% | [-0.352, -0.047] | -3% | Under 2.5 (-3%) | NOT_ENOUGH |
-| 18 | League One | 3/10 | 22 | 23% | 2.15 | -48% | [-0.807, -0.156] | -10% | — | NOT_ENOUGH |
+| 1 | Japan J-League | 5/10 | 21 | 71% | 2.13 | +51% | [0.191, 0.783] | +21% | — | NOT_ENOUGH |
+| 2 | Bundesliga 2 | 5/10 | 14 | 64% | 2.60 | +62% | [0.103, 1.309] | +20% | — | NOT_ENOUGH |
+| 3 | Serie B | 5/10 | 29 | 69% | 1.93 | +34% | [-0.008, 0.643] | +18% | Over 2.5 (+33%) | NOT_ENOUGH |
+| 4 | Mexico Liga MX | 5/10 | 28 | 64% | 2.03 | +24% | [-0.005, 0.483] | +14% | Under 2.5 (+20%) | NOT_ENOUGH |
+| 5 | Finland Veikkausliiga | 5/10 | 17 | 59% | 2.08 | +22% | [-0.092, 0.772] | +12% | — | NOT_ENOUGH |
+| 6 | Brazil Serie A | 8/10 | 40 | 57% | 1.99 | +15% | [-0.037, 0.3] | +11% | Under 2.5 (+22%) | PROMISING |
+| 7 | La Liga 2 | 5/10 | 34 | 53% | 2.06 | +11% | [-0.13, 0.36] | +10% | Over 2.5 (+10%) | NOT_ENOUGH |
+| 8 | Ireland Premier Division | 5/10 | 12 | 58% | 2.00 | +10% | [-0.312, 0.468] | +9% | — | NOT_ENOUGH |
+| 9 | Sweden Allsvenskan | 5/10 | 17 | 47% | 2.26 | +7% | [-0.208, 0.443] | +8% | — | NOT_ENOUGH |
+| 10 | China Super League | 5/10 | 7 | 43% | 2.59 | +1% | [None, None] | +8% | — | NOT_ENOUGH |
+| 11 | Argentina Primera Division | 7/10 | 100 | 54% | 2.07 | +7% | [-0.13, 0.3] | +7% | BTTS (+16%) | PROMISING |
+| 12 | Ligue 2 | 5/10 | 8 | 50% | 2.06 | -1% | [None, None] | +7% | — | NOT_ENOUGH |
+| 13 | Denmark Superliga | 5/10 | 7 | 43% | 2.33 | -3% | [None, None] | +7% | — | NOT_ENOUGH |
+| 14 | Austrian Bundesliga | 5/10 | 10 | 40% | 2.38 | -12% | [-0.554, 0.529] | +5% | — | NOT_ENOUGH |
+| 15 | Championship | 5/10 | 37 | 51% | 2.00 | -0% | [-0.288, 0.3] | +5% | — | NOT_ENOUGH |
+| 16 | Norway Eliteserien | 5/10 | 18 | 39% | 2.58 | -11% | [-0.556, 0.386] | +3% | — | NOT_ENOUGH |
+| 17 | League Two | 5/10 | 32 | 41% | 2.01 | -19% | [-0.352, -0.054] | -2% | Under 2.5 (-3%) | NOT_ENOUGH |
+| 18 | League One | 3/10 | 22 | 23% | 2.15 | -48% | [-0.775, -0.145] | -9% | — | NOT_ENOUGH |
 
