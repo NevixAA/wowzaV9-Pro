@@ -44,6 +44,8 @@ API = "https://previous-runs-api.open-meteo.com/v1/forecast"
 VARS = ["temperature_2m", "precipitation", "wind_speed_10m"]
 HOURLY = VARS + [f"{v}_previous_day1" for v in VARS]
 BUDGET = 8000                      # weighted calls per run (free tier: 10,000/day per IP)
+WALL_SECONDS = 45 * 60             # stop and commit before the 60-minute job timeout
+WORKERS = 4                        # parallel requests (free tier allows 600/min)
 SLEEP = 0.25
 CALC = "weather_surprise-1.0.0"
 
@@ -74,8 +76,24 @@ def _window(hourly: dict, kickoff: pd.Timestamp) -> dict:
     return out
 
 
+def _get(requests, lat, lon, start, end):
+    """One stadium-month. Retries a slow service; returns (response or None, body)."""
+    for attempt in range(3):
+        try:
+            r = requests.get(API, params={"latitude": lat, "longitude": lon, "start_date": start, "end_date": end,
+                                          "hourly": ",".join(HOURLY), "timezone": "UTC"}, timeout=120)
+            return r, r.json()
+        except Exception as e:                                         # noqa: BLE001
+            body = {"reason": f"network error: {type(e).__name__}"}
+            time.sleep(5 * (attempt + 1))
+    return None, body
+
+
 def fetch(budget: float = BUDGET) -> dict:
+    """Parallel batches of WORKERS stadium-months; never stops on a single slow or failed request
+    (it is retried by a later run). Stops cleanly on the daily limit, the budget or the time limit."""
     import requests
+    from concurrent.futures import ThreadPoolExecutor
     mv = pd.read_csv(VENUES)
     mv["kickoff_utc"] = pd.to_datetime(mv["kickoff_utc"], utc=True, errors="coerce")
     mv = mv.dropna(subset=["kickoff_utc", "lat", "lon"])
@@ -86,42 +104,52 @@ def fetch(budget: float = BUDGET) -> dict:
         prev = pd.read_csv(OUT, usecols=["venue", "month"])
         done = set(zip(prev["venue"], prev["month"]))
     state = json.loads(STATE.read_text(encoding="utf-8")) if STATE.exists() else {"weighted_calls": 0, "runs": 0}
-    spent, rows, stop_reason = 0.0, [], "budget"
-    todo = mv.groupby(["venue", "month"])
-    for (venue, month), g in todo:
+    todo = []
+    for (venue, month), g in mv.groupby(["venue", "month"]):
         if (venue, month) in done:
             continue
         start = g["kickoff_utc"].min().strftime("%Y-%m-%d")
         end = (g["kickoff_utc"].max() + pd.Timedelta(days=1)).strftime("%Y-%m-%d")
         days = (pd.Timestamp(end) - pd.Timestamp(start)).days + 1
-        w = _weight(days, len(HOURLY))
-        if spent + w > budget:
-            break
-        lat, lon = g["lat"].iloc[0], g["lon"].iloc[0]
-        try:
-            r = requests.get(API, params={"latitude": lat, "longitude": lon, "start_date": start, "end_date": end,
-                                          "hourly": ",".join(HOURLY), "timezone": "UTC"}, timeout=60)
-            body = r.json()
-        except Exception as e:                                         # noqa: BLE001
-            stop_reason = f"network error: {e}"
-            break
-        if r.status_code == 429:
-            reason = str(body.get("reason", ""))
-            stop_reason = f"429: {reason}"
-            if "minutely" in reason.lower():
-                time.sleep(65)
-                continue
-            break
-        spent += w
-        hourly = body.get("hourly") or {}
-        for rr in g.itertuples(index=False):
-            vals = _window(hourly, rr.kickoff_utc) if hourly else {}
-            rows.append({"league": rr.league, "date": rr.date, "home_team": rr.home_team, "away_team": rr.away_team,
-                         "kickoff_utc": rr.kickoff_utc.isoformat(), "venue": venue, "month": month,
-                         "api_error": "" if hourly else str(body.get("reason", "no hourly data"))[:120], **vals})
-        time.sleep(SLEEP)
-    else:
-        stop_reason = "complete"
+        todo.append((venue, month, g, start, end, _weight(days, len(HOURLY))))
+    spent, rows, stop_reason, errors = 0.0, [], "complete", 0
+    t_start = time.monotonic()
+    with ThreadPoolExecutor(WORKERS) as ex:
+        for i in range(0, len(todo), WORKERS):
+            batch = todo[i:i + WORKERS]
+            if spent + sum(b[5] for b in batch) > budget:
+                stop_reason = "budget"
+                break
+            if time.monotonic() - t_start > WALL_SECONDS:
+                stop_reason = "time budget"
+                break
+            results = list(ex.map(lambda b: _get(requests, b[2]["lat"].iloc[0], b[2]["lon"].iloc[0], b[3], b[4]), batch))
+            daily = False
+            for (venue, month, g, _s, _e, w), (r, body) in zip(batch, results):
+                if r is None:
+                    errors += 1
+                    continue                    # not recorded -> retried by a later run
+                if r.status_code == 429:
+                    reason = str(body.get("reason", ""))
+                    if "minutely" in reason.lower():
+                        time.sleep(65)
+                    else:
+                        daily, stop_reason = True, f"429: {reason}"
+                    continue
+                spent += w
+                hourly = body.get("hourly") or {}
+                for rr in g.itertuples(index=False):
+                    vals = _window(hourly, rr.kickoff_utc) if hourly else {}
+                    rows.append({"league": rr.league, "date": rr.date, "home_team": rr.home_team,
+                                 "away_team": rr.away_team, "kickoff_utc": rr.kickoff_utc.isoformat(),
+                                 "venue": venue, "month": month,
+                                 "api_error": "" if hourly else str(body.get("reason", "no hourly data"))[:120], **vals})
+            if daily:
+                break
+            if errors >= 40:
+                stop_reason = "too many network errors"
+                break
+            time.sleep(SLEEP)
     if rows:
         DIR.mkdir(parents=True, exist_ok=True)
         new = pd.DataFrame(rows)

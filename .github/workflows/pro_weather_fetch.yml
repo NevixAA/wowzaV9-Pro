@@ -7,7 +7,7 @@ name: Pro weather forecast-vs-actual fetch (resumable)
 
 on:
   schedule:
-    - cron: '17 2 * * *'
+    - cron: '17 */3 * * *'
   push:
     branches: [main]
     paths: ['.github/workflows/pro_weather_fetch.yml', 'src/studies/weather_surprise.py']
