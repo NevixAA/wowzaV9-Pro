@@ -1,0 +1,13 @@
+{
+ "study": "league_calibration_ou25",
+ "version": 1,
+ "registered_at": "2026-10-20",
+ "requested_by": "owner 2026-10-20: 'it can't be global values... it must be per league'",
+ "finding_that_triggered_it": "v9 O/U probabilities sit near one global level in every league (NF backtest: Argentina real Over 36.1% vs v9 51.2%; Norway/China real 59.7% vs v9 53.0%; Bundesliga 2 real 58.0% vs v9 50.0%)",
+ "arm": "PER_LEAGUE_CAL: logit p' = a_L + b_L * logit p_v9, fitted by log loss on all EARLIER blocks of league L only; (a_L, b_L) shrunk toward the global (a_G, b_G) fitted on all earlier blocks of the track: weight n_L/(n_L+K), K=300 matches; a league with no earlier rows uses the global fit; first block of a track uses identity",
+ "also_reported": "GLOBAL_CAL (same, no league terms) to separate 'v9 is squeezed' from 'v9 lacks the league level'",
+ "data": "experiments/ou_info_inputs_2026_10/eval_rows.parquet p_base (v9 own train(), quarterly walk-forward); market for the standard track = football-data PRE-MATCH Avg; new_format market comparison not used (prices invalid, see market_anchor)",
+ "primary_metric": "log loss, PER_LEAGUE_CAL minus V9, per track",
+ "decision_rule": "v9 PROPOSAL candidate for a track only if dLL <= -0.001 AND 90% day-block CI upper < 0 AND it does not lose to GLOBAL_CAL. Bets reported descriptively at the live floors (3%/8%) at the pre-match price (standard only). Owner decides; nothing changes in v9 from this study.",
+ "frozen": "K, the arm and the rule are not changed after results are seen"
+}

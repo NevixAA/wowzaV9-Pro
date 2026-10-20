@@ -1,0 +1,414 @@
+{
+ "generated_at": "2026-10-20 11:11 UTC",
+ "decision_rule": "v9 PROPOSAL candidate for a track only if dLL <= -0.001 AND 90% day-block CI upper < 0 AND it does not lose to GLOBAL_CAL. Bets reported descriptively at the live floors (3%/8%) at the pre-match price (standard only). Owner decides; nothing changes in v9 from this study.",
+ "tracks": {
+  "new_format": {
+   "n": 13584,
+   "log_loss": {
+    "V9": 0.67611,
+    "GLOBAL_CAL": 0.67689,
+    "PER_LEAGUE_CAL": 0.67709
+   },
+   "dLL_PER_LEAGUE_CAL_minus_V9": {
+    "delta": 0.00098,
+    "ci90": [
+     1e-05,
+     0.00193
+    ]
+   },
+   "dLL_GLOBAL_CAL_minus_V9": {
+    "delta": 0.00079,
+    "ci90": [
+     -0.0,
+     0.00161
+    ]
+   },
+   "dLL_PER_LEAGUE_CAL_minus_GLOBAL_CAL": {
+    "delta": 0.00019,
+    "ci90": [
+     -0.00054,
+     0.0009
+    ]
+   },
+   "level_by_league": [
+    {
+     "league": "Argentina Primera Division",
+     "n": 1599,
+     "real_over": 0.343,
+     "v9": 0.399,
+     "per_league_cal": 0.352
+    },
+    {
+     "league": "Austrian Bundesliga",
+     "n": 638,
+     "real_over": 0.514,
+     "v9": 0.538,
+     "per_league_cal": 0.522
+    },
+    {
+     "league": "Brazil Serie A",
+     "n": 1223,
+     "real_over": 0.473,
+     "v9": 0.465,
+     "per_league_cal": 0.453
+    },
+    {
+     "league": "China Super League",
+     "n": 1096,
+     "real_over": 0.59,
+     "v9": 0.572,
+     "per_league_cal": 0.592
+    },
+    {
+     "league": "Denmark Superliga",
+     "n": 535,
+     "real_over": 0.596,
+     "v9": 0.563,
+     "per_league_cal": 0.586
+    },
+    {
+     "league": "Finland Veikkausliiga",
+     "n": 583,
+     "real_over": 0.58,
+     "v9": 0.545,
+     "per_league_cal": 0.578
+    },
+    {
+     "league": "Ireland Premier Division",
+     "n": 524,
+     "real_over": 0.466,
+     "v9": 0.468,
+     "per_league_cal": 0.452
+    },
+    {
+     "league": "Japan J-League",
+     "n": 993,
+     "real_over": 0.489,
+     "v9": 0.489,
+     "per_league_cal": 0.484
+    },
+    {
+     "league": "K-League 1",
+     "n": 615,
+     "real_over": 0.473,
+     "v9": 0.471,
+     "per_league_cal": 0.465
+    },
+    {
+     "league": "Mexico Liga MX",
+     "n": 1042,
+     "real_over": 0.543,
+     "v9": 0.529,
+     "per_league_cal": 0.539
+    },
+    {
+     "league": "Norway Eliteserien",
+     "n": 657,
+     "real_over": 0.595,
+     "v9": 0.586,
+     "per_league_cal": 0.594
+    },
+    {
+     "league": "Romanian Superliga",
+     "n": 843,
+     "real_over": 0.435,
+     "v9": 0.459,
+     "per_league_cal": 0.441
+    },
+    {
+     "league": "Saudi Pro League",
+     "n": 788,
+     "real_over": 0.563,
+     "v9": 0.561,
+     "per_league_cal": 0.569
+    },
+    {
+     "league": "Sweden Allsvenskan",
+     "n": 665,
+     "real_over": 0.532,
+     "v9": 0.536,
+     "per_league_cal": 0.549
+    },
+    {
+     "league": "USA MLS",
+     "n": 1783,
+     "real_over": 0.62,
+     "v9": 0.584,
+     "per_league_cal": 0.619
+    }
+   ],
+   "verdict": "NO PROPOSAL"
+  },
+  "standard": {
+   "n": 15724,
+   "log_loss": {
+    "V9": 0.69275,
+    "GLOBAL_CAL": 0.7063,
+    "PER_LEAGUE_CAL": 0.70663
+   },
+   "dLL_PER_LEAGUE_CAL_minus_V9": {
+    "delta": 0.01389,
+    "ci90": [
+     0.00954,
+     0.01871
+    ]
+   },
+   "dLL_GLOBAL_CAL_minus_V9": {
+    "delta": 0.01355,
+    "ci90": [
+     0.00939,
+     0.01821
+    ]
+   },
+   "dLL_PER_LEAGUE_CAL_minus_GLOBAL_CAL": {
+    "delta": 0.00033,
+    "ci90": [
+     -0.00118,
+     0.00187
+    ]
+   },
+   "level_by_league": [
+    {
+     "league": "Belgian First Division A",
+     "n": 843,
+     "real_over": 0.527,
+     "v9": 0.518,
+     "per_league_cal": 0.508
+    },
+    {
+     "league": "Bundesliga 2",
+     "n": 892,
+     "real_over": 0.585,
+     "v9": 0.519,
+     "per_league_cal": 0.54
+    },
+    {
+     "league": "Championship",
+     "n": 1596,
+     "real_over": 0.494,
+     "v9": 0.512,
+     "per_league_cal": 0.477
+    },
+    {
+     "league": "Dutch Eredivisie",
+     "n": 844,
+     "real_over": 0.596,
+     "v9": 0.524,
+     "per_league_cal": 0.525
+    },
+    {
+     "league": "Greek Super League",
+     "n": 715,
+     "real_over": 0.517,
+     "v9": 0.512,
+     "per_league_cal": 0.52
+    },
+    {
+     "league": "La Liga 2",
+     "n": 1456,
+     "real_over": 0.472,
+     "v9": 0.508,
+     "per_league_cal": 0.449
+    },
+    {
+     "league": "League One",
+     "n": 1557,
+     "real_over": 0.505,
+     "v9": 0.512,
+     "per_league_cal": 0.496
+    },
+    {
+     "league": "League Two",
+     "n": 1541,
+     "real_over": 0.48,
+     "v9": 0.514,
+     "per_league_cal": 0.497
+    },
+    {
+     "league": "Ligue 2",
+     "n": 867,
+     "real_over": 0.475,
+     "v9": 0.509,
+     "per_league_cal": 0.475
+    },
+    {
+     "league": "National League",
+     "n": 1502,
+     "real_over": 0.543,
+     "v9": 0.521,
+     "per_league_cal": 0.529
+    },
+    {
+     "league": "Portuguese Primeira Liga",
+     "n": 852,
+     "real_over": 0.528,
+     "v9": 0.514,
+     "per_league_cal": 0.503
+    },
+    {
+     "league": "Scottish Championship",
+     "n": 497,
+     "real_over": 0.459,
+     "v9": 0.516,
+     "per_league_cal": 0.496
+    },
+    {
+     "league": "Scottish Premiership",
+     "n": 615,
+     "real_over": 0.574,
+     "v9": 0.517,
+     "per_league_cal": 0.538
+    },
+    {
+     "league": "Serie B",
+     "n": 1028,
+     "real_over": 0.474,
+     "v9": 0.509,
+     "per_league_cal": 0.479
+    },
+    {
+     "league": "Turkish Super Lig",
+     "n": 919,
+     "real_over": 0.54,
+     "v9": 0.514,
+     "per_league_cal": 0.493
+    }
+   ],
+   "verdict": "NO PROPOSAL",
+   "bets_at_prematch_price": {
+    "V9": {
+     "VALUABLE": {
+      "OVER": {
+       "n": 3492,
+       "roi_pct": -6.6,
+       "roi_ci90_pct": [
+        -9.8,
+        -3.3
+       ],
+       "claimed_hit": 0.518,
+       "real_hit": 0.416
+      },
+      "UNDER": {
+       "n": 2530,
+       "roi_pct": -12.7,
+       "roi_ci90_pct": [
+        -16.5,
+        -8.8
+       ],
+       "claimed_hit": 0.485,
+       "real_hit": 0.355
+      },
+      "ALL": {
+       "n": 6022,
+       "roi_pct": -9.2,
+       "roi_ci90_pct": [
+        -11.7,
+        -6.7
+       ],
+       "claimed_hit": 0.504,
+       "real_hit": 0.39
+      }
+     },
+     "MARKSMAN": {
+      "OVER": {
+       "n": 1155,
+       "roi_pct": -4.4,
+       "roi_ci90_pct": [
+        -10.1,
+        1.0
+       ],
+       "claimed_hit": 0.522,
+       "real_hit": 0.391
+      },
+      "UNDER": {
+       "n": 994,
+       "roi_pct": -17.3,
+       "roi_ci90_pct": [
+        -24.0,
+        -10.6
+       ],
+       "claimed_hit": 0.486,
+       "real_hit": 0.3
+      },
+      "ALL": {
+       "n": 2149,
+       "roi_pct": -10.4,
+       "roi_ci90_pct": [
+        -14.6,
+        -6.1
+       ],
+       "claimed_hit": 0.505,
+       "real_hit": 0.349
+      }
+     }
+    },
+    "PER_LEAGUE_CAL": {
+     "VALUABLE": {
+      "OVER": {
+       "n": 3133,
+       "roi_pct": -6.7,
+       "roi_ci90_pct": [
+        -9.6,
+        -3.8
+       ],
+       "claimed_hit": 0.523,
+       "real_hit": 0.42
+      },
+      "UNDER": {
+       "n": 2986,
+       "roi_pct": -15.2,
+       "roi_ci90_pct": [
+        -18.6,
+        -12.0
+       ],
+       "claimed_hit": 0.554,
+       "real_hit": 0.369
+      },
+      "ALL": {
+       "n": 6119,
+       "roi_pct": -10.9,
+       "roi_ci90_pct": [
+        -13.0,
+        -8.6
+       ],
+       "claimed_hit": 0.538,
+       "real_hit": 0.395
+      }
+     },
+     "MARKSMAN": {
+      "OVER": {
+       "n": 1021,
+       "roi_pct": -6.6,
+       "roi_ci90_pct": [
+        -12.0,
+        -0.9
+       ],
+       "claimed_hit": 0.539,
+       "real_hit": 0.395
+      },
+      "UNDER": {
+       "n": 1536,
+       "roi_pct": -15.3,
+       "roi_ci90_pct": [
+        -20.8,
+        -10.6
+       ],
+       "claimed_hit": 0.614,
+       "real_hit": 0.367
+      },
+      "ALL": {
+       "n": 2557,
+       "roi_pct": -11.8,
+       "roi_ci90_pct": [
+        -15.5,
+        -8.2
+       ],
+       "claimed_hit": 0.584,
+       "real_hit": 0.378
+      }
+     }
+    }
+   }
+  }
+ }
+}

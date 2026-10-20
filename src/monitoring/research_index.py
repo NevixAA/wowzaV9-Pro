@@ -229,6 +229,16 @@ def _market_anchor():
             "report": "output/studies/market_anchor.json"}
 
 
+def _league_calibration():
+    r = _j("studies/league_calibration.json")
+    if not r:
+        return None
+    key = {f"{t} per-league calibration vs v9": f"{x['verdict']} (Δ log loss {x['dLL_PER_LEAGUE_CAL_minus_V9']['delta']:+.4f})"
+           for t, x in (r.get("tracks") or {}).items()}
+    return {"status": "Per-league calibration of v9 O/U: fixes each league's level but does not improve predictions",
+            "date": r.get("generated_at"), "key": key, "report": "output/studies/league_calibration.json"}
+
+
 def _segments():
     s = _j("studies/props_segments.json")
     if not s:
@@ -305,6 +315,7 @@ STUDIES = [
     ("ou_info_inputs", "O/U inputs: injuries (lineups / news / movement next)", "models", _ou_info),
     ("ou_lineups", "O/U inputs: starting lineups", "models", _ou_lineups),
     ("market_anchor", "Market-anchored O/U review", "models", _market_anchor),
+    ("league_calibration", "Per-league calibration of O/U", "models", _league_calibration),
     ("calibration_form", "Calibration form: v9 vs log-odds Platt", "models", _calibration),
     ("calibration_shadow", "Calibration shadow in v9 (pre-registered)", "models", _cal_shadow),
     ("props_segments", "Props segments: attacking D / M (pre-registered)", "players", _segments),
