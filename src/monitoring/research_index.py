@@ -239,6 +239,25 @@ def _league_calibration():
             "date": r.get("generated_at"), "key": key, "report": "output/studies/league_calibration.json"}
 
 
+def _valuable():
+    p = OUT / "valuable_deep_dive" / "valuable_summary.csv"
+    if not p.exists():
+        return None
+    s = pd.read_csv(p)
+    pooled = s[(s.tier == "VALUABLE") & s.market.str.startswith("ALL")].set_index("window")
+    by = s[s.tier == "VALUABLE"].set_index(["window", "market"])
+    f = lambda w: f"{pooled.at[w, 'ROI_pct']:+.1f}% (n {int(pooled.at[w, 'N'])})" if w in pooled.index else "-"
+    g = lambda w, m: (f"{by.at[(w, m), 'ROI_pct']:+.1f}% (n {int(by.at[(w, m), 'N'])})" if (w, m) in by.index else "-")
+    return {"status": "VALUABLE deep dive: OU25 edge does not rank outcomes; BTTS 4-8% is the stable candidate "
+                      "(7 hypotheses registered, shadow started) - production unchanged",
+            "date": "2026-10-20",
+            "key": {"last 14 days (pooled)": f("last14"), "last 30 days": f("last30"), "since Aug 26": f("since_aug26"),
+                    "OU25 since Aug 26": g("since_aug26", "over25"), "BTTS since Aug 26": g("since_aug26", "btts"),
+                    "OU25 3-4 / 4-6 / 6-8 since Aug": "-5.8% / +3.1% / +16.3% (CLV falls as edge rises)",
+                    "BTTS fair edge 4-8": "new_format +19.6% (n87), standard +31.1% (n34)"},
+            "report": "output/valuable_deep_dive/VALUABLE_DEEP_DIVE.md"}
+
+
 def _segments():
     s = _j("studies/props_segments.json")
     if not s:
@@ -316,6 +335,7 @@ STUDIES = [
     ("ou_lineups", "O/U inputs: starting lineups", "models", _ou_lineups),
     ("market_anchor", "Market-anchored O/U review", "models", _market_anchor),
     ("league_calibration", "Per-league calibration of O/U", "models", _league_calibration),
+    ("valuable_deep_dive", "VALUABLE tier deep dive", "tips", _valuable),
     ("calibration_form", "Calibration form: v9 vs log-odds Platt", "models", _calibration),
     ("calibration_shadow", "Calibration shadow in v9 (pre-registered)", "models", _cal_shadow),
     ("props_segments", "Props segments: attacking D / M (pre-registered)", "players", _segments),

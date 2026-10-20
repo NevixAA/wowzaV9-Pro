@@ -1,0 +1,63 @@
+name: Pro VALUABLE low-edge shadow
+
+# Owner brief 2026-10-20 sec. 7: capture EVERY pre-kickoff candidate v9 sees (raw edge >= 0, including below
+# the VALUABLE floor) - never notified, never bet - and settle it later. src/studies/valuable/shadow.py.
+#
+# Source = v9's own committed output/predictions.csv history (each row names its v9 commit), so a snapshot can
+# never be invented after the fact. A partial (blob-less) clone keeps the v9 checkout small: only the code the
+# capture imports plus the predictions.csv blobs it reads are downloaded. Read-only towards v9.
+# Once daily is enough: the capture walks every v9 commit since the registered start, so a late or skipped
+# run loses nothing.
+
+on:
+  schedule:
+    - cron: '50 9 * * *'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pro_valuable_shadow.yml', 'src/studies/valuable/shadow.py']
+  workflow_dispatch:
+
+concurrency:
+  group: pro-valuable-shadow
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  shadow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy pyarrow scipy requests python-dotenv pytest
+      - name: Tests
+        run: python -m pytest tests/test_valuable_shadow.py -q
+      - name: v9 history (partial clone, read-only)
+        run: |
+          git clone --filter=blob:none --sparse https://github.com/NevixAA/wowza-betting.git _v9
+          git -C _v9 sparse-checkout set --no-cone '/src/' '/config.py' '/config/' '/best_params*.json' '/output/best_params*.json'
+      - name: Capture + settle
+        run: |
+          set -o pipefail
+          python -m src.studies.valuable.shadow --v9 "$GITHUB_WORKSPACE/_v9" 2>&1 | tee shadow.txt
+          { echo '## VALUABLE shadow'; echo '```'; tail -n 20 shadow.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for f in output/valuable_shadow/valuable_shadow.csv output/valuable_shadow/valuable_shadow_state.json; do
+            [ -e "$f" ] && git add -f "$f"
+          done
+          git diff --staged --quiet && exit 0
+          git commit -m "pro: valuable shadow $(date -u '+%Y-%m-%d %H:%M UTC')"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash -X theirs origin main && git push && exit 0
+            sleep $((RANDOM % 5 + 3))
+          done
+          exit 1
