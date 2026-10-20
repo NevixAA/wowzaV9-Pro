@@ -63,7 +63,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           for p in output/scout/weekly_promotion_review.json output/scout/WEEKLY_PROMOTION_REVIEW.md \
                    registry/league_lifecycle.json registry/wowza_league_registry.json output/scout/report.json output/scout/REPORT.md \
-                   output/scout/league_status.json; do
+                   output/scout/league_status.json output/scout/auto_onboard_queue.json; do
             [ -e "$p" ] && git add "$p"
           done
           [ -d output/scout/promotions ] && git add output/scout/promotions

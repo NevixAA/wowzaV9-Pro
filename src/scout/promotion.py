@@ -36,7 +36,7 @@ INTEGRATION — FAIL CLOSED. v9's new-format model is ONE global model: adding a
 new-format league's model. A league reaching SHADOW_APPROVED is therefore run through the
 existing-league regression harness (src/scout/regression_harness.py, built 2026-10-14: champion vs
 champion + new league, scored on existing leagues only). integration_route becomes
-REGRESSION_PASSED_AWAITING_OWNER or REGRESSION_FAILED (any harness error fails closed). Either way an
+REGRESSION_PASSED_AUTO_ONBOARD (owner standing approval 2026-10-20) or REGRESSION_FAILED (any harness error fails closed). Either way an
 onboarding proposal is written (exact v9 config entries, ids, season type) but NO PR is opened and NO
 config changes. Money deployment is never decided here.
 """
@@ -301,7 +301,7 @@ def validate(row: dict, extra: dict, res, odds, mdl, week: str) -> dict:
             from src.scout import regression_harness as RH
             regression = RH.run(lid)
             RH.save(regression)
-            route = {"PASS": "REGRESSION_PASSED_AWAITING_OWNER",
+            route = {"PASS": "REGRESSION_PASSED_AUTO_ONBOARD",
                      "FAIL": "REGRESSION_FAILED"}.get(regression["verdict"], "REGRESSION_" + regression["verdict"])
         except Exception as e:                                       # noqa: BLE001 - fail closed
             route, regression = "REGRESSION_HARNESS_ERROR", {"error": f"{type(e).__name__}: {e}"}
@@ -311,13 +311,16 @@ def validate(row: dict, extra: dict, res, odds, mdl, week: str) -> dict:
         "integration_route": route,
         "regression": {k: v for k, v in (regression or {}).items() if k != "targets"} or None,
         "integration_note": "v9 new-format is one global model; the existing-league regression harness "
-                            "(output/scout/regression/<id>.md) must PASS, and onboarding stays an owner "
-                            "decision. No PR opened, no config changed.",
+                            "(output/scout/regression/<id>.md) must PASS. OWNER STANDING APPROVAL 2026-10-20: a "
+                            "league that passes every gate is queued (output/scout/auto_onboard_queue.json) and "
+                            "v9's weekly auto_onboard job makes it a tips generator.",
         "v9_config_entries_needed": {"NEW_FORMAT_LEAGUES": True, "API_FOOTBALL_ONLY_LEAGUES": True,
-                                     "ENABLED_LEAGUES": "paper", "PAPER_LEAGUES": True,
+                                     "ENABLED_LEAGUES": True, "PAPER_LEAGUES": False,
                                      "api_football_id": lid, "current_season": extra.get("current_season")},
-        "deployment": {"WOWZA_SUPPORTED": "NO" if new != "SHADOW_APPROVED" else "PENDING", "REAL_MONEY": "NO",
-                       "PAPER_ONLY": "YES"},
+        "deployment": {"WOWZA_SUPPORTED": "NO" if new != "SHADOW_APPROVED" else "PENDING",
+                       "TIPS": "YES once onboarded (owner 2026-10-20)",
+                       "STAKE": "league rating rules - a new league has no rating, so the minimum scale"},
+        "country": row.get("country"), "current_season": extra.get("current_season"),
         "market_states": {m: ("PAPER" if m in supported else "RESEARCH") for m in R.SIDE},
         "hard_fails": hard,
     }
@@ -425,9 +428,31 @@ def run(status: dict | None = None, week: str | None = None) -> dict:
     review["EXISTING_PRODUCTION_SELECTION_CHANGED"] = "NO"
     review["EXISTING_LEAGUE_MODELS_RETRAINED"] = "NO"
     review["NEW_LEAGUES_PROMOTED"] = review["promoted"]
-    review["NEW_LEAGUES_DEPLOYMENT"] = "PAPER/SHADOW"
+    review["NEW_LEAGUES_DEPLOYMENT"] = "AUTO_ONBOARD_QUEUE (owner standing approval 2026-10-20)"
+    review["auto_onboard_queue"] = write_auto_onboard_queue()
     (OUT / "weekly_promotion_review.json").write_text(json.dumps(review, indent=1, default=str), encoding="utf-8")
     return review
+
+
+def write_auto_onboard_queue() -> list[str]:
+    """Every league whose LATEST proposal passed all gates AND the existing-league regression harness.
+    v9's weekly auto_onboard job reads this file (owner standing approval 2026-10-20: 'if a new league
+    is ready to become a tips generator, go'). Fail closed: only an explicit PASS route is queued."""
+    q = []
+    for f in sorted((OUT / "promotions").glob("*/onboarding_proposal.json")):
+        try:
+            pr = json.loads(f.read_text(encoding="utf-8"))
+        except Exception:                                               # noqa: BLE001
+            continue
+        if (pr.get("state") == "SHADOW_APPROVED" and pr.get("integration_route") == "REGRESSION_PASSED_AUTO_ONBOARD"
+                and (pr.get("regression") or {}).get("verdict") == "PASS" and not pr.get("hard_fails")):
+            q.append({"league_id": int(pr["league_id"]), "league": pr["league"], "country": pr.get("country"),
+                      "current_season": pr.get("current_season") or (pr.get("v9_config_entries_needed") or {}).get(
+                          "current_season"), "week": pr.get("week"), "promotion_score": pr.get("promotion_score")})
+    (OUT / "auto_onboard_queue.json").write_text(json.dumps(
+        {"generated_at": pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%dT%H:%M:%SZ"), "leagues": q}, indent=1),
+        encoding="utf-8")
+    return [x["league"] for x in q]
 
 
 def _weeks_between(a: str, b: str) -> int:
