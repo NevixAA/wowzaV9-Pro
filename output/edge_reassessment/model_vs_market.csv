@@ -1,0 +1,5 @@
+model_type,market,n,logloss_model,logloss_market,brier_model,brier_market,paired_brier_diff_model_minus_market,paired_brier_ci95,auc_model,auc_market,model_calibration_slope,model_calibration_intercept,residual_coef_model_given_market,residual_LR_p,verdict
+new_format,btts,591,0.67572,0.67501,0.24135,0.24115,0.00019,"[-0.00700, 0.00700]",0.538,0.539,1.066,0.292,0.756,0.3186,MARKET_SUFFICIENT
+new_format,ou25,680,0.67852,0.67171,0.24281,0.23972,0.00309,"[-0.00200, 0.00800]",0.58,0.593,0.914,0.193,0.314,0.372,MARKET_SUFFICIENT
+standard,btts,577,0.68399,0.68254,0.24543,0.2447,0.00074,"[-0.00300, 0.00400]",0.518,0.529,0.908,0.19,0.541,0.5431,MARKET_SUFFICIENT
+standard,ou25,637,0.69874,0.68523,0.25276,0.24606,0.0067,"[0.00200, 0.01100]",0.476,0.572,-0.49,0.124,-1.14,0.0293,MARKET_SUFFICIENT

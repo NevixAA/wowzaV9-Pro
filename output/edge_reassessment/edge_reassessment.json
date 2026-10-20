@@ -1,0 +1,133 @@
+{
+ "generated_at": "2026-10-20 11:45 UTC",
+ "production_changed": "NO",
+ "all_fixture_rows": 3032,
+ "all_fixture_by_market": {
+  "new_format|btts": 591,
+  "new_format|ou25": 680,
+  "new_format|over15": 85,
+  "new_format|over35": 318,
+  "standard|btts": 577,
+  "standard|ou25": 637,
+  "standard|over15": 18,
+  "standard|over35": 126
+ },
+ "close_status": {
+  "VALID_PRE_KICKOFF_CLOSE": 2847,
+  "NO_CLOSE_NEAR_KICKOFF": 147,
+  "ONLY_ONE_OBSERVATION": 38
+ },
+ "btts_preregistered_progress": [
+  {
+   "id": "H-BTTS-01",
+   "title": "BTTS edge persists in Argentina Primera Division",
+   "n_post_registration": 21,
+   "n_min": 150,
+   "roi_pct": 4.6,
+   "ci95_block10": [
+    -28.0,
+    39.6
+   ],
+   "progress_pct": 14.0,
+   "status": "ACCRUING (definition unchanged)"
+  },
+  {
+   "id": "H-BTTS-02",
+   "title": "BTTS edge exists OUTSIDE Argentina",
+   "n_post_registration": 13,
+   "n_min": 150,
+   "roi_pct": 36.1,
+   "ci95_block10": [
+    16.7,
+    36.5
+   ],
+   "progress_pct": 8.7,
+   "status": "ACCRUING (definition unchanged)"
+  },
+  {
+   "id": "H-BTTS-03",
+   "title": "Argentina BTTS beats the CLOSING price, not just the result",
+   "n_post_registration": 21,
+   "single_book_clv_mean_pct": -0.85,
+   "status": "NOT_EVALUABLE_HERE - the registered metric is consensus_clv (>=3 two-sided books); the ledger CLV is single-book and is shown only as context"
+  },
+  {
+   "id": "H-BTTS-04",
+   "title": "Argentina BTTS probabilities are better calibrated than the market's",
+   "n": 8,
+   "brier_model": 0.2403,
+   "brier_market_devig": 0.2164,
+   "status": "ACCRUING (definition unchanged; all-fixture snapshot rows = staked-tier proxy)"
+  }
+ ],
+ "over15_certification": {
+  "historical_backtest": "INVALID - contains filled/default prices (src/data_loader.py:542/587 fill paths); not quoted",
+  "backtest_top_price_shares": {
+   "1.4": 0.997,
+   "1.28": 0.0,
+   "1.25": 0.0
+  },
+  "genuine_snapshot_prices": {
+   "new_format": {
+    "n": 78,
+    "matchdays": 36,
+    "wins": 52,
+    "hit_pct": 66.7,
+    "mean_odds": 1.558,
+    "breakeven_hit_pct": 64.4,
+    "excess_hit_pp": 2.3,
+    "pnl": 2.72,
+    "roi_pct": 3.5,
+    "roi_ci95_lo": -12.7,
+    "roi_ci95_hi": 18.5,
+    "p_one_sided": 0.33938971678034624,
+    "max_drawdown_u": 5.98,
+    "longest_losing_run": 4,
+    "close_coverage_pct": 78.2,
+    "clv_mean": -0.06,
+    "clv_median": 0.0,
+    "clv_pos_pct": 34.6,
+    "roi_ex_top5_winners_pct": -1.1,
+    "largest_month_share": 1.58,
+    "side_concentration": 1.0,
+    "odds_band_concentration": 1.0
+   },
+   "standard": {
+    "n": 15,
+    "matchdays": 11,
+    "wins": 8,
+    "hit_pct": 53.3,
+    "mean_odds": 1.397,
+    "breakeven_hit_pct": 72.0,
+    "excess_hit_pp": -18.7,
+    "pnl": -4.24,
+    "roi_pct": -28.3,
+    "roi_ci95_lo": -61.5,
+    "roi_ci95_hi": 7.5,
+    "p_one_sided": 0.9300881991539757,
+    "max_drawdown_u": 4.71,
+    "longest_losing_run": 3,
+    "close_coverage_pct": 53.3,
+    "clv_mean": -0.16,
+    "clv_median": 0.0,
+    "clv_pos_pct": 20.0,
+    "roi_ex_top5_winners_pct": -62.8,
+    "largest_month_share": NaN,
+    "side_concentration": 1.0,
+    "odds_band_concentration": 1.0
+   }
+  },
+  "live_ledger": {
+   "n": 108,
+   "roi_pct": 8.3,
+   "note": "live prices are captured quotes; small n"
+  },
+  "fair_edge_available": "NO (no Under 1.5 price captured)"
+ },
+ "v91_shadow_crosscheck": {
+  "rows": 641,
+  "settled": 0
+ },
+ "registry": "registry\\candidate_forward_tests.json",
+ "n_forward_tests": 14
+}

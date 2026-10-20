@@ -1,0 +1,684 @@
+{
+ "registry": "candidate_forward_tests",
+ "version": 1,
+ "registered_at": "2026-10-20T11:43:55Z",
+ "source": "v9 output/league_market_gate_registry.json CANDIDATE cells (generated 2026-10-06)",
+ "caveats": [
+  "candidate gates are the best point of each cell's own fit curve after examining 1682 hypotheses - heavy selection",
+  "new_format OU25 historical prices are best-of-books (11% of rows with two-way margin < 0) - historical ROI inflated",
+  "rows between discovery and forward_start are reported as POST_DISCOVERY and never count toward a pass"
+ ],
+ "confirmed_assignable_here": false,
+ "hypotheses": [
+  {
+   "id": "H-GATE-01",
+   "league": "Argentina Primera Division",
+   "market": "over15",
+   "model_type": "new_format",
+   "production_gates": {
+    "valuable": 0.04,
+    "marksman": 0.08,
+    "sniper": 0.1
+   },
+   "candidate_gate": null,
+   "edge_definition": "production raw edge (OU25 p-1/odds; side p-(1/odds)/1.08) on the side v9 picks",
+   "discovery_date": "2026-10-06",
+   "discovery_hypotheses_examined": 1682,
+   "historical": {
+    "fit_roi": null,
+    "fit_n": null,
+    "validation_roi": null,
+    "validation_n": null,
+    "holdout_roi": null,
+    "holdout_n": null,
+    "windows": null
+   },
+   "forward_start": "2026-10-21 00:00:00+00:00",
+   "min_forward_n": 80,
+   "required_matchdays": 10,
+   "statistical_test": "flat 1u ROI, 95% matchday block bootstrap; one-sided t for BH",
+   "multiple_comparison_family": "H-GATE-* (all candidates in this registry), Benjamini-Hochberg q<=0.10",
+   "pass_criterion": "n>=min_forward_n AND matchdays>=10 AND ROI 95% CI lower > 0 AND BH q<=0.10 AND (CLV mean>=0 where close coverage>=50%) -> FORWARD_SUPPORTED",
+   "fail_criterion": "n>=min_forward_n AND ROI 95% CI upper < 0 -> REJECTED; or n>=2*min_forward_n AND ROI<=0 -> REJECTED",
+   "status": "DISCOVERY (source registry gives no candidate gate - nothing to test)",
+   "production_behaviour": "UNCHANGED - this is a forward test on the all-fixture shadow, never a live gate"
+  },
+  {
+   "id": "H-GATE-02",
+   "league": "Austrian Bundesliga",
+   "market": "ou25",
+   "model_type": "new_format",
+   "production_gates": {
+    "valuable": 0.03,
+    "marksman": 0.08,
+    "sniper": 0.12
+   },
+   "candidate_gate": 0.1,
+   "edge_definition": "production raw edge (OU25 p-1/odds; side p-(1/odds)/1.08) on the side v9 picks",
+   "discovery_date": "2026-10-06",
+   "discovery_hypotheses_examined": 1682,
+   "historical": {
+    "fit_roi": 0.4926,
+    "fit_n": 42,
+    "validation_roi": 0.2647,
+    "validation_n": 19,
+    "holdout_roi": null,
+    "holdout_n": 15,
+    "windows": {
+     "fit": [
+      "2024-02-25",
+      "2025-11-09",
+      143
+     ],
+     "validation": [
+      "2025-11-22",
+      "2026-03-13",
+      55
+     ],
+     "holdout": [
+      "2026-03-14",
+      "2026-09-20",
+      85
+     ]
+    }
+   },
+   "forward_start": "2026-10-21 00:00:00+00:00",
+   "min_forward_n": 100,
+   "required_matchdays": 10,
+   "statistical_test": "flat 1u ROI, 95% matchday block bootstrap; one-sided t for BH",
+   "multiple_comparison_family": "H-GATE-* (all candidates in this registry), Benjamini-Hochberg q<=0.10",
+   "pass_criterion": "n>=min_forward_n AND matchdays>=10 AND ROI 95% CI lower > 0 AND BH q<=0.10 AND (CLV mean>=0 where close coverage>=50%) -> FORWARD_SUPPORTED",
+   "fail_criterion": "n>=min_forward_n AND ROI 95% CI upper < 0 -> REJECTED; or n>=2*min_forward_n AND ROI<=0 -> REJECTED",
+   "status": "REGISTERED",
+   "production_behaviour": "UNCHANGED - this is a forward test on the all-fixture shadow, never a live gate"
+  },
+  {
+   "id": "H-GATE-03",
+   "league": "Championship",
+   "market": "btts",
+   "model_type": "standard",
+   "production_gates": {
+    "valuable": 0.04,
+    "marksman": 0.07,
+    "sniper": 0.09
+   },
+   "candidate_gate": 0.04,
+   "edge_definition": "production raw edge (OU25 p-1/odds; side p-(1/odds)/1.08) on the side v9 picks",
+   "discovery_date": "2026-10-06",
+   "discovery_hypotheses_examined": 1682,
+   "historical": {
+    "fit_roi": 0.0288,
+    "fit_n": 43,
+    "validation_roi": 0.3062,
+    "validation_n": 20,
+    "holdout_roi": -0.2743,
+    "holdout_n": 22,
+    "windows": {
+     "fit": [
+      "2023-08-26",
+      "2023-12-13",
+      102
+     ],
+     "validation": [
+      "2023-12-16",
+      "2024-03-02",
+      41
+     ],
+     "holdout": [
+      "2024-03-06",
+      "2024-10-18",
+      57
+     ]
+    }
+   },
+   "forward_start": "2026-10-21 00:00:00+00:00",
+   "min_forward_n": 80,
+   "required_matchdays": 10,
+   "statistical_test": "flat 1u ROI, 95% matchday block bootstrap; one-sided t for BH",
+   "multiple_comparison_family": "H-GATE-* (all candidates in this registry), Benjamini-Hochberg q<=0.10",
+   "pass_criterion": "n>=min_forward_n AND matchdays>=10 AND ROI 95% CI lower > 0 AND BH q<=0.10 AND (CLV mean>=0 where close coverage>=50%) -> FORWARD_SUPPORTED",
+   "fail_criterion": "n>=min_forward_n AND ROI 95% CI upper < 0 -> REJECTED; or n>=2*min_forward_n AND ROI<=0 -> REJECTED",
+   "status": "REGISTERED",
+   "production_behaviour": "UNCHANGED - this is a forward test on the all-fixture shadow, never a live gate"
+  },
+  {
+   "id": "H-GATE-04",
+   "league": "Denmark Superliga",
+   "market": "ou25",
+   "model_type": "new_format",
+   "production_gates": {
+    "valuable": 0.03,
+    "marksman": 0.08,
+    "sniper": 0.12
+   },
+   "candidate_gate": 0.05,
+   "edge_definition": "production raw edge (OU25 p-1/odds; side p-(1/odds)/1.08) on the side v9 picks",
+   "discovery_date": "2026-10-06",
+   "discovery_hypotheses_examined": 1682,
+   "historical": {
+    "fit_roi": 0.0304,
+    "fit_n": 53,
+    "validation_roi": -0.2924,
+    "validation_n": 29,
+    "holdout_roi": 0.0482,
+    "holdout_n": 61,
+    "windows": {
+     "fit": [
+      "2024-02-25",
+      "2025-11-30",
+      145
+     ],
+     "validation": [
+      "2025-12-01",
+      "2026-04-19",
+      60
+     ],
+     "holdout": [
+      "2026-04-20",
+      "2026-09-20",
+      85
+     ]
+    }
+   },
+   "forward_start": "2026-10-21 00:00:00+00:00",
+   "min_forward_n": 100,
+   "required_matchdays": 10,
+   "statistical_test": "flat 1u ROI, 95% matchday block bootstrap; one-sided t for BH",
+   "multiple_comparison_family": "H-GATE-* (all candidates in this registry), Benjamini-Hochberg q<=0.10",
+   "pass_criterion": "n>=min_forward_n AND matchdays>=10 AND ROI 95% CI lower > 0 AND BH q<=0.10 AND (CLV mean>=0 where close coverage>=50%) -> FORWARD_SUPPORTED",
+   "fail_criterion": "n>=min_forward_n AND ROI 95% CI upper < 0 -> REJECTED; or n>=2*min_forward_n AND ROI<=0 -> REJECTED",
+   "status": "REGISTERED",
+   "production_behaviour": "UNCHANGED - this is a forward test on the all-fixture shadow, never a live gate"
+  },
+  {
+   "id": "H-GATE-05",
+   "league": "Finland Veikkausliiga",
+   "market": "ou25",
+   "model_type": "new_format",
+   "production_gates": {
+    "valuable": 0.03,
+    "marksman": 0.08,
+    "sniper": 0.12
+   },
+   "candidate_gate": 0.08,
+   "edge_definition": "production raw edge (OU25 p-1/odds; side p-(1/odds)/1.08) on the side v9 picks",
+   "discovery_date": "2026-10-06",
+   "discovery_hypotheses_examined": 1682,
+   "historical": {
+    "fit_roi": 0.1365,
+    "fit_n": 46,
+    "validation_roi": 0.0638,
+    "validation_n": 26,
+    "holdout_roi": 0.2661,
+    "holdout_n": 33,
+    "windows": {
+     "fit": [
+      "2024-04-12",
+      "2025-10-18",
+      145
+     ],
+     "validation": [
+      "2025-10-19",
+      "2026-05-16",
+      59
+     ],
+     "holdout": [
+      "2026-05-18",
+      "2026-09-19",
+      84
+     ]
+    }
+   },
+   "forward_start": "2026-10-21 00:00:00+00:00",
+   "min_forward_n": 100,
+   "required_matchdays": 10,
+   "statistical_test": "flat 1u ROI, 95% matchday block bootstrap; one-sided t for BH",
+   "multiple_comparison_family": "H-GATE-* (all candidates in this registry), Benjamini-Hochberg q<=0.10",
+   "pass_criterion": "n>=min_forward_n AND matchdays>=10 AND ROI 95% CI lower > 0 AND BH q<=0.10 AND (CLV mean>=0 where close coverage>=50%) -> FORWARD_SUPPORTED",
+   "fail_criterion": "n>=min_forward_n AND ROI 95% CI upper < 0 -> REJECTED; or n>=2*min_forward_n AND ROI<=0 -> REJECTED",
+   "status": "REGISTERED",
+   "production_behaviour": "UNCHANGED - this is a forward test on the all-fixture shadow, never a live gate"
+  },
+  {
+   "id": "H-GATE-06",
+   "league": "Ireland Premier Division",
+   "market": "ou25",
+   "model_type": "new_format",
+   "production_gates": {
+    "valuable": 0.03,
+    "marksman": 0.08,
+    "sniper": 0.12
+   },
+   "candidate_gate": 0.07,
+   "edge_definition": "production raw edge (OU25 p-1/odds; side p-(1/odds)/1.08) on the side v9 picks",
+   "discovery_date": "2026-10-06",
+   "discovery_hypotheses_examined": 1682,
+   "historical": {
+    "fit_roi": 0.2981,
+    "fit_n": 48,
+    "validation_roi": 0.3235,
+    "validation_n": 20,
+    "holdout_roi": 0.3754,
+    "holdout_n": 26,
+    "windows": {
+     "fit": [
+      "2024-03-01",
+      "2026-02-06",
+      135
+     ],
+     "validation": [
+      "2026-02-08",
+      "2026-04-17",
+      54
+     ],
+     "holdout": [
+      "2026-04-18",
+      "2026-10-02",
+      79
+     ]
+    }
+   },
+   "forward_start": "2026-10-21 00:00:00+00:00",
+   "min_forward_n": 100,
+   "required_matchdays": 10,
+   "statistical_test": "flat 1u ROI, 95% matchday block bootstrap; one-sided t for BH",
+   "multiple_comparison_family": "H-GATE-* (all candidates in this registry), Benjamini-Hochberg q<=0.10",
+   "pass_criterion": "n>=min_forward_n AND matchdays>=10 AND ROI 95% CI lower > 0 AND BH q<=0.10 AND (CLV mean>=0 where close coverage>=50%) -> FORWARD_SUPPORTED",
+   "fail_criterion": "n>=min_forward_n AND ROI 95% CI upper < 0 -> REJECTED; or n>=2*min_forward_n AND ROI<=0 -> REJECTED",
+   "status": "REGISTERED",
+   "production_behaviour": "UNCHANGED - this is a forward test on the all-fixture shadow, never a live gate"
+  },
+  {
+   "id": "H-GATE-07",
+   "league": "Japan J-League",
+   "market": "ou25",
+   "model_type": "new_format",
+   "production_gates": {
+    "valuable": 0.03,
+    "marksman": 0.08,
+    "sniper": 0.12
+   },
+   "candidate_gate": 0.1,
+   "edge_definition": "production raw edge (OU25 p-1/odds; side p-(1/odds)/1.08) on the side v9 picks",
+   "discovery_date": "2026-10-06",
+   "discovery_hypotheses_examined": 1682,
+   "historical": {
+    "fit_roi": -0.0363,
+    "fit_n": 41,
+    "validation_roi": 0.1379,
+    "validation_n": 19,
+    "holdout_roi": -0.0832,
+    "holdout_n": 22,
+    "windows": {
+     "fit": [
+      "2024-02-25",
+      "2025-07-05",
+      126
+     ],
+     "validation": [
+      "2025-07-19",
+      "2025-08-30",
+      47
+     ],
+     "holdout": [
+      "2025-08-31",
+      "2025-12-06",
+      71
+     ]
+    }
+   },
+   "forward_start": "2026-10-21 00:00:00+00:00",
+   "min_forward_n": 100,
+   "required_matchdays": 10,
+   "statistical_test": "flat 1u ROI, 95% matchday block bootstrap; one-sided t for BH",
+   "multiple_comparison_family": "H-GATE-* (all candidates in this registry), Benjamini-Hochberg q<=0.10",
+   "pass_criterion": "n>=min_forward_n AND matchdays>=10 AND ROI 95% CI lower > 0 AND BH q<=0.10 AND (CLV mean>=0 where close coverage>=50%) -> FORWARD_SUPPORTED",
+   "fail_criterion": "n>=min_forward_n AND ROI 95% CI upper < 0 -> REJECTED; or n>=2*min_forward_n AND ROI<=0 -> REJECTED",
+   "status": "REGISTERED",
+   "production_behaviour": "UNCHANGED - this is a forward test on the all-fixture shadow, never a live gate"
+  },
+  {
+   "id": "H-GATE-08",
+   "league": "La Liga 2",
+   "market": "btts",
+   "model_type": "standard",
+   "production_gates": {
+    "valuable": 0.04,
+    "marksman": 0.08,
+    "sniper": 0.1
+   },
+   "candidate_gate": 0.05,
+   "edge_definition": "production raw edge (OU25 p-1/odds; side p-(1/odds)/1.08) on the side v9 picks",
+   "discovery_date": "2026-10-06",
+   "discovery_hypotheses_examined": 1682,
+   "historical": {
+    "fit_roi": 0.1798,
+    "fit_n": 40,
+    "validation_roi": 0.046,
+    "validation_n": 17,
+    "holdout_roi": -0.0655,
+    "holdout_n": 21,
+    "windows": {
+     "fit": [
+      "2023-08-27",
+      "2024-02-11",
+      101
+     ],
+     "validation": [
+      "2024-02-17",
+      "2024-04-28",
+      42
+     ],
+     "holdout": [
+      "2024-05-03",
+      "2024-10-14",
+      59
+     ]
+    }
+   },
+   "forward_start": "2026-10-21 00:00:00+00:00",
+   "min_forward_n": 80,
+   "required_matchdays": 10,
+   "statistical_test": "flat 1u ROI, 95% matchday block bootstrap; one-sided t for BH",
+   "multiple_comparison_family": "H-GATE-* (all candidates in this registry), Benjamini-Hochberg q<=0.10",
+   "pass_criterion": "n>=min_forward_n AND matchdays>=10 AND ROI 95% CI lower > 0 AND BH q<=0.10 AND (CLV mean>=0 where close coverage>=50%) -> FORWARD_SUPPORTED",
+   "fail_criterion": "n>=min_forward_n AND ROI 95% CI upper < 0 -> REJECTED; or n>=2*min_forward_n AND ROI<=0 -> REJECTED",
+   "status": "REGISTERED",
+   "production_behaviour": "UNCHANGED - this is a forward test on the all-fixture shadow, never a live gate"
+  },
+  {
+   "id": "H-GATE-09",
+   "league": "League One",
+   "market": "btts",
+   "model_type": "standard",
+   "production_gates": {
+    "valuable": 0.04,
+    "marksman": 0.08,
+    "sniper": 0.1
+   },
+   "candidate_gate": 0.03,
+   "edge_definition": "production raw edge (OU25 p-1/odds; side p-(1/odds)/1.08) on the side v9 picks",
+   "discovery_date": "2026-10-06",
+   "discovery_hypotheses_examined": 1682,
+   "historical": {
+    "fit_roi": 0.241,
+    "fit_n": 40,
+    "validation_roi": 0.2384,
+    "validation_n": 16,
+    "holdout_roi": 0.0558,
+    "holdout_n": 25,
+    "windows": {
+     "fit": [
+      "2023-08-26",
+      "2024-01-13",
+      94
+     ],
+     "validation": [
+      "2024-01-20",
+      "2024-02-10",
+      31
+     ],
+     "holdout": [
+      "2024-02-13",
+      "2024-10-12",
+      54
+     ]
+    }
+   },
+   "forward_start": "2026-10-21 00:00:00+00:00",
+   "min_forward_n": 80,
+   "required_matchdays": 10,
+   "statistical_test": "flat 1u ROI, 95% matchday block bootstrap; one-sided t for BH",
+   "multiple_comparison_family": "H-GATE-* (all candidates in this registry), Benjamini-Hochberg q<=0.10",
+   "pass_criterion": "n>=min_forward_n AND matchdays>=10 AND ROI 95% CI lower > 0 AND BH q<=0.10 AND (CLV mean>=0 where close coverage>=50%) -> FORWARD_SUPPORTED",
+   "fail_criterion": "n>=min_forward_n AND ROI 95% CI upper < 0 -> REJECTED; or n>=2*min_forward_n AND ROI<=0 -> REJECTED",
+   "status": "REGISTERED",
+   "production_behaviour": "UNCHANGED - this is a forward test on the all-fixture shadow, never a live gate"
+  },
+  {
+   "id": "H-GATE-10",
+   "league": "League One",
+   "market": "ou25",
+   "model_type": "standard",
+   "production_gates": {
+    "valuable": 0.03,
+    "marksman": 0.08,
+    "sniper": 0.12
+   },
+   "candidate_gate": 0.12,
+   "edge_definition": "production raw edge (OU25 p-1/odds; side p-(1/odds)/1.08) on the side v9 picks",
+   "discovery_date": "2026-10-06",
+   "discovery_hypotheses_examined": 1682,
+   "historical": {
+    "fit_roi": 0.1516,
+    "fit_n": 45,
+    "validation_roi": -0.1137,
+    "validation_n": 16,
+    "holdout_roi": 0.1063,
+    "holdout_n": 24,
+    "windows": {
+     "fit": [
+      "2020-10-20",
+      "2023-10-03",
+      1705
+     ],
+     "validation": [
+      "2023-10-07",
+      "2024-12-03",
+      669
+     ],
+     "holdout": [
+      "2024-12-04",
+      "2026-10-03",
+      1016
+     ]
+    }
+   },
+   "forward_start": "2026-10-21 00:00:00+00:00",
+   "min_forward_n": 100,
+   "required_matchdays": 10,
+   "statistical_test": "flat 1u ROI, 95% matchday block bootstrap; one-sided t for BH",
+   "multiple_comparison_family": "H-GATE-* (all candidates in this registry), Benjamini-Hochberg q<=0.10",
+   "pass_criterion": "n>=min_forward_n AND matchdays>=10 AND ROI 95% CI lower > 0 AND BH q<=0.10 AND (CLV mean>=0 where close coverage>=50%) -> FORWARD_SUPPORTED",
+   "fail_criterion": "n>=min_forward_n AND ROI 95% CI upper < 0 -> REJECTED; or n>=2*min_forward_n AND ROI<=0 -> REJECTED",
+   "status": "REGISTERED",
+   "production_behaviour": "UNCHANGED - this is a forward test on the all-fixture shadow, never a live gate"
+  },
+  {
+   "id": "H-GATE-11",
+   "league": "League Two",
+   "market": "btts",
+   "model_type": "standard",
+   "production_gates": {
+    "valuable": 0.04,
+    "marksman": 0.08,
+    "sniper": 0.1
+   },
+   "candidate_gate": 0.05,
+   "edge_definition": "production raw edge (OU25 p-1/odds; side p-(1/odds)/1.08) on the side v9 picks",
+   "discovery_date": "2026-10-06",
+   "discovery_hypotheses_examined": 1682,
+   "historical": {
+    "fit_roi": 0.0343,
+    "fit_n": 40,
+    "validation_roi": 0.1981,
+    "validation_n": 22,
+    "holdout_roi": null,
+    "holdout_n": 12,
+    "windows": {
+     "fit": [
+      "2023-08-26",
+      "2024-01-01",
+      101
+     ],
+     "validation": [
+      "2024-01-06",
+      "2024-03-23",
+      42
+     ],
+     "holdout": [
+      "2024-03-29",
+      "2024-10-12",
+      55
+     ]
+    }
+   },
+   "forward_start": "2026-10-21 00:00:00+00:00",
+   "min_forward_n": 80,
+   "required_matchdays": 10,
+   "statistical_test": "flat 1u ROI, 95% matchday block bootstrap; one-sided t for BH",
+   "multiple_comparison_family": "H-GATE-* (all candidates in this registry), Benjamini-Hochberg q<=0.10",
+   "pass_criterion": "n>=min_forward_n AND matchdays>=10 AND ROI 95% CI lower > 0 AND BH q<=0.10 AND (CLV mean>=0 where close coverage>=50%) -> FORWARD_SUPPORTED",
+   "fail_criterion": "n>=min_forward_n AND ROI 95% CI upper < 0 -> REJECTED; or n>=2*min_forward_n AND ROI<=0 -> REJECTED",
+   "status": "REGISTERED",
+   "production_behaviour": "UNCHANGED - this is a forward test on the all-fixture shadow, never a live gate"
+  },
+  {
+   "id": "H-GATE-12",
+   "league": "Mexico Liga MX",
+   "market": "ou25",
+   "model_type": "new_format",
+   "production_gates": {
+    "valuable": 0.03,
+    "marksman": 0.08,
+    "sniper": 0.12
+   },
+   "candidate_gate": 0.09,
+   "edge_definition": "production raw edge (OU25 p-1/odds; side p-(1/odds)/1.08) on the side v9 picks",
+   "discovery_date": "2026-10-06",
+   "discovery_hypotheses_examined": 1682,
+   "historical": {
+    "fit_roi": 0.3934,
+    "fit_n": 50,
+    "validation_roi": null,
+    "validation_n": 9,
+    "holdout_roi": 0.6706,
+    "holdout_n": 33,
+    "windows": {
+     "fit": [
+      "2024-02-25",
+      "2025-12-04",
+      175
+     ],
+     "validation": [
+      "2025-12-07",
+      "2026-04-05",
+      72
+     ],
+     "holdout": [
+      "2026-04-06",
+      "2026-09-28",
+      102
+     ]
+    }
+   },
+   "forward_start": "2026-10-21 00:00:00+00:00",
+   "min_forward_n": 100,
+   "required_matchdays": 10,
+   "statistical_test": "flat 1u ROI, 95% matchday block bootstrap; one-sided t for BH",
+   "multiple_comparison_family": "H-GATE-* (all candidates in this registry), Benjamini-Hochberg q<=0.10",
+   "pass_criterion": "n>=min_forward_n AND matchdays>=10 AND ROI 95% CI lower > 0 AND BH q<=0.10 AND (CLV mean>=0 where close coverage>=50%) -> FORWARD_SUPPORTED",
+   "fail_criterion": "n>=min_forward_n AND ROI 95% CI upper < 0 -> REJECTED; or n>=2*min_forward_n AND ROI<=0 -> REJECTED",
+   "status": "REGISTERED",
+   "production_behaviour": "UNCHANGED - this is a forward test on the all-fixture shadow, never a live gate"
+  },
+  {
+   "id": "H-GATE-13",
+   "league": "Serie B",
+   "market": "btts",
+   "model_type": "standard",
+   "production_gates": {
+    "valuable": 0.04,
+    "marksman": 0.08,
+    "sniper": 0.1
+   },
+   "candidate_gate": 0.02,
+   "edge_definition": "production raw edge (OU25 p-1/odds; side p-(1/odds)/1.08) on the side v9 picks",
+   "discovery_date": "2026-10-06",
+   "discovery_hypotheses_examined": 1682,
+   "historical": {
+    "fit_roi": 0.1456,
+    "fit_n": 43,
+    "validation_roi": 0.0808,
+    "validation_n": 20,
+    "holdout_roi": 0.2163,
+    "holdout_n": 27,
+    "windows": {
+     "fit": [
+      "2023-09-02",
+      "2024-01-27",
+      79
+     ],
+     "validation": [
+      "2024-02-03",
+      "2024-04-13",
+      26
+     ],
+     "holdout": [
+      "2024-04-20",
+      "2024-10-18",
+      45
+     ]
+    }
+   },
+   "forward_start": "2026-10-21 00:00:00+00:00",
+   "min_forward_n": 80,
+   "required_matchdays": 10,
+   "statistical_test": "flat 1u ROI, 95% matchday block bootstrap; one-sided t for BH",
+   "multiple_comparison_family": "H-GATE-* (all candidates in this registry), Benjamini-Hochberg q<=0.10",
+   "pass_criterion": "n>=min_forward_n AND matchdays>=10 AND ROI 95% CI lower > 0 AND BH q<=0.10 AND (CLV mean>=0 where close coverage>=50%) -> FORWARD_SUPPORTED",
+   "fail_criterion": "n>=min_forward_n AND ROI 95% CI upper < 0 -> REJECTED; or n>=2*min_forward_n AND ROI<=0 -> REJECTED",
+   "status": "REGISTERED",
+   "production_behaviour": "UNCHANGED - this is a forward test on the all-fixture shadow, never a live gate"
+  },
+  {
+   "id": "H-GATE-14",
+   "league": "Sweden Allsvenskan",
+   "market": "ou25",
+   "model_type": "new_format",
+   "production_gates": {
+    "valuable": 0.03,
+    "marksman": 0.08,
+    "sniper": 0.12
+   },
+   "candidate_gate": 0.1,
+   "edge_definition": "production raw edge (OU25 p-1/odds; side p-(1/odds)/1.08) on the side v9 picks",
+   "discovery_date": "2026-10-06",
+   "discovery_hypotheses_examined": 1682,
+   "historical": {
+    "fit_roi": 0.09,
+    "fit_n": 43,
+    "validation_roi": null,
+    "validation_n": 11,
+    "holdout_roi": 0.5912,
+    "holdout_n": 33,
+    "windows": {
+     "fit": [
+      "2024-03-30",
+      "2025-09-28",
+      181
+     ],
+     "validation": [
+      "2025-09-29",
+      "2026-04-23",
+      74
+     ],
+     "holdout": [
+      "2026-04-26",
+      "2026-09-14",
+      107
+     ]
+    }
+   },
+   "forward_start": "2026-10-21 00:00:00+00:00",
+   "min_forward_n": 100,
+   "required_matchdays": 10,
+   "statistical_test": "flat 1u ROI, 95% matchday block bootstrap; one-sided t for BH",
+   "multiple_comparison_family": "H-GATE-* (all candidates in this registry), Benjamini-Hochberg q<=0.10",
+   "pass_criterion": "n>=min_forward_n AND matchdays>=10 AND ROI 95% CI lower > 0 AND BH q<=0.10 AND (CLV mean>=0 where close coverage>=50%) -> FORWARD_SUPPORTED",
+   "fail_criterion": "n>=min_forward_n AND ROI 95% CI upper < 0 -> REJECTED; or n>=2*min_forward_n AND ROI<=0 -> REJECTED",
+   "status": "REGISTERED",
+   "production_behaviour": "UNCHANGED - this is a forward test on the all-fixture shadow, never a live gate"
+  }
+ ]
+}

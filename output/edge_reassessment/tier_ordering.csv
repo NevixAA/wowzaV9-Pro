@@ -1,0 +1,12 @@
+source,model_type,market,sniper_beats_marksman_roi,ordering_by_roi
+ALL_FIXTURE first-sight production tier,new_format,btts,True,SNIPER > VALUABLE > MARKSMAN
+ALL_FIXTURE first-sight production tier,new_format,ou25,True,VALUABLE > SNIPER > MARKSMAN
+ALL_FIXTURE first-sight production tier,new_format,over15,True,VALUABLE > SNIPER > MARKSMAN
+ALL_FIXTURE first-sight production tier,standard,btts,True,SNIPER > VALUABLE > MARKSMAN
+ALL_FIXTURE first-sight production tier,standard,ou25,False,MARKSMAN > VALUABLE > SNIPER
+ALL_FIXTURE first-sight production tier,standard,over15,True,VALUABLE > SNIPER > MARKSMAN
+"LIVE ledger tier (max reached, upgraded in place)",new_format,btts,False,MARKSMAN > SNIPER > VALUABLE
+"LIVE ledger tier (max reached, upgraded in place)",new_format,ou25,False,MARKSMAN > VALUABLE > SNIPER
+"LIVE ledger tier (max reached, upgraded in place)",new_format,over15,True,VALUABLE > SNIPER > MARKSMAN
+"LIVE ledger tier (max reached, upgraded in place)",standard,btts,False,VALUABLE > MARKSMAN > SNIPER
+"LIVE ledger tier (max reached, upgraded in place)",standard,ou25,True,VALUABLE > SNIPER > MARKSMAN
