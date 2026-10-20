@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-20 07:58 UTC",
+ "generated_at": "2026-10-20 08:03 UTC",
  "items": [
   {
    "id": "league_promotion",
@@ -22,7 +22,7 @@
    "title": "Props calibration monitor (daily)",
    "area": "players",
    "status": "Live props model vs reality (30 days): assists predicted 20% / happened 20%, cards predicted 17% / happened 20%, goals predicted 24% / happened 29%, sot predicted 29% / happened 42%",
-   "date": "2026-10-20 06:35 UTC",
+   "date": "2026-10-20 08:00 UTC",
    "key": {
     "assists": "CALIBRATED \u00b7 gap -0.9% [-0.0631, 0.0364] \u00b7 n 199",
     "cards": "UNDER_PREDICTS \u00b7 gap +2.5% [0.0067, 0.0538] \u00b7 n 1623",
@@ -37,7 +37,7 @@
    "title": "Top picks \u2014 weekly table",
    "area": "tips",
    "status": "Top picks 2026-W43: live to date BEST_BETS 100%/+89%, SAFEST 60%/+2%, VALUE 100%/+89%",
-   "date": "2026-10-20 06:35 UTC",
+   "date": "2026-10-20 08:00 UTC",
    "key": {
     "BEST_BETS (backtest)": "56% hit \u00b7 +12% ROI \u00b7 5% 0/5 days \u00b7 186 picks",
     "CURRENT (backtest)": "49% hit \u00b7 +3% ROI \u00b7 8% 0/5 days \u00b7 190 picks",
@@ -59,7 +59,7 @@
    "title": "Best leagues \u2014 results by league",
    "area": "tips",
    "status": "Best leagues (season): proven Brazil Serie A \u00b7 losing League Two, League One",
-   "date": "2026-10-20 06:35 UTC",
+   "date": "2026-10-20 08:00 UTC",
    "key": {
     "Brazil Serie A": "PROVEN \u00b7 114 tips \u00b7 63% hit @ 1.99 \u00b7 ROI +26% (shrunk +19%)",
     "Serie B": "PROMISING \u00b7 83 tips \u00b7 61% hit @ 2.00 \u00b7 ROI +24% (shrunk +16%)",
@@ -88,7 +88,7 @@
    "title": "Calibration shadow in v9 (pre-registered)",
    "area": "models",
    "status": "Live shadow of log-odds calibration in v9: WAITING_FOR_SHADOW_ROWS",
-   "date": "2026-10-20 06:35 UTC",
+   "date": "2026-10-20 08:00 UTC",
    "key": {},
    "report": "output/studies/CALIBRATION_SHADOW.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/CALIBRATION_SHADOW.md"
@@ -98,7 +98,7 @@
    "title": "Props segments: attacking D / M (pre-registered)",
    "area": "players",
    "status": "27 qualifying props since 2026-10-14; 0 EDGE cells",
-   "date": "2026-10-20 06:35 UTC",
+   "date": "2026-10-20 08:00 UTC",
    "key": {
     "ATT_DEF|goals": "COLLECTING (0/150)",
     "ATT_DEF|sot": "COLLECTING (0/150)",
@@ -112,6 +112,19 @@
    },
    "report": "output/studies/PROPS_SEGMENTS.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/PROPS_SEGMENTS.md"
+  },
+  {
+   "id": "ou_lineups",
+   "title": "O/U inputs: starting lineups",
+   "area": "models",
+   "status": "Lineups as O/U model inputs: NO GAIN on either track (earlier pass was a same-match leak, withdrawn)",
+   "date": "2026-10-20",
+   "key": {
+    "standard with lineups": "NO GAIN (\u0394 log loss +0.0002, n 8296)",
+    "new_format with lineups": "NO GAIN (\u0394 log loss +0.0023, n 10211)"
+   },
+   "report": "output/studies/ou_lineups.json",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/ou_lineups.json"
   },
   {
    "id": "price_trader",
