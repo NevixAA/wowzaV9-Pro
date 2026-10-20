@@ -387,13 +387,20 @@ def notify(d: pd.DataFrame, *, dry_run: bool = True) -> dict:
     n = max(1, int(round(len(scored) * TOP_PCT / 100.0)))
     chosen = scored[:n]
     out["eligible"] = len(chosen)
+    # DELIVERY (owner 2026-10-20): the picks now ride in v9's morning album, like Bet Builder, so the
+    # separate Telegram message is off by default. The pick is still SELECTED and RECORDED here exactly
+    # as before (notified_* columns), which is what the album and the paper record read.
+    telegram_on = os.getenv("PAPER_1X2_TELEGRAM", "0") == "1"
     for i, pick, ev, odds in chosen[:MAX_TIPS_PER_RUN]:
-        if dry_run or not getattr(cfg, "PRO_MAY_NOTIFY", False):
+        if dry_run:
             continue
-        ok, detail = cn.send(format_tip(d.loc[i], pick, ev, odds))
-        if not ok:
-            out["reasons"][f"SEND_FAILED:{detail}"] = 1
-            break                                  # same circuit breaker as the combo notifier
+        if telegram_on:
+            if not getattr(cfg, "PRO_MAY_NOTIFY", False):
+                continue
+            ok, detail = cn.send(format_tip(d.loc[i], pick, ev, odds))
+            if not ok:
+                out["reasons"][f"SEND_FAILED:{detail}"] = 1
+                break                              # same circuit breaker as the combo notifier
         d.at[i, "notified_at"] = now.strftime("%Y-%m-%dT%H:%M:%SZ")
         d.at[i, "notified_pick"] = pick
         d.at[i, "notified_odds"] = odds
