@@ -210,6 +210,25 @@ def _ou_lineups():
             "date": r.get("generated_at"), "key": cov, "report": "output/studies/ou_lineups.json"}
 
 
+def _market_anchor():
+    r = _j("studies/market_anchor.json")
+    if not r:
+        return None
+    s = (r.get("tracks") or {}).get("standard", {})
+    d = s.get("dLL_MARKET_minus_V9", {})
+    ub = (s.get("bets", {}).get("V9", {}).get("VALUABLE", {}).get("UNDER") or {})
+    return {"status": "Market-anchored O/U (standard): the pre-match price beats v9; weight on v9 when anchored ~0 - "
+                      "anchoring leaves no tips",
+            "date": r.get("generated_at"),
+            "key": {"market minus v9, log loss": f"{d.get('delta')} (90% CI {d.get('ci90')})",
+                    "v9 probability spread vs market": f"{s.get('prob_spread_sd', {}).get('V9')} vs "
+                                                       f"{s.get('prob_spread_sd', {}).get('MARKET')}",
+                    "v9 UNDER bets (edge>=3%)": f"n {ub.get('n')}, ROI {ub.get('roi_pct')}%, claimed hit "
+                                                f"{ub.get('claimed_hit')} vs real {ub.get('real_hit')}",
+                    "new-format": "price data invalid for this test"},
+            "report": "output/studies/market_anchor.json"}
+
+
 def _segments():
     s = _j("studies/props_segments.json")
     if not s:
@@ -285,6 +304,7 @@ STUDIES = [
     ("model_lineage", "Model lineage — champion high-water mark", "models", _lineage),
     ("ou_info_inputs", "O/U inputs: injuries (lineups / news / movement next)", "models", _ou_info),
     ("ou_lineups", "O/U inputs: starting lineups", "models", _ou_lineups),
+    ("market_anchor", "Market-anchored O/U review", "models", _market_anchor),
     ("calibration_form", "Calibration form: v9 vs log-odds Platt", "models", _calibration),
     ("calibration_shadow", "Calibration shadow in v9 (pre-registered)", "models", _cal_shadow),
     ("props_segments", "Props segments: attacking D / M (pre-registered)", "players", _segments),

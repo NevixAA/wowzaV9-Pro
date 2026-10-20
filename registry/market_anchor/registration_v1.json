@@ -1,0 +1,23 @@
+{
+ "study": "market_anchor_ou25",
+ "version": 1,
+ "registered_at": "2026-10-20",
+ "requested_by": "owner 2026-10-20 ('do it'): bring the market-anchored O/U review forward",
+ "question": "Does v9 O/U 2.5 improve when anchored on the de-vigged market price with the model as a small correction?",
+ "data": {
+  "model": "v9 walk-forward probabilities p_base (v9's own train(), quarterly blocks 2024-01..2026-10, out-of-sample) from experiments/ou_info_inputs_2026_10/eval_rows.parquet",
+  "market_primary": "standard track: football-data PRE-MATCH average Avg>2.5 / Avg<2.5 (recorded before kickoff, ~when v9 tips freeze); closing AvgC is NOT used as the anchor",
+  "market_secondary": "new_format track: the frame's own odds_over25/odds_under25 (v9 captures, timing not guaranteed) - reported, never decisive",
+  "devig": "power method (p_o^k + p_u^k = 1)"
+ },
+ "arms": {
+  "V9": "p_base unchanged",
+  "MARKET": "de-vigged market alone",
+  "ANCHOR": "logit p = logit p_mkt + w*(logit p_v9 - logit p_mkt); w fitted by log loss on all EARLIER blocks only, clipped to [0, 0.40] standard / [0, 0.45] new_format (v11 caps); first block uses w=0.20",
+  "ANCHOR_LR": "sensitivity only: logistic regression on [logit p_mkt, logit p_v9] fitted on earlier blocks"
+ },
+ "primary_metric": "log loss on identical rows, ANCHOR minus V9, standard track",
+ "decision_rule": "ANCHOR is a v9 PROPOSAL candidate only if dLL(ANCHOR-V9) <= -0.001 AND 90% day-block bootstrap CI upper < 0. Any proposal goes to the owner with numbers; nothing changes in v9 from this study.",
+ "secondary": ["dLL ANCHOR-MARKET (does the model add anything to the price)", "calibration by side: claimed vs realised P(under) on bets", "bet level at the pre-match price: edge = p - 1/odds >= 0.03 (live VALUABLE floor) and >= 0.08 (live MARKSMAN floor); count, ROI, split OVER/UNDER, bootstrap CI"],
+ "frozen": "no thresholds, caps or arms are changed after results are seen"
+}

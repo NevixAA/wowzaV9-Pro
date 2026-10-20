@@ -1,0 +1,409 @@
+{
+ "generated_at": "2026-10-20 10:27 UTC",
+ "registration": "registry\\market_anchor\\registration_v1.json",
+ "decision_rule": "ANCHOR is a v9 PROPOSAL candidate only if dLL(ANCHOR-V9) <= -0.001 AND 90% day-block bootstrap CI upper < 0. Any proposal goes to the owner with numbers; nothing changes in v9 from this study.",
+ "audit": {
+  "standard_rows": 15724,
+  "standard_with_prematch_price": 14488,
+  "new_format_rows": 13584,
+  "new_format_with_price": 4428,
+  "prematch_equals_closing_share": 0.071,
+  "frame_odds_equal_closing_share": 0.998
+ },
+ "anchor_weight_by_block": {
+  "new_format": {
+   "2025-04-01": 0.2,
+   "2025-07-01": 0.45,
+   "2025-10-01": 0.45,
+   "2026-01-01": 0.45,
+   "2026-04-01": 0.45,
+   "2026-07-01": 0.45,
+   "2026-10-01": 0.45
+  },
+  "standard": {
+   "2024-01-01": 0.2,
+   "2024-04-01": 0.0,
+   "2024-07-01": 0.0,
+   "2024-10-01": 0.021,
+   "2025-01-01": 0.0,
+   "2025-04-01": 0.0,
+   "2025-07-01": 0.0,
+   "2025-10-01": 0.0,
+   "2026-01-01": 0.0,
+   "2026-04-01": 0.006,
+   "2026-07-01": 0.005,
+   "2026-10-01": 0.0
+  }
+ },
+ "tracks": {
+  "new_format": {
+   "n": 4427,
+   "log_loss": {
+    "V9": 0.67697,
+    "MARKET": 0.6896,
+    "ANCHOR": 0.67692,
+    "ANCHOR_LR": 0.6767
+   },
+   "brier": {
+    "V9": 0.24203,
+    "MARKET": 0.24738,
+    "ANCHOR": 0.24199
+   },
+   "dLL_ANCHOR_minus_V9": {
+    "delta": -5e-05,
+    "ci90": [
+     -0.00383,
+     0.00375
+    ]
+   },
+   "dLL_ANCHOR_minus_MARKET": {
+    "delta": -0.01268,
+    "ci90": [
+     -0.01602,
+     -0.00944
+    ]
+   },
+   "dLL_MARKET_minus_V9": {
+    "delta": 0.01263,
+    "ci90": [
+     0.00598,
+     0.01951
+    ]
+   },
+   "dLL_ANCHOR_LR_minus_V9": {
+    "delta": -0.00027,
+    "ci90": [
+     -0.00335,
+     0.00296
+    ]
+   },
+   "prob_spread_sd": {
+    "V9": 0.0914,
+    "MARKET": 0.1303,
+    "ANCHOR": 0.1012
+   },
+   "bets": {
+    "V9": {
+     "VALUABLE": {
+      "OVER": {
+       "n": 1491,
+       "roi_pct": 20.6,
+       "roi_ci90_pct": [
+        14.9,
+        26.7
+       ],
+       "claimed_hit": 0.542,
+       "real_hit": 0.498
+      },
+      "UNDER": {
+       "n": 1320,
+       "roi_pct": 7.9,
+       "roi_ci90_pct": [
+        2.0,
+        13.6
+       ],
+       "claimed_hit": 0.513,
+       "real_hit": 0.445
+      },
+      "ALL": {
+       "n": 2811,
+       "roi_pct": 14.7,
+       "roi_ci90_pct": [
+        10.2,
+        18.9
+       ],
+       "claimed_hit": 0.529,
+       "real_hit": 0.473
+      }
+     },
+     "MARKSMAN": {
+      "OVER": {
+       "n": 758,
+       "roi_pct": 40.2,
+       "roi_ci90_pct": [
+        30.8,
+        49.6
+       ],
+       "claimed_hit": 0.563,
+       "real_hit": 0.521
+      },
+      "UNDER": {
+       "n": 663,
+       "roi_pct": 16.4,
+       "roi_ci90_pct": [
+        7.6,
+        24.9
+       ],
+       "claimed_hit": 0.537,
+       "real_hit": 0.457
+      },
+      "ALL": {
+       "n": 1421,
+       "roi_pct": 29.1,
+       "roi_ci90_pct": [
+        21.8,
+        36.2
+       ],
+       "claimed_hit": 0.551,
+       "real_hit": 0.491
+      }
+     }
+    },
+    "ANCHOR": {
+     "VALUABLE": {
+      "OVER": {
+       "n": 694,
+       "roi_pct": 37.7,
+       "roi_ci90_pct": [
+        27.6,
+        47.6
+       ],
+       "claimed_hit": 0.465,
+       "real_hit": 0.519
+      },
+      "UNDER": {
+       "n": 464,
+       "roi_pct": 26.5,
+       "roi_ci90_pct": [
+        15.0,
+        37.0
+       ],
+       "claimed_hit": 0.471,
+       "real_hit": 0.517
+      },
+      "ALL": {
+       "n": 1158,
+       "roi_pct": 33.2,
+       "roi_ci90_pct": [
+        25.5,
+        40.8
+       ],
+       "claimed_hit": 0.468,
+       "real_hit": 0.518
+      }
+     },
+     "MARKSMAN": {
+      "OVER": {
+       "n": 152,
+       "roi_pct": 72.6,
+       "roi_ci90_pct": [
+        51.9,
+        93.4
+       ],
+       "claimed_hit": 0.416,
+       "real_hit": 0.526
+      },
+      "UNDER": {
+       "n": 51,
+       "roi_pct": 62.5,
+       "roi_ci90_pct": [
+        30.7,
+        95.1
+       ],
+       "claimed_hit": 0.472,
+       "real_hit": 0.588
+      },
+      "ALL": {
+       "n": 203,
+       "roi_pct": 70.0,
+       "roi_ci90_pct": [
+        54.1,
+        87.1
+       ],
+       "claimed_hit": 0.43,
+       "real_hit": 0.542
+      }
+     }
+    }
+   }
+  },
+  "standard": {
+   "n": 14487,
+   "log_loss": {
+    "V9": 0.69272,
+    "MARKET": 0.67877,
+    "ANCHOR": 0.67886,
+    "ANCHOR_LR": 0.68248
+   },
+   "brier": {
+    "V9": 0.24978,
+    "MARKET": 0.24294,
+    "ANCHOR": 0.24298
+   },
+   "dLL_ANCHOR_minus_V9": {
+    "delta": -0.01386,
+    "ci90": [
+     -0.01605,
+     -0.01167
+    ]
+   },
+   "dLL_ANCHOR_minus_MARKET": {
+    "delta": 9e-05,
+    "ci90": [
+     -6e-05,
+     0.00024
+    ]
+   },
+   "dLL_MARKET_minus_V9": {
+    "delta": -0.01395,
+    "ci90": [
+     -0.01618,
+     -0.01172
+    ]
+   },
+   "dLL_ANCHOR_LR_minus_V9": {
+    "delta": -0.01024,
+    "ci90": [
+     -0.01268,
+     -0.00781
+    ]
+   },
+   "prob_spread_sd": {
+    "V9": 0.0247,
+    "MARKET": 0.0851,
+    "ANCHOR": 0.0831
+   },
+   "bets": {
+    "V9": {
+     "VALUABLE": {
+      "OVER": {
+       "n": 3492,
+       "roi_pct": -6.6,
+       "roi_ci90_pct": [
+        -9.8,
+        -3.3
+       ],
+       "claimed_hit": 0.518,
+       "real_hit": 0.416
+      },
+      "UNDER": {
+       "n": 2529,
+       "roi_pct": -12.7,
+       "roi_ci90_pct": [
+        -16.4,
+        -8.8
+       ],
+       "claimed_hit": 0.485,
+       "real_hit": 0.355
+      },
+      "ALL": {
+       "n": 6021,
+       "roi_pct": -9.1,
+       "roi_ci90_pct": [
+        -11.7,
+        -6.7
+       ],
+       "claimed_hit": 0.504,
+       "real_hit": 0.39
+      }
+     },
+     "MARKSMAN": {
+      "OVER": {
+       "n": 1155,
+       "roi_pct": -4.4,
+       "roi_ci90_pct": [
+        -10.1,
+        1.0
+       ],
+       "claimed_hit": 0.522,
+       "real_hit": 0.391
+      },
+      "UNDER": {
+       "n": 993,
+       "roi_pct": -17.3,
+       "roi_ci90_pct": [
+        -23.8,
+        -10.6
+       ],
+       "claimed_hit": 0.486,
+       "real_hit": 0.3
+      },
+      "ALL": {
+       "n": 2148,
+       "roi_pct": -10.3,
+       "roi_ci90_pct": [
+        -14.2,
+        -5.8
+       ],
+       "claimed_hit": 0.505,
+       "real_hit": 0.349
+      }
+     }
+    },
+    "ANCHOR": {
+     "VALUABLE": {
+      "OVER": {
+       "n": 0,
+       "roi_pct": null,
+       "roi_ci90_pct": [
+        null,
+        null
+       ],
+       "claimed_hit": null,
+       "real_hit": null
+      },
+      "UNDER": {
+       "n": 0,
+       "roi_pct": null,
+       "roi_ci90_pct": [
+        null,
+        null
+       ],
+       "claimed_hit": null,
+       "real_hit": null
+      },
+      "ALL": {
+       "n": 0,
+       "roi_pct": null,
+       "roi_ci90_pct": [
+        null,
+        null
+       ],
+       "claimed_hit": null,
+       "real_hit": null
+      }
+     },
+     "MARKSMAN": {
+      "OVER": {
+       "n": 0,
+       "roi_pct": null,
+       "roi_ci90_pct": [
+        null,
+        null
+       ],
+       "claimed_hit": null,
+       "real_hit": null
+      },
+      "UNDER": {
+       "n": 0,
+       "roi_pct": null,
+       "roi_ci90_pct": [
+        null,
+        null
+       ],
+       "claimed_hit": null,
+       "real_hit": null
+      },
+      "ALL": {
+       "n": 0,
+       "roi_pct": null,
+       "roi_ci90_pct": [
+        null,
+        null
+       ],
+       "claimed_hit": null,
+       "real_hit": null
+      }
+     }
+    }
+   }
+  }
+ },
+ "verdict": "PASSES THE FROZEN RULE BUT IS NOT A TIPPING MODEL - the fitted weight on v9 is ~0 in every block, so the anchored arm IS the market price and produces no tips at the live floors. v9 adds nothing to the pre-match price on standard O/U. Owner decision, not a v9 swap.",
+ "standard_weight_on_v9_median": 0.0,
+ "new_format_price_integrity": {
+  "share_margin_below_zero": 0.11,
+  "median_overround": 1.049,
+  "verdict": "INVALID AS A MARKET ANCHOR - prices look like best-of-books per side, not one book's two-way price; new_format results above are not decision-grade"
+ }
+}
