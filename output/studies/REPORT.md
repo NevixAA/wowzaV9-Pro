@@ -4,32 +4,32 @@ Research only. Nothing here changes v9, a threshold or a stake.
 
 ## 1. Argentina BTTS: model, league, bookmaker, or luck?
 
-- BTTS rate, all Argentina matches: 2025 **38%**, 2026 47%, since 10 Aug **55%**.
-- Tip period, 112 matches with a clean Bet365 price: BTTS happened 57% while the de-vigged price implied 42% (gap 14.7 points).
-- **B, blind YES on every match: +25%** [+9%, +43%], n 112.
-- A, matches Wowza picked: +36%; matches it did not pick: +15%. Difference +22% [-4%, +48%] — **not distinguishable from zero**.
-- Model vs market on the same matches: Brier 0.2451 vs 0.2816; residual z 0.38 (no fixture-level signal beyond the level).
-- C, a cheap bookmaker: no book's YES price ever beat the others' de-vigged consensus (102 fixtures). The whole market is behind, not one book.
+- BTTS rate, all Argentina matches: 2025 **38%**, 2026 47%, since 10 Aug **56%**.
+- Tip period, 115 matches with a clean Bet365 price: BTTS happened 58% while the de-vigged price implied 42% (gap 15.8 points).
+- **B, blind YES on every match: +28%** [+12%, +45%], n 115.
+- A, matches Wowza picked: +36%; matches it did not pick: +20%. Difference +16% [-12%, +42%] — **not distinguishable from zero**.
+- Model vs market on the same matches: Brier 0.246 vs 0.2837; residual z -0.03 (no fixture-level signal beyond the level).
+- C, a cheap bookmaker: no book's YES price ever beat the others' de-vigged consensus (105 fixtures). The whole market is behind, not one book.
 - 51 Bet365 price pairs were the FIRST-HALF BTTS market and were dropped (YES 8.00 / NO 1.08 passes a margin check).
 
 **Reading.** The profit is a league scoring regime the market has priced slowly, not model selection. Wowza's contribution is being more bullish on YES than the market. If the league reverts toward 2025's rate, so does the edge. Watch the gap between realised and implied.
 
 ## 2. The UNDER problem
 
-- 1258 O/U 2.5 fixtures, every priced one (not only tips).
+- 1266 O/U 2.5 fixtures, every priced one (not only tips).
 - The model's P(over) barely moves: it sits around 52% in every band while the market ranges 41–67%. Disagreement therefore comes from the MARKET moving, not the model knowing.
 
 | Model leans | n | Realised over | Model | Market | Model error | Market error |
 |---|---|---|---|---|---|---|
-| model UNDER by >10pp | 196 | 60% | 51% | 66% | -8.9 | +6.1 |
-| UNDER 5-10pp | 253 | 61% | 52% | 59% | -9.4 | -2.0 |
-| UNDER 2-5pp | 173 | 58% | 52% | 55% | -6.4 | -3.0 |
-| agrees (±2pp) | 282 | 51% | 52% | 52% | +0.7 | +0.7 |
-| OVER 2-5pp | 167 | 48% | 52% | 49% | +3.5 | +0.0 |
-| OVER 5-10pp | 137 | 47% | 52% | 45% | +5.7 | -1.4 |
+| model UNDER by >10pp | 199 | 60% | 51% | 66% | -9.7 | +5.4 |
+| UNDER 5-10pp | 254 | 61% | 52% | 59% | -9.6 | -2.1 |
+| UNDER 2-5pp | 174 | 59% | 52% | 55% | -6.7 | -3.3 |
+| agrees (±2pp) | 283 | 52% | 52% | 52% | +0.5 | +0.5 |
+| OVER 2-5pp | 168 | 48% | 52% | 49% | +3.7 | +0.3 |
+| OVER 5-10pp | 138 | 46% | 52% | 45% | +6.0 | -1.1 |
 | model OVER by >10pp | 50 | 44% | 54% | 42% | +10.1 | -2.2 |
 
-- Share of the model's lean that showed up in results: leaning UNDER 0.032, leaning OVER 0.139 (1 = all of it, 0 = none; negative = the result moved the other way).
+- Share of the model's lean that showed up in results: leaning UNDER -0.006, leaning OVER 0.096 (1 = all of it, 0 = none; negative = the result moved the other way).
 
 **Reading.** UNDER tips come from matches the market rates high-scoring while the model stays near 52%. The market is right. The fix is in the probability: anchor on the market and add the model only as a small, fitted residual — whose fitted weight is currently about zero.
 
@@ -37,53 +37,53 @@ Research only. Nothing here changes v9, a threshold or a stake.
 
 | Market | Track | n | Brier market | Brier model | Out-of-sample Δ log-loss | 90% CI | Verdict |
 |---|---|---|---|---|---|---|---|
-| OU25 | all | 1258 | 0.24353 | 0.2481 | +0.00179 | [-0.0004, +0.0040] | NO_DETECTABLE_GAIN |
-| OU25 | new_format | 682 | 0.24194 | 0.24599 | +0.00731 | [+0.0023, +0.0128] | MODEL_HURTS |
-| OU25 | standard | 576 | 0.24542 | 0.2506 | +0.00362 | [-0.0017, +0.0094] | NO_DETECTABLE_GAIN |
-| OU35 | all | 357 | 0.23352 | 0.24677 | +0.04125 | [-0.0003, +0.0950] | NO_DETECTABLE_GAIN |
-| OU35 | new_format | 279 | 0.23305 | 0.24814 | +0.00333 | [+0.0001, +0.0072] | MODEL_HURTS |
-| BTTS | all | 1252 | 0.24224 | 0.24423 | +0.00757 | [+0.0014, +0.0149] | MODEL_HURTS |
-| BTTS | new_format | 685 | 0.24178 | 0.24218 | +0.00874 | [+0.0041, +0.0138] | MODEL_HURTS |
-| BTTS | standard | 567 | 0.2428 | 0.24669 | +0.00902 | [-0.0038, +0.0229] | NO_DETECTABLE_GAIN |
+| OU25 | all | 1266 | 0.2433 | 0.24849 | +0.00117 | [-0.0009, +0.0032] | NO_DETECTABLE_GAIN |
+| OU25 | new_format | 689 | 0.24165 | 0.24675 | +0.00483 | [+0.0003, +0.0097] | MODEL_HURTS |
+| OU25 | standard | 577 | 0.24527 | 0.25057 | +0.00351 | [-0.0019, +0.0091] | NO_DETECTABLE_GAIN |
+| OU35 | all | 359 | 0.23372 | 0.2471 | +0.04096 | [+0.0003, +0.0936] | MODEL_HURTS |
+| OU35 | new_format | 281 | 0.23331 | 0.24855 | +0.00080 | [-0.0006, +0.0024] | NO_DETECTABLE_GAIN |
+| BTTS | all | 1261 | 0.24232 | 0.24426 | +0.00741 | [+0.0014, +0.0145] | MODEL_HURTS |
+| BTTS | new_format | 693 | 0.24172 | 0.24223 | +0.00753 | [+0.0025, +0.0130] | MODEL_HURTS |
+| BTTS | standard | 568 | 0.24305 | 0.24675 | +0.00712 | [-0.0048, +0.0205] | NO_DETECTABLE_GAIN |
 
 Negative Δ = adding the model improved the forecast. No market × track shows an improvement; several are made worse. O/U stays PAPER regardless of short ROI windows.
 
 ## 4. Evidence per cell (staked tips since 10 Aug)
 
-19 cells tested (of 30; the rest are too small). Pooled prior +3.9%, between-cell sd 0.15. Reality-check p for the best cell: **0.058**.
+19 cells tested (of 30; the rest are too small). Pooled prior +3.7%, between-cell sd 0.16. Reality-check p for the best cell: **0.058**.
 
 | League | Market | n | Raw ROI | Shrunk ROI | P(edge>0) | FDR q | CLV 90% CS | Recommendation |
 |---|---|---|---|---|---|---|---|---|
-| Argentina Primera Division | btts | 85 | +32% | +21% | 0.98 | 0.08 | [-5.7, +2.1] | PAPER (n 85 < 150) |
-| Brazil Serie A | ou25 | 25 | +47% | +18% | 0.92 | 0.15 | [-6.5, +3.3] | PAPER (n 25 < 150) |
-| Sweden Allsvenskan | ou25 | 31 | +24% | +10% | 0.78 | 0.69 | [-4.7, +4.4] | PAPER (n 31 < 150) |
-| Serie B | ou25 | 22 | +25% | +10% | 0.77 | 0.69 | [-1.3, +11.8] | PAPER (n 22 < 150) |
-| Brazil Serie A | btts | 19 | +19% | +8% | 0.72 | 0.75 | [-23.0, +19.4] | PAPER (n 19 < 150) |
+| Argentina Primera Division | btts | 85 | +32% | +22% | 0.98 | 0.08 | [-5.7, +2.1] | PAPER (n 85 < 150) |
+| Brazil Serie A | ou25 | 25 | +47% | +19% | 0.92 | 0.15 | [-6.5, +3.3] | PAPER (n 25 < 150) |
+| Sweden Allsvenskan | ou25 | 31 | +24% | +11% | 0.78 | 0.62 | [-4.7, +4.4] | PAPER (n 31 < 150) |
+| Serie B | ou25 | 22 | +25% | +10% | 0.77 | 0.62 | [-1.3, +11.8] | PAPER (n 22 < 150) |
+| Brazil Serie A | btts | 20 | +24% | +10% | 0.76 | 0.62 | [-21.0, +17.7] | PAPER (n 20 < 150) |
 | Argentina Primera Division | ou25 | 33 | +15% | +7% | 0.68 | 0.75 | [-4.2, +5.4] | PAPER (n 33 < 150) |
 | Finland Veikkausliiga | ou25 | 19 | +11% | +6% | 0.66 | 0.75 | [-6.6, +7.1] | PAPER (n 19 < 150) |
-| Japan J-League | ou25 | 26 | +8% | +5% | 0.66 | 0.75 | [-4.8, +11.7] | PAPER (n 26 < 150) |
-| Mexico Liga MX | ou25 | 26 | +7% | +5% | 0.65 | 0.75 | [-0.3, +8.4] | PAPER (n 26 < 150) |
-| Argentina Primera Division | over15 | 90 | +3% | +3% | 0.64 | 0.75 | [-0.2, +2.7] | PAPER (n 90 < 150) |
-| La Liga 2 | ou25 | 36 | -4% | +2% | 0.55 | 0.95 | [-2.7, +4.2] | PAPER (n 36 < 150) |
-| Denmark Superliga | ou25 | 20 | -7% | +1% | 0.53 | 0.95 | [-5.1, +7.6] | PAPER (n 20 < 150) |
-| Ireland Premier Division | ou25 | 15 | -15% | -0% | 0.49 | 0.97 | [-13.4, +3.6] | PAPER (n 15 < 150) |
-| Austrian Bundesliga | ou25 | 19 | -15% | -1% | 0.47 | 0.97 | [-14.3, +5.0] | PAPER (n 19 < 150) |
-| Bundesliga 2 | ou25 | 15 | -35% | -5% | 0.37 | 0.98 | [-13.2, +9.9] | PAPER (n 15 < 150) |
-| Championship | ou25 | 24 | -29% | -7% | 0.30 | 0.98 | [-7.8, +5.9] | PAPER (n 24 < 150) |
-| China Super League | ou25 | 26 | -33% | -7% | 0.30 | 0.98 | [-10.6, +4.1] | PAPER (n 26 < 150) |
-| League One | ou25 | 20 | -41% | -9% | 0.26 | 0.98 | [-7.5, +4.6] | PAPER (n 20 < 150) |
-| Norway Eliteserien | ou25 | 21 | -49% | -12% | 0.20 | 0.98 | [-11.9, +6.6] | PAPER (n 21 < 150) |
+| Japan J-League | ou25 | 26 | +8% | +5% | 0.65 | 0.75 | [-4.8, +11.7] | PAPER (n 26 < 150) |
+| Argentina Primera Division | over15 | 92 | +4% | +4% | 0.67 | 0.75 | [-0.2, +2.7] | PAPER (n 92 < 150) |
+| Mexico Liga MX | ou25 | 27 | +3% | +4% | 0.60 | 0.83 | [-0.5, +8.1] | PAPER (n 27 < 150) |
+| La Liga 2 | ou25 | 36 | -4% | +2% | 0.54 | 0.98 | [-2.7, +4.2] | PAPER (n 36 < 150) |
+| Denmark Superliga | ou25 | 21 | -11% | -0% | 0.49 | 0.98 | [-4.8, +7.1] | PAPER (n 21 < 150) |
+| Austrian Bundesliga | ou25 | 19 | -15% | -1% | 0.47 | 0.98 | [-14.3, +5.0] | PAPER (n 19 < 150) |
+| Ireland Premier Division | ou25 | 16 | -20% | -2% | 0.44 | 0.98 | [-12.5, +3.4] | PAPER (n 16 < 150) |
+| Bundesliga 2 | ou25 | 15 | -35% | -6% | 0.35 | 0.98 | [-13.2, +9.9] | PAPER (n 15 < 150) |
+| Championship | ou25 | 24 | -29% | -7% | 0.29 | 0.98 | [-7.8, +5.9] | PAPER (n 24 < 150) |
+| China Super League | ou25 | 26 | -33% | -8% | 0.29 | 0.98 | [-10.6, +4.1] | PAPER (n 26 < 150) |
+| League One | ou25 | 20 | -41% | -10% | 0.25 | 0.98 | [-7.5, +4.6] | PAPER (n 20 < 150) |
+| Norway Eliteserien | ou25 | 21 | -49% | -13% | 0.19 | 0.98 | [-11.9, +6.6] | PAPER (n 21 < 150) |
 
 ## 5. Market-anchored O/U 2.5 challenger
 
-`logit p = a + b·logit(market) + c·logit(v9)`, refitted weekly, c ≥ 0. Decision-time market only (never the close). 964 out-of-sample fixtures.
+`logit p = a + b·logit(market) + c·logit(v9)`, refitted weekly, c ≥ 0. Decision-time market only (never the close). 972 out-of-sample fixtures.
 
 | | Log loss | Brier | Tips at 5% edge | UNDER share | Units | ROI | Mean CLV (pp) |
 |---|---|---|---|---|---|---|---|
-| Market | 0.68804 | 0.2476 | – | – | – | – | – |
-| v9 | 0.69459 | 0.2507 | 246 | 0.78 | -12.88 | -5% | -3.8 |
-| Challenger | 0.68812 | 0.24754 | 0 | – | – | – | – |
+| Market | 0.68762 | 0.24739 | – | – | – | – | – |
+| v9 | 0.69541 | 0.2511 | 249 | 0.783 | -15.88 | -6% | -3.83 |
+| Challenger | 0.6877 | 0.24733 | 0 | – | – | – | – |
 
-Current weights: c (model) = 0.0 — unconstrained fit -0.263, i.e. given the market, v9's lean points the WRONG way, so it gets no say. Forward record: `output/studies/ou_challenger_forward.csv` (first sight, never revised).
+Current weights: c (model) = 0.0 — unconstrained fit -0.324, i.e. given the market, v9's lean points the WRONG way, so it gets no say. Forward record: `output/studies/ou_challenger_forward.csv` (first sight, never revised).
 
 Gates for a TINY_REAL review: n ≥ 150, P(edge>0) ≥ 0.80, FDR q ≤ 0.10, no CLV deterioration alarm. Recommendations only; the execution policy changes by a human-approved commit.
