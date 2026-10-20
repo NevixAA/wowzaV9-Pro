@@ -13,7 +13,7 @@ Code: `src/studies/edge_reassessment.py` (Pro). Outputs: `output/edge_reassessme
 |---|---|---|
 | **ALL_FIXTURE** | every fixture v9 priced, from its 689 committed `predictions.csv` snapshots (2026-08-15 → 10-20), first sight per fixture × market, settled from Pro `team_match_stats` via v9's league-scoped resolver (100% agreement with ledger results on 720 shared fixtures). Close = last committed snapshot **strictly before kickoff and within 6 h of it**, else NaN. | 3,032 settled rows: OU25 1,317 · BTTS 1,168 · O1.5 103 · O3.5 444. Valid close 94% (2,847); 147 had no observation near kickoff, 38 only one observation — those get a result but NaN CLV. |
 | **LIVE** | v9 ledgers, first sight. Selection-censored: below-gate fixtures never enter. | 1,674 settled tips |
-| **V91_SHADOW** | v9 `output/v91_shadow.csv` (OU25, from 10-04), an independent capture | 641 rows, **0 settled at the time of writing** (settlement fix in progress — see Instrumentation failures) |
+| **V91_SHADOW** | v9 `output/v91_shadow.csv` (OU25, from 10-04), an independent capture, settled by the P0 fix (v9 `9184f99b`/`63faa1a0`; 29 frozen columns hash-identical, independently re-verified: 0 changed cells vs the pre-fix commit) | 641 rows, 375 settled; close = last archived pre-kickoff price (median 319 min before kickoff, so not a certified closing line) |
 
 ## Decision matrix
 
@@ -49,6 +49,16 @@ Code: `src/studies/edge_reassessment.py` (Pro). Outputs: `output/edge_reassessme
 * **Entry time:** 88% of first sightings are ≥ 96 h before kickoff; the short-horizon cells are too small to read.
 * **Movement state:** all-fixture first-sight drift is "New" on every row (the drift signal needs history) — the
   movement split is only meaningful on the live ledger (see the VALUABLE deep dive: Conflicted −19.5%, Neutral +5.9%).
+
+### V91_SHADOW cross-check (independent capture, OU25, 375 settled)
+
+| track | all positive-edge candidates | ρ(edge, P/L) all rows | by v9 tier (n, ROI) | below-gate AVOID with edge ≥ 0 |
+|---|---|---|---|---|
+| new_format | n 162, **+8.9% [−1.8, 20.6]**, CLV −0.1 | −0.042 (p 0.55) | VALUABLE 50 +31.8% · MARKSMAN 33 −7.3% · SNIPER 24 −18.5% | n 55, +9.8% |
+| standard | n 92, **−9.7% [−27.8, 26.4]**, CLV +0.5 | −0.026 (p 0.74) | VALUABLE 43 −6.0% · MARKSMAN 7 +5.3% · SNIPER 8 −71.9% | n 34, −3.0% |
+
+Two independent captures agree: **edge does not rank OU25 outcomes**, new-format is mildly positive with an interval
+including zero, standard is negative, and the tier ladder is inverted on new-format.
 
 ## B. BTTS
 
@@ -133,7 +143,7 @@ the source gives no gate. Rows between discovery and forward start are reported 
 * Results since the 10-18 champion.
 
 ### Instrumentation failures
-1. `output/v91_shadow.csv` — 641 rows since 10-04, **never settled** (fix in progress in v9).
+1. `output/v91_shadow.csv` — 641 rows since 10-04 were never settled. **FIXED 2026-10-20** (v9 `9184f99b`): 375 settled, 45 finished rows still open (Japan/Denmark API-Football seasons hardcoded stale; Brazil/Finland/China name aliases) — owner decisions listed in v9 `docs/P0_SHADOW_SETTLEMENT_FIX.md`.
 2. `src/ledger.py` overwrites tier, edge (and for side markets the odds) in place on upgrade — the ledger is not
    first-sight; 31% of OU25 tips affected.
 3. `retrain_batch_id` is never populated; `model_version` is absent from snapshots before 2026-10-18 — results

@@ -126,7 +126,84 @@
  },
  "v91_shadow_crosscheck": {
   "rows": 641,
-  "settled": 0
+  "settled": 375,
+  "note": "independent capture; OU25 only; close = last archived pre-kickoff price, median 319 min before kickoff",
+  "new_format": {
+   "all_positive_edge": {
+    "n": 162,
+    "matchdays": 15,
+    "roi_pct": 8.9,
+    "roi_ci95_lo": -1.8,
+    "roi_ci95_hi": 20.6,
+    "clv_mean": -0.13,
+    "excess_hit_pp": 4.6
+   },
+   "spearman_edge_pnl_all_rows": [
+    -0.042,
+    0.5505
+   ],
+   "n_all": 207,
+   "by_tier": {
+    "AVOID": [
+     100,
+     8.0
+    ],
+    "MARKSMAN": [
+     33,
+     -7.3
+    ],
+    "SNIPER": [
+     24,
+     -18.5
+    ],
+    "VALUABLE": [
+     50,
+     31.8
+    ]
+   },
+   "below_gate_AVOID_positive_edge": [
+    55,
+    9.8
+   ]
+  },
+  "standard": {
+   "all_positive_edge": {
+    "n": 92,
+    "matchdays": 13,
+    "roi_pct": -9.7,
+    "roi_ci95_lo": -27.8,
+    "roi_ci95_hi": 26.4,
+    "clv_mean": 0.45,
+    "excess_hit_pp": -5.0
+   },
+   "spearman_edge_pnl_all_rows": [
+    -0.026,
+    0.7424
+   ],
+   "n_all": 168,
+   "by_tier": {
+    "AVOID": [
+     110,
+     5.4
+    ],
+    "MARKSMAN": [
+     7,
+     5.3
+    ],
+    "SNIPER": [
+     8,
+     -71.9
+    ],
+    "VALUABLE": [
+     43,
+     -6.0
+    ]
+   },
+   "below_gate_AVOID_positive_edge": [
+    34,
+    -3.0
+   ]
+  }
  },
  "registry": "registry\\candidate_forward_tests.json",
  "n_forward_tests": 14
