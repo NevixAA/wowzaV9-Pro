@@ -1,4 +1,4 @@
-# Top picks — weekly table (2026-W43, updated 2026-10-20 06:35 UTC)
+# Top picks — weekly table (2026-W43, updated 2026-10-20 08:00 UTC)
 
 | List | How it's ranked | Live, this week | Live, to date | Backtest (all days with >= 10 tips) |
 |---|---|---|---|---|
