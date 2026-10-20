@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-20 08:03 UTC",
+ "generated_at": "2026-10-20 10:28 UTC",
  "items": [
   {
    "id": "league_promotion",
@@ -16,6 +16,21 @@
    },
    "report": "output/scout/WEEKLY_PROMOTION_REVIEW.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/scout/WEEKLY_PROMOTION_REVIEW.md"
+  },
+  {
+   "id": "market_anchor",
+   "title": "Market-anchored O/U review",
+   "area": "models",
+   "status": "Market-anchored O/U (standard): the pre-match price beats v9; weight on v9 when anchored ~0 - anchoring leaves no tips",
+   "date": "2026-10-20 10:27 UTC",
+   "key": {
+    "market minus v9, log loss": "-0.01395 (90% CI [-0.01618, -0.01172])",
+    "v9 probability spread vs market": "0.0247 vs 0.0851",
+    "v9 UNDER bets (edge>=3%)": "n 2529, ROI -12.7%, claimed hit 0.485 vs real 0.355",
+    "new-format": "price data invalid for this test"
+   },
+   "report": "output/studies/market_anchor.json",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/market_anchor.json"
   },
   {
    "id": "props_calibration",
