@@ -93,7 +93,7 @@ def test_readable_league_validates_and_is_idempotent(iso, monkeypatch):
     for f in ("league_onboarding_data_quality.json", "model_matrix.csv", "onboarding_proposal.json", "PROMOTION_REPORT.md"):
         assert (folder / f).exists(), f
     prop = json.loads((folder / "onboarding_proposal.json").read_text(encoding="utf-8"))
-    assert prop["deployment"]["REAL_MONEY"] == "NO" and prop["deployment"]["PAPER_ONLY"] == "YES"
+    assert prop["deployment"]["REAL_MONEY"] == "NO" and prop["deployment"]["TIPS"].startswith("YES")
     assert set(prop["market_states"].values()) <= {"PAPER", "RESEARCH"}
     # a second run the same week must not re-promote or re-validate
     r2 = P.run(_status(), week="2026-W42")

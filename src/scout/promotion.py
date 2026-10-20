@@ -319,6 +319,7 @@ def validate(row: dict, extra: dict, res, odds, mdl, week: str) -> dict:
                                      "api_football_id": lid, "current_season": extra.get("current_season")},
         "deployment": {"WOWZA_SUPPORTED": "NO" if new != "SHADOW_APPROVED" else "PENDING",
                        "TIPS": "YES once onboarded (owner 2026-10-20)",
+                       "REAL_MONEY": "NO",
                        "STAKE": "league rating rules - a new league has no rating, so the minimum scale"},
         "country": row.get("country"), "current_season": extra.get("current_season"),
         "market_states": {m: ("PAPER" if m in supported else "RESEARCH") for m in R.SIDE},
