@@ -1,0 +1,47 @@
+{
+ "generated_at": "2026-10-20",
+ "study": "lineups as O/U inputs (v9 trainer, walk-forward, quarterly blocks)",
+ "rule": "pre-registered: dLL <= -0.001 AND 90% day-block CI upper < 0",
+ "verdict": "NO GAIN on either track",
+ "leak_found": "player_history dates are midnight; kickoff timestamp bisect counted the match itself as history in 98.9% of fixtures (its own goals fed xi_ga_share). The 2026-10-19 'standard PASS' (dLL -0.00276) came entirely from this leak. Fixed: calendar-day cut + fixture-id exclusion.",
+ "leaked_result_withdrawn": {
+  "track": "standard",
+  "scope": "covered",
+  "delta": -0.00276,
+  "n": 8297
+ },
+ "results": [
+  {
+   "track": "standard",
+   "scope": "all",
+   "n": 18312,
+   "delta": 0.00021,
+   "ci90": "[-0.00009,+0.00050]",
+   "verdict": "NO GAIN"
+  },
+  {
+   "track": "standard",
+   "scope": "covered",
+   "n": 8296,
+   "delta": 0.00018,
+   "ci90": "[-0.00027,+0.00061]",
+   "verdict": "NO GAIN"
+  },
+  {
+   "track": "new_format",
+   "scope": "all",
+   "n": 15683,
+   "delta": 0.00177,
+   "ci90": "[+0.00069,+0.00279]",
+   "verdict": "NO GAIN"
+  },
+  {
+   "track": "new_format",
+   "scope": "covered",
+   "n": 10211,
+   "delta": 0.00233,
+   "ci90": "[+0.00084,+0.00384]",
+   "verdict": "NO GAIN"
+  }
+ ]
+}
