@@ -45,7 +45,7 @@ VARS = ["temperature_2m", "precipitation", "wind_speed_10m"]
 HOURLY = VARS + [f"{v}_previous_day1" for v in VARS]
 BUDGET = 8000                      # weighted calls per run (free tier: 10,000/day per IP)
 WALL_SECONDS = 45 * 60             # stop and commit before the 60-minute job timeout
-WORKERS = 8                        # parallel requests; ~800 weighted calls per 45 min at 4 -> service latency, not quota, is the limit (free tier allows 600/min)
+WORKERS = 3                        # free tier caps CONCURRENT requests: 8 drew 429 Too many concurrent requests
 SLEEP = 0.25
 CALC = "weather_surprise-1.0.0"
 
@@ -78,11 +78,18 @@ def _window(hourly: dict, kickoff: pd.Timestamp) -> dict:
 
 def _get(requests, lat, lon, start, end):
     """One stadium-month. Retries a slow service; returns (response or None, body)."""
-    for attempt in range(3):
+    body = {}
+    for attempt in range(5):
         try:
             r = requests.get(API, params={"latitude": lat, "longitude": lon, "start_date": start, "end_date": end,
                                           "hourly": ",".join(HOURLY), "timezone": "UTC"}, timeout=120)
-            return r, r.json()
+            body = r.json()
+            # "Too many concurrent requests" is a back-off signal, NOT the daily limit: wait and retry.
+            # (2026-10-19: treating it as daily stalled three overnight runs at ~60 matches each.)
+            if r.status_code == 429 and "concurrent" in str(body.get("reason", "")).lower():
+                time.sleep(10 * (attempt + 1))
+                continue
+            return r, body
         except Exception as e:                                         # noqa: BLE001
             body = {"reason": f"network error: {type(e).__name__}"}
             time.sleep(5 * (attempt + 1))
