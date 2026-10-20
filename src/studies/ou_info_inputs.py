@@ -373,6 +373,131 @@ def report() -> dict:
     return out
 
 
+# ── lineups (history: one /fixtures/lineups call per finished fixture) ──────────────────────────
+LINEUP_FROM = "2023-07-01"
+LINEUP_CACHE = EXP / "lineups"
+
+
+def fetch_lineups(max_calls: int = 32000, workers: int = 6) -> dict:
+    """Starting XI + formation for every finished fixture since LINEUP_FROM in our leagues.
+
+    A lineup is published ~1h before kickoff and never revised, so — unlike injury lists — it has no
+    hindsight risk. Budget: capped per run (`max_calls`), cached per fixture forever, resumable.
+    Production uses ~10-14k/day of a 75k/day plan; this stays inside the remaining headroom."""
+    import requests
+    from concurrent.futures import ThreadPoolExecutor
+    LINEUP_CACHE.mkdir(parents=True, exist_ok=True)
+    afx = pd.read_parquet(EXP / "af_fixtures.parquet")
+    afx = afx[afx["status"].isin(["FT", "AET", "PEN"])]
+    afx = afx[pd.to_datetime(afx["fixture_ts"], utc=True) >= pd.Timestamp(LINEUP_FROM, tz="UTC")]
+    todo = [int(f) for f in afx["af_fixture_id"] if not (LINEUP_CACHE / f"{int(f)}.json").exists()][:max_calls]
+    key = common._af_key()
+
+    def one(fid):
+        for attempt in range(3):
+            try:
+                b = requests.get(f"{AF}/fixtures/lineups", headers={"x-apisports-key": key},
+                                 params={"fixture": fid}, timeout=60).json()
+                if b.get("errors"):
+                    if "rateLimit" in str(b["errors"]) or "requests" in str(b["errors"]).lower():
+                        time.sleep(5 + 5 * attempt)
+                        continue
+                    return "error"
+                (LINEUP_CACHE / f"{fid}.json").write_text(json.dumps(b.get("response", [])), encoding="utf-8")
+                return "ok" if b.get("response") else "empty"
+            except Exception:                                          # noqa: BLE001
+                time.sleep(3)
+        return "error"
+    with ThreadPoolExecutor(workers) as ex:
+        res = list(ex.map(one, todo))
+    from collections import Counter
+    return {"fixtures_in_scope": int(len(afx)), "requested": len(todo), **Counter(res)}
+
+
+# ── price movement (football-data raw files: opening AND closing O/U 2.5 prices) ─────────────────
+FD_SEASONS = ("2223", "2324", "2425", "2526", "2627")
+
+
+def _fd_codes() -> dict[str, str]:
+    import ast
+    src = (Path(cfg.V9_LOCAL) / "config.py").read_text(encoding="utf-8")
+    for node in ast.parse(src).body:
+        if isinstance(node, ast.Assign) and getattr(node.targets[0], "id", "") == "FOOTBALL_DATA_LEAGUES":
+            return ast.literal_eval(node.value)
+    return {}
+
+
+def movement_features() -> dict:
+    """Per standard-league match: de-vigged P(over 2.5) at the OPENING average price, at the CLOSING
+    average price, and the move between them. Opening is known when v9 first tips; the close only
+    near kickoff — so `p_open` is an EARLY input and `move` / `p_close` are LATE inputs."""
+    import io
+    import requests
+    from src.data.entities import norm_name  # noqa: F401  (kept for parity with other modules)
+    rows = []
+    calls = 0
+    cache = EXP / "fd_raw"
+    cache.mkdir(parents=True, exist_ok=True)
+    for lg, code in _fd_codes().items():
+        if not isinstance(code, str) or len(code) > 3:
+            continue
+        for s in FD_SEASONS:
+            f = cache / f"{code}_{s}.csv"
+            if not f.exists():
+                # files normally arrive via pro_fd_raw_fetch.yml (this laptop's network blocks the site)
+                try:
+                    r = requests.get(f"https://www.football-data.co.uk/mmz4281/{s}/{code}.csv", timeout=60)
+                except Exception:                                      # noqa: BLE001
+                    continue
+                calls += 1
+                if r.status_code != 200 or b"Date" not in r.content[:200]:
+                    continue
+                f.write_bytes(r.content)
+                time.sleep(0.3)
+            try:
+                d = pd.read_csv(f, encoding="latin-1", on_bad_lines="skip")
+            except Exception:                                          # noqa: BLE001
+                continue
+            need = {"Avg>2.5", "Avg<2.5", "AvgC>2.5", "AvgC<2.5", "HomeTeam", "AwayTeam", "Date"}
+            if not need <= set(d.columns):
+                continue
+            d = d.dropna(subset=["HomeTeam", "AwayTeam"])
+
+            def devig(o, u):
+                o, u = pd.to_numeric(o, errors="coerce"), pd.to_numeric(u, errors="coerce")
+                return (1 / o) / (1 / o + 1 / u)
+            po, pc = devig(d["Avg>2.5"], d["Avg<2.5"]), devig(d["AvgC>2.5"], d["AvgC<2.5"])
+            rows.append(pd.DataFrame({"league": lg, "match_date": pd.to_datetime(d["Date"], dayfirst=True,
+                                                                                 errors="coerce"),
+                                      "home_team": d["HomeTeam"].values, "away_team": d["AwayTeam"].values,
+                                      "p_open": po.values, "p_close": pc.values,
+                                      "move": (pc - po).values}))
+    mv = pd.concat(rows, ignore_index=True).dropna(subset=["match_date"])
+    mv = mv[(mv["p_open"].between(0.05, 0.95)) & (mv["p_close"].between(0.05, 0.95))].reset_index(drop=True)
+    fr = _frame()
+    fr = fr[fr["track"] == "standard"].reset_index(drop=True)
+    fr["match_date"] = pd.to_datetime(fr["date"]).dt.normalize()
+    # fast path: exact names (v9's standard rows come from these same files), then fuzzy for the rest
+    k = ["league", "match_date", "home_team", "away_team"]
+    m = fr[k].merge(mv, on=k, how="left")
+    miss = m["p_open"].isna()
+    if miss.any():
+        idx = common.match_frames(fr.loc[miss.values, k], mv, day_tol=1)
+        ok = idx.dropna().astype(int)
+        for c in ("p_open", "p_close", "move"):
+            m.loc[ok.index, c] = mv.loc[ok.values, c].values
+    out = m.rename(columns={"match_date": "date"})[["league", "date", "home_team", "away_team",
+                                                    "p_open", "p_close", "move"]]
+    out.to_parquet(EXP / "movement_features.parquet", index=False)
+    res = {"fd_files_downloaded": calls, "fd_rows": len(mv), "standard_rows": len(fr),
+           "matched": int(out["p_open"].notna().sum()),
+           "match_rate": round(float(out["p_open"].notna().mean()), 4),
+           "move_abs_mean_pp": round(float(out["move"].abs().mean() * 100), 3),
+           "open_close_corr": round(float(out[["p_open", "p_close"]].corr().iloc[0, 1]), 4)}
+    (EXP / "movement_audit.json").write_text(json.dumps(res, indent=2), encoding="utf-8")
+    return res
+
+
 # ── prospective leak check ──────────────────────────────────────────────────────────────────────
 SNAP = OUT / "injury_snapshots.parquet"
 FORWARD_LEAGUES = ("Championship", "Denmark Superliga", "Norway Eliteserien", "Sweden Allsvenskan",
@@ -446,5 +571,6 @@ def forward_check() -> dict:
 if __name__ == "__main__":
     step = sys.argv[1] if len(sys.argv) > 1 else "fetch"
     fn = {"fetch": fetch, "features": features, "audit": audit, "report": report,
-          "forward": forward, "forward_check": forward_check}[step]
+          "forward": forward, "forward_check": forward_check, "fetch_lineups": fetch_lineups,
+          "movement": movement_features}[step]
     print(json.dumps(fn(), indent=2, default=str))

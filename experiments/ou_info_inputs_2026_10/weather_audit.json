@@ -1,0 +1,798 @@
+{
+  "built": "2026-10-19 11:12:31.837179+00:00",
+  "window": "2023-07-01 .. 2026-10-16 00:00:00",
+  "rows": 34901,
+  "matched_to_af": 31579,
+  "match_rate": 0.9048,
+  "v9_near_duplicate_rows_same_fixture": 1148,
+  "home_teams": 706,
+  "venues_distinct": 541,
+  "coordinates_distinct": 593,
+  "geocode_success_rate": 0.9986,
+  "geocode_alias_used": 40,
+  "venue_source_counts": {
+    "fixture_modal_venue": 532,
+    "af_teams": 173,
+    "none": 1
+  },
+  "rows_by_venue_source": {
+    "fixture_modal_venue": 24067,
+    "af_teams": 7489,
+    "none": 23
+  },
+  "cumulative_call_ledger_all_runs": {
+    "api_football": 232,
+    "om_geocoding": 1321,
+    "om_archive": 8304
+  },
+  "geocode_failures": [
+    {
+      "home_id": 4699,
+      "af_team": NaN,
+      "team_country": NaN,
+      "venue_source": "none",
+      "venue_name": NaN,
+      "venue_city": NaN,
+      "geocode_status": "no_city"
+    }
+  ],
+  "share_rows_with_weather": 0.7193,
+  "share_matched_rows_with_weather": 0.795,
+  "at_home_venue_share_where_known": 0.9538,
+  "rows_not_at_home_venue": 968,
+  "not_at_home_venue_by_league": {
+    "Saudi Pro League": 178,
+    "Turkish Super Lig": 83,
+    "Japan J-League": 76,
+    "Brazil Serie A": 67,
+    "Mexico Liga MX": 64,
+    "USA MLS": 60,
+    "Romanian Superliga": 56,
+    "Ligue 2": 45,
+    "Championship": 41,
+    "Bundesliga 2": 36,
+    "Norway Eliteserien": 35,
+    "League One": 30,
+    "Portuguese Primeira Liga": 25,
+    "National League": 23,
+    "K-League 1": 21,
+    "Greek Super League": 21,
+    "Scottish Premiership": 21,
+    "Sweden Allsvenskan": 15,
+    "Scottish Championship": 14,
+    "Austrian Bundesliga": 11,
+    "Finland Veikkausliiga": 10,
+    "La Liga 2": 9,
+    "Serie B": 8,
+    "Denmark Superliga": 8,
+    "China Super League": 4,
+    "League Two": 3,
+    "Argentina Primera Division": 2,
+    "Dutch Eredivisie": 2
+  },
+  "per_league": [
+    {
+      "league": "Argentina Primera Division",
+      "rows": 1898,
+      "matched": 0.7713,
+      "located": 0.7713,
+      "with_weather": 0.7713,
+      "at_home_venue": 0.9936
+    },
+    {
+      "league": "Austrian Bundesliga",
+      "rows": 787,
+      "matched": 0.7522,
+      "located": 0.7522,
+      "with_weather": 0.7522,
+      "at_home_venue": 0.9781
+    },
+    {
+      "league": "Belgian First Division A",
+      "rows": 995,
+      "matched": 0.8734,
+      "located": 0.8734,
+      "with_weather": 0.8734,
+      "at_home_venue": 1.0
+    },
+    {
+      "league": "Brazil Serie A",
+      "rows": 1548,
+      "matched": 0.8999,
+      "located": 0.8999,
+      "with_weather": 0.8999,
+      "at_home_venue": 0.9035
+    },
+    {
+      "league": "Bundesliga 2",
+      "rows": 1038,
+      "matched": 0.9345,
+      "located": 0.9345,
+      "with_weather": 0.8314,
+      "at_home_venue": 0.958
+    },
+    {
+      "league": "Championship",
+      "rows": 1909,
+      "matched": 0.9282,
+      "located": 0.9282,
+      "with_weather": 0.6862,
+      "at_home_venue": 0.972
+    },
+    {
+      "league": "China Super League",
+      "rows": 1350,
+      "matched": 0.4393,
+      "located": 0.4393,
+      "with_weather": 0.4393,
+      "at_home_venue": 0.9874
+    },
+    {
+      "league": "Denmark Superliga",
+      "rows": 637,
+      "matched": 1.0,
+      "located": 1.0,
+      "with_weather": 0.0,
+      "at_home_venue": 0.9862
+    },
+    {
+      "league": "Dutch Eredivisie",
+      "rows": 979,
+      "matched": 1.0,
+      "located": 1.0,
+      "with_weather": 1.0,
+      "at_home_venue": 0.9978
+    },
+    {
+      "league": "Finland Veikkausliiga",
+      "rows": 690,
+      "matched": 0.8638,
+      "located": 0.8638,
+      "with_weather": 0.0,
+      "at_home_venue": 0.9768
+    },
+    {
+      "league": "Greek Super League",
+      "rows": 814,
+      "matched": 0.9115,
+      "located": 0.9115,
+      "with_weather": 0.9115,
+      "at_home_venue": 0.9572
+    },
+    {
+      "league": "Ireland Premier Division",
+      "rows": 605,
+      "matched": 0.9769,
+      "located": 0.9769,
+      "with_weather": 0.6182,
+      "at_home_venue": 1.0
+    },
+    {
+      "league": "Japan J-League",
+      "rows": 1137,
+      "matched": 0.9208,
+      "located": 0.9208,
+      "with_weather": 0.9208,
+      "at_home_venue": 0.9245
+    },
+    {
+      "league": "K-League 1",
+      "rows": 731,
+      "matched": 1.0,
+      "located": 1.0,
+      "with_weather": 1.0,
+      "at_home_venue": 0.9663
+    },
+    {
+      "league": "La Liga 2",
+      "rows": 1737,
+      "matched": 0.8474,
+      "located": 0.8474,
+      "with_weather": 0.8474,
+      "at_home_venue": 0.9924
+    },
+    {
+      "league": "League One",
+      "rows": 1859,
+      "matched": 0.9462,
+      "located": 0.9462,
+      "with_weather": 0.6783,
+      "at_home_venue": 0.9724
+    },
+    {
+      "league": "League Two",
+      "rows": 1825,
+      "matched": 0.9699,
+      "located": 0.9699,
+      "with_weather": 0.6345,
+      "at_home_venue": 0.9964
+    },
+    {
+      "league": "Ligue 2",
+      "rows": 1047,
+      "matched": 0.9255,
+      "located": 0.9255,
+      "with_weather": 0.9255,
+      "at_home_venue": 0.9464
+    },
+    {
+      "league": "Mexico Liga MX",
+      "rows": 1248,
+      "matched": 0.895,
+      "located": 0.895,
+      "with_weather": 0.895,
+      "at_home_venue": 0.9207
+    },
+    {
+      "league": "National League",
+      "rows": 1797,
+      "matched": 1.0,
+      "located": 0.9872,
+      "with_weather": 0.6789,
+      "at_home_venue": 0.9586
+    },
+    {
+      "league": "Norway Eliteserien",
+      "rows": 810,
+      "matched": 1.0,
+      "located": 1.0,
+      "with_weather": 0.0,
+      "at_home_venue": 0.9501
+    },
+    {
+      "league": "Portuguese Primeira Liga",
+      "rows": 978,
+      "matched": 0.7843,
+      "located": 0.7843,
+      "with_weather": 0.7843,
+      "at_home_venue": 0.963
+    },
+    {
+      "league": "Romanian Superliga",
+      "rows": 1010,
+      "matched": 1.0,
+      "located": 1.0,
+      "with_weather": 1.0,
+      "at_home_venue": 0.9259
+    },
+    {
+      "league": "Saudi Pro League",
+      "rows": 957,
+      "matched": 1.0,
+      "located": 1.0,
+      "with_weather": 1.0,
+      "at_home_venue": 0.7468
+    },
+    {
+      "league": "Scottish Championship",
+      "rows": 579,
+      "matched": 0.7288,
+      "located": 0.7288,
+      "with_weather": 0.0,
+      "at_home_venue": 0.9457
+    },
+    {
+      "league": "Scottish Premiership",
+      "rows": 728,
+      "matched": 1.0,
+      "located": 1.0,
+      "with_weather": 0.0,
+      "at_home_venue": 0.9661
+    },
+    {
+      "league": "Serie B",
+      "rows": 1207,
+      "matched": 1.0,
+      "located": 1.0,
+      "with_weather": 1.0,
+      "at_home_venue": 0.9923
+    },
+    {
+      "league": "Sweden Allsvenskan",
+      "rows": 808,
+      "matched": 1.0,
+      "located": 1.0,
+      "with_weather": 0.0,
+      "at_home_venue": 0.9715
+    },
+    {
+      "league": "Turkish Super Lig",
+      "rows": 1079,
+      "matched": 0.8304,
+      "located": 0.8304,
+      "with_weather": 0.8304,
+      "at_home_venue": 0.8868
+    },
+    {
+      "league": "USA MLS",
+      "rows": 2114,
+      "matched": 1.0,
+      "located": 1.0,
+      "with_weather": 1.0,
+      "at_home_venue": 0.8537
+    }
+  ],
+  "far_venues_gt_300km_from_nearest_league_venue": [
+    {
+      "league": "Argentina Primera Division",
+      "team": "Aldosivi",
+      "venue": "Estadio Jos\u00e9 Mar\u00eda Minella",
+      "af_city": "Mar del Plata",
+      "geocoded_to": "Mar del Plata, Buenos Aires",
+      "lat": -38.00042,
+      "lon": -57.5562,
+      "nearest_other_venue_km": 344.0
+    },
+    {
+      "league": "Brazil Serie A",
+      "team": "Sport Recife",
+      "venue": "Itaipava Arena Pernambuco",
+      "af_city": "Recife, Pernambuco",
+      "geocoded_to": "Recife, Pernambuco",
+      "lat": -8.05389,
+      "lon": -34.88111,
+      "nearest_other_venue_km": 630.0
+    },
+    {
+      "league": "Brazil Serie A",
+      "team": "Cuiaba",
+      "venue": "Arena Pantanal",
+      "af_city": "Cuiab\u00e1, Mato Grosso",
+      "geocoded_to": "Cuiab\u00e1, Mato Grosso",
+      "lat": -15.59611,
+      "lon": -56.09667,
+      "nearest_other_venue_km": 741.0
+    },
+    {
+      "league": "Brazil Serie A",
+      "team": "Remo",
+      "venue": "Mangueir\u00e3o",
+      "af_city": "Bel\u00e9m",
+      "geocoded_to": "Bel\u00e9m, Par\u00e1",
+      "lat": -1.45583,
+      "lon": -48.50444,
+      "nearest_other_venue_km": 1135.0
+    },
+    {
+      "league": "Brazil Serie A",
+      "team": "Mirassol",
+      "venue": "Est\u00e1dio Jos\u00e9 Maria de Campos Maia",
+      "af_city": "Mirassol",
+      "geocoded_to": "Mirassol, S\u00e3o Paulo",
+      "lat": -20.81917,
+      "lon": -49.52111,
+      "nearest_other_venue_km": 388.0
+    },
+    {
+      "league": "China Super League",
+      "team": "Henan Jianye",
+      "venue": "Zhengzhou Hanghai Stadium",
+      "af_city": "Zhengzhou",
+      "geocoded_to": "Zhengzhou, Henan",
+      "lat": 34.75778,
+      "lon": 113.64861,
+      "nearest_other_venue_km": 369.0
+    },
+    {
+      "league": "China Super League",
+      "team": "Wuhan Three Towns",
+      "venue": "Wuhan Sports Centre",
+      "af_city": "Wuhan",
+      "geocoded_to": "Wuhan, Hubei",
+      "lat": 30.58333,
+      "lon": 114.26667,
+      "nearest_other_venue_km": 468.0
+    },
+    {
+      "league": "China Super League",
+      "team": "Yunnan Yukun",
+      "venue": "Yuxi Plateau Sports Center Stadium",
+      "af_city": "Yuxi",
+      "geocoded_to": "Yuxi, Yunnan",
+      "lat": 24.355,
+      "lon": 102.54222,
+      "nearest_other_venue_km": 702.0
+    },
+    {
+      "league": "Greek Super League",
+      "team": "OFI",
+      "venue": "Stadio Th\u00f3doros Vardinoy\u00e1nnis",
+      "af_city": "Heraklion",
+      "geocoded_to": "Heraklion, Crete",
+      "lat": 35.32787,
+      "lon": 25.14341,
+      "nearest_other_venue_km": 320.0
+    },
+    {
+      "league": "Japan J-League",
+      "team": "Consadole Sapporo",
+      "venue": "Daiwa House Premist Dome",
+      "af_city": "Sapporo",
+      "geocoded_to": "Sapporo, Hokkaido",
+      "lat": 43.06667,
+      "lon": 141.35,
+      "nearest_other_venue_km": 604.0
+    },
+    {
+      "league": "Mexico Liga MX",
+      "team": "Club Tijuana",
+      "venue": "Estadio Caliente",
+      "af_city": "Tijuana",
+      "geocoded_to": "Tijuana, Baja California",
+      "lat": 32.5027,
+      "lon": -117.00371,
+      "nearest_other_venue_km": 996.0
+    },
+    {
+      "league": "Mexico Liga MX",
+      "team": "Santos Laguna",
+      "venue": "Estadio Corona",
+      "af_city": "Torre\u00f3n",
+      "geocoded_to": "Torre\u00f3n, Coahuila",
+      "lat": 25.54389,
+      "lon": -103.41898,
+      "nearest_other_venue_km": 313.0
+    },
+    {
+      "league": "Mexico Liga MX",
+      "team": "FC Juarez",
+      "venue": "Estadio Ol\u00edmpico Benito Ju\u00e1rez",
+      "af_city": "Ciudad Ju\u00e1rez",
+      "geocoded_to": "Ciudad Ju\u00e1rez, Chihuahua",
+      "lat": 31.72024,
+      "lon": -106.46084,
+      "nearest_other_venue_km": 748.0
+    },
+    {
+      "league": "Mexico Liga MX",
+      "team": "Mazatl\u00e1n",
+      "venue": "Estadio El Encanto",
+      "af_city": "Mazatl\u00e1n",
+      "geocoded_to": "Mazatl\u00e1n, Sinaloa",
+      "lat": 23.22163,
+      "lon": -106.41885,
+      "nearest_other_venue_km": 399.0
+    },
+    {
+      "league": "Norway Eliteserien",
+      "team": "Tromso",
+      "venue": "Romssa Arena",
+      "af_city": "Troms\u00f8",
+      "geocoded_to": "Troms\u00f8, Troms",
+      "lat": 69.6489,
+      "lon": 18.95508,
+      "nearest_other_venue_km": 323.0
+    },
+    {
+      "league": "Norway Eliteserien",
+      "team": "Bodo/Glimt",
+      "venue": "Aspmyra Stadion",
+      "af_city": "Bod\u00f8",
+      "geocoded_to": "Bod\u00f8, Nordland",
+      "lat": 67.28267,
+      "lon": 14.37513,
+      "nearest_other_venue_km": 323.0
+    },
+    {
+      "league": "Portuguese Primeira Liga",
+      "team": "Santa Clara",
+      "venue": "Est\u00e1dio de S\u00e3o Miguel",
+      "af_city": "Ponta Delgada, Ilha de S\u00e3o Miguel, A\u00e7ores",
+      "geocoded_to": "Ponta Delgada, Azores",
+      "lat": 37.73952,
+      "lon": -25.66874,
+      "nearest_other_venue_km": 964.0
+    },
+    {
+      "league": "Saudi Pro League",
+      "team": "Al Orubah",
+      "venue": "Al-Jouf University Stadium",
+      "af_city": "Sakakah",
+      "geocoded_to": "Sakakah, Al Jawf Region",
+      "lat": 29.96974,
+      "lon": 40.20641,
+      "nearest_other_venue_km": 308.0
+    },
+    {
+      "league": "Saudi Pro League",
+      "team": "NEOM",
+      "venue": "King Khalid Sports City",
+      "af_city": "Tabuk",
+      "geocoded_to": "Tabuk, Tabuk Region",
+      "lat": 28.3998,
+      "lon": 36.57151,
+      "nearest_other_venue_km": 394.0
+    },
+    {
+      "league": "USA MLS",
+      "team": "San Jose Earthquakes",
+      "venue": "PayPal Park",
+      "af_city": "San Jose, California",
+      "geocoded_to": "San Jose, California",
+      "lat": 37.33939,
+      "lon": -121.89496,
+      "nearest_other_venue_km": 492.0
+    },
+    {
+      "league": "USA MLS",
+      "team": "FC Dallas",
+      "venue": "Toyota Stadium",
+      "af_city": "Frisco",
+      "geocoded_to": "Frisco, Texas",
+      "lat": 33.15067,
+      "lon": -96.82361,
+      "nearest_other_venue_km": 332.0
+    },
+    {
+      "league": "USA MLS",
+      "team": "Toronto FC",
+      "venue": "BMO Field",
+      "af_city": "Toronto",
+      "geocoded_to": "Toronto, Ontario",
+      "lat": 43.70643,
+      "lon": -79.39864,
+      "nearest_other_venue_km": 502.0
+    },
+    {
+      "league": "USA MLS",
+      "team": "Real Salt Lake",
+      "venue": "America First Field",
+      "af_city": "Sandy, Utah",
+      "geocoded_to": "Sandy City, Utah",
+      "lat": 40.59161,
+      "lon": -111.8841,
+      "nearest_other_venue_km": 597.0
+    },
+    {
+      "league": "USA MLS",
+      "team": "Chicago Fire",
+      "venue": "Soldier Field",
+      "af_city": "Chicago",
+      "geocoded_to": "Chicago, Illinois",
+      "lat": 41.85003,
+      "lon": -87.65005,
+      "nearest_other_venue_km": 402.0
+    },
+    {
+      "league": "USA MLS",
+      "team": "Atlanta United FC",
+      "venue": "Mercedes-Benz Stadium",
+      "af_city": "Atlanta",
+      "geocoded_to": "Atlanta, Georgia",
+      "lat": 33.749,
+      "lon": -84.38798,
+      "nearest_other_venue_km": 346.0
+    },
+    {
+      "league": "USA MLS",
+      "team": "Colorado Rapids",
+      "venue": "Dick's Sporting Goods Park",
+      "af_city": "Commerce City, Colorado",
+      "geocoded_to": "Commerce City, Colorado",
+      "lat": 39.80832,
+      "lon": -104.93387,
+      "nearest_other_venue_km": 597.0
+    },
+    {
+      "league": "USA MLS",
+      "team": "Sporting Kansas City",
+      "venue": "Children's Mercy Park",
+      "af_city": "Kansas City, Kansas",
+      "geocoded_to": "Kansas City, Kansas",
+      "lat": 39.11417,
+      "lon": -94.62746,
+      "nearest_other_venue_km": 387.0
+    },
+    {
+      "league": "USA MLS",
+      "team": "Minnesota United FC",
+      "venue": "Allianz Field",
+      "af_city": "Saint Paul",
+      "geocoded_to": "Saint Paul, Minnesota",
+      "lat": 44.94441,
+      "lon": -93.09327,
+      "nearest_other_venue_km": 558.0
+    },
+    {
+      "league": "USA MLS",
+      "team": "CF Montreal",
+      "venue": "Stade Saputo",
+      "af_city": "Montreal, Quebec",
+      "geocoded_to": "Montreal, Quebec",
+      "lat": 45.50884,
+      "lon": -73.58781,
+      "nearest_other_venue_km": 426.0
+    },
+    {
+      "league": "USA MLS",
+      "team": "Nashville SC",
+      "venue": "Geodis Park",
+      "af_city": "Nashville",
+      "geocoded_to": "Nashville, Tennessee",
+      "lat": 36.16589,
+      "lon": -86.78444,
+      "nearest_other_venue_km": 346.0
+    },
+    {
+      "league": "USA MLS",
+      "team": "Charlotte",
+      "venue": "Bank of America Stadium",
+      "af_city": "Charlotte",
+      "geocoded_to": "Charlotte, North Carolina",
+      "lat": 35.22709,
+      "lon": -80.84313,
+      "nearest_other_venue_km": 364.0
+    },
+    {
+      "league": "USA MLS",
+      "team": "St. Louis City",
+      "venue": "CITYPARK",
+      "af_city": "St. Louis, Missouri",
+      "geocoded_to": "St Louis, Missouri",
+      "lat": 38.62727,
+      "lon": -90.19789,
+      "nearest_other_venue_km": 387.0
+    }
+  ],
+  "value_ranges": {
+    "temp_c": {
+      "min": -13.9,
+      "p01": -0.33200000000000024,
+      "median": 16.2,
+      "p99": 33.298666666666634,
+      "max": 41.833333333333336,
+      "nan_share": 0.2807
+    },
+    "precip_mm": {
+      "min": 0.0,
+      "p01": 0.0,
+      "median": 0.0,
+      "p99": 6.0,
+      "max": 45.900000000000006,
+      "nan_share": 0.2807
+    },
+    "wind_kmh": {
+      "min": 0.2333333333333333,
+      "p01": 1.5333333333333334,
+      "median": 10.433333333333334,
+      "p99": 32.06666666666667,
+      "max": 57.13333333333333,
+      "nan_share": 0.2807
+    },
+    "gust_kmh": {
+      "min": 2.2,
+      "p01": 6.8,
+      "median": 27.4,
+      "p99": 67.7,
+      "max": 107.3,
+      "nan_share": 0.2807
+    },
+    "humidity": {
+      "min": 3.3333333333333335,
+      "p01": 14.0,
+      "median": 71.66666666666667,
+      "p99": 97.33333333333333,
+      "max": 100.0,
+      "nan_share": 0.2807
+    }
+  },
+  "flag_rates": {
+    "heavy_rain": {
+      "rate": 0.0335,
+      "n_true": 840
+    },
+    "strong_wind": {
+      "rate": 0.0169,
+      "n_true": 425
+    },
+    "hot": {
+      "rate": 0.0615,
+      "n_true": 1543
+    },
+    "cold": {
+      "rate": 0.0257,
+      "n_true": 646
+    }
+  },
+  "impossible_values": {
+    "temp_outside_-35_50": 0,
+    "precip_negative": 0,
+    "gust_below_wind": 0,
+    "humidity_outside_0_100": 0
+  },
+  "roofed_candidates_treated_as_outdoor": [
+    {
+      "team": "Fortuna D\u00fcsseldorf",
+      "venue": "D\u00fcsseldorf Arena",
+      "city": "D\u00fcsseldorf",
+      "matches": 51
+    },
+    {
+      "team": "FC Schalke 04",
+      "venue": "VELTINS-Arena",
+      "city": "Gelsenkirchen",
+      "matches": 51
+    },
+    {
+      "team": "Ajax",
+      "venue": "Johan Cruijff Arena",
+      "city": "Amsterdam",
+      "matches": 55
+    },
+    {
+      "team": "Vitesse",
+      "venue": "GelreDome",
+      "city": "Arnhem",
+      "matches": 17
+    },
+    {
+      "team": "Nagoya Grampus",
+      "venue": "Toyota Stadium",
+      "city": "Toyota",
+      "matches": 54
+    },
+    {
+      "team": "Vissel Kobe",
+      "venue": "NOEVIR Stadium Kobe",
+      "city": "Kobe",
+      "matches": 54
+    },
+    {
+      "team": "Yokohama F. Marinos",
+      "venue": "Nissan Stadium",
+      "city": "Yokohama",
+      "matches": 55
+    },
+    {
+      "team": "AIK Stockholm",
+      "venue": "Strawberry Arena",
+      "city": "Solna",
+      "matches": 50
+    },
+    {
+      "team": "FC Copenhagen",
+      "venue": "Parken",
+      "city": "K\u00f8benhavn",
+      "matches": 53
+    },
+    {
+      "team": "FC Dallas",
+      "venue": "Toyota Stadium",
+      "city": "Frisco",
+      "matches": 58
+    },
+    {
+      "team": "Vancouver Whitecaps",
+      "venue": "BC Place",
+      "city": "Vancouver",
+      "matches": 66
+    },
+    {
+      "team": "Atlanta United FC",
+      "venue": "Mercedes-Benz Stadium",
+      "city": "Atlanta",
+      "matches": 82
+    },
+    {
+      "team": "Al-Hilal Saudi FC",
+      "venue": "Kingdom Arena",
+      "city": "Riyadh",
+      "matches": 53
+    }
+  ],
+  "roof_note": "No special handling: roofed/retractable grounds carry outdoor weather. List is a name-based candidate list, not a verdict.",
+  "archive_requests_pending": 2368,
+  "archive_stopped_reason": "Daily API request limit exceeded. Please try again tomorrow.",
+  "calls_this_run": {
+    "api_football": 0,
+    "om_geocoding": 0,
+    "om_archive": 7945,
+    "om_archive_weight": 12473.857142856989
+  },
+  "caveats": [
+    "location = city centroid of the home team's CURRENT venue (/teams is undated)",
+    "precipitation is preceding-hour sum, so window covers kickoff-1h .. kickoff+2h",
+    "realised weather, not a forecast: look-ahead if used as a pre-match input",
+    "Open-Meteo archive reanalysis grid (~9-25 km), not a stadium station"
+  ]
+}
