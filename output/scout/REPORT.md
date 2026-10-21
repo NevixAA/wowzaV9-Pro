@@ -1,6 +1,6 @@
-# League scout — 2026-10-21T01:06 UTC
+# League scout — 2026-10-21T08:03 UTC
 
-Results stored: 240,285 · fixtures priced: 2,753 · model frozen: 2,710
+Results stored: 240,292 · fixtures priced: 2,811 · model frozen: 2,767
 
 COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kickoff close
 
@@ -83,21 +83,21 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 1 | Italy Serie C - Girone B | ou35 | 13 | COLLECTING | +0.046 | – | +2.6% (5) |
 | 1 | Italy Serie C - Girone B | btts | 13 | COLLECTING | +0.036 | – | +80.0% (1) |
 | 1 | England National League | ou15 | 12 | COLLECTING | +0.040 | – | -100.0% (1) |
+| 1 | Japan J2 League | ou15 | 12 | COLLECTING | +0.001 | – | +240.0% (1) |
 | 1 | Denmark 1. Division | ou15 | 12 | COLLECTING | -0.047 | – | -100.0% (2) |
 | 1 | Scotland Championship | ou15 | 12 | COLLECTING | -0.116 | – | -12.5% (4) |
 | 1 | England National League | ou25 | 12 | COLLECTING | +0.027 | – | +33.8% (4) |
+| 1 | Japan J2 League | ou25 | 12 | COLLECTING | +0.011 | – | -100.0% (2) |
 | 1 | Denmark 1. Division | ou25 | 12 | COLLECTING | -0.005 | – | +122.5% (2) |
 | 1 | Scotland Championship | ou25 | 12 | COLLECTING | +0.012 | – | +54.3% (7) |
 | 1 | England National League | ou35 | 12 | COLLECTING | +0.030 | – | -16.8% (4) |
+| 1 | Japan J2 League | ou35 | 12 | COLLECTING | -0.008 | – | -100.0% (2) |
 | 1 | Denmark 1. Division | ou35 | 12 | COLLECTING | -0.051 | – | +50.5% (2) |
 | 1 | Scotland Championship | ou35 | 12 | COLLECTING | -0.189 | – | +33.2% (5) |
 | 1 | England National League | btts | 12 | COLLECTING | -0.046 | – | -100.0% (1) |
+| 1 | Japan J2 League | btts | 12 | COLLECTING | +0.014 | – | -100.0% (3) |
 | 1 | Denmark 1. Division | btts | 12 | COLLECTING | -0.049 | – | +98.3% (3) |
 | 1 | Scotland Championship | btts | 12 | COLLECTING | -0.010 | – | -36.3% (3) |
-| 1 | Japan J2 League | ou15 | 11 | COLLECTING | -0.010 | – | +240.0% (1) |
-| 1 | Japan J2 League | ou25 | 11 | COLLECTING | +0.029 | – | -100.0% (2) |
-| 1 | Japan J2 League | ou35 | 11 | COLLECTING | +0.011 | – | -100.0% (2) |
-| 1 | Japan J2 League | btts | 11 | COLLECTING | +0.036 | – | -100.0% (3) |
 | 1 | Scotland League One | ou15 | 10 | COLLECTING | -0.102 | – | +17.0% (1) |
 | 1 | Scotland League Two | ou15 | 10 | COLLECTING | +0.006 | – | -100.0% (2) |
 | 1 | Ireland First Division | ou15 | 10 | COLLECTING | +0.065 | – | -100.0% (1) |
@@ -158,49 +158,49 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Argentina Torneo Federal A | ou25 | 24 | COLLECTING | +0.042 | – | +2.1% (9) |
 | 2 | Argentina Torneo Federal A | ou35 | 24 | COLLECTING | +0.060 | – | -5.2% (5) |
 | 2 | Argentina Torneo Federal A | btts | 24 | COLLECTING | +0.013 | – | -20.5% (8) |
+| 2 | Japan J3 League | ou15 | 23 | COLLECTING | -0.046 | – | – |
 | 2 | Colombia Primera B | ou15 | 23 | COLLECTING | -0.080 | – | – |
+| 2 | Japan J3 League | ou25 | 23 | COLLECTING | -0.074 | – | +28.1% (7) |
 | 2 | Colombia Primera B | ou25 | 23 | COLLECTING | -0.040 | – | +44.6% (7) |
+| 2 | Japan J3 League | ou35 | 23 | COLLECTING | -0.113 | – | – |
 | 2 | Colombia Primera B | ou35 | 23 | COLLECTING | +0.024 | – | – |
+| 2 | Japan J3 League | btts | 23 | COLLECTING | -0.033 | – | – |
 | 2 | Colombia Primera B | btts | 23 | COLLECTING | -0.043 | – | – |
 | 2 | Argentina Primera B Metropolitana | ou15 | 22 | COLLECTING | +0.086 | – | +60.7% (3) |
+| 2 | Colombia Primera A | ou15 | 22 | COLLECTING | -0.001 | – | – |
 | 2 | Saudi-Arabia Pro League | ou15 | 22 | COLLECTING | -0.036 | – | -100.0% (1) |
 | 2 | Argentina Primera B Metropolitana | ou25 | 22 | COLLECTING | +0.048 | – | +34.4% (5) |
+| 2 | Colombia Primera A | ou25 | 22 | COLLECTING | -0.025 | – | +15.7% (3) |
 | 2 | Saudi-Arabia Pro League | ou25 | 22 | COLLECTING | +0.082 | – | -100.0% (3) |
 | 2 | Argentina Primera B Metropolitana | ou35 | 22 | COLLECTING | +0.097 | – | +17.0% (2) |
+| 2 | Colombia Primera A | ou35 | 22 | COLLECTING | +0.067 | – | +25.0% (2) |
 | 2 | Saudi-Arabia Pro League | ou35 | 22 | COLLECTING | +0.010 | – | -13.5% (2) |
 | 2 | Argentina Primera B Metropolitana | btts | 22 | COLLECTING | +0.034 | – | +39.5% (4) |
+| 2 | Colombia Primera A | btts | 22 | COLLECTING | +0.017 | – | +12.5% (2) |
 | 2 | Saudi-Arabia Pro League | btts | 22 | COLLECTING | -0.005 | – | +120.0% (1) |
 | 2 | England National League - South | ou15 | 20 | COLLECTING | +0.043 | – | +48.0% (5) |
-| 2 | Japan J3 League | ou15 | 20 | COLLECTING | -0.029 | – | – |
 | 2 | Romania Liga II | ou15 | 20 | COLLECTING | -0.051 | – | – |
 | 2 | England National League - South | ou25 | 20 | COLLECTING | +0.082 | – | -33.3% (9) |
-| 2 | Japan J3 League | ou25 | 20 | COLLECTING | -0.092 | – | +8.0% (5) |
 | 2 | Romania Liga II | ou25 | 20 | COLLECTING | -0.090 | – | +28.3% (3) |
 | 2 | England National League - South | ou35 | 20 | COLLECTING | +0.045 | – | -4.9% (9) |
-| 2 | Japan J3 League | ou35 | 20 | COLLECTING | -0.067 | – | – |
 | 2 | Romania Liga II | ou35 | 20 | COLLECTING | +0.020 | – | – |
 | 2 | England National League - South | btts | 20 | COLLECTING | -0.017 | – | -54.2% (4) |
-| 2 | Japan J3 League | btts | 20 | COLLECTING | -0.036 | – | – |
 | 2 | Romania Liga II | btts | 20 | COLLECTING | -0.193 | – | – |
 | 2 | Poland Ekstraklasa | ou15 | 19 | COLLECTING | -0.014 | – | -100.0% (1) |
 | 2 | Poland II Liga - East | ou15 | 19 | COLLECTING | -0.046 | – | -62.0% (3) |
 | 2 | Turkey 2. Lig | ou15 | 19 | COLLECTING | +0.037 | – | – |
-| 2 | Colombia Primera A | ou15 | 19 | COLLECTING | +0.013 | – | – |
 | 2 | Egypt Second League | ou15 | 19 | COLLECTING | +0.065 | – | – |
 | 2 | Poland Ekstraklasa | ou25 | 19 | COLLECTING | +0.083 | – | +2.5% (2) |
 | 2 | Poland II Liga - East | ou25 | 19 | COLLECTING | -0.057 | – | -12.2% (6) |
 | 2 | Turkey 2. Lig | ou25 | 19 | COLLECTING | +0.090 | – | -3.3% (6) |
-| 2 | Colombia Primera A | ou25 | 19 | COLLECTING | +0.001 | – | +15.7% (3) |
 | 2 | Egypt Second League | ou25 | 19 | COLLECTING | +0.026 | – | +44.6% (5) |
 | 2 | Poland Ekstraklasa | ou35 | 19 | COLLECTING | +0.044 | – | -30.0% (2) |
 | 2 | Poland II Liga - East | ou35 | 19 | COLLECTING | -0.071 | – | +2.8% (5) |
 | 2 | Turkey 2. Lig | ou35 | 19 | COLLECTING | +0.040 | – | – |
-| 2 | Colombia Primera A | ou35 | 19 | COLLECTING | +0.108 | – | +25.0% (2) |
 | 2 | Egypt Second League | ou35 | 19 | COLLECTING | +0.067 | – | – |
 | 2 | Poland Ekstraklasa | btts | 19 | COLLECTING | +0.016 | – | – |
 | 2 | Poland II Liga - East | btts | 19 | COLLECTING | +0.016 | – | -10.8% (4) |
 | 2 | Turkey 2. Lig | btts | 19 | COLLECTING | +0.100 | – | – |
-| 2 | Colombia Primera A | btts | 19 | COLLECTING | +0.014 | – | +12.5% (2) |
 | 2 | Egypt Second League | btts | 19 | COLLECTING | +0.035 | – | – |
 | 2 | France Ligue 2 | ou15 | 18 | COLLECTING | +0.005 | – | -100.0% (3) |
 | 2 | Netherlands Eredivisie | ou15 | 18 | COLLECTING | +0.099 | – | – |
