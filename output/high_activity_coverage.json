@@ -127,12 +127,12 @@
       "sample_status": "OK"
     },
     "Mexico Liga MX": {
-      "T-10m": 3.9,
-      "T-1h": 32.5,
-      "T-30m": 14.3,
-      "T-3h": 79.2,
-      "T-6h": 93.5,
-      "fixtures": 77,
+      "T-10m": 3.8,
+      "T-1h": 32.1,
+      "T-30m": 14.1,
+      "T-3h": 79.5,
+      "T-6h": 93.6,
+      "fixtures": 78,
       "sample_status": "OK"
     },
     "Norway Eliteserien": {
@@ -179,7 +179,7 @@
       "T-30m": 14.7,
       "T-3h": 68.8,
       "T-6h": 91.3,
-      "fixtures": 1465,
+      "fixtures": 1466,
       "sample_status": "OK"
     },
     "OU15": {
@@ -197,16 +197,16 @@
       "T-30m": 15.3,
       "T-3h": 71.4,
       "T-6h": 94.0,
-      "fixtures": 1528,
+      "fixtures": 1529,
       "sample_status": "OK"
     },
     "OU35": {
       "T-10m": 6.5,
       "T-1h": 27.0,
-      "T-30m": 15.7,
-      "T-3h": 61.2,
-      "T-6h": 83.3,
-      "fixtures": 492,
+      "T-30m": 15.6,
+      "T-3h": 61.3,
+      "T-6h": 83.4,
+      "fixtures": 493,
       "sample_status": "OK"
     },
     "btts_no": {
@@ -305,7 +305,7 @@
       "T-30m": 3.0,
       "T-3h": 14.1,
       "T-6h": 29.1,
-      "fixtures": 1523,
+      "fixtures": 1524,
       "sample_status": "OK"
     },
     "over35": {
@@ -314,7 +314,7 @@
       "T-30m": 3.1,
       "T-3h": 11.2,
       "T-6h": 25.5,
-      "fixtures": 909,
+      "fixtures": 910,
       "sample_status": "OK"
     },
     "under15": {
@@ -332,7 +332,7 @@
       "T-30m": 3.0,
       "T-3h": 14.1,
       "T-6h": 30.1,
-      "fixtures": 1523,
+      "fixtures": 1524,
       "sample_status": "OK"
     },
     "under35": {
@@ -416,7 +416,7 @@
       "active_missed_windows": null,
       "active_p90_gap_min": null,
       "first": "2026-08-18T02:03:10Z",
-      "fixtures_kicking_off": 101,
+      "fixtures_kicking_off": 102,
       "last": "2026-10-20T21:50:14Z",
       "max_gap_min": 9149.5,
       "median_gap_min": 227.0,
@@ -430,25 +430,25 @@
       "active_p90_gap_min": null,
       "first": "2026-08-19T02:05:16Z",
       "fixtures_kicking_off": 80,
-      "last": "2026-10-14T23:24:29Z",
+      "last": "2026-10-21T00:51:37Z",
       "max_gap_min": 9287.4,
-      "median_gap_min": 192.4,
-      "missed_windows": 8100,
-      "n_observations": 63,
-      "p90_gap_min": 8836.3
+      "median_gap_min": 196.3,
+      "missed_windows": 8971,
+      "n_observations": 64,
+      "p90_gap_min": 8836.0
     }
   },
   "fixtures": {
-    "in_store": 1736,
-    "kicked_off": 1528,
-    "with_market_snapshot": 12579,
-    "with_model_snapshot": 1736,
+    "in_store": 1737,
+    "kicked_off": 1529,
+    "with_market_snapshot": 12580,
+    "with_model_snapshot": 1737,
     "with_player_props": 1685
   },
-  "generated_at": "2026-10-20T21:50:52Z",
+  "generated_at": "2026-10-21T00:52:13Z",
   "live": {
-    "live_odds_fixtures": 5894,
-    "live_odds_rows": 251612,
+    "live_odds_fixtures": 5900,
+    "live_odds_rows": 251910,
     "live_signal_fixtures": 139
   },
   "near_kickoff_market": {
@@ -465,15 +465,15 @@
       "pct_of_kicked_off": 15.3
     },
     "T-3h": {
-      "fixtures_covered": 1091,
+      "fixtures_covered": 1092,
       "pct_of_kicked_off": 71.4
     },
     "T-6h": {
-      "fixtures_covered": 1439,
+      "fixtures_covered": 1440,
       "pct_of_kicked_off": 94.2
     },
-    "fixtures_with_any_prematch_obs": 1528,
-    "kicked_off_fixtures": 1528,
+    "fixtures_with_any_prematch_obs": 1529,
+    "kicked_off_fixtures": 1529,
     "status": "OK"
   },
   "near_kickoff_model": {
@@ -490,25 +490,25 @@
       "pct_of_kicked_off": 11.2
     },
     "T-3h": {
-      "fixtures_covered": 964,
+      "fixtures_covered": 965,
       "pct_of_kicked_off": 63.1
     },
     "T-6h": {
-      "fixtures_covered": 1350,
+      "fixtures_covered": 1351,
       "pct_of_kicked_off": 88.4
     },
-    "fixtures_with_any_prematch_obs": 1528,
-    "kicked_off_fixtures": 1528,
+    "fixtures_with_any_prematch_obs": 1529,
+    "kicked_off_fixtures": 1529,
     "status": "OK"
   },
   "problems": [],
   "recommendations": [
     "T-10m market coverage is 6.3% of kicked-off fixtures. Closing price cannot be backfilled, so this is a permanent loss per uncovered fixture.",
     "T-1h market coverage is 30.4%. The final hour is where the sharp money moves; a capture window inside it is worth more than an extra one three days out.",
-    "market_snapshots p90 gap is 413 min against a 10 min target (1896 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
-    "model_snapshots p90 gap is 487 min against a 10 min target (1875 missed windows) \u2014 the tail, not the median, is where captures are being lost."
+    "market_snapshots p90 gap is 405 min against a 10 min target (1869 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
+    "model_snapshots p90 gap is 487 min against a 10 min target (1889 missed windows) \u2014 the tail, not the median, is where captures are being lost."
   ],
-  "scheduler_mode": "HIGH_ACTIVITY",
+  "scheduler_mode": "LIVE_MATCH",
   "status": "PASS",
   "target_interval_min": 10,
   "weekend": {
