@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-10-21T19:01:56Z",
+ "generated_at": "2026-10-21T23:45:40Z",
  "status_rule": "COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kickoff close",
  "totals": {
-  "results": 240322,
-  "odds_rows": 242858,
-  "fixtures_priced": 2840,
-  "fixtures_frozen": 2796
+  "results": 240331,
+  "odds_rows": 243836,
+  "fixtures_priced": 2842,
+  "fixtures_frozen": 2798
  },
  "cells": [
   {
@@ -2304,19 +2304,106 @@
    "league": "Non League Premier - Isthmian",
    "priority": 2,
    "market": "ou15",
+   "n": 31,
+   "status": "COLLECTING",
+   "rate": 0.9032,
+   "brier_base_rate": 0.0937,
+   "brier_market_close": 0.0959,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.0235,
+   "n_model": 31,
+   "brier_model": 0.0854,
+   "residual": {
+    "coef": 3.6226,
+    "se": 3.231,
+    "z": 1.12
+   }
+  },
+  {
+   "league_id": 58,
+   "country": "England",
+   "league": "Non League Premier - Isthmian",
+   "priority": 2,
+   "market": "ou25",
+   "n": 31,
+   "status": "COLLECTING",
+   "rate": 0.6774,
+   "brier_base_rate": 0.2222,
+   "brier_market_close": 0.2275,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.0239,
+   "n_model": 31,
+   "brier_model": 0.2242,
+   "residual": {
+    "coef": 1.6668,
+    "se": 1.6744,
+    "z": 1.0
+   },
+   "paper_bets": 11,
+   "paper_roi": 0.1427,
+   "paper_first_side_share": 1.0
+  },
+  {
+   "league_id": 58,
+   "country": "England",
+   "league": "Non League Premier - Isthmian",
+   "priority": 2,
+   "market": "ou35",
+   "n": 31,
+   "status": "COLLECTING",
+   "rate": 0.3226,
+   "brier_base_rate": 0.2216,
+   "brier_market_close": 0.2302,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.0388,
+   "n_model": 31,
+   "brier_model": 0.2488,
+   "residual": {
+    "coef": 0.8439,
+    "se": 1.4911,
+    "z": 0.57
+   }
+  },
+  {
+   "league_id": 58,
+   "country": "England",
+   "league": "Non League Premier - Isthmian",
+   "priority": 2,
+   "market": "btts",
+   "n": 31,
+   "status": "COLLECTING",
+   "rate": 0.6129,
+   "brier_base_rate": 0.2378,
+   "brier_market_close": 0.2366,
+   "reference": "median",
+   "market_skill_vs_base": 0.005,
+   "n_model": 31,
+   "brier_model": 0.2291,
+   "residual": {
+    "coef": 2.3359,
+    "se": 1.9305,
+    "z": 1.21
+   }
+  },
+  {
+   "league_id": 59,
+   "country": "England",
+   "league": "Non League Premier - Northern",
+   "priority": 2,
+   "market": "ou15",
    "n": 30,
    "status": "COLLECTING",
-   "rate": 0.9,
-   "brier_base_rate": 0.0958,
-   "brier_market_close": 0.0979,
+   "rate": 0.8,
+   "brier_base_rate": 0.1602,
+   "brier_market_close": 0.1625,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0219,
+   "market_skill_vs_base": -0.0144,
    "n_model": 30,
-   "brier_model": 0.0877,
+   "brier_model": 0.1757,
    "residual": {
-    "coef": 3.5097,
-    "se": 3.2279,
-    "z": 1.09
+    "coef": -1.1534,
+    "se": 1.0323,
+    "z": -1.12
    }
   },
   {
@@ -2341,28 +2428,28 @@
    }
   },
   {
-   "league_id": 58,
+   "league_id": 59,
    "country": "England",
-   "league": "Non League Premier - Isthmian",
+   "league": "Non League Premier - Northern",
    "priority": 2,
    "market": "ou25",
    "n": 30,
    "status": "COLLECTING",
    "rate": 0.6667,
-   "brier_base_rate": 0.2247,
-   "brier_market_close": 0.2302,
+   "brier_base_rate": 0.2361,
+   "brier_market_close": 0.238,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0245,
+   "market_skill_vs_base": -0.008,
    "n_model": 30,
-   "brier_model": 0.2288,
+   "brier_model": 0.2708,
    "residual": {
-    "coef": 1.5929,
-    "se": 1.6495,
-    "z": 0.97
+    "coef": -1.2747,
+    "se": 1.0096,
+    "z": -1.26
    },
    "paper_bets": 10,
-   "paper_roi": 0.095,
-   "paper_first_side_share": 1.0
+   "paper_roi": 0.016,
+   "paper_first_side_share": 0.8
   },
   {
    "league_id": 100,
@@ -2389,24 +2476,24 @@
    "paper_first_side_share": 0.5
   },
   {
-   "league_id": 58,
+   "league_id": 59,
    "country": "England",
-   "league": "Non League Premier - Isthmian",
+   "league": "Non League Premier - Northern",
    "priority": 2,
    "market": "ou35",
    "n": 30,
    "status": "COLLECTING",
-   "rate": 0.3,
-   "brier_base_rate": 0.2161,
-   "brier_market_close": 0.2261,
+   "rate": 0.4,
+   "brier_base_rate": 0.2457,
+   "brier_market_close": 0.2452,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0463,
+   "market_skill_vs_base": 0.002,
    "n_model": 30,
-   "brier_model": 0.2479,
+   "brier_model": 0.2657,
    "residual": {
-    "coef": 0.8142,
-    "se": 1.5143,
-    "z": 0.54
+    "coef": -0.4341,
+    "se": 0.9512,
+    "z": -0.46
    }
   },
   {
@@ -2431,24 +2518,24 @@
    }
   },
   {
-   "league_id": 58,
+   "league_id": 59,
    "country": "England",
-   "league": "Non League Premier - Isthmian",
+   "league": "Non League Premier - Northern",
    "priority": 2,
    "market": "btts",
    "n": 30,
    "status": "COLLECTING",
    "rate": 0.6,
-   "brier_base_rate": 0.2401,
-   "brier_market_close": 0.24,
+   "brier_base_rate": 0.2422,
+   "brier_market_close": 0.2445,
    "reference": "median",
-   "market_skill_vs_base": 0.0004,
+   "market_skill_vs_base": -0.0095,
    "n_model": 30,
-   "brier_model": 0.2333,
+   "brier_model": 0.2663,
    "residual": {
-    "coef": 2.2024,
-    "se": 1.9002,
-    "z": 1.16
+    "coef": -1.5386,
+    "se": 1.344,
+    "z": -1.14
    }
   },
   {
@@ -2473,20 +2560,6 @@
    }
   },
   {
-   "league_id": 59,
-   "country": "England",
-   "league": "Non League Premier - Northern",
-   "priority": 2,
-   "market": "ou15",
-   "n": 29,
-   "status": "COLLECTING",
-   "rate": 0.7931,
-   "brier_base_rate": 0.1641,
-   "brier_market_close": 0.1667,
-   "reference": "pinnacle",
-   "market_skill_vs_base": -0.0158
-  },
-  {
    "league_id": 187,
    "country": "Algeria",
    "league": "Ligue 2",
@@ -2499,23 +2572,6 @@
    "brier_market_close": 0.2599,
    "reference": "pinnacle",
    "market_skill_vs_base": 0.0159
-  },
-  {
-   "league_id": 59,
-   "country": "England",
-   "league": "Non League Premier - Northern",
-   "priority": 2,
-   "market": "ou25",
-   "n": 29,
-   "status": "COLLECTING",
-   "rate": 0.6552,
-   "brier_base_rate": 0.2373,
-   "brier_market_close": 0.2406,
-   "reference": "pinnacle",
-   "market_skill_vs_base": -0.0139,
-   "paper_bets": 9,
-   "paper_roi": -0.0456,
-   "paper_first_side_share": 0.778
   },
   {
    "league_id": 187,
@@ -2535,20 +2591,6 @@
    "paper_first_side_share": 0.4
   },
   {
-   "league_id": 59,
-   "country": "England",
-   "league": "Non League Premier - Northern",
-   "priority": 2,
-   "market": "ou35",
-   "n": 29,
-   "status": "COLLECTING",
-   "rate": 0.3793,
-   "brier_base_rate": 0.2385,
-   "brier_market_close": 0.2406,
-   "reference": "pinnacle",
-   "market_skill_vs_base": -0.0088
-  },
-  {
    "league_id": 187,
    "country": "Algeria",
    "league": "Ligue 2",
@@ -2561,20 +2603,6 @@
    "brier_market_close": 0.1256,
    "reference": "pinnacle",
    "market_skill_vs_base": -0.0211
-  },
-  {
-   "league_id": 59,
-   "country": "England",
-   "league": "Non League Premier - Northern",
-   "priority": 2,
-   "market": "btts",
-   "n": 29,
-   "status": "COLLECTING",
-   "rate": 0.5862,
-   "brier_base_rate": 0.2437,
-   "brier_market_close": 0.2474,
-   "reference": "median",
-   "market_skill_vs_base": -0.0152
   },
   {
    "league_id": 187,
@@ -2596,13 +2624,13 @@
    "league": "First Amateur Division",
    "priority": 2,
    "market": "ou15",
-   "n": 25,
+   "n": 27,
    "status": "COLLECTING",
-   "rate": 0.8,
-   "brier_base_rate": 0.16,
-   "brier_market_close": 0.1625,
+   "rate": 0.8148,
+   "brier_base_rate": 0.1513,
+   "brier_market_close": 0.1545,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0156
+   "market_skill_vs_base": -0.0212
   },
   {
    "league_id": 487,
@@ -2610,13 +2638,13 @@
    "league": "First Amateur Division",
    "priority": 2,
    "market": "ou25",
-   "n": 25,
+   "n": 27,
    "status": "COLLECTING",
-   "rate": 0.56,
-   "brier_base_rate": 0.2474,
-   "brier_market_close": 0.2473,
+   "rate": 0.5556,
+   "brier_base_rate": 0.2483,
+   "brier_market_close": 0.2485,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0004,
+   "market_skill_vs_base": -0.0008,
    "paper_bets": 8,
    "paper_roi": -0.1862,
    "paper_first_side_share": 0.625
@@ -2627,13 +2655,13 @@
    "league": "First Amateur Division",
    "priority": 2,
    "market": "ou35",
-   "n": 25,
+   "n": 27,
    "status": "COLLECTING",
-   "rate": 0.4,
-   "brier_base_rate": 0.2412,
-   "brier_market_close": 0.2391,
+   "rate": 0.4074,
+   "brier_base_rate": 0.2432,
+   "brier_market_close": 0.2425,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0087
+   "market_skill_vs_base": 0.0029
   },
   {
    "league_id": 487,
@@ -2641,13 +2669,13 @@
    "league": "First Amateur Division",
    "priority": 2,
    "market": "btts",
-   "n": 25,
+   "n": 27,
    "status": "COLLECTING",
-   "rate": 0.56,
-   "brier_base_rate": 0.2465,
-   "brier_market_close": 0.2553,
+   "rate": 0.5185,
+   "brier_base_rate": 0.2506,
+   "brier_market_close": 0.2606,
    "reference": "median",
-   "market_skill_vs_base": -0.0357
+   "market_skill_vs_base": -0.0399
   },
   {
    "league_id": 134,
@@ -3009,6 +3037,20 @@
    "market_skill_vs_base": -0.0512
   },
   {
+   "league_id": 339,
+   "country": "Guatemala",
+   "league": "Liga Nacional",
+   "priority": 2,
+   "market": "ou15",
+   "n": 20,
+   "status": "COLLECTING",
+   "rate": 0.9,
+   "brier_base_rate": 0.1347,
+   "brier_market_close": 0.1243,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0772
+  },
+  {
    "league_id": 51,
    "country": "England",
    "league": "National League - South",
@@ -3043,6 +3085,23 @@
    "paper_first_side_share": 0.667
   },
   {
+   "league_id": 339,
+   "country": "Guatemala",
+   "league": "Liga Nacional",
+   "priority": 2,
+   "market": "ou25",
+   "n": 20,
+   "status": "COLLECTING",
+   "rate": 0.55,
+   "brier_base_rate": 0.2568,
+   "brier_market_close": 0.2448,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0467,
+   "paper_bets": 6,
+   "paper_roi": -0.0,
+   "paper_first_side_share": 0.5
+  },
+  {
    "league_id": 51,
    "country": "England",
    "league": "National League - South",
@@ -3074,6 +3133,20 @@
    "market_skill_vs_base": 0.0202
   },
   {
+   "league_id": 339,
+   "country": "Guatemala",
+   "league": "Liga Nacional",
+   "priority": 2,
+   "market": "ou35",
+   "n": 20,
+   "status": "COLLECTING",
+   "rate": 0.15,
+   "brier_base_rate": 0.136,
+   "brier_market_close": 0.1424,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.0471
+  },
+  {
    "league_id": 51,
    "country": "England",
    "league": "National League - South",
@@ -3103,6 +3176,20 @@
    "brier_market_close": 0.2779,
    "reference": "median",
    "market_skill_vs_base": -0.1932
+  },
+  {
+   "league_id": 339,
+   "country": "Guatemala",
+   "league": "Liga Nacional",
+   "priority": 2,
+   "market": "btts",
+   "n": 20,
+   "status": "COLLECTING",
+   "rate": 0.8,
+   "brier_base_rate": 0.2729,
+   "brier_market_close": 0.2573,
+   "reference": "median",
+   "market_skill_vs_base": 0.0572
   },
   {
    "league_id": 106,
@@ -3151,20 +3238,6 @@
    "brier_market_close": 0.1392,
    "reference": "pinnacle",
    "market_skill_vs_base": 0.0367
-  },
-  {
-   "league_id": 339,
-   "country": "Guatemala",
-   "league": "Liga Nacional",
-   "priority": 2,
-   "market": "ou15",
-   "n": 19,
-   "status": "COLLECTING",
-   "rate": 0.9474,
-   "brier_base_rate": 0.1165,
-   "brier_market_close": 0.1033,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.1133
   },
   {
    "league_id": 780,
@@ -3243,23 +3316,6 @@
    "market_skill_vs_base": 0.0898,
    "paper_bets": 6,
    "paper_roi": -0.0333,
-   "paper_first_side_share": 0.5
-  },
-  {
-   "league_id": 339,
-   "country": "Guatemala",
-   "league": "Liga Nacional",
-   "priority": 2,
-   "market": "ou25",
-   "n": 19,
-   "status": "COLLECTING",
-   "rate": 0.5789,
-   "brier_base_rate": 0.2594,
-   "brier_market_close": 0.2438,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.0601,
-   "paper_bets": 6,
-   "paper_roi": -0.0,
    "paper_first_side_share": 0.5
   },
   {
@@ -3345,20 +3401,6 @@
    "market_skill_vs_base": 0.0397
   },
   {
-   "league_id": 339,
-   "country": "Guatemala",
-   "league": "Liga Nacional",
-   "priority": 2,
-   "market": "ou35",
-   "n": 19,
-   "status": "COLLECTING",
-   "rate": 0.1579,
-   "brier_base_rate": 0.1401,
-   "brier_market_close": 0.145,
-   "reference": "pinnacle",
-   "market_skill_vs_base": -0.035
-  },
-  {
    "league_id": 780,
    "country": "Poland",
    "league": "III Liga - Group 1",
@@ -3430,20 +3472,6 @@
    "brier_market_close": 0.2325,
    "reference": "median",
    "market_skill_vs_base": 0.0999
-  },
-  {
-   "league_id": 339,
-   "country": "Guatemala",
-   "league": "Liga Nacional",
-   "priority": 2,
-   "market": "btts",
-   "n": 19,
-   "status": "COLLECTING",
-   "rate": 0.8421,
-   "brier_base_rate": 0.2756,
-   "brier_market_close": 0.2546,
-   "reference": "median",
-   "market_skill_vs_base": 0.0762
   },
   {
    "league_id": 780,
@@ -8073,6 +8101,20 @@
    "paper_first_side_share": 0.0
   },
   {
+   "league_id": 243,
+   "country": "Ecuador",
+   "league": "Liga Pro Serie B",
+   "priority": 2,
+   "market": "ou15",
+   "n": 9,
+   "status": "COLLECTING",
+   "rate": 0.6667,
+   "brier_base_rate": 0.2249,
+   "brier_market_close": 0.184,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.1819
+  },
+  {
    "league_id": 144,
    "country": "Belgium",
    "league": "Jupiler Pro League",
@@ -8087,6 +8129,23 @@
    "market_skill_vs_base": 0.1774,
    "paper_bets": 2,
    "paper_roi": 0.35,
+   "paper_first_side_share": 0.0
+  },
+  {
+   "league_id": 243,
+   "country": "Ecuador",
+   "league": "Liga Pro Serie B",
+   "priority": 2,
+   "market": "ou25",
+   "n": 9,
+   "status": "COLLECTING",
+   "rate": 0.4444,
+   "brier_base_rate": 0.2519,
+   "brier_market_close": 0.1749,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.3057,
+   "paper_bets": 3,
+   "paper_roi": 0.6267,
    "paper_first_side_share": 0.0
   },
   {
@@ -8107,6 +8166,20 @@
    "paper_first_side_share": 0.0
   },
   {
+   "league_id": 243,
+   "country": "Ecuador",
+   "league": "Liga Pro Serie B",
+   "priority": 2,
+   "market": "ou35",
+   "n": 9,
+   "status": "COLLECTING",
+   "rate": 0.3333,
+   "brier_base_rate": 0.2407,
+   "brier_market_close": 0.1419,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.4105
+  },
+  {
    "league_id": 144,
    "country": "Belgium",
    "league": "Jupiler Pro League",
@@ -8124,6 +8197,20 @@
    "paper_first_side_share": 0.0
   },
   {
+   "league_id": 243,
+   "country": "Ecuador",
+   "league": "Liga Pro Serie B",
+   "priority": 2,
+   "market": "btts",
+   "n": 9,
+   "status": "COLLECTING",
+   "rate": 0.5556,
+   "brier_base_rate": 0.2609,
+   "brier_market_close": 0.2315,
+   "reference": "median",
+   "market_skill_vs_base": 0.1127
+  },
+  {
    "league_id": 110,
    "country": "Wales",
    "league": "Premier League",
@@ -8136,20 +8223,6 @@
    "brier_market_close": 0.1925,
    "reference": "pinnacle",
    "market_skill_vs_base": -0.0223
-  },
-  {
-   "league_id": 243,
-   "country": "Ecuador",
-   "league": "Liga Pro Serie B",
-   "priority": 2,
-   "market": "ou15",
-   "n": 8,
-   "status": "COLLECTING",
-   "rate": 0.625,
-   "brier_base_rate": 0.2345,
-   "brier_market_close": 0.2061,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.1211
   },
   {
    "league_id": 282,
@@ -8243,23 +8316,6 @@
    "paper_bets": 3,
    "paper_roi": -0.6,
    "paper_first_side_share": 0.667
-  },
-  {
-   "league_id": 243,
-   "country": "Ecuador",
-   "league": "Liga Pro Serie B",
-   "priority": 2,
-   "market": "ou25",
-   "n": 8,
-   "status": "COLLECTING",
-   "rate": 0.375,
-   "brier_base_rate": 0.2344,
-   "brier_market_close": 0.1822,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.2227,
-   "paper_bets": 3,
-   "paper_roi": 0.6267,
-   "paper_first_side_share": 0.0
   },
   {
    "league_id": 282,
@@ -8361,20 +8417,6 @@
    "paper_first_side_share": 0.667
   },
   {
-   "league_id": 243,
-   "country": "Ecuador",
-   "league": "Liga Pro Serie B",
-   "priority": 2,
-   "market": "ou35",
-   "n": 8,
-   "status": "COLLECTING",
-   "rate": 0.25,
-   "brier_base_rate": 0.1904,
-   "brier_market_close": 0.1385,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.2726
-  },
-  {
    "league_id": 282,
    "country": "Peru",
    "league": "Segunda Divisi\u00f3n",
@@ -8449,20 +8491,6 @@
    "paper_bets": 3,
    "paper_roi": 0.0,
    "paper_first_side_share": 0.667
-  },
-  {
-   "league_id": 243,
-   "country": "Ecuador",
-   "league": "Liga Pro Serie B",
-   "priority": 2,
-   "market": "btts",
-   "n": 8,
-   "status": "COLLECTING",
-   "rate": 0.5,
-   "brier_base_rate": 0.254,
-   "brier_market_close": 0.2363,
-   "reference": "median",
-   "market_skill_vs_base": 0.0697
   },
   {
    "league_id": 282,
@@ -9472,6 +9500,20 @@
    "market_skill_vs_base": 0.0053
   },
   {
+   "league_id": 510,
+   "country": "Switzerland",
+   "league": "1. Liga Promotion",
+   "priority": 2,
+   "market": "ou15",
+   "n": 5,
+   "status": "COLLECTING",
+   "rate": 0.8,
+   "brier_base_rate": 0.1615,
+   "brier_market_close": 0.1679,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.0396
+  },
+  {
    "league_id": 75,
    "country": "Brazil",
    "league": "Serie C",
@@ -9566,6 +9608,20 @@
    "paper_bets": 3,
    "paper_roi": 0.2833,
    "paper_first_side_share": 0.667
+  },
+  {
+   "league_id": 510,
+   "country": "Switzerland",
+   "league": "1. Liga Promotion",
+   "priority": 2,
+   "market": "ou25",
+   "n": 5,
+   "status": "COLLECTING",
+   "rate": 0.6,
+   "brier_base_rate": 0.2424,
+   "brier_market_close": 0.2365,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0243
   },
   {
    "league_id": 635,
@@ -9672,6 +9728,20 @@
    "market_skill_vs_base": 0.1637
   },
   {
+   "league_id": 510,
+   "country": "Switzerland",
+   "league": "1. Liga Promotion",
+   "priority": 2,
+   "market": "ou35",
+   "n": 5,
+   "status": "COLLECTING",
+   "rate": 0.4,
+   "brier_base_rate": 0.2428,
+   "brier_market_close": 0.2583,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.0638
+  },
+  {
    "league_id": 635,
    "country": "Hungary",
    "league": "NB III - Northwest",
@@ -9773,6 +9843,20 @@
    "market_skill_vs_base": 0.0076
   },
   {
+   "league_id": 510,
+   "country": "Switzerland",
+   "league": "1. Liga Promotion",
+   "priority": 2,
+   "market": "btts",
+   "n": 5,
+   "status": "COLLECTING",
+   "rate": 0.6,
+   "brier_base_rate": 0.2407,
+   "brier_market_close": 0.254,
+   "reference": "median",
+   "market_skill_vs_base": -0.0553
+  },
+  {
    "league_id": 635,
    "country": "Hungary",
    "league": "NB III - Northwest",
@@ -9841,20 +9925,6 @@
    "brier_market_close": 0.1824,
    "reference": "pinnacle",
    "market_skill_vs_base": 0.0324
-  },
-  {
-   "league_id": 510,
-   "country": "Switzerland",
-   "league": "1. Liga Promotion",
-   "priority": 2,
-   "market": "ou15",
-   "n": 4,
-   "status": "COLLECTING",
-   "rate": 0.75,
-   "brier_base_rate": 0.1954,
-   "brier_market_close": 0.199,
-   "reference": "pinnacle",
-   "market_skill_vs_base": -0.0184
   },
   {
    "league_id": 645,
@@ -9933,20 +10003,6 @@
    "paper_first_side_share": 1.0
   },
   {
-   "league_id": 510,
-   "country": "Switzerland",
-   "league": "1. Liga Promotion",
-   "priority": 2,
-   "market": "ou25",
-   "n": 4,
-   "status": "COLLECTING",
-   "rate": 0.75,
-   "brier_base_rate": 0.1975,
-   "brier_market_close": 0.2027,
-   "reference": "pinnacle",
-   "market_skill_vs_base": -0.0263
-  },
-  {
    "league_id": 645,
    "country": "Slovakia",
    "league": "3. liga - East",
@@ -10023,20 +10079,6 @@
    "market_skill_vs_base": 0.0109
   },
   {
-   "league_id": 510,
-   "country": "Switzerland",
-   "league": "1. Liga Promotion",
-   "priority": 2,
-   "market": "ou35",
-   "n": 4,
-   "status": "COLLECTING",
-   "rate": 0.5,
-   "brier_base_rate": 0.2522,
-   "brier_market_close": 0.2813,
-   "reference": "pinnacle",
-   "market_skill_vs_base": -0.1154
-  },
-  {
    "league_id": 645,
    "country": "Slovakia",
    "league": "3. liga - East",
@@ -10105,20 +10147,6 @@
    "brier_market_close": 0.2469,
    "reference": "median",
    "market_skill_vs_base": -0.0511
-  },
-  {
-   "league_id": 510,
-   "country": "Switzerland",
-   "league": "1. Liga Promotion",
-   "priority": 2,
-   "market": "btts",
-   "n": 4,
-   "status": "COLLECTING",
-   "rate": 0.75,
-   "brier_base_rate": 0.2026,
-   "brier_market_close": 0.2153,
-   "reference": "median",
-   "market_skill_vs_base": -0.0627
   },
   {
    "league_id": 645,
@@ -10503,10 +10531,10 @@
    "n": 3,
    "status": "COLLECTING",
    "rate": 0.6667,
-   "brier_base_rate": 0.2547,
+   "brier_base_rate": 0.2548,
    "brier_market_close": 0.2801,
    "reference": "median",
-   "market_skill_vs_base": -0.0997
+   "market_skill_vs_base": -0.0993
   },
   {
    "league_id": 453,
