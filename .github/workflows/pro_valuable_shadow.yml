@@ -35,7 +35,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install pandas numpy pyarrow scipy requests python-dotenv pytest
+      - run: pip install -r requirements.txt
       - name: Tests
         run: python -m pytest tests/test_valuable_shadow.py -q
       - name: v9 history (partial clone, read-only)

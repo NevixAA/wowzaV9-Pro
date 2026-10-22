@@ -57,7 +57,7 @@ jobs:
         with:
           python-version: '3.11'
       - if: steps.guard.outputs.run == 'true'
-        run: pip install pandas numpy pyarrow requests pytest
+        run: pip install -r requirements.txt
       - name: Tests
         if: steps.guard.outputs.run == 'true'
         env:

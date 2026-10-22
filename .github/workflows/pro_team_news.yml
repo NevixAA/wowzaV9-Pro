@@ -90,7 +90,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install deps
-        run: pip install pandas numpy pyarrow requests
+        run: pip install -r requirements.txt
 
       - name: Collect team news
         id: news

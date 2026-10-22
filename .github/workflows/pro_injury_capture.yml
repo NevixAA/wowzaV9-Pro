@@ -38,7 +38,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install pandas numpy pyarrow requests
+      - run: pip install -r requirements.txt
       - name: Capture and check
         env:
           APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}

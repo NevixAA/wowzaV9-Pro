@@ -44,7 +44,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install pandas numpy pyarrow requests scipy scikit-learn pytest
+      - run: pip install -r requirements.txt
       - name: Tests
         run: python -m pytest tests/test_league_promotion.py tests/test_regression_harness.py -q
       - name: Refresh scout status

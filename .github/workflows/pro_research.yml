@@ -57,7 +57,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - run: pip install pandas pyarrow numpy scipy scikit-learn requests
+      - run: pip install -r requirements.txt
 
       # EACH STUDY IS continue-on-error AND SEPARATE. They answer independent questions on
       # independent data; one failing must not silence the other two. That is the same per-track

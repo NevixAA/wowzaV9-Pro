@@ -51,7 +51,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - run: pip install pandas pyarrow requests numpy
+      - run: pip install -r requirements.txt
 
       - name: Collect
         env:

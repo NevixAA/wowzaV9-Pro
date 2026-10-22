@@ -77,7 +77,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - run: pip install pandas pyarrow requests
+      - run: pip install -r requirements.txt
 
       # Gate on the artifact, not on a flag. Once the join exists there is nothing left to do,
       # so the hourly schedule costs one checkout and stops.

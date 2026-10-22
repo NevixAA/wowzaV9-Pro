@@ -61,7 +61,7 @@ jobs:
         with:
           python-version: '3.11'
 
-      - run: pip install pandas pyarrow numpy scipy requests
+      - run: pip install -r requirements.txt
 
       # The gates are pure functions over a row, so they are worth proving before a run that can
       # send messages. A vocabulary mismatch between the two builders once suppressed 6,318 of

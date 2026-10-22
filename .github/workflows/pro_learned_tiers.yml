@@ -32,7 +32,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install pandas numpy pyarrow scipy scikit-learn pytest
+      - run: pip install -r requirements.txt
       - name: Tests
         run: python -m pytest tests/test_learned_tiers.py -q
       - name: Retrain + walk-forward
