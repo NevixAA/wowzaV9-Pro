@@ -1,0 +1,14 @@
+# Canonical Pro dependencies (2026-10-22). Every workflow installs `-r requirements.txt` unless it
+# needs an extra (it then installs this file PLUS the extra). Unpinned on purpose: this matches what
+# the workflows installed before, so adopting the file changes no package version.
+# tests/test_requirements_cover_imports.py fails if src/ imports a third-party package not listed here.
+pandas
+numpy
+pyarrow
+requests
+scipy
+scikit-learn
+openpyxl
+python-dotenv
+pyyaml
+pytest
