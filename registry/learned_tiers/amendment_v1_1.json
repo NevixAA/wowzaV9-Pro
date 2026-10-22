@@ -1,0 +1,16 @@
+{
+ "amends": "registry/learned_tiers/registration_v1.json",
+ "version": "1.1",
+ "amended_at": "2026-10-22",
+ "by": "owner 2026-10-22: 'we need more study and more data and more tips to turn off league'",
+ "made_before_prospective_data": true,
+ "rule": "The learned tiers may RE-RANK tips inside a league but may NEVER switch a league off. Where the learned model assigns AVOID to a candidate in a league that has not passed the league-off test, that candidate keeps v9's production tier (scheme LEARNED_LEAGUE_PROTECTED). The swap rule of v1 is evaluated on LEARNED_LEAGUE_PROTECTED, not on raw LEARNED.",
+ "league_off_test": {
+  "unit": "league x market x model_type, settled first-sight tips",
+  "min_tips": 600,
+  "why_600": "~ the tips needed to detect a -10% league at 95% one-sided / 80% power (619), or a -15% league with Bonferroni across ~20 cells (592); assumptions: flat 1u, odds ~2.0, per-bet sd ~1.0; cross-checked by simulation",
+  "criteria": "ALL of: n >= 600; ROI upper bound of a Bonferroni-corrected (20 cells) 95% one-sided CI < 0; mean CLV <= 0 where >= 50% close coverage; learned model also assigns AVOID to >= 90% of that league's candidates; holds in BOTH halves of the record",
+  "result": "a league passing it is PROPOSED to the owner to stop tips (collection always continues); never automatic"
+ },
+ "production_changed": "NO"
+}

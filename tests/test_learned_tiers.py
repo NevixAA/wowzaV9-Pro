@@ -50,3 +50,12 @@ def test_registration_is_frozen_with_a_prospective_only_swap_rule():
     reg = json.loads((L.cfg.BASE_DIR / "registry" / "learned_tiers" / "registration_v1.json").read_text(encoding="utf-8"))
     assert reg["prospective_start"] == "2026-10-21" and "never trigger a swap" in reg["swap_rule"]
     assert L.CUTS == {"SNIPER": 0.06, "MARKSMAN": 0.03, "VALUABLE": 0.0} and L.C == 0.5
+
+
+def test_learned_tiers_never_switch_a_league_off():
+    d = pd.DataFrame({"league": ["League One", "League One"], "market": "ou25", "model_type": "standard",
+                      "learned_tier": ["AVOID", "SNIPER"], "prod_tier": ["VALUABLE", "MARKSMAN"]})
+    assert list(L.protect_leagues(d)) == ["VALUABLE", "SNIPER"]          # AVOID falls back, others re-rank
+    import json
+    am = json.loads((L.cfg.BASE_DIR / "registry" / "learned_tiers" / "amendment_v1_1.json").read_text(encoding="utf-8"))
+    assert am["league_off_test"]["min_tips"] == 600 and not L.LEAGUES_OFF_APPROVED

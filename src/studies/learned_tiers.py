@@ -129,11 +129,27 @@ def _summ(x: pd.DataFrame) -> dict:
             "hit_pct": round(float(x["won"].mean() * 100), 1), "pnl": round(float(x["pnl"].sum()), 1)}
 
 
+#: Amendment v1.1 (owner 2026-10-22): the learned tiers never switch a league off. Leagues listed here
+#: have PASSED the league-off test (registry/learned_tiers/amendment_v1_1.json) and been approved by the
+#: owner; it is empty until then.
+LEAGUES_OFF_APPROVED: set[tuple[str, str, str]] = set()
+
+
+def protect_leagues(d: pd.DataFrame) -> pd.Series:
+    """LEARNED_LEAGUE_PROTECTED: the learned tier, except that a candidate the model would AVOID in a
+    league not approved for switching off keeps v9's production tier - re-rank inside, never switch off."""
+    off = [(l, m, t) in LEAGUES_OFF_APPROVED for l, m, t in zip(d["league"], d["market"], d["model_type"])]
+    keep_prod = (d["learned_tier"] == "AVOID") & ~pd.Series(off, index=d.index)
+    return d["learned_tier"].where(~keep_prod, d["prod_tier"])
+
+
 def compare(wf: pd.DataFrame) -> dict:
     out = {}
+    wf = wf.assign(protected_tier=protect_leagues(wf))
     for (mt, mk), g in wf.groupby(["model_type", "market"]):
         r = {"weeks_scored": int(g["week"].nunique()), "rows": int(len(g))}
-        for scheme, col in (("PRODUCTION", "prod_tier"), ("LEARNED", "learned_tier")):
+        for scheme, col in (("PRODUCTION", "prod_tier"), ("LEARNED", "learned_tier"),
+                            ("LEARNED_LEAGUE_PROTECTED", "protected_tier")):
             r[scheme] = {t: _summ(g[g[col] == t]) for t in ("SNIPER", "MARKSMAN", "VALUABLE")}
             r[scheme]["ALL_TIPS"] = _summ(g[g[col].isin(["SNIPER", "MARKSMAN", "VALUABLE"])])
             rois = [r[scheme][t].get("roi_pct") for t in ("SNIPER", "MARKSMAN", "VALUABLE")]
@@ -187,6 +203,6 @@ if __name__ == "__main__":
     r = run()
     for k, v in r["comparison"].items():
         print(k, "weeks", v["weeks_scored"], "rows", v["rows"])
-        for s in ("PRODUCTION", "LEARNED"):
+        for s in ("PRODUCTION", "LEARNED", "LEARNED_LEAGUE_PROTECTED"):
             print("  ", s, {t: (v[s][t].get("n"), v[s][t].get("roi_pct")) for t in ("SNIPER", "MARKSMAN", "VALUABLE", "ALL_TIPS")},
                   "ordered", v[s]["ordered_S>M>V"])

@@ -264,11 +264,12 @@ def _learned_tiers():
         return None
     key = {}
     for track, v in (r.get("comparison") or {}).items():
-        p, l = v["PRODUCTION"]["ALL_TIPS"], v["LEARNED"]["ALL_TIPS"]
-        key[track] = (f"today's tiers {p.get('roi_pct')}% (n {p.get('n')}) vs learned {l.get('roi_pct')}% "
-                      f"(n {l.get('n')}) · learned ordered: {v['LEARNED']['ordered_S>M>V']}")
-    return {"status": "Learned per-league tiers (challenger): weekly retrain; swap proposed only on prospective "
-                      "rows from 2026-10-21 - historical results are discovery",
+        p = v["PRODUCTION"]["ALL_TIPS"]
+        lp = (v.get("LEARNED_LEAGUE_PROTECTED") or v["LEARNED"])["ALL_TIPS"]
+        key[track] = (f"today's tiers {p.get('roi_pct')}% (n {p.get('n')}) vs learned, leagues protected "
+                      f"{lp.get('roi_pct')}% (n {lp.get('n')})")
+    return {"status": "Learned per-league tiers (challenger): weekly retrain; re-ranks inside leagues, never switches one "
+                      "off (owner: league-off needs >= 600 tips); swap only on prospective rows from 2026-10-21",
             "date": r.get("generated_at"), "key": key, "report": "output/studies/learned_tiers/learned_tiers.json"}
 
 
