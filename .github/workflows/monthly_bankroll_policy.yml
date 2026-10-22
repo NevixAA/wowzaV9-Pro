@@ -83,7 +83,7 @@ jobs:
                    output/bankroll/policy_candidates.csv output/bankroll/stress_tests.csv \
                    output/bankroll/walk_forward.csv output/bankroll/track_decisions.csv \
                    output/bankroll/convergence_leagues.csv output/bankroll/track_evidence.json \
-                   output/bankroll/production_policy_path.csv \
+                   output/bankroll/production_policy_path.csv output/bankroll/tier_rules.csv \
                    output/bankroll/MONTHLY_REVIEW.md output/bankroll/pr_body.md output/bankroll/history/*.json; do
             [ -e "$p" ] && git add "$p"
           done
