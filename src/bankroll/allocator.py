@@ -144,11 +144,49 @@ def decide_track(name: str, t: dict, ev: dict | None, as_of, dd_warning: bool) -
     return t, rec
 
 
+TIER_RULE_MIN_N = 100
+EQUAL_TIERS = {"SNIPER": 1.0, "MARKSMAN": 1.0, "VALUABLE": 1.0}
+
+
+def derive_tier_rules(bets: pd.DataFrame, prev: dict, as_of) -> tuple[dict, list[dict]]:
+    """Per track: does the edge rank outcomes? If not, every tier is staked the same.
+
+    Uses EVERY tier's settled bets before `as_of` (the question is about the tiers themselves, so it
+    cannot look only at the tiers already staked). n >= TIER_RULE_MIN_N and Spearman(edge, P/L) not
+    positive at p < 0.05 -> EQUAL; it ranks -> the global ladder (no override); too few bets -> keep
+    whatever is in force (no change without evidence). Owner 2026-10-22: tiers follow measured
+    outcomes, not raw edge size."""
+    from scipy.stats import spearmanr
+    out = dict(prev.get("track_tier_multipliers") or {})
+    rows = []
+    b = bets[(bets["date"] < pd.Timestamp(as_of)) & bets["unit"].notna()]
+    for track in sorted(prev.get("tracks", {})):
+        g = b[(b["track"] == track) & b["edge"].notna()] if "edge" in b.columns else b.iloc[0:0]
+        rec = {"track": track, "n": int(len(g))}
+        if len(g) < TIER_RULE_MIN_N:
+            rec["rule"] = "KEEP (too few bets)"
+        else:
+            rho, p = spearmanr(g["edge"], g["unit"])
+            rec.update(spearman=round(float(rho), 3), p=round(float(p), 4),
+                       roi_by_tier={t: round(float(x["unit"].mean() * 100), 1) for t, x in g.groupby("signal_tier")})
+            if rho > 0 and p < 0.05:
+                out.pop(track, None)
+                rec["rule"] = "LADDER (edge ranks outcomes)"
+            else:
+                out[track] = dict(EQUAL_TIERS)
+                rec["rule"] = "EQUAL (edge does not rank outcomes)"
+        rows.append(rec)
+    return out, rows
+
+
 def propose(prev: dict, bets: pd.DataFrame, as_of, v11: pd.DataFrame | None = None,
             dd_warning: bool = False) -> tuple[dict, list[dict], dict]:
     """Returns (proposed_policy, per-track decisions, evidence). Uses bets before `as_of` only."""
-    ev = track_evidence(bets, as_of)
     pol = copy.deepcopy(prev)
+    pol["track_tier_multipliers"], tier_rows = derive_tier_rules(bets, prev, as_of)
+    from src.bankroll.data import staked
+    bets = staked(bets, pol)                    # evidence = the tiers this policy actually stakes
+    ev = track_evidence(bets, as_of)
     decisions = []
     for name, t in prev["tracks"].items():
         nt, rec = decide_track(name, t, ev.get(name), as_of, dd_warning)
@@ -172,7 +210,7 @@ def propose(prev: dict, bets: pd.DataFrame, as_of, v11: pd.DataFrame | None = No
     pol["policy_version"] = f"adaptive-{pd.Timestamp(as_of):%Y-%m}"
     pol["evidence_cutoff"] = (pd.Timestamp(as_of) - pd.Timedelta(days=1)).strftime("%Y-%m-%d")
     pol["generated_at"] = pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%d %H:%M UTC")
-    return pol, decisions, {"tracks": ev, "convergence": conv}
+    return pol, decisions, {"tracks": ev, "convergence": conv, "tier_rules": tier_rows}
 
 
 def reduce_only(current: dict, proposed: dict) -> dict:
@@ -201,6 +239,11 @@ def validate(policy: dict) -> list[str]:
     for k, (lo, hi) in HARD_BOUNDS["tier"].items():
         m = policy["tier_multipliers"].get(k, lo)
         if not lo <= m <= hi: v.append(f"{k} multiplier outside {lo}-{hi}")
+    for track, tt in (policy.get("track_tier_multipliers") or {}).items():
+        for k, m in tt.items():
+            tlo, thi = HARD_BOUNDS["tier"].get(k, (0.0, 0.0))
+            if not tlo <= float(m) <= thi:
+                v.append(f"{track} {k} multiplier outside {tlo}-{thi}")
     lo, hi = HARD_BOUNDS["convergence"]
     if not lo <= policy["convergence"]["multiplier"] <= hi: v.append("convergence multiplier outside 1.00-1.20")
     for k, t in policy["tracks"].items():

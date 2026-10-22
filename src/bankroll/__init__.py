@@ -33,5 +33,5 @@ STATE_BAND_LIMITS = {"PROBATION": 0.0025, "ACTIVE_LOW": 0.005, "ACTIVE": 0.0125,
 HARD_BOUNDS = {"single_bet_cap": 0.02, "fixture_cap": 0.02, "daily_cap_min": 0.03,
                "daily_cap_max": 0.075, "daily_cap_increase_above": 0.06, "league_daily_cap": 0.04,
                "league_market_daily_cap": 0.03, "max_odds": 2.75, "blocked_odds": 3.0,
-               "tier": {"SNIPER": (1.00, 1.25), "MARKSMAN": (0.75, 1.00)}, "convergence": (1.00, 1.20)}
+               "tier": {"SNIPER": (1.00, 1.25), "MARKSMAN": (0.75, 1.00), "VALUABLE": (0.00, 1.00)}, "convergence": (1.00, 1.20)}
 SURVIVAL = {"p_dd20": 0.05, "p_below75": 0.05, "p_below50": 0.01}

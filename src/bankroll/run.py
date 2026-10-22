@@ -146,6 +146,8 @@ def _diff(a: dict, b: dict) -> list[str]:
     for f in ("daily_cap", "fixture_cap", "league_daily_cap", "league_market_daily_cap"):
         if a["portfolio"].get(f) != b["portfolio"].get(f):
             ch.append(f"portfolio.{f}: {a['portfolio'].get(f)} -> {b['portfolio'].get(f)}")
+    if (a.get("track_tier_multipliers") or {}) != (b.get("track_tier_multipliers") or {}):
+        ch.append(f"track_tier_multipliers: {a.get('track_tier_multipliers')} -> {b.get('track_tier_multipliers')}")
     if a.get("tier_multipliers") != b.get("tier_multipliers"):
         ch.append(f"tier_multipliers: {a.get('tier_multipliers')} -> {b.get('tier_multipliers')}")
     if sorted(a["convergence"]["leagues"]) != sorted(b["convergence"]["leagues"]):
@@ -245,6 +247,7 @@ def main(as_of: str | None = None, n_paths: int = 2000) -> int:
                      drawdown=lambda x: 1 - x["bankroll"] / x["peak"]).to_csv(OUT / "production_policy_path.csv", index=False)
     pd.DataFrame(decisions).to_csv(OUT / "track_decisions.csv", index=False)
     pd.DataFrame(ev["convergence"]).to_csv(OUT / "convergence_leagues.csv", index=False)
+    pd.DataFrame(ev.get("tier_rules", [])).to_csv(OUT / "tier_rules.csv", index=False)
     (OUT / "track_evidence.json").write_text(json.dumps(ev["tracks"], indent=2, default=str), encoding="utf-8")
     summary = render_summary(verdict, current, recommended, decisions, table, stress_rows)
     (OUT / "MONTHLY_REVIEW.md").write_text(summary, encoding="utf-8")
