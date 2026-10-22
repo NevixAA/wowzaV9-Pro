@@ -90,7 +90,10 @@ CONTRACT: tuple[Artifact, ...] = (
         max_age_h=6.0,
         grain="one row per (book, market, side) price CHANGE",
         caveat="CONSECUTIVE-DISTINCT DEDUPED: a poll where nothing moved writes no row. So "
-               "`size > 1` guarantees movement and cannot be used as evidence OF movement.",
+               "`size > 1` guarantees movement and cannot be used as evidence OF movement. "
+               "ROLLING since 2026-10-22: holds only match_date >= today-2; played matches are "
+               "in output/book_odds_snapshots_archive/<match_date>.csv -- full-history readers "
+               "use v9_source.read_v9_all / fetch_csv_all.",
         tags=("unrecoverable",),
     ),
     Artifact(

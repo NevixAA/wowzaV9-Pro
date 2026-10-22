@@ -75,10 +75,13 @@ def build() -> tuple[pd.DataFrame, dict]:
     frames, stats = [], {}
     for fname, tag in SOURCES.items():
         p = _v9() / "output" / fname
-        if not p.exists():
+        # read_v9_all: v9 rolling files keep played matches in <stem>_archive/ (2026-10-22);
+        # for a plain file it is exactly read_csv.
+        from src.data.v9_source import read_v9_all, v9_archive_parts
+        if not p.exists() and not v9_archive_parts(f"output/{fname}", _v9()):
             stats[tag] = {"rows": 0, "note": "missing"}
             continue
-        d = pd.read_csv(p, low_memory=False)
+        d = read_v9_all(f"output/{fname}", _v9(), low_memory=False)
         n0 = len(d)
         out = pd.DataFrame(index=d.index)
         out["source"] = tag

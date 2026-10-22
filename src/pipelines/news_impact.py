@@ -135,7 +135,8 @@ def run(window_min: float = DEFAULT_WINDOW_MIN, quiet: bool = False) -> dict:
         return {"n": 0, "status": "NO_DATA_YET"}
 
     from src.data import v9_source as v9
-    snaps = v9.fetch_csv("output/book_odds_snapshots.csv", required=False)
+    # ROLLING in v9 since 2026-10-22 -> archive + live, so older lineups keep their price series.
+    snaps = v9.fetch_csv_all("output/book_odds_snapshots.csv", required=False)
     if snaps.empty:
         print("[news_impact] no book_odds_snapshots available")
         return {"n": 0, "status": "NO_ODDS"}

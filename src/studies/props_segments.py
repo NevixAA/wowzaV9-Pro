@@ -109,11 +109,13 @@ def attach_role(d: pd.DataFrame) -> pd.DataFrame:
 def attach_clv(d: pd.DataFrame) -> pd.DataFrame:
     if d.empty:
         return d.assign(clv=pd.Series(dtype=float))
-    p = cfg.V9_LOCAL / "output" / "player_prop_odds_history.csv"
-    if not p.exists():
-        return d.assign(clv=np.nan)
-    h = pd.read_csv(p, usecols=["snapshot_ts", "match_date", "player", "market", "odds"],
+    # v9's file is ROLLING since 2026-10-22: played matches live in player_prop_odds_history_archive/.
+    from src.data.v9_source import read_v9_all
+    h = read_v9_all("output/player_prop_odds_history.csv",
+                    usecols=["snapshot_ts", "match_date", "player", "market", "odds"],
                     low_memory=False)
+    if h.empty:
+        return d.assign(clv=np.nan)
     h = h[h["match_date"].astype(str) >= WINDOW_FROM]
     h["k"] = h["player"].map(_ini_sur)
     h = h.dropna(subset=["k"])

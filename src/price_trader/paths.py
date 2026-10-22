@@ -25,7 +25,9 @@ PAPER = {"USA MLS"}
 
 
 def load_snapshots() -> pd.DataFrame:
-    d = pd.read_csv(cfg.V9_LOCAL / "output" / "book_odds_snapshots.csv", low_memory=False)
+    # v9's file is ROLLING since 2026-10-22: played matches live in book_odds_snapshots_archive/.
+    from src.data.v9_source import read_v9_all
+    d = read_v9_all("output/book_odds_snapshots.csv", low_memory=False)
     d["ts"] = pd.to_datetime(d["snapshot_ts"], utc=True, errors="coerce")
     d["ko"] = pd.to_datetime(d["kickoff_utc"], utc=True, errors="coerce")
     d["side"] = d["side"].astype(str).str.upper()

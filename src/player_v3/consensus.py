@@ -2,7 +2,8 @@
 
     python -m src.player_v3.consensus        # -> output/player_v3/consensus/*
 
-Source: v9 output/prop_quotes/<YYYY-MM>.csv (append-only quote log since 2026-10-14). A fair
+Source: v9 output/prop_quotes/*.csv (append-only quote log since 2026-10-14; one file per capture
+DAY, <YYYY-MM-DD>.csv, since 2026-10-22 -- was <YYYY-MM>.csv; load_quotes globs both). A fair
 probability needs BOTH sides of ONE market from ONE book at (nearly) one moment:
 
     raw_over  = 1/over_odds,  raw_under = 1/under_odds

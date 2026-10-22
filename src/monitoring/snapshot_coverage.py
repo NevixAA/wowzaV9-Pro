@@ -97,11 +97,12 @@ MIN_MEDIAN_SNAPSHOTS = 10          # main market measured 41
 
 
 def _load(path: str) -> pd.DataFrame:
-    p = cfg.V9_LOCAL / path
-    if not p.exists():
-        return pd.DataFrame()
+    # read_v9_all: v9's rolling files keep played matches in <stem>_archive/ (2026-10-22); for a
+    # plain file it is exactly read_csv. Coverage is measured on KICKED-OFF fixtures, i.e. mostly
+    # archived ones, so the live file alone would shrink the sample to two days.
+    from src.data.v9_source import read_v9_all
     try:
-        return pd.read_csv(p)
+        return read_v9_all(path)
     except Exception:
         return pd.DataFrame()
 

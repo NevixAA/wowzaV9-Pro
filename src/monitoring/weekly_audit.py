@@ -77,6 +77,10 @@ class Audit:
 
 def _read(path: str) -> pd.DataFrame:
     try:
+        # v9 rolling files (2026-10-22) keep played matches in <stem>_archive/; a 7-day audit
+        # window spans those, so read archive + live for them.
+        if path in v9.ROLLING_FILES:
+            return v9.fetch_csv_all(path, required=False)
         return v9.fetch_csv(path, required=False)
     except Exception:
         return pd.DataFrame()

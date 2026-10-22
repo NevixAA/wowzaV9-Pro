@@ -55,7 +55,9 @@ def ini_sur(name) -> str | None:
 
 def prop_items() -> pd.DataFrame:
     """One row per (match date, player, market) with entry/close/consensus/dispersion."""
-    h = pd.read_csv(cfg.V9_LOCAL / "output" / "player_prop_odds_history.csv", low_memory=False)
+    # v9's file is ROLLING since 2026-10-22: played matches live in player_prop_odds_history_archive/.
+    from src.data.v9_source import read_v9_all
+    h = read_v9_all("output/player_prop_odds_history.csv", low_memory=False)
     h = h[h["market"].isin(TARGET)]
     h["odds"] = pd.to_numeric(h["odds"], errors="coerce")
     h = h[h["odds"] > 1.0]

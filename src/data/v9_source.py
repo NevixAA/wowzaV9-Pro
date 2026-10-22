@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import io
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -147,6 +148,82 @@ def fetch_csv(rel_path: str, *, required: bool = True) -> pd.DataFrame:
             f"checkout to avoid raw-HTTP rate limits."
         ) from last
     return pd.DataFrame()
+
+
+# ── v9 ROLLING files (v9 src/rolling_store.py, 2026-10-22) ───────────────────────────────────────
+# v9 stopped rewriting three append-only odds logs whole on every run (git re-stored ~100 MB per
+# commit and the repo grew by GBs a week). The live file keeps its PATH but now holds only rows
+# whose match_date >= today - 2; played matches move once into <stem>_archive/<YYYY-MM-DD>.csv
+# beside it. A reader that needs the FULL history must read archive + live -- these helpers.
+# Incremental readers (watermark on snapshot_ts) and "latest price" readers need only the live file.
+ROLLING_FILES = ("output/book_odds_snapshots.csv", "output/player_prop_odds_history.csv")
+_DAY = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+def archive_rel_dir(rel_path: str) -> str:
+    p = Path(rel_path)
+    return (p.parent / f"{p.stem}_archive").as_posix()
+
+
+def v9_archive_parts(rel_path: str, root: Path | None = None) -> list[Path]:
+    adir = Path(root or cfg.V9_LOCAL) / archive_rel_dir(rel_path)
+    if not adir.exists():
+        return []
+    return sorted(p for p in adir.glob("*.csv") if _DAY.match(p.stem))
+
+
+def read_v9_all(rel_path: str, root: Path | None = None, **read_kw) -> pd.DataFrame:
+    """LOCAL full history of a v9 rolling file: archive parts + live, exact duplicates dropped.
+
+    For a file with no archive dir this is exactly `pd.read_csv(root / rel_path, **read_kw)`
+    (no dedupe), so pointing an existing reader at it changes nothing until v9 rolls the file.
+    Missing everything -> empty frame (callers already treat a missing file that way)."""
+    root = Path(root or cfg.V9_LOCAL)
+    parts = v9_archive_parts(rel_path, root)
+    live = root / rel_path
+    frames = [pd.read_csv(p, **read_kw) for p in parts]
+    if live.exists():
+        frames.append(pd.read_csv(live, **read_kw))
+    frames = [f for f in frames if not f.empty]
+    if not frames:
+        return pd.DataFrame()
+    out = pd.concat(frames, ignore_index=True)
+    return out.drop_duplicates().reset_index(drop=True) if parts else out
+
+
+def fetch_csv_all(rel_path: str, *, required: bool = True) -> pd.DataFrame:
+    """`fetch_csv` for a v9 ROLLING file, archive included (all columns as str, like fetch_csv).
+
+    Local clone first. Over HTTP the archive is listed through the GitHub contents API (one
+    unauthenticated call) and each part fetched raw; if the listing fails the LIVE file alone is
+    returned with a loud warning -- recent matches only, never a crash."""
+    kw = dict(dtype=str, keep_default_na=False, na_values=[""])
+    if (cfg.V9_LOCAL / rel_path).exists() or v9_archive_parts(rel_path):
+        try:
+            return read_v9_all(rel_path, **kw)
+        except Exception as e:
+            if required:
+                raise SourceUnavailable(f"local read failed for {rel_path}: {e}") from e
+            return pd.DataFrame()
+    live = fetch_csv(rel_path, required=required)
+    try:
+        import requests
+        r = requests.get(f"https://api.github.com/repos/{cfg.V9_REPO}/contents/"
+                         f"{archive_rel_dir(rel_path)}", timeout=30)
+        if r.status_code == 404:
+            return live
+        r.raise_for_status()
+        names = sorted(x["name"] for x in r.json()
+                       if x.get("name", "").endswith(".csv") and _DAY.match(x["name"][:-4]))
+    except Exception as e:                                          # noqa: BLE001
+        print(f"[v9_source] WARNING: archive listing for {rel_path} failed ({e}); "
+              f"using the live file only (recent matches)")
+        return live
+    frames = [fetch_csv(f"{archive_rel_dir(rel_path)}/{n}", required=False) for n in names]
+    frames = [f for f in frames + [live] if not f.empty]
+    if not frames:
+        return pd.DataFrame()
+    return pd.concat(frames, ignore_index=True).drop_duplicates().reset_index(drop=True)
 
 
 def num(s: pd.Series) -> pd.Series:
