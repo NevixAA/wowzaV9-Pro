@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-22 10:47 UTC",
+ "generated_at": "2026-10-22 10:49 UTC",
  "items": [
   {
    "id": "league_promotion",
@@ -16,6 +16,102 @@
    },
    "report": "output/scout/WEEKLY_PROMOTION_REVIEW.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/scout/WEEKLY_PROMOTION_REVIEW.md"
+  },
+  {
+   "id": "props_calibration",
+   "title": "Props calibration monitor (daily)",
+   "area": "players",
+   "status": "Live props model vs reality (30 days): assists predicted 20% / happened 21%, cards predicted 17% / happened 20%, goals predicted 24% / happened 29%, sot predicted 29% / happened 42%",
+   "date": "2026-10-22 10:46 UTC",
+   "key": {
+    "assists": "CALIBRATED \u00b7 gap +0.7% [-0.0395, 0.0539] \u00b7 n 217",
+    "cards": "UNDER_PREDICTS \u00b7 gap +2.2% [0.0053, 0.0495] \u00b7 n 1736",
+    "goals": "UNDER_PREDICTS \u00b7 gap +5.3% [0.0308, 0.0787] \u00b7 n 647",
+    "sot": "UNDER_PREDICTS \u00b7 gap +13.2% [0.1199, 0.1521] \u00b7 n 3184"
+   },
+   "report": "output/studies/PROPS_CALIBRATION.md",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/PROPS_CALIBRATION.md"
+  },
+  {
+   "id": "top_picks_weekly",
+   "title": "Top picks \u2014 weekly table",
+   "area": "tips",
+   "status": "Top picks 2026-W43: live to date BEST_BETS 100%/+94%, SAFEST 70%/+23%, VALUE 100%/+94%",
+   "date": "2026-10-22 10:46 UTC",
+   "key": {
+    "BEST_BETS (backtest)": "56% hit \u00b7 +12% ROI \u00b7 5% 0/5 days \u00b7 191 picks",
+    "CURRENT (backtest)": "49% hit \u00b7 +3% ROI \u00b7 8% 0/5 days \u00b7 195 picks",
+    "RANDOM_5 (backtest)": "48% hit \u00b7 -2% ROI \u00b7 4% 0/5 days \u00b7 195 picks",
+    "SAFEST (backtest)": "65% hit \u00b7 +10% ROI \u00b7 0% 0/5 days \u00b7 195 picks",
+    "VALUE (backtest)": "56% hit \u00b7 +14% ROI \u00b7 5% 0/5 days \u00b7 195 picks",
+    "BEST_BETS (live_this_week)": "100% hit \u00b7 +94% ROI \u00b7 0% 0/5 days \u00b7 10 picks",
+    "SAFEST (live_this_week)": "70% hit \u00b7 +23% ROI \u00b7 0% 0/5 days \u00b7 10 picks",
+    "VALUE (live_this_week)": "100% hit \u00b7 +94% ROI \u00b7 0% 0/5 days \u00b7 10 picks",
+    "BEST_BETS (live_to_date)": "100% hit \u00b7 +94% ROI \u00b7 0% 0/5 days \u00b7 10 picks",
+    "SAFEST (live_to_date)": "70% hit \u00b7 +23% ROI \u00b7 0% 0/5 days \u00b7 10 picks",
+    "VALUE (live_to_date)": "100% hit \u00b7 +94% ROI \u00b7 0% 0/5 days \u00b7 10 picks"
+   },
+   "report": "output/studies/TOP_PICKS_WEEKLY.md",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/TOP_PICKS_WEEKLY.md"
+  },
+  {
+   "id": "league_results",
+   "title": "Best leagues \u2014 results by league",
+   "area": "tips",
+   "status": "Best leagues (season): proven Brazil Serie A \u00b7 losing League Two, League One",
+   "date": "2026-10-22 10:46 UTC",
+   "key": {
+    "Brazil Serie A": "PROVEN \u00b7 114 tips \u00b7 63% hit @ 1.99 \u00b7 ROI +26% (shrunk +19%)",
+    "Serie B": "PROMISING \u00b7 83 tips \u00b7 61% hit @ 2.00 \u00b7 ROI +24% (shrunk +16%)",
+    "Argentina Primera Division": "PROMISING \u00b7 301 tips \u00b7 56% hit @ 2.15 \u00b7 ROI +14% (shrunk +12%)",
+    "Mexico Liga MX": "PROMISING \u00b7 76 tips \u00b7 55% hit @ 2.11 \u00b7 ROI +13% (shrunk +9%)",
+    "Finland Veikkausliiga": "PROMISING \u00b7 51 tips \u00b7 55% hit @ 2.09 \u00b7 ROI +15% (shrunk +9%)",
+    "Sweden Allsvenskan": "PROMISING \u00b7 66 tips \u00b7 47% hit @ 2.30 \u00b7 ROI +7% (shrunk +5%)",
+    "Japan J-League": "PROMISING \u00b7 93 tips \u00b7 50% hit @ 2.07 \u00b7 ROI +4% (shrunk +4%)",
+    "Bundesliga 2": "NEUTRAL \u00b7 48 tips \u00b7 40% hit @ 2.44 \u00b7 ROI -3% (shrunk -0%)",
+    "Championship": "NEUTRAL \u00b7 79 tips \u00b7 49% hit @ 2.03 \u00b7 ROI -2% (shrunk -0%)",
+    "Denmark Superliga": "NEUTRAL \u00b7 44 tips \u00b7 41% hit @ 2.34 \u00b7 ROI -5% (shrunk -1%)",
+    "Austrian Bundesliga": "NEUTRAL \u00b7 41 tips \u00b7 44% hit @ 2.20 \u00b7 ROI -8% (shrunk -2%)",
+    "Ligue 2": "NOT_ENOUGH \u00b7 26 tips \u00b7 42% hit @ 2.08 \u00b7 ROI -15% (shrunk -3%)",
+    "China Super League": "NEUTRAL \u00b7 53 tips \u00b7 38% hit @ 2.54 \u00b7 ROI -9% (shrunk -3%)",
+    "Norway Eliteserien": "NEUTRAL \u00b7 52 tips \u00b7 38% hit @ 2.57 \u00b7 ROI -15% (shrunk -6%)",
+    "Ireland Premier Division": "NOT_ENOUGH \u00b7 32 tips \u00b7 41% hit @ 2.05 \u00b7 ROI -21% (shrunk -7%)",
+    "La Liga 2": "NEUTRAL \u00b7 78 tips \u00b7 41% hit @ 2.12 \u00b7 ROI -14% (shrunk -8%)",
+    "League Two": "LOSING \u00b7 48 tips \u00b7 33% hit @ 2.05 \u00b7 ROI -32% (shrunk -15%)",
+    "League One": "LOSING \u00b7 62 tips \u00b7 31% hit @ 2.13 \u00b7 ROI -36% (shrunk -18%)"
+   },
+   "report": "output/studies/LEAGUE_RESULTS.md",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/LEAGUE_RESULTS.md"
+  },
+  {
+   "id": "calibration_shadow",
+   "title": "Calibration shadow in v9 (pre-registered)",
+   "area": "models",
+   "status": "Live shadow of log-odds calibration in v9: WAITING_FOR_SHADOW_ROWS",
+   "date": "2026-10-22 10:46 UTC",
+   "key": {},
+   "report": "output/studies/CALIBRATION_SHADOW.md",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/CALIBRATION_SHADOW.md"
+  },
+  {
+   "id": "props_segments",
+   "title": "Props segments: attacking D / M (pre-registered)",
+   "area": "players",
+   "status": "34 qualifying props since 2026-10-14; 0 EDGE cells",
+   "date": "2026-10-22 10:46 UTC",
+   "key": {
+    "ATT_DEF|goals": "COLLECTING (0/150)",
+    "ATT_DEF|sot": "COLLECTING (0/150)",
+    "ATT_DEF|assists": "COLLECTING (0/150)",
+    "ATT_MID|goals": "COLLECTING (6/150)",
+    "ATT_MID|sot": "COLLECTING (2/150)",
+    "ATT_MID|assists": "COLLECTING (0/150)",
+    "CONTROL|goals": "COLLECTING (19/150)",
+    "CONTROL|sot": "COLLECTING (6/150)",
+    "CONTROL|assists": "COLLECTING (1/150)"
+   },
+   "report": "output/studies/PROPS_SEGMENTS.md",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/PROPS_SEGMENTS.md"
   },
   {
    "id": "learned_tiers",
@@ -68,102 +164,6 @@
    },
    "report": "output/bankroll/MONTHLY_REVIEW.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/bankroll/MONTHLY_REVIEW.md"
-  },
-  {
-   "id": "props_calibration",
-   "title": "Props calibration monitor (daily)",
-   "area": "players",
-   "status": "Live props model vs reality (30 days): assists predicted 20% / happened 21%, cards predicted 17% / happened 20%, goals predicted 24% / happened 29%, sot predicted 29% / happened 42%",
-   "date": "2026-10-22 07:50 UTC",
-   "key": {
-    "assists": "CALIBRATED \u00b7 gap +0.7% [-0.0395, 0.0539] \u00b7 n 217",
-    "cards": "UNDER_PREDICTS \u00b7 gap +2.2% [0.0053, 0.0495] \u00b7 n 1736",
-    "goals": "UNDER_PREDICTS \u00b7 gap +5.3% [0.0308, 0.0787] \u00b7 n 647",
-    "sot": "UNDER_PREDICTS \u00b7 gap +13.2% [0.1199, 0.1521] \u00b7 n 3184"
-   },
-   "report": "output/studies/PROPS_CALIBRATION.md",
-   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/PROPS_CALIBRATION.md"
-  },
-  {
-   "id": "top_picks_weekly",
-   "title": "Top picks \u2014 weekly table",
-   "area": "tips",
-   "status": "Top picks 2026-W43: live to date BEST_BETS 100%/+94%, SAFEST 70%/+23%, VALUE 100%/+94%",
-   "date": "2026-10-22 07:50 UTC",
-   "key": {
-    "BEST_BETS (backtest)": "56% hit \u00b7 +12% ROI \u00b7 5% 0/5 days \u00b7 191 picks",
-    "CURRENT (backtest)": "49% hit \u00b7 +3% ROI \u00b7 8% 0/5 days \u00b7 195 picks",
-    "RANDOM_5 (backtest)": "48% hit \u00b7 -2% ROI \u00b7 4% 0/5 days \u00b7 195 picks",
-    "SAFEST (backtest)": "65% hit \u00b7 +10% ROI \u00b7 0% 0/5 days \u00b7 195 picks",
-    "VALUE (backtest)": "56% hit \u00b7 +14% ROI \u00b7 5% 0/5 days \u00b7 195 picks",
-    "BEST_BETS (live_this_week)": "100% hit \u00b7 +94% ROI \u00b7 0% 0/5 days \u00b7 10 picks",
-    "SAFEST (live_this_week)": "70% hit \u00b7 +23% ROI \u00b7 0% 0/5 days \u00b7 10 picks",
-    "VALUE (live_this_week)": "100% hit \u00b7 +94% ROI \u00b7 0% 0/5 days \u00b7 10 picks",
-    "BEST_BETS (live_to_date)": "100% hit \u00b7 +94% ROI \u00b7 0% 0/5 days \u00b7 10 picks",
-    "SAFEST (live_to_date)": "70% hit \u00b7 +23% ROI \u00b7 0% 0/5 days \u00b7 10 picks",
-    "VALUE (live_to_date)": "100% hit \u00b7 +94% ROI \u00b7 0% 0/5 days \u00b7 10 picks"
-   },
-   "report": "output/studies/TOP_PICKS_WEEKLY.md",
-   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/TOP_PICKS_WEEKLY.md"
-  },
-  {
-   "id": "league_results",
-   "title": "Best leagues \u2014 results by league",
-   "area": "tips",
-   "status": "Best leagues (season): proven Brazil Serie A \u00b7 losing League Two, League One",
-   "date": "2026-10-22 07:50 UTC",
-   "key": {
-    "Brazil Serie A": "PROVEN \u00b7 114 tips \u00b7 63% hit @ 1.99 \u00b7 ROI +26% (shrunk +19%)",
-    "Serie B": "PROMISING \u00b7 83 tips \u00b7 61% hit @ 2.00 \u00b7 ROI +24% (shrunk +16%)",
-    "Argentina Primera Division": "PROMISING \u00b7 301 tips \u00b7 56% hit @ 2.15 \u00b7 ROI +14% (shrunk +12%)",
-    "Mexico Liga MX": "PROMISING \u00b7 76 tips \u00b7 55% hit @ 2.11 \u00b7 ROI +13% (shrunk +9%)",
-    "Finland Veikkausliiga": "PROMISING \u00b7 51 tips \u00b7 55% hit @ 2.09 \u00b7 ROI +15% (shrunk +9%)",
-    "Sweden Allsvenskan": "PROMISING \u00b7 66 tips \u00b7 47% hit @ 2.30 \u00b7 ROI +7% (shrunk +5%)",
-    "Japan J-League": "PROMISING \u00b7 93 tips \u00b7 50% hit @ 2.07 \u00b7 ROI +4% (shrunk +4%)",
-    "Bundesliga 2": "NEUTRAL \u00b7 48 tips \u00b7 40% hit @ 2.44 \u00b7 ROI -3% (shrunk -0%)",
-    "Championship": "NEUTRAL \u00b7 79 tips \u00b7 49% hit @ 2.03 \u00b7 ROI -2% (shrunk -0%)",
-    "Denmark Superliga": "NEUTRAL \u00b7 44 tips \u00b7 41% hit @ 2.34 \u00b7 ROI -5% (shrunk -1%)",
-    "Austrian Bundesliga": "NEUTRAL \u00b7 41 tips \u00b7 44% hit @ 2.20 \u00b7 ROI -8% (shrunk -2%)",
-    "Ligue 2": "NOT_ENOUGH \u00b7 26 tips \u00b7 42% hit @ 2.08 \u00b7 ROI -15% (shrunk -3%)",
-    "China Super League": "NEUTRAL \u00b7 53 tips \u00b7 38% hit @ 2.54 \u00b7 ROI -9% (shrunk -3%)",
-    "Norway Eliteserien": "NEUTRAL \u00b7 52 tips \u00b7 38% hit @ 2.57 \u00b7 ROI -15% (shrunk -6%)",
-    "Ireland Premier Division": "NOT_ENOUGH \u00b7 32 tips \u00b7 41% hit @ 2.05 \u00b7 ROI -21% (shrunk -7%)",
-    "La Liga 2": "NEUTRAL \u00b7 78 tips \u00b7 41% hit @ 2.12 \u00b7 ROI -14% (shrunk -8%)",
-    "League Two": "LOSING \u00b7 48 tips \u00b7 33% hit @ 2.05 \u00b7 ROI -32% (shrunk -15%)",
-    "League One": "LOSING \u00b7 62 tips \u00b7 31% hit @ 2.13 \u00b7 ROI -36% (shrunk -18%)"
-   },
-   "report": "output/studies/LEAGUE_RESULTS.md",
-   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/LEAGUE_RESULTS.md"
-  },
-  {
-   "id": "calibration_shadow",
-   "title": "Calibration shadow in v9 (pre-registered)",
-   "area": "models",
-   "status": "Live shadow of log-odds calibration in v9: WAITING_FOR_SHADOW_ROWS",
-   "date": "2026-10-22 07:50 UTC",
-   "key": {},
-   "report": "output/studies/CALIBRATION_SHADOW.md",
-   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/CALIBRATION_SHADOW.md"
-  },
-  {
-   "id": "props_segments",
-   "title": "Props segments: attacking D / M (pre-registered)",
-   "area": "players",
-   "status": "34 qualifying props since 2026-10-14; 0 EDGE cells",
-   "date": "2026-10-22 07:50 UTC",
-   "key": {
-    "ATT_DEF|goals": "COLLECTING (0/150)",
-    "ATT_DEF|sot": "COLLECTING (0/150)",
-    "ATT_DEF|assists": "COLLECTING (0/150)",
-    "ATT_MID|goals": "COLLECTING (6/150)",
-    "ATT_MID|sot": "COLLECTING (2/150)",
-    "ATT_MID|assists": "COLLECTING (0/150)",
-    "CONTROL|goals": "COLLECTING (19/150)",
-    "CONTROL|sot": "COLLECTING (6/150)",
-    "CONTROL|assists": "COLLECTING (1/150)"
-   },
-   "report": "output/studies/PROPS_SEGMENTS.md",
-   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/PROPS_SEGMENTS.md"
   },
   {
    "id": "player_v3_forward",
