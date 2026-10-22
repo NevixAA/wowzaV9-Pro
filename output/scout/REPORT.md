@@ -1,6 +1,6 @@
-# League scout — 2026-10-22T10:44 UTC
+# League scout — 2026-10-22T12:33 UTC
 
-Results stored: 240,346 · fixtures priced: 2,986 · model frozen: 2,942
+Results stored: 240,348 · fixtures priced: 3,014 · model frozen: 2,970
 
 COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kickoff close
 
@@ -193,24 +193,28 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Poland Ekstraklasa | ou15 | 19 | COLLECTING | -0.014 | – | -100.0% (1) |
 | 2 | Poland II Liga - East | ou15 | 19 | COLLECTING | -0.046 | – | -62.0% (3) |
 | 2 | Turkey 2. Lig | ou15 | 19 | COLLECTING | +0.037 | – | – |
+| 2 | Indonesia Liga 1 | ou15 | 19 | COLLECTING | +0.011 | – | – |
 | 2 | USA USL League One | ou15 | 19 | COLLECTING | +0.069 | – | – |
 | 2 | Poland III Liga - Group 1 | ou15 | 19 | COLLECTING | -0.005 | – | – |
 | 2 | Egypt Second League | ou15 | 19 | COLLECTING | +0.065 | – | – |
 | 2 | Poland Ekstraklasa | ou25 | 19 | COLLECTING | +0.083 | – | +2.5% (2) |
 | 2 | Poland II Liga - East | ou25 | 19 | COLLECTING | -0.057 | – | -12.2% (6) |
 | 2 | Turkey 2. Lig | ou25 | 19 | COLLECTING | +0.090 | – | -3.3% (6) |
+| 2 | Indonesia Liga 1 | ou25 | 19 | COLLECTING | -0.013 | – | -39.2% (6) |
 | 2 | USA USL League One | ou25 | 19 | COLLECTING | +0.121 | – | +100.0% (1) |
 | 2 | Poland III Liga - Group 1 | ou25 | 19 | COLLECTING | +0.025 | – | -45.8% (8) |
 | 2 | Egypt Second League | ou25 | 19 | COLLECTING | +0.026 | – | +44.6% (5) |
 | 2 | Poland Ekstraklasa | ou35 | 19 | COLLECTING | +0.044 | – | -30.0% (2) |
 | 2 | Poland II Liga - East | ou35 | 19 | COLLECTING | -0.071 | – | +2.8% (5) |
 | 2 | Turkey 2. Lig | ou35 | 19 | COLLECTING | +0.040 | – | – |
+| 2 | Indonesia Liga 1 | ou35 | 19 | COLLECTING | +0.073 | – | – |
 | 2 | USA USL League One | ou35 | 19 | COLLECTING | -0.036 | – | – |
 | 2 | Poland III Liga - Group 1 | ou35 | 19 | COLLECTING | -0.031 | – | – |
 | 2 | Egypt Second League | ou35 | 19 | COLLECTING | +0.067 | – | – |
 | 2 | Poland Ekstraklasa | btts | 19 | COLLECTING | +0.016 | – | – |
 | 2 | Poland II Liga - East | btts | 19 | COLLECTING | +0.016 | – | -10.8% (4) |
 | 2 | Turkey 2. Lig | btts | 19 | COLLECTING | +0.100 | – | – |
+| 2 | Indonesia Liga 1 | btts | 19 | COLLECTING | +0.022 | – | – |
 | 2 | USA USL League One | btts | 19 | COLLECTING | -0.005 | – | – |
 | 2 | Poland III Liga - Group 1 | btts | 19 | COLLECTING | +0.018 | – | – |
 | 2 | Egypt Second League | btts | 19 | COLLECTING | +0.035 | – | – |
@@ -246,16 +250,12 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Czech-Republic 3. liga - MSFL | btts | 18 | COLLECTING | -0.038 | – | – |
 | 2 | Netherlands Tweede Divisie | btts | 18 | COLLECTING | +0.078 | – | – |
 | 2 | Spain Segunda División RFEF - Group 1 | btts | 18 | COLLECTING | +0.067 | – | – |
-| 2 | Indonesia Liga 1 | ou15 | 17 | COLLECTING | -0.009 | – | – |
 | 2 | Czech-Republic 3. liga - CFL B | ou15 | 17 | COLLECTING | +0.031 | – | – |
 | 2 | Spain Segunda División RFEF - Group 2 | ou15 | 17 | COLLECTING | -0.052 | – | – |
-| 2 | Indonesia Liga 1 | ou25 | 17 | COLLECTING | -0.026 | – | -39.2% (6) |
 | 2 | Czech-Republic 3. liga - CFL B | ou25 | 17 | COLLECTING | +0.105 | – | -6.5% (4) |
 | 2 | Spain Segunda División RFEF - Group 2 | ou25 | 17 | COLLECTING | -0.001 | – | -5.7% (11) |
-| 2 | Indonesia Liga 1 | ou35 | 17 | COLLECTING | +0.072 | – | – |
 | 2 | Czech-Republic 3. liga - CFL B | ou35 | 17 | COLLECTING | +0.075 | – | – |
 | 2 | Spain Segunda División RFEF - Group 2 | ou35 | 17 | COLLECTING | -0.148 | – | – |
-| 2 | Indonesia Liga 1 | btts | 17 | COLLECTING | +0.020 | – | – |
 | 2 | Czech-Republic 3. liga - CFL B | btts | 17 | COLLECTING | -0.031 | – | – |
 | 2 | Spain Segunda División RFEF - Group 2 | btts | 17 | COLLECTING | +0.043 | – | – |
 | 2 | Morocco Botola Pro | ou15 | 16 | COLLECTING | +0.011 | – | – |
