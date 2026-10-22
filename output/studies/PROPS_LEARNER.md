@@ -1,18 +1,18 @@
 # Props learner study — classic GradientBoosting vs HistGradientBoosting
 
-Generated 2026-10-12 16:27 UTC. Rule (fixed in advance): PASS when the 95% block-bootstrap CI upper end of (challenger - incumbent) log loss is <= 1% of the incumbent's log loss; switch only if every market passes.
+Generated 2026-10-22 11:39 UTC. Rule (fixed in advance): PASS when the 95% block-bootstrap CI upper end of (challenger - incumbent) log loss is <= 1% of the incumbent's log loss; switch only if every market passes.
 
 **SWITCH CANDIDATE — every market non-inferior; needs owner approval**
 
 | Market | Test rows | Log loss now | Log loss fast | Diff (95% CI) | AUC now / fast | Fit time now / fast | Verdict |
 |---|---:|---:|---:|---|---|---|---|
-| goals | 171,346 | 0.25933 | 0.25862 | -0.00072 [-0.00089, -0.00053] | 0.7429 / 0.7442 | 48.4 / 0.7 min (x69.5) | PASS |
-| goals2 | 171,346 | 0.04267 | 0.04232 | -0.00035 [-0.00052, -0.00016] | 0.8387 / 0.8412 | 50.9 / 0.7 min (x70.1) | PASS |
-| assists | 171,346 | 0.21706 | 0.21706 | +0.00001 [-0.00020, +0.00022] | 0.6808 / 0.6812 | 47.8 / 0.7 min (x69.7) | PASS |
-| sot | 171,346 | 0.47330 | 0.47304 | -0.00025 [-0.00042, -0.00009] | 0.7366 / 0.7369 | 48.6 / 0.7 min (x71.5) | PASS |
-| sot2 | 171,346 | 0.18201 | 0.18100 | -0.00101 [-0.00126, -0.00078] | 0.8029 / 0.8039 | 53.3 / 0.8 min (x68.9) | PASS |
-| sot3 | 171,346 | 0.06003 | 0.05937 | -0.00066 [-0.00086, -0.00047] | 0.8478 / 0.8518 | 42.0 / 0.6 min (x68.9) | PASS |
-| sot4 | 170,265 | 0.01766 | 0.01766 | -0.00000 [-0.00000, +0.00000] | 0.8875 / 0.8876 | 51.4 / 0.7 min (x71.6) | PASS |
-| cards | 171,346 | 0.37337 | 0.37336 | -0.00001 [-0.00012, +0.00010] | 0.6225 / 0.6217 | 51.6 / 0.7 min (x74.4) | PASS |
+| goals | 173,258 | 0.26117 | 0.26046 | -0.00071 [-0.00092, -0.00050] | 0.7409 / 0.7423 | 34.2 / 0.5 min (x73.2) | PASS |
+| goals2 | 173,258 | 0.04273 | 0.04253 | -0.00020 [-0.00034, -0.00005] | 0.8382 / 0.8401 | 55.1 / 0.8 min (x73.2) | PASS |
+| assists | 173,258 | 0.21864 | 0.21836 | -0.00028 [-0.00048, -0.00009] | 0.6805 / 0.6814 | 47.4 / 0.7 min (x68.4) | PASS |
+| sot | 173,258 | 0.47509 | 0.47510 | +0.00002 [-0.00024, +0.00028] | 0.7352 / 0.7348 | 48.2 / 0.7 min (x68.5) | PASS |
+| sot2 | 173,258 | 0.18329 | 0.18246 | -0.00083 [-0.00107, -0.00060] | 0.8012 / 0.8023 | 52.8 / 0.7 min (x74.2) | PASS |
+| sot3 | 173,258 | 0.06068 | 0.05967 | -0.00101 [-0.00125, -0.00078] | 0.8467 / 0.8524 | 43.1 / 0.6 min (x76.9) | PASS |
+| sot4 | 172,177 | 0.01829 | 0.01829 | -0.00000 [-0.00000, +0.00000] | 0.8867 / 0.8887 | 51.6 / 0.6 min (x79.9) | PASS |
+| cards | 173,258 | 0.37261 | 0.37249 | -0.00012 [-0.00023, -0.00002] | 0.6203 / 0.6202 | 37.2 / 0.5 min (x80.2) | PASS |
 
 Negative diff = the fast learner is better. Recommendation only; v9 changes need the owner's approval.
