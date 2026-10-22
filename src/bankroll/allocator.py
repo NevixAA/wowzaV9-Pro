@@ -145,6 +145,18 @@ def decide_track(name: str, t: dict, ev: dict | None, as_of, dd_warning: bool) -
 
 
 TIER_RULE_MIN_N = 100
+
+
+def _spearman(x: pd.Series, y: pd.Series) -> tuple[float, float]:
+    """Spearman rho and a two-sided p-value WITHOUT scipy (the monthly review installs only pandas/
+    numpy). p uses the large-sample normal approximation z = rho*sqrt(n-1), accurate at n >= 100,
+    which is the rule's minimum."""
+    n = len(x)
+    rho = float(pd.Series(x).rank().corr(pd.Series(y).rank())) if n > 2 else 0.0
+    if not math.isfinite(rho):
+        return 0.0, 1.0
+    z = abs(rho) * math.sqrt(max(n - 1, 1))
+    return rho, math.erfc(z / math.sqrt(2))
 EQUAL_TIERS = {"SNIPER": 1.0, "MARKSMAN": 1.0, "VALUABLE": 1.0}
 
 
@@ -156,7 +168,6 @@ def derive_tier_rules(bets: pd.DataFrame, prev: dict, as_of) -> tuple[dict, list
     positive at p < 0.05 -> EQUAL; it ranks -> the global ladder (no override); too few bets -> keep
     whatever is in force (no change without evidence). Owner 2026-10-22: tiers follow measured
     outcomes, not raw edge size."""
-    from scipy.stats import spearmanr
     out = dict(prev.get("track_tier_multipliers") or {})
     rows = []
     b = bets[(bets["date"] < pd.Timestamp(as_of)) & bets["unit"].notna()]
@@ -166,7 +177,7 @@ def derive_tier_rules(bets: pd.DataFrame, prev: dict, as_of) -> tuple[dict, list
         if len(g) < TIER_RULE_MIN_N:
             rec["rule"] = "KEEP (too few bets)"
         else:
-            rho, p = spearmanr(g["edge"], g["unit"])
+            rho, p = _spearman(g["edge"], g["unit"])
             rec.update(spearman=round(float(rho), 3), p=round(float(p), 4),
                        roi_by_tier={t: round(float(x["unit"].mean() * 100), 1) for t, x in g.groupby("signal_tier")})
             if rho > 0 and p < 0.05:
