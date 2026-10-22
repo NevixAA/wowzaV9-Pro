@@ -209,7 +209,10 @@ def main(as_of: str | None = None, n_paths: int = 2000) -> int:
     recommended.update(policy_version=f"{current.get('policy_version', 'policy')}+review-{as_of:%Y-%m}"
                        if rec_name.startswith("CURRENT") else proposed["policy_version"],
                        generated_at=proposed["generated_at"], evidence_cutoff=proposed["evidence_cutoff"],
-                       status="RECOMMENDED_NOT_WIRED")
+                       # keep production's wiring status (v9 sizes stake_plan.csv in pipeline since
+                       # 2026-10-13; stakes PAPER). Writing RECOMMENDED_NOT_WIRED here re-introduced a
+                       # false label on every merged PR (P1-3, 2026-10-22).
+                       status=current.get("status", "RECOMMENDED_NOT_WIRED"))
     violations = A.validate(recommended)
     if violations:
         recommended, rec_name = copy.deepcopy(current), "CURRENT (recommendation violated hard bounds)"
@@ -248,7 +251,10 @@ def main(as_of: str | None = None, n_paths: int = 2000) -> int:
     pd.DataFrame(decisions).to_csv(OUT / "track_decisions.csv", index=False)
     pd.DataFrame(ev["convergence"]).to_csv(OUT / "convergence_leagues.csv", index=False)
     pd.DataFrame(ev.get("tier_rules", [])).to_csv(OUT / "tier_rules.csv", index=False)
-    (OUT / "track_evidence.json").write_text(json.dumps(ev["tracks"], indent=2, default=str), encoding="utf-8")
+    # generated_at recorded IN the file (freshness manifest reads it; never mtime) - 2026-10-22
+    (OUT / "track_evidence.json").write_text(json.dumps(
+        {"generated_at": proposed["generated_at"], "as_of": as_of.strftime("%Y-%m-%d"),
+         "evidence_cutoff": proposed["evidence_cutoff"], "tracks": ev["tracks"]}, indent=2, default=str), encoding="utf-8")
     summary = render_summary(verdict, current, recommended, decisions, table, stress_rows)
     (OUT / "MONTHLY_REVIEW.md").write_text(summary, encoding="utf-8")
     (OUT / "pr_body.md").write_text(pr_body(verdict, current, recommended, decisions, table, stress_rows),
