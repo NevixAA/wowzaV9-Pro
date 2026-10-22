@@ -1,0 +1,14 @@
+{
+ "study": "learned_per_league_tiers",
+ "version": 1,
+ "registered_at": "2026-10-22",
+ "requested_by": "owner 2026-10-22: learn tiers and swap if another wins; gates must be per league",
+ "model": "per (model_type, market) L2 logistic (C=0.5, fixed) on logit fair p, logit model p, raw edge, log odds, side, league one-hot and league x raw edge; leagues shrunk by the L2 penalty",
+ "tiers": "predicted EV = p_hat*odds-1: SNIPER >= +6%, MARKSMAN +3..6%, VALUABLE 0..3%, else AVOID (fixed)",
+ "data": "first-sight candidates (snapshot record 2026-08-15 ->, Pro shadow 2026-10-21 ->), every candidate not only sent tips",
+ "evaluation": "weekly walk-forward (fit on earlier weeks only, min 150 rows), compared with v9 production tiers on the same rows",
+ "prospective_start": "2026-10-21",
+ "swap_rule": "Propose replacing v9's tiers on a track (to the owner, never automatic) only when, on PROSPECTIVE rows from 2026-10-21 with >= 150 learned tips and >= 8 weeks: (1) learned ALL_TIPS ROI 90% CI lower bound > production ALL_TIPS ROI on the same rows, i.e. the paired difference CI excludes zero, AND (2) learned tiers are ordered SNIPER > MARKSMAN > VALUABLE by ROI. Historical walk-forward results are DISCOVERY only and can never trigger a swap.",
+ "frozen": "cut-offs, C, features and the swap rule are not changed after results are seen",
+ "production_changed": "NO"
+}

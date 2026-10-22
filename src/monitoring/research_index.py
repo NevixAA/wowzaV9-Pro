@@ -258,6 +258,20 @@ def _valuable():
             "report": "output/valuable_deep_dive/VALUABLE_DEEP_DIVE.md"}
 
 
+def _learned_tiers():
+    r = _j("studies/learned_tiers/learned_tiers.json")
+    if not r:
+        return None
+    key = {}
+    for track, v in (r.get("comparison") or {}).items():
+        p, l = v["PRODUCTION"]["ALL_TIPS"], v["LEARNED"]["ALL_TIPS"]
+        key[track] = (f"today's tiers {p.get('roi_pct')}% (n {p.get('n')}) vs learned {l.get('roi_pct')}% "
+                      f"(n {l.get('n')}) · learned ordered: {v['LEARNED']['ordered_S>M>V']}")
+    return {"status": "Learned per-league tiers (challenger): weekly retrain; swap proposed only on prospective "
+                      "rows from 2026-10-21 - historical results are discovery",
+            "date": r.get("generated_at"), "key": key, "report": "output/studies/learned_tiers/learned_tiers.json"}
+
+
 def _segments():
     s = _j("studies/props_segments.json")
     if not s:
@@ -336,6 +350,7 @@ STUDIES = [
     ("market_anchor", "Market-anchored O/U review", "models", _market_anchor),
     ("league_calibration", "Per-league calibration of O/U", "models", _league_calibration),
     ("valuable_deep_dive", "VALUABLE tier deep dive", "tips", _valuable),
+    ("learned_tiers", "Learned per-league tiers (challenger)", "tips", _learned_tiers),
     ("calibration_form", "Calibration form: v9 vs log-odds Platt", "models", _calibration),
     ("calibration_shadow", "Calibration shadow in v9 (pre-registered)", "models", _cal_shadow),
     ("props_segments", "Props segments: attacking D / M (pre-registered)", "players", _segments),

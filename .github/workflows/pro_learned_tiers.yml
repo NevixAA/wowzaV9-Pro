@@ -1,0 +1,57 @@
+name: Pro learned per-league tiers (challenger)
+
+# Owner 2026-10-22: "learn and retrain -> swap if another tier wins", gates per league.
+# Weekly retrain of src/studies/learned_tiers.py on every settled first-sight candidate (snapshot record +
+# the Pro low-edge shadow), walk-forward comparison with v9's production tiers, per-league implied gates.
+# Research only: never changes v9. A swap is proposed to the owner only under
+# registry/learned_tiers/registration_v1.json (prospective rows only).
+
+on:
+  schedule:
+    - cron: '40 10 * * 1'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/pro_learned_tiers.yml', 'src/studies/learned_tiers.py']
+  workflow_dispatch:
+
+concurrency:
+  group: pro-learned-tiers
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  learn:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install pandas numpy pyarrow scipy scikit-learn pytest
+      - name: Tests
+        run: python -m pytest tests/test_learned_tiers.py -q
+      - name: Retrain + walk-forward
+        run: |
+          set -o pipefail
+          python -m src.studies.learned_tiers 2>&1 | tee lt.txt
+          { echo '## Learned tiers'; echo '```'; tail -n 30 lt.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for f in output/studies/learned_tiers/learned_tiers.json output/studies/learned_tiers/league_gates.csv \
+                   output/studies/learned_tiers/walk_forward_rows.csv; do
+            [ -e "$f" ] && git add -f "$f"
+          done
+          git diff --staged --quiet && exit 0
+          git commit -m "pro: learned tiers $(date -u '+%Y-%m-%d')"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash -X theirs origin main && git push && exit 0
+            sleep $((RANDOM % 5 + 3))
+          done
+          exit 1
