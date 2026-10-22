@@ -1,6 +1,6 @@
-# League scout — 2026-10-22T17:43 UTC
+# League scout — 2026-10-22T21:59 UTC
 
-Results stored: 240,366 · fixtures priced: 3,067 · model frozen: 3,023
+Results stored: 240,375 · fixtures priced: 3,068 · model frozen: 3,024
 
 COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kickoff close
 
@@ -126,18 +126,18 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 1 | Switzerland Challenge League | ou25 | 5 | COLLECTING | +0.045 | – | – |
 | 1 | Switzerland Challenge League | ou35 | 5 | COLLECTING | -0.560 | – | +60.0% (2) |
 | 1 | Switzerland Challenge League | btts | 5 | COLLECTING | -0.080 | – | – |
+| 2 | Israel Liga Alef | ou15 | 35 | COLLECTING | +0.010 | – | – |
+| 2 | Israel Liga Alef | ou25 | 35 | COLLECTING | +0.006 | – | -9.1% (11) |
+| 2 | Israel Liga Alef | ou35 | 35 | COLLECTING | -0.005 | – | – |
+| 2 | Israel Liga Alef | btts | 35 | COLLECTING | +0.023 | – | – |
 | 2 | England Non League Premier - Southern Central | ou15 | 34 | COLLECTING | +0.008 | -0.34 | – |
 | 2 | England Non League Premier - Southern Central | ou25 | 34 | COLLECTING | +0.037 | -0.88 | -10.7% (12) |
 | 2 | England Non League Premier - Southern Central | ou35 | 34 | COLLECTING | +0.046 | -1.43 | – |
 | 2 | England Non League Premier - Southern Central | btts | 34 | COLLECTING | +0.017 | -0.3 | – |
 | 2 | England Non League Premier - Southern South | ou15 | 33 | COLLECTING | -0.070 | 0.18 | – |
-| 2 | Israel Liga Alef | ou15 | 33 | COLLECTING | +0.009 | – | – |
 | 2 | England Non League Premier - Southern South | ou25 | 33 | COLLECTING | +0.010 | 1.36 | +15.6% (13) |
-| 2 | Israel Liga Alef | ou25 | 33 | COLLECTING | +0.027 | – | -0.0% (10) |
 | 2 | England Non League Premier - Southern South | ou35 | 33 | COLLECTING | +0.018 | 1.39 | – |
-| 2 | Israel Liga Alef | ou35 | 33 | COLLECTING | +0.011 | – | – |
 | 2 | England Non League Premier - Southern South | btts | 33 | COLLECTING | +0.027 | -0.68 | – |
-| 2 | Israel Liga Alef | btts | 33 | COLLECTING | +0.019 | – | – |
 | 2 | England Non League Premier - Isthmian | ou15 | 31 | COLLECTING | -0.024 | 1.12 | – |
 | 2 | England Non League Premier - Isthmian | ou25 | 31 | COLLECTING | -0.024 | 1.0 | +14.3% (11) |
 | 2 | England Non League Premier - Isthmian | ou35 | 31 | COLLECTING | -0.039 | 0.57 | – |
@@ -343,6 +343,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Cyprus 1. Division | ou15 | 14 | COLLECTING | -0.001 | – | +22.0% (1) |
 | 2 | Israel Ligat Ha'al | ou15 | 14 | COLLECTING | -0.090 | – | – |
 | 2 | Nigeria NPFL | ou15 | 14 | COLLECTING | +0.071 | – | – |
+| 2 | Iraq Iraqi League | ou15 | 14 | COLLECTING | +0.042 | – | – |
 | 2 | Sweden Ettan - Norra | ou15 | 14 | COLLECTING | -0.071 | – | – |
 | 2 | Uganda Premier League | ou15 | 14 | COLLECTING | +0.083 | – | – |
 | 2 | Sweden Division 2 - Norra Götaland | ou15 | 14 | COLLECTING | +0.002 | – | +350.0% (1) |
@@ -353,6 +354,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Cyprus 1. Division | ou25 | 14 | COLLECTING | +0.066 | – | +6.7% (7) |
 | 2 | Israel Ligat Ha'al | ou25 | 14 | COLLECTING | -0.090 | – | – |
 | 2 | Nigeria NPFL | ou25 | 14 | COLLECTING | -0.018 | – | +3.3% (3) |
+| 2 | Iraq Iraqi League | ou25 | 14 | COLLECTING | +0.038 | – | +53.2% (4) |
 | 2 | Sweden Ettan - Norra | ou25 | 14 | COLLECTING | -0.064 | – | +4.8% (4) |
 | 2 | Uganda Premier League | ou25 | 14 | COLLECTING | -0.016 | – | -2.0% (3) |
 | 2 | Sweden Division 2 - Norra Götaland | ou25 | 14 | COLLECTING | +0.015 | – | +138.0% (1) |
@@ -364,6 +366,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Cyprus 1. Division | ou35 | 14 | COLLECTING | +0.014 | – | +23.9% (8) |
 | 2 | Israel Ligat Ha'al | ou35 | 14 | COLLECTING | -0.182 | – | -100.0% (1) |
 | 2 | Nigeria NPFL | ou35 | 14 | COLLECTING | +0.044 | – | – |
+| 2 | Iraq Iraqi League | ou35 | 14 | COLLECTING | -0.008 | – | – |
 | 2 | Sweden Ettan - Norra | ou35 | 14 | COLLECTING | +0.005 | – | +74.3% (3) |
 | 2 | Sweden Division 2 - Norra Götaland | ou35 | 14 | COLLECTING | +0.061 | – | +57.0% (1) |
 | 2 | Sweden Division 2 - Norra Svealand | ou35 | 14 | COLLECTING | -0.005 | – | – |
@@ -374,6 +377,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Cyprus 1. Division | btts | 14 | COLLECTING | +0.059 | – | +43.2% (4) |
 | 2 | Israel Ligat Ha'al | btts | 14 | COLLECTING | -0.018 | – | – |
 | 2 | Nigeria NPFL | btts | 14 | COLLECTING | +0.047 | – | – |
+| 2 | Iraq Iraqi League | btts | 14 | COLLECTING | -0.018 | – | – |
 | 2 | Sweden Ettan - Norra | btts | 14 | COLLECTING | -0.078 | – | – |
 | 2 | Uganda Premier League | btts | 14 | COLLECTING | -0.032 | – | – |
 | 2 | Sweden Division 2 - Norra Götaland | btts | 14 | COLLECTING | +0.016 | – | +150.0% (1) |
@@ -381,27 +385,35 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Sweden Division 2 - Västra Götaland | btts | 14 | COLLECTING | +0.174 | – | – |
 | 2 | Spain Segunda División RFEF - Group 5 | btts | 14 | COLLECTING | +0.112 | – | – |
 | 2 | Greece Super League 1 | ou15 | 13 | COLLECTING | +0.051 | – | +21.0% (5) |
+| 2 | Ecuador Liga Pro Serie B | ou15 | 13 | COLLECTING | +0.199 | – | – |
 | 2 | Uruguay Segunda División | ou15 | 13 | COLLECTING | -0.011 | – | – |
+| 2 | Qatar Stars League | ou15 | 13 | COLLECTING | +0.033 | – | – |
 | 2 | Nicaragua Primera Division | ou15 | 13 | COLLECTING | +0.046 | – | – |
 | 2 | Northern-Ireland Premiership | ou15 | 13 | COLLECTING | -0.034 | – | -100.0% (1) |
 | 2 | Sweden Division 2 - Norra Svealand | ou15 | 13 | COLLECTING | -0.028 | – | – |
 | 2 | Spain Segunda División RFEF - Group 3 | ou15 | 13 | COLLECTING | +0.083 | – | – |
 | 2 | Greece Super League 1 | ou25 | 13 | COLLECTING | +0.150 | – | +46.2% (4) |
+| 2 | Ecuador Liga Pro Serie B | ou25 | 13 | COLLECTING | +0.239 | – | +22.0% (4) |
 | 2 | Uruguay Segunda División | ou25 | 13 | COLLECTING | +0.020 | – | +57.0% (1) |
 | 2 | Indonesia Liga 2 | ou25 | 13 | COLLECTING | -0.003 | – | -1.2% (6) |
+| 2 | Qatar Stars League | ou25 | 13 | COLLECTING | +0.058 | – | +150.0% (1) |
 | 2 | Nicaragua Primera Division | ou25 | 13 | COLLECTING | +0.015 | – | -42.5% (4) |
 | 2 | Northern-Ireland Premiership | ou25 | 13 | COLLECTING | -0.063 | – | -100.0% (1) |
 | 2 | Spain Segunda División RFEF - Group 3 | ou25 | 13 | COLLECTING | +0.060 | – | -50.7% (7) |
 | 2 | Greece Super League 1 | ou35 | 13 | COLLECTING | +0.095 | – | +64.5% (4) |
+| 2 | Ecuador Liga Pro Serie B | ou35 | 13 | COLLECTING | +0.194 | – | – |
 | 2 | Uruguay Segunda División | ou35 | 13 | COLLECTING | -0.264 | – | – |
 | 2 | Indonesia Liga 2 | ou35 | 13 | COLLECTING | -0.043 | – | – |
+| 2 | Qatar Stars League | ou35 | 13 | COLLECTING | +0.066 | – | +62.0% (1) |
 | 2 | Nicaragua Primera Division | ou35 | 13 | COLLECTING | +0.083 | – | – |
 | 2 | Northern-Ireland Premiership | ou35 | 13 | COLLECTING | -0.077 | – | -100.0% (1) |
 | 2 | Uganda Premier League | ou35 | 13 | COLLECTING | +0.074 | – | – |
 | 2 | Spain Segunda División RFEF - Group 3 | ou35 | 13 | COLLECTING | +0.051 | – | – |
 | 2 | Greece Super League 1 | btts | 13 | COLLECTING | -0.019 | – | +51.6% (5) |
+| 2 | Ecuador Liga Pro Serie B | btts | 13 | COLLECTING | +0.088 | – | – |
 | 2 | Uruguay Segunda División | btts | 13 | COLLECTING | +0.022 | – | – |
 | 2 | Indonesia Liga 2 | btts | 13 | COLLECTING | +0.042 | – | – |
+| 2 | Qatar Stars League | btts | 13 | COLLECTING | -0.043 | – | +150.0% (1) |
 | 2 | Nicaragua Primera Division | btts | 13 | COLLECTING | +0.007 | – | – |
 | 2 | Northern-Ireland Premiership | btts | 13 | COLLECTING | +0.120 | – | -100.0% (1) |
 | 2 | Spain Segunda División RFEF - Group 3 | btts | 13 | COLLECTING | -0.005 | – | – |
@@ -413,13 +425,11 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Hungary NB I | ou15 | 12 | COLLECTING | -0.018 | – | – |
 | 2 | Indonesia Liga 2 | ou15 | 12 | COLLECTING | +0.101 | – | – |
 | 2 | South-Korea K League 1 | ou15 | 12 | COLLECTING | +0.054 | – | – |
-| 2 | Qatar Stars League | ou15 | 12 | COLLECTING | +0.029 | – | – |
 | 2 | Slovakia Super Liga | ou15 | 12 | COLLECTING | +0.020 | – | – |
 | 2 | El-Salvador Primera Division | ou15 | 12 | COLLECTING | -0.037 | – | – |
 | 2 | Northern-Ireland Championship | ou15 | 12 | COLLECTING | +0.000 | – | -100.0% (1) |
 | 2 | Norway 2. Division - Group 1 | ou15 | 12 | COLLECTING | +0.006 | – | -100.0% (2) |
 | 2 | Norway 2. Division - Group 2 | ou15 | 12 | COLLECTING | +0.016 | – | -100.0% (2) |
-| 2 | Iraq Iraqi League | ou15 | 12 | COLLECTING | +0.035 | – | – |
 | 2 | Sweden Division 2 - Södra Svealand | ou15 | 12 | COLLECTING | -0.205 | – | – |
 | 2 | Poland III Liga - Group 4 | ou15 | 12 | COLLECTING | +0.033 | – | – |
 | 2 | Denmark 3. Division | ou15 | 12 | COLLECTING | +0.050 | – | – |
@@ -430,13 +440,11 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Paraguay Division Profesional - Clausura | ou25 | 12 | COLLECTING | -0.010 | – | -43.7% (6) |
 | 2 | Hungary NB I | ou25 | 12 | COLLECTING | -0.041 | – | +81.7% (3) |
 | 2 | South-Korea K League 1 | ou25 | 12 | COLLECTING | +0.192 | – | -100.0% (1) |
-| 2 | Qatar Stars League | ou25 | 12 | COLLECTING | +0.056 | – | +150.0% (1) |
 | 2 | Slovakia Super Liga | ou25 | 12 | COLLECTING | -0.078 | – | – |
 | 2 | El-Salvador Primera Division | ou25 | 12 | COLLECTING | +0.008 | – | -100.0% (1) |
 | 2 | Northern-Ireland Championship | ou25 | 12 | COLLECTING | +0.069 | – | +16.7% (3) |
 | 2 | Norway 2. Division - Group 1 | ou25 | 12 | COLLECTING | -0.011 | – | -100.0% (4) |
 | 2 | Norway 2. Division - Group 2 | ou25 | 12 | COLLECTING | +0.029 | – | -100.0% (5) |
-| 2 | Iraq Iraqi League | ou25 | 12 | COLLECTING | +0.031 | – | +54.3% (3) |
 | 2 | Sweden Division 2 - Södra Svealand | ou25 | 12 | COLLECTING | +0.006 | – | -100.0% (1) |
 | 2 | Poland III Liga - Group 4 | ou25 | 12 | COLLECTING | +0.080 | – | +82.9% (7) |
 | 2 | Denmark 3. Division | ou25 | 12 | COLLECTING | +0.088 | – | -5.3% (3) |
@@ -447,13 +455,11 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Paraguay Division Profesional - Clausura | ou35 | 12 | COLLECTING | -0.039 | – | -45.1% (7) |
 | 2 | Hungary NB I | ou35 | 12 | COLLECTING | -0.493 | – | +12.0% (3) |
 | 2 | South-Korea K League 1 | ou35 | 12 | COLLECTING | +0.165 | – | – |
-| 2 | Qatar Stars League | ou35 | 12 | COLLECTING | +0.061 | – | +62.0% (1) |
 | 2 | Slovakia Super Liga | ou35 | 12 | COLLECTING | -0.037 | – | – |
 | 2 | El-Salvador Primera Division | ou35 | 12 | COLLECTING | +0.066 | – | – |
 | 2 | Northern-Ireland Championship | ou35 | 12 | COLLECTING | +0.044 | – | +124.0% (2) |
 | 2 | Norway 2. Division - Group 1 | ou35 | 12 | COLLECTING | +0.039 | – | -44.3% (3) |
 | 2 | Norway 2. Division - Group 2 | ou35 | 12 | COLLECTING | +0.005 | – | -34.5% (4) |
-| 2 | Iraq Iraqi League | ou35 | 12 | COLLECTING | +0.000 | – | – |
 | 2 | Sweden Division 2 - Södra Svealand | ou35 | 12 | COLLECTING | +0.127 | – | – |
 | 2 | Poland III Liga - Group 4 | ou35 | 12 | COLLECTING | +0.054 | – | – |
 | 2 | Denmark 3. Division | ou35 | 12 | COLLECTING | +0.104 | – | – |
@@ -464,13 +470,11 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Paraguay Division Profesional - Clausura | btts | 12 | COLLECTING | -0.064 | – | -100.0% (4) |
 | 2 | Hungary NB I | btts | 12 | COLLECTING | -0.114 | – | +150.0% (1) |
 | 2 | South-Korea K League 1 | btts | 12 | COLLECTING | +0.029 | – | – |
-| 2 | Qatar Stars League | btts | 12 | COLLECTING | -0.059 | – | +150.0% (1) |
 | 2 | Slovakia Super Liga | btts | 12 | COLLECTING | +0.006 | – | – |
 | 2 | El-Salvador Primera Division | btts | 12 | COLLECTING | -0.012 | – | – |
 | 2 | Northern-Ireland Championship | btts | 12 | COLLECTING | -0.056 | – | -100.0% (1) |
 | 2 | Norway 2. Division - Group 1 | btts | 12 | COLLECTING | +0.014 | – | +62.7% (3) |
 | 2 | Norway 2. Division - Group 2 | btts | 12 | COLLECTING | -0.058 | – | -100.0% (1) |
-| 2 | Iraq Iraqi League | btts | 12 | COLLECTING | -0.017 | – | – |
 | 2 | Sweden Division 2 - Södra Svealand | btts | 12 | COLLECTING | +0.190 | – | – |
 | 2 | Poland III Liga - Group 4 | btts | 12 | COLLECTING | +0.039 | – | – |
 | 2 | Denmark 3. Division | btts | 12 | COLLECTING | +0.033 | – | – |
@@ -511,13 +515,9 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Ukraine Persha Liga | btts | 10 | COLLECTING | -0.043 | – | – |
 | 2 | Slovenia 1. SNL | btts | 10 | COLLECTING | -0.081 | – | – |
 | 2 | Belgium Jupiler Pro League | ou15 | 9 | COLLECTING | +0.094 | – | -100.0% (1) |
-| 2 | Ecuador Liga Pro Serie B | ou15 | 9 | COLLECTING | +0.182 | – | – |
 | 2 | Belgium Jupiler Pro League | ou25 | 9 | COLLECTING | +0.177 | – | +35.0% (2) |
-| 2 | Ecuador Liga Pro Serie B | ou25 | 9 | COLLECTING | +0.306 | – | +62.7% (3) |
 | 2 | Belgium Jupiler Pro League | ou35 | 9 | COLLECTING | +0.096 | – | -16.5% (2) |
-| 2 | Ecuador Liga Pro Serie B | ou35 | 9 | COLLECTING | +0.410 | – | – |
 | 2 | Belgium Jupiler Pro League | btts | 9 | COLLECTING | +0.097 | – | -33.3% (3) |
-| 2 | Ecuador Liga Pro Serie B | btts | 9 | COLLECTING | +0.113 | – | – |
 | 2 | Wales Premier League | ou15 | 8 | COLLECTING | -0.022 | – | – |
 | 2 | Peru Segunda División | ou15 | 8 | COLLECTING | +0.056 | – | – |
 | 2 | Jordan League | ou15 | 8 | COLLECTING | -0.099 | – | +8.3% (3) |
