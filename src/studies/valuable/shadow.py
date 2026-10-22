@@ -31,6 +31,7 @@ import pandas as pd
 from config import pro_config as cfg
 
 REGISTERED_START = "2026-10-21T00:00:00Z"
+CLOSE_MAX_MIN = 30.0
 OUT = cfg.BASE_DIR / "output" / "valuable_shadow"
 FILE = OUT / "valuable_shadow.csv"
 STATE = OUT / "valuable_shadow_state.json"
@@ -39,7 +40,8 @@ COLS = ["generated_at", "kickoff", "fixture_id", "league", "home_team", "away_te
         "model_probability", "odds", "opposite_side_odds", "bookmaker_count", "raw_implied_probability",
         "fair_market_probability", "raw_edge", "fair_edge", "FAIR_EDGE_AVAILABLE", "production_tier",
         "production_thresholds", "tier_rule_source", "would_have_been_valuable", "would_have_been_marksman",
-        "would_have_been_sniper", "result", "flat_pnl", "closing_odds", "clv", "model_version", "retrain_batch",
+        "would_have_been_sniper", "result", "flat_pnl", "closing_odds", "clv", "close_minutes_to_kickoff",
+        "close_status", "model_version", "retrain_batch",
         "snapshot_sha"]
 KEEP = ["league", "date", "kickoff_utc", "home_team", "away_team", "model_type", "model_version", "generated_at",
         "p_over25", "odds_over25", "odds_under25", "tier_over", "tier_under", "p_btts", "odds_btts", "odds_btts_no",
@@ -151,11 +153,21 @@ def capture(v9: str) -> dict:
     have = set(zip(old.fixture_id.astype(str), old.market, old.side)) if len(old) else set()
     new = first[[k not in have for k in zip(first.fixture_id, first.market, first.side)]]
     # closing price = last committed snapshot before kickoff (same source); refreshed for unsettled rows
-    last = c.drop_duplicates(["fixture_id", "market", "side"], keep="last").set_index(["fixture_id", "market", "side"])["odds"]
+    lastrow = c.drop_duplicates(["fixture_id", "market", "side"], keep="last").set_index(["fixture_id", "market", "side"])
+    last = lastrow["odds"]
+    # CERTIFIED CLOSE ONLY (owner rule 2026-10-22, same as v9 src/shadow_settlement.py): the last committed
+    # snapshot counts as the close only if it was taken within CLOSE_MAX_MIN of kickoff; otherwise the
+    # price is kept but CLV is NaN with close_status STALE_CLOSE_GT_30MIN.
+    gap = ((pd.to_datetime(lastrow["kickoff"], utc=True) - pd.to_datetime(lastrow["generated_at"], utc=True))
+           .dt.total_seconds() / 60).round(1)
     allr = pd.concat([old, new.reindex(columns=COLS)], ignore_index=True)
     k = list(zip(allr.fixture_id.astype(str), allr.market, allr.side))
     allr["closing_odds"] = [last.get(x, co) for x, co in zip(k, allr["closing_odds"])]
-    allr["clv"] = (pd.to_numeric(allr["odds"]) / pd.to_numeric(allr["closing_odds"]) - 1) * 100
+    allr["close_minutes_to_kickoff"] = [gap.get(x, m) for x, m in zip(k, allr.get("close_minutes_to_kickoff", pd.Series([None] * len(allr))))]
+    mins = pd.to_numeric(allr["close_minutes_to_kickoff"], errors="coerce")
+    allr["close_status"] = np.where(mins.isna(), "NO_CLOSE", np.where(mins <= CLOSE_MAX_MIN, "OK", "STALE_CLOSE_GT_30MIN"))
+    allr["clv"] = np.where(allr["close_status"] == "OK",
+                           (pd.to_numeric(allr["odds"]) / pd.to_numeric(allr["closing_odds"]) - 1) * 100, np.nan)
     allr = settle(allr, v9)
     allr[COLS].to_csv(FILE, index=False)
     st = {"registered_start": REGISTERED_START, "rows": int(len(allr)), "new_rows": int(len(new)),

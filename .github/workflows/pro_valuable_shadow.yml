@@ -38,7 +38,7 @@ jobs:
           python-version: '3.11'
       - run: pip install -r requirements.txt
       - name: Tests
-        run: python -m pytest tests/test_valuable_shadow.py -q
+        run: python -m pytest tests/test_valuable_shadow.py tests/test_candidate_forward.py -q
       - name: v9 history (partial clone, read-only)
         run: |
           git clone --filter=blob:none --sparse https://github.com/NevixAA/wowza-betting.git _v9
@@ -48,11 +48,13 @@ jobs:
           set -o pipefail
           python -m src.studies.valuable.shadow --v9 "$GITHUB_WORKSPACE/_v9" 2>&1 | tee shadow.txt
           { echo '## VALUABLE shadow'; echo '```'; tail -n 20 shadow.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Candidate forward-test progress (frozen registry, forward rows only)
+        run: python -m src.studies.candidate_forward | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          for f in output/valuable_shadow/valuable_shadow.csv output/valuable_shadow/valuable_shadow_state.json; do
+          for f in output/valuable_shadow/valuable_shadow.csv output/valuable_shadow/valuable_shadow_state.json \n                   output/edge_reassessment/candidate_forward_progress.json; do
             [ -e "$f" ] && git add -f "$f"
           done
           git diff --staged --quiet && exit 0
