@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-22 11:07 UTC",
+ "generated_at": "2026-10-22 12:05 UTC",
  "items": [
   {
    "id": "league_promotion",
@@ -22,7 +22,7 @@
    "title": "Props calibration monitor (daily)",
    "area": "players",
    "status": "Live props model vs reality (30 days): assists predicted 20% / happened 21%, cards predicted 17% / happened 20%, goals predicted 24% / happened 29%, sot predicted 29% / happened 42%",
-   "date": "2026-10-22 11:05 UTC",
+   "date": "2026-10-22 12:02 UTC",
    "key": {
     "assists": "CALIBRATED \u00b7 gap +0.7% [-0.0395, 0.0539] \u00b7 n 217",
     "cards": "UNDER_PREDICTS \u00b7 gap +2.2% [0.0053, 0.0495] \u00b7 n 1736",
@@ -37,7 +37,7 @@
    "title": "Top picks \u2014 weekly table",
    "area": "tips",
    "status": "Top picks 2026-W43: live to date BEST_BETS 100%/+94%, SAFEST 70%/+23%, VALUE 100%/+94%",
-   "date": "2026-10-22 11:05 UTC",
+   "date": "2026-10-22 12:02 UTC",
    "key": {
     "BEST_BETS (backtest)": "56% hit \u00b7 +12% ROI \u00b7 5% 0/5 days \u00b7 191 picks",
     "CURRENT (backtest)": "49% hit \u00b7 +3% ROI \u00b7 8% 0/5 days \u00b7 195 picks",
@@ -59,7 +59,7 @@
    "title": "Best leagues \u2014 results by league",
    "area": "tips",
    "status": "Best leagues (season): proven Brazil Serie A \u00b7 losing League Two, League One",
-   "date": "2026-10-22 11:05 UTC",
+   "date": "2026-10-22 12:02 UTC",
    "key": {
     "Brazil Serie A": "PROVEN \u00b7 114 tips \u00b7 63% hit @ 1.99 \u00b7 ROI +26% (shrunk +19%)",
     "Serie B": "PROMISING \u00b7 83 tips \u00b7 61% hit @ 2.00 \u00b7 ROI +24% (shrunk +16%)",
@@ -88,7 +88,7 @@
    "title": "Calibration shadow in v9 (pre-registered)",
    "area": "models",
    "status": "Live shadow of log-odds calibration in v9: WAITING_FOR_SHADOW_ROWS",
-   "date": "2026-10-22 11:04 UTC",
+   "date": "2026-10-22 12:02 UTC",
    "key": {},
    "report": "output/studies/CALIBRATION_SHADOW.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/CALIBRATION_SHADOW.md"
@@ -98,7 +98,7 @@
    "title": "Props segments: attacking D / M (pre-registered)",
    "area": "players",
    "status": "34 qualifying props since 2026-10-14; 0 EDGE cells",
-   "date": "2026-10-22 11:04 UTC",
+   "date": "2026-10-22 12:02 UTC",
    "key": {
     "ATT_DEF|goals": "COLLECTING (0/150)",
     "ATT_DEF|sot": "COLLECTING (0/150)",
@@ -112,6 +112,25 @@
    },
    "report": "output/studies/PROPS_SEGMENTS.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/PROPS_SEGMENTS.md"
+  },
+  {
+   "id": "props_learner",
+   "title": "Props learner: classic GB vs HGB",
+   "area": "players",
+   "status": "SWITCH CANDIDATE \u2014 every market non-inferior; needs owner approval",
+   "date": "2026-10-22 11:39 UTC",
+   "key": {
+    "goals": "PASS",
+    "goals2": "PASS",
+    "assists": "PASS",
+    "sot": "PASS",
+    "sot2": "PASS",
+    "sot3": "PASS",
+    "sot4": "PASS",
+    "cards": "PASS"
+   },
+   "report": "output/studies/PROPS_LEARNER.md",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/PROPS_LEARNER.md"
   },
   {
    "id": "player_v3_forward",
@@ -375,25 +394,6 @@
    },
    "report": "output/player_v3/PLAYER_V3_REPORT.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/player_v3/PLAYER_V3_REPORT.md"
-  },
-  {
-   "id": "props_learner",
-   "title": "Props learner: classic GB vs HGB",
-   "area": "players",
-   "status": "SWITCH CANDIDATE \u2014 every market non-inferior; needs owner approval",
-   "date": "2026-10-12 16:27 UTC",
-   "key": {
-    "goals": "PASS",
-    "goals2": "PASS",
-    "assists": "PASS",
-    "sot": "PASS",
-    "sot2": "PASS",
-    "sot3": "PASS",
-    "sot4": "PASS",
-    "cards": "PASS"
-   },
-   "report": "output/studies/PROPS_LEARNER.md",
-   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/PROPS_LEARNER.md"
   },
   {
    "id": "upgrade_studies",
