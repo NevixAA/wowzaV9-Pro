@@ -1,6 +1,6 @@
-# League scout — 2026-10-23T01:04 UTC
+# League scout — 2026-10-23T08:00 UTC
 
-Results stored: 240,375 · fixtures priced: 3,119 · model frozen: 3,075
+Results stored: 240,377 · fixtures priced: 3,173 · model frozen: 3,129
 
 COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kickoff close
 
@@ -74,13 +74,13 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 1 | Austria 2. Liga | ou25 | 15 | COLLECTING | -0.004 | – | -34.5% (4) |
 | 1 | Austria 2. Liga | ou35 | 15 | COLLECTING | +0.071 | – | -56.8% (4) |
 | 1 | Austria 2. Liga | btts | 15 | COLLECTING | +0.036 | – | -40.5% (4) |
-| 1 | Mexico Liga de Expansión MX | ou15 | 14 | COLLECTING | +0.418 | – | – |
+| 1 | Mexico Liga de Expansión MX | ou15 | 14 | COLLECTING | +0.417 | – | – |
 | 1 | Italy Serie C - Girone C | ou15 | 14 | COLLECTING | -0.045 | – | -37.5% (2) |
-| 1 | Mexico Liga de Expansión MX | ou25 | 14 | COLLECTING | +0.195 | – | -20.7% (3) |
+| 1 | Mexico Liga de Expansión MX | ou25 | 14 | COLLECTING | +0.194 | – | -20.7% (3) |
 | 1 | Italy Serie C - Girone C | ou25 | 14 | COLLECTING | +0.018 | – | +53.8% (4) |
 | 1 | Mexico Liga de Expansión MX | ou35 | 14 | COLLECTING | -0.029 | – | – |
 | 1 | Italy Serie C - Girone C | ou35 | 14 | COLLECTING | +0.074 | – | +112.5% (2) |
-| 1 | Mexico Liga de Expansión MX | btts | 14 | COLLECTING | +0.253 | – | – |
+| 1 | Mexico Liga de Expansión MX | btts | 14 | COLLECTING | +0.252 | – | – |
 | 1 | Italy Serie C - Girone C | btts | 14 | COLLECTING | -0.032 | – | -4.5% (2) |
 | 1 | Italy Serie C - Girone B | ou15 | 13 | COLLECTING | +0.072 | – | -18.8% (4) |
 | 1 | Italy Serie C - Girone B | ou25 | 13 | COLLECTING | -0.025 | – | +19.7% (6) |
@@ -158,20 +158,20 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Belgium First Amateur Division | ou25 | 27 | COLLECTING | -0.001 | – | -18.6% (8) |
 | 2 | Belgium First Amateur Division | ou35 | 27 | COLLECTING | +0.003 | – | – |
 | 2 | Belgium First Amateur Division | btts | 27 | COLLECTING | -0.040 | – | – |
+| 2 | Colombia Primera A | ou15 | 25 | COLLECTING | +0.027 | – | -100.0% (1) |
+| 2 | Colombia Primera A | ou25 | 25 | COLLECTING | +0.044 | – | -13.2% (4) |
+| 2 | Colombia Primera A | ou35 | 25 | COLLECTING | +0.003 | – | +23.3% (3) |
+| 2 | Colombia Primera A | btts | 25 | COLLECTING | +0.029 | – | -25.0% (3) |
 | 2 | Argentina Torneo Federal A | ou15 | 24 | COLLECTING | -0.027 | – | +18.0% (9) |
-| 2 | Colombia Primera A | ou15 | 24 | COLLECTING | +0.016 | – | -100.0% (1) |
 | 2 | Saudi-Arabia Pro League | ou15 | 24 | COLLECTING | -0.036 | – | -100.0% (1) |
 | 2 | Egypt Second League | ou15 | 24 | COLLECTING | +0.079 | – | – |
 | 2 | Argentina Torneo Federal A | ou25 | 24 | COLLECTING | +0.042 | – | +2.1% (9) |
-| 2 | Colombia Primera A | ou25 | 24 | COLLECTING | +0.022 | – | -13.2% (4) |
 | 2 | Saudi-Arabia Pro League | ou25 | 24 | COLLECTING | +0.078 | – | -100.0% (3) |
 | 2 | Egypt Second League | ou25 | 24 | COLLECTING | +0.027 | – | +62.2% (6) |
 | 2 | Argentina Torneo Federal A | ou35 | 24 | COLLECTING | +0.060 | – | -5.2% (5) |
-| 2 | Colombia Primera A | ou35 | 24 | COLLECTING | +0.021 | – | +23.3% (3) |
 | 2 | Saudi-Arabia Pro League | ou35 | 24 | COLLECTING | +0.014 | – | -13.5% (2) |
 | 2 | Egypt Second League | ou35 | 24 | COLLECTING | +0.058 | – | – |
 | 2 | Argentina Torneo Federal A | btts | 24 | COLLECTING | +0.013 | – | -20.5% (8) |
-| 2 | Colombia Primera A | btts | 24 | COLLECTING | +0.018 | – | +12.5% (2) |
 | 2 | Saudi-Arabia Pro League | btts | 24 | COLLECTING | +0.007 | – | +120.0% (1) |
 | 2 | Egypt Second League | btts | 24 | COLLECTING | +0.035 | – | – |
 | 2 | Colombia Primera B | ou15 | 23 | COLLECTING | -0.080 | – | – |
