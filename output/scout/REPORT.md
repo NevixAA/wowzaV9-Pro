@@ -1,6 +1,6 @@
-# League scout — 2026-10-22T21:59 UTC
+# League scout — 2026-10-23T01:04 UTC
 
-Results stored: 240,375 · fixtures priced: 3,068 · model frozen: 3,024
+Results stored: 240,375 · fixtures priced: 3,119 · model frozen: 3,075
 
 COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kickoff close
 
