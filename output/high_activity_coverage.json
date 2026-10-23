@@ -351,13 +351,13 @@
       "active_missed_windows": null,
       "active_p90_gap_min": null,
       "first": "2026-08-21T02:10:42Z",
-      "fixtures_kicking_off": 180,
-      "last": "2026-10-16T21:38:45Z",
+      "fixtures_kicking_off": 181,
+      "last": "2026-10-23T00:54:07Z",
       "max_gap_min": 9038.7,
-      "median_gap_min": 269.1,
-      "missed_windows": 2647,
-      "n_observations": 58,
-      "p90_gap_min": 8715.5
+      "median_gap_min": 269.7,
+      "missed_windows": 8980,
+      "n_observations": 59,
+      "p90_gap_min": 8789.9
     },
     "Mon": {
       "active_median_gap_min": null,
@@ -368,7 +368,7 @@
       "last": "2026-10-19T23:55:14Z",
       "max_gap_min": 9304.5,
       "median_gap_min": 277.4,
-      "missed_windows": 2960,
+      "missed_windows": 9042,
       "n_observations": 62,
       "p90_gap_min": 8724.0
     },
@@ -381,7 +381,7 @@
       "last": "2026-10-17T22:36:59Z",
       "max_gap_min": 9146.0,
       "median_gap_min": 217.9,
-      "missed_windows": 2645,
+      "missed_windows": 8097,
       "n_observations": 64,
       "p90_gap_min": 8699.0
     },
@@ -394,7 +394,7 @@
       "last": "2026-10-18T22:34:33Z",
       "max_gap_min": 9161.7,
       "median_gap_min": 219.4,
-      "missed_windows": 2643,
+      "missed_windows": 8093,
       "n_observations": 66,
       "p90_gap_min": 8710.8
     },
@@ -403,11 +403,11 @@
       "active_missed_windows": null,
       "active_p90_gap_min": null,
       "first": "2026-08-20T02:04:19Z",
-      "fixtures_kicking_off": 54,
+      "fixtures_kicking_off": 56,
       "last": "2026-10-22T21:54:03Z",
       "max_gap_min": 9181.3,
       "median_gap_min": 234.9,
-      "missed_windows": 2973,
+      "missed_windows": 9097,
       "n_observations": 67,
       "p90_gap_min": 8774.8
     },
@@ -416,11 +416,11 @@
       "active_missed_windows": null,
       "active_p90_gap_min": null,
       "first": "2026-08-18T02:03:10Z",
-      "fixtures_kicking_off": 102,
+      "fixtures_kicking_off": 103,
       "last": "2026-10-20T21:50:14Z",
       "max_gap_min": 9149.5,
       "median_gap_min": 227.0,
-      "missed_windows": 2973,
+      "missed_windows": 9093,
       "n_observations": 65,
       "p90_gap_min": 8974.1
     },
@@ -433,22 +433,22 @@
       "last": "2026-10-21T23:35:22Z",
       "max_gap_min": 9287.4,
       "median_gap_min": 225.2,
-      "missed_windows": 2974,
+      "missed_windows": 9100,
       "n_observations": 69,
       "p90_gap_min": 8834.6
     }
   },
   "fixtures": {
-    "in_store": 1757,
+    "in_store": 1761,
     "kicked_off": 1550,
-    "with_market_snapshot": 12638,
-    "with_model_snapshot": 1757,
+    "with_market_snapshot": 12640,
+    "with_model_snapshot": 1761,
     "with_player_props": 1739
   },
-  "generated_at": "2026-10-22T21:54:29Z",
+  "generated_at": "2026-10-23T00:54:45Z",
   "live": {
-    "live_odds_fixtures": 5975,
-    "live_odds_rows": 255002,
+    "live_odds_fixtures": 5978,
+    "live_odds_rows": 255126,
     "live_signal_fixtures": 153
   },
   "near_kickoff_market": {
@@ -505,20 +505,20 @@
   "recommendations": [
     "T-10m market coverage is 6.5% of kicked-off fixtures. Closing price cannot be backfilled, so this is a permanent loss per uncovered fixture.",
     "T-1h market coverage is 30.2%. The final hour is where the sharp money moves; a capture window inside it is worth more than an extra one three days out.",
-    "market_snapshots p90 gap is 398 min against a 30 min target (557 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
-    "model_snapshots p90 gap is 478 min against a 30 min target (553 missed windows) \u2014 the tail, not the median, is where captures are being lost."
+    "market_snapshots p90 gap is 398 min against a 10 min target (1865 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
+    "model_snapshots p90 gap is 477 min against a 10 min target (1886 missed windows) \u2014 the tail, not the median, is where captures are being lost."
   ],
-  "scheduler_mode": "NORMAL",
+  "scheduler_mode": "HIGH_ACTIVITY",
   "status": "PASS",
-  "target_interval_min": 30,
+  "target_interval_min": 10,
   "weekend": {
     "Fri": {
-      "fixtures_kicking_off": 180,
+      "fixtures_kicking_off": 181,
       "live_odds_observations": 29207,
-      "market_median_gap_min": 269.1,
-      "market_observations": 36667,
-      "market_p90_gap_min": 8715.5,
-      "model_observations": 44580,
+      "market_median_gap_min": 269.7,
+      "market_observations": 37359,
+      "market_p90_gap_min": 8789.9,
+      "model_observations": 45602,
       "props_observations": 81737
     },
     "Sat": {
