@@ -1,8 +1,8 @@
 {
  "window_from": "2026-08-10",
- "decision_fixtures": 1690,
- "settled_matched": 1303,
- "oos_fixtures": 1011,
+ "decision_fixtures": 1699,
+ "settled_matched": 1308,
+ "oos_fixtures": 1016,
  "weekly_coefficients": [
   {
    "week": "2026-08-31/2026-09-06",
@@ -71,37 +71,37 @@
  ],
  "probabilistic_oos": {
   "market": {
-   "logloss": 0.68699,
-   "brier": 0.24708
+   "logloss": 0.68658,
+   "brier": 0.24688
   },
   "v9": {
-   "logloss": 0.69464,
-   "brier": 0.25072
+   "logloss": 0.69467,
+   "brier": 0.25074
   },
   "challenger": {
-   "logloss": 0.68715,
-   "brier": 0.24706
+   "logloss": 0.68679,
+   "brier": 0.24688
   }
  },
  "challenger_minus_v9_logloss": {
-  "mean": -0.00748,
+  "mean": -0.00788,
   "ci90": [
-   -0.0149,
-   -0.0003
+   -0.0153,
+   -0.0005
   ]
  },
  "tips_at_5pct_edge": {
   "v9": {
-   "n": 256,
-   "under_share": 0.785,
-   "units": -16.19,
-   "roi": -0.0633,
+   "n": 259,
+   "under_share": 0.788,
+   "units": -16.94,
+   "roi": -0.0654,
    "roi_ci90": [
-    -0.1912,
-    0.0596
+    -0.1809,
+    0.0599
    ],
    "mean_clv_pp": -3.87,
-   "avg_odds_taken": 2.437
+   "avg_odds_taken": 2.434
   },
   "challenger": {
    "n": 0
@@ -110,16 +110,16 @@
  "tips_by_track": {
   "new_format": {
    "v9": {
-    "n": 170,
-    "under_share": 0.959,
-    "units": 1.15,
-    "roi": 0.0068,
+    "n": 173,
+    "under_share": 0.96,
+    "units": 0.41,
+    "roi": 0.0023,
     "roi_ci90": [
-     -0.1538,
-     0.1642
+     -0.1577,
+     0.154
     ],
     "mean_clv_pp": -3.6,
-    "avg_odds_taken": 2.508
+    "avg_odds_taken": 2.502
    },
    "challenger": {
     "n": 0
@@ -132,8 +132,8 @@
     "units": -17.34,
     "roi": -0.2017,
     "roi_ci90": [
-     -0.396,
-     0.0336
+     -0.398,
+     0.03
     ],
     "mean_clv_pp": -4.41,
     "avg_odds_taken": 2.298
@@ -144,11 +144,11 @@
   }
  },
  "current_weights": {
-  "a": 0.075,
-  "b_market": 0.688,
+  "a": 0.078,
+  "b_market": 0.693,
   "c_model": 0.0,
-  "c_model_unconstrained": -0.263,
-  "n_train": 1303
+  "c_model_unconstrained": -0.27,
+  "n_train": 1308
  },
- "forward_logged_this_run": 0
+ "forward_logged_this_run": 9
 }

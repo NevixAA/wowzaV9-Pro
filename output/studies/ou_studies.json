@@ -1,46 +1,46 @@
 {
  "window": [
   "2026-08-10",
-  "2026-10-21"
+  "2026-10-22"
  ],
- "results_fixtures": 3401,
+ "results_fixtures": 3444,
  "residual": {
   "OU25": {
    "all": {
-    "n": 1305,
-    "n_oos": 1011,
-    "rate": 0.5464,
-    "logloss_market_raw": 0.67896,
-    "logloss_model_raw": 0.68995,
-    "brier_market_raw": 0.24316,
-    "brier_model_raw": 0.24842,
-    "oos_delta_logloss": 0.00151,
+    "n": 1310,
+    "n_oos": 1016,
+    "rate": 0.5473,
+    "logloss_market_raw": 0.67852,
+    "logloss_model_raw": 0.69012,
+    "brier_market_raw": 0.24296,
+    "brier_model_raw": 0.24851,
+    "oos_delta_logloss": 0.00129,
     "oos_delta_logloss_ci90": [
-     -0.0006,
-     0.0037
+     -0.0009,
+     0.0035
     ],
-    "oos_delta_brier": 0.00073,
-    "in_sample_model_coef": -0.212,
-    "in_sample_model_z": -0.77,
+    "oos_delta_brier": 0.00062,
+    "in_sample_model_coef": -0.238,
+    "in_sample_model_z": -0.87,
     "verdict": "NO_DETECTABLE_GAIN",
     "reading": "delta < 0 means adding the model IMPROVED the forecast; the 90% interval must sit below 0"
    },
    "new_format": {
-    "n": 705,
-    "n_oos": 541,
-    "rate": 0.5674,
-    "logloss_market_raw": 0.67606,
-    "logloss_model_raw": 0.68683,
-    "brier_market_raw": 0.24194,
-    "brier_model_raw": 0.24691,
-    "oos_delta_logloss": 0.00441,
+    "n": 710,
+    "n_oos": 546,
+    "rate": 0.569,
+    "logloss_market_raw": 0.67527,
+    "logloss_model_raw": 0.68717,
+    "brier_market_raw": 0.24157,
+    "brier_model_raw": 0.24707,
+    "oos_delta_logloss": 0.00507,
     "oos_delta_logloss_ci90": [
-     -0.0006,
-     0.0101
+     0.0,
+     0.0106
     ],
-    "oos_delta_brier": 0.00216,
-    "in_sample_model_coef": -0.05,
-    "in_sample_model_z": -0.15,
+    "oos_delta_brier": 0.0025,
+    "in_sample_model_coef": -0.091,
+    "in_sample_model_z": -0.27,
     "verdict": "NO_DETECTABLE_GAIN",
     "reading": "delta < 0 means adding the model IMPROVED the forecast; the 90% interval must sit below 0"
    },
@@ -54,7 +54,7 @@
     "brier_model_raw": 0.2502,
     "oos_delta_logloss": 0.00327,
     "oos_delta_logloss_ci90": [
-     -0.002,
+     -0.0019,
      0.0087
     ],
     "oos_delta_brier": 0.00106,
@@ -80,40 +80,40 @@
   },
   "OU35": {
    "all": {
-    "n": 366,
-    "n_oos": 294,
-    "rate": 0.4016,
-    "logloss_market_raw": 0.66214,
-    "logloss_model_raw": 0.69397,
-    "brier_market_raw": 0.23468,
-    "brier_model_raw": 0.24863,
-    "oos_delta_logloss": 0.06502,
+    "n": 367,
+    "n_oos": 295,
+    "rate": 0.4033,
+    "logloss_market_raw": 0.66188,
+    "logloss_model_raw": 0.69443,
+    "brier_market_raw": 0.23455,
+    "brier_model_raw": 0.24886,
+    "oos_delta_logloss": 0.06501,
     "oos_delta_logloss_ci90": [
-     0.0105,
-     0.1332
+     0.0096,
+     0.137
     ],
-    "oos_delta_brier": 0.02061,
-    "in_sample_model_coef": -0.098,
-    "in_sample_model_z": -0.28,
+    "oos_delta_brier": 0.02064,
+    "in_sample_model_coef": -0.088,
+    "in_sample_model_z": -0.25,
     "verdict": "MODEL_HURTS",
     "reading": "delta < 0 means adding the model IMPROVED the forecast; the 90% interval must sit below 0"
    },
    "new_format": {
-    "n": 283,
-    "n_oos": 180,
-    "rate": 0.4099,
-    "logloss_market_raw": 0.66034,
-    "logloss_model_raw": 0.69486,
-    "brier_market_raw": 0.2338,
-    "brier_model_raw": 0.24918,
-    "oos_delta_logloss": 0.00092,
+    "n": 284,
+    "n_oos": 181,
+    "rate": 0.412,
+    "logloss_market_raw": 0.66,
+    "logloss_model_raw": 0.69546,
+    "brier_market_raw": 0.23363,
+    "brier_model_raw": 0.24948,
+    "oos_delta_logloss": 0.00087,
     "oos_delta_logloss_ci90": [
-     -0.0006,
-     0.0025
+     -0.0007,
+     0.0026
     ],
-    "oos_delta_brier": 0.00048,
-    "in_sample_model_coef": 0.132,
-    "in_sample_model_z": 0.35,
+    "oos_delta_brier": 0.00046,
+    "in_sample_model_coef": 0.143,
+    "in_sample_model_z": 0.37,
     "verdict": "NO_DETECTABLE_GAIN",
     "reading": "delta < 0 means adding the model IMPROVED the forecast; the 90% interval must sit below 0"
    },
@@ -124,40 +124,40 @@
   },
   "BTTS": {
    "all": {
-    "n": 1300,
-    "n_oos": 978,
-    "rate": 0.59,
-    "logloss_market_raw": 0.6781,
-    "logloss_model_raw": 0.68228,
-    "brier_market_raw": 0.24259,
-    "brier_model_raw": 0.2446,
-    "oos_delta_logloss": 0.01223,
+    "n": 1305,
+    "n_oos": 983,
+    "rate": 0.5908,
+    "logloss_market_raw": 0.67792,
+    "logloss_model_raw": 0.6819,
+    "brier_market_raw": 0.2425,
+    "brier_model_raw": 0.24441,
+    "oos_delta_logloss": 0.01196,
     "oos_delta_logloss_ci90": [
-     0.0052,
-     0.0194
+     0.005,
+     0.0192
     ],
-    "oos_delta_brier": 0.00536,
-    "in_sample_model_coef": -0.341,
-    "in_sample_model_z": -0.64,
+    "oos_delta_brier": 0.00524,
+    "in_sample_model_coef": -0.252,
+    "in_sample_model_z": -0.47,
     "verdict": "MODEL_HURTS",
     "reading": "delta < 0 means adding the model IMPROVED the forecast; the 90% interval must sit below 0"
    },
    "new_format": {
-    "n": 709,
-    "n_oos": 554,
-    "rate": 0.6037,
-    "logloss_market_raw": 0.67683,
-    "logloss_model_raw": 0.67819,
-    "brier_market_raw": 0.24207,
-    "brier_model_raw": 0.24258,
-    "oos_delta_logloss": 0.00962,
+    "n": 714,
+    "n_oos": 547,
+    "rate": 0.605,
+    "logloss_market_raw": 0.67651,
+    "logloss_model_raw": 0.67752,
+    "brier_market_raw": 0.24191,
+    "brier_model_raw": 0.24225,
+    "oos_delta_logloss": 0.00849,
     "oos_delta_logloss_ci90": [
-     0.0051,
-     0.0145
+     0.0037,
+     0.0134
     ],
-    "oos_delta_brier": 0.00453,
-    "in_sample_model_coef": 0.076,
-    "in_sample_model_z": 0.11,
+    "oos_delta_brier": 0.00398,
+    "in_sample_model_coef": 0.215,
+    "in_sample_model_z": 0.31,
     "verdict": "MODEL_HURTS",
     "reading": "delta < 0 means adding the model IMPROVED the forecast; the 90% interval must sit below 0"
    },
@@ -171,8 +171,8 @@
     "brier_model_raw": 0.24702,
     "oos_delta_logloss": 0.00566,
     "oos_delta_logloss_ci90": [
-     -0.0051,
-     0.0183
+     -0.0056,
+     0.0185
     ],
     "oos_delta_brier": 0.00268,
     "in_sample_model_coef": -1.175,
@@ -183,35 +183,35 @@
   }
  },
  "under": {
-  "n": 1305,
+  "n": 1310,
   "overall": {
-   "rate_over": 0.5464,
-   "model_p_over": 0.5182,
-   "market_p_over": 0.5446
+   "rate_over": 0.5473,
+   "model_p_over": 0.5181,
+   "market_p_over": 0.5449
   },
   "by_model_lean": {
    "model UNDER by >10pp": {
-    "n": 205,
-    "realised_over": 0.6049,
-    "model_p_over": 0.5057,
-    "market_p_over": 0.6569,
-    "model_error_pp": -9.9,
-    "market_error_pp": 5.2,
+    "n": 209,
+    "realised_over": 0.6077,
+    "model_p_over": 0.505,
+    "market_p_over": 0.6564,
+    "model_error_pp": -10.3,
+    "market_error_pp": 4.9,
     "realised_ci90": [
-     0.5496,
-     0.6611
+     0.5539,
+     0.6667
     ]
    },
    "UNDER 5-10pp": {
-    "n": 260,
-    "realised_over": 0.6115,
+    "n": 261,
+    "realised_over": 0.613,
     "model_p_over": 0.5181,
     "market_p_over": 0.5925,
-    "model_error_pp": -9.3,
-    "market_error_pp": -1.9,
+    "model_error_pp": -9.5,
+    "market_error_pp": -2.1,
     "realised_ci90": [
-     0.5566,
-     0.6632
+     0.5603,
+     0.664
     ]
    },
    "UNDER 2-5pp": {
@@ -222,8 +222,8 @@
     "model_error_pp": -6.6,
     "market_error_pp": -3.2,
     "realised_ci90": [
-     0.5337,
-     0.6352
+     0.5321,
+     0.6354
     ]
    },
    "agrees (\u00b12pp)": {
@@ -234,7 +234,7 @@
     "model_error_pp": -0.4,
     "market_error_pp": -0.4,
     "realised_ci90": [
-     0.4758,
+     0.4771,
      0.5745
     ]
    },
@@ -246,8 +246,8 @@
     "model_error_pp": 3.6,
     "market_error_pp": 0.2,
     "realised_ci90": [
-     0.4171,
-     0.5475
+     0.4157,
+     0.5482
     ]
    },
    "OVER 5-10pp": {
@@ -258,8 +258,8 @@
     "model_error_pp": 6.9,
     "market_error_pp": -0.2,
     "realised_ci90": [
-     0.4083,
-     0.5042
+     0.4091,
+     0.5039
     ]
    },
    "model OVER by >10pp": {
@@ -270,22 +270,22 @@
     "model_error_pp": 10.1,
     "market_error_pp": -2.2,
     "realised_ci90": [
-     0.3111,
-     0.5614
+     0.3137,
+     0.56
     ]
    }
   },
-  "leans_under_share_of_lean_realised": -0.001,
-  "leans_under_n": 648,
+  "leans_under_share_of_lean_realised": -0.017,
+  "leans_under_n": 653,
   "leans_over_share_of_lean_realised": 0.045,
   "leans_over_n": 363,
   "by_track": {
    "new_format": {
-    "n": 705,
-    "model_error_pp": -4.9,
-    "market_error_pp": -0.3,
-    "brier_model": 0.2469,
-    "brier_market": 0.2419
+    "n": 710,
+    "model_error_pp": -5.1,
+    "market_error_pp": -0.4,
+    "brier_model": 0.2471,
+    "brier_market": 0.2416
    },
    "standard": {
     "n": 600,
@@ -295,7 +295,7 @@
     "brier_market": 0.2446
    }
   },
-  "lean_coef": -0.745,
-  "lean_z": -0.67
+  "lean_coef": -0.847,
+  "lean_z": -0.76
  }
 }
