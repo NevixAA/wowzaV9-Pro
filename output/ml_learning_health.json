@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T10:29:14Z",
+  "generated_at": "2026-10-24T09:46:29Z",
   "calc_version": "1.0.0",
   "worst": "NO_NEW_DATA",
   "counts": {
@@ -7,11 +7,11 @@
     "PASS": 5
   },
   "settlements_fingerprint": {
-    "rows": 94176,
-    "latest_match": "2026-10-21",
+    "rows": 96201,
+    "latest_match": "2026-10-22",
     "earliest_match": "2025-08-02",
     "leagues": 24,
-    "fingerprint": "66e6d45347093db2"
+    "fingerprint": "a639731880aec76d"
   },
   "last_genuine_learning_event": {
     "date": "2026-10-18",
@@ -32,11 +32,11 @@
       "status": "PASS",
       "why": "challenger trained and promoted \u2014 log loss 0.68845 -> 0.68826 (-0.00018), within the 0.03000 tolerance",
       "model_artifact": "models/model_v9_standard.pkl",
-      "incumbent_changed_at": "2026-10-23T10:01:48Z",
+      "incumbent_changed_at": "2026-10-24T09:23:56Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-22",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
@@ -97,11 +97,11 @@
       "status": "NO_NEW_DATA",
       "why": "only 0 new settled fixture(s) since the incumbent was built \u2014 too few to learn from. Healthy.",
       "model_artifact": "models/model_v9_newformat.pkl",
-      "incumbent_changed_at": "2026-10-23T10:01:48Z",
+      "incumbent_changed_at": "2026-10-24T09:23:56Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-22",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": null
     },
@@ -110,11 +110,11 @@
       "status": "PASS",
       "why": "challenger trained and REJECTED \u2014 log loss ROSE +0.00022 (0.68575 -> 0.68597) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion. A rejection is a healthy learning outcome, not a failure.",
       "model_artifact": "models/model_v9_btts.pkl",
-      "incumbent_changed_at": "2026-10-23T10:01:48Z",
+      "incumbent_changed_at": "2026-10-24T09:23:56Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-22",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": false,
@@ -176,11 +176,11 @@
       "status": "PASS",
       "why": "challenger trained and promoted \u2014 log loss 0.54486 -> 0.54480 (-0.00006), within the 0.03000 tolerance",
       "model_artifact": "models/model_v9_over15.pkl",
-      "incumbent_changed_at": "2026-10-23T10:01:48Z",
+      "incumbent_changed_at": "2026-10-24T09:23:56Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-22",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
@@ -241,11 +241,11 @@
       "status": "PASS",
       "why": "challenger trained and REJECTED \u2014 log loss ROSE +0.00030 (0.60125 -> 0.60155) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion. A rejection is a healthy learning outcome, not a failure.",
       "model_artifact": "models/model_v9_over35.pkl",
-      "incumbent_changed_at": "2026-10-23T10:01:48Z",
+      "incumbent_changed_at": "2026-10-24T09:23:56Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-22",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": false,
@@ -307,11 +307,11 @@
       "status": "PASS",
       "why": "challenger trained and promoted \u2014 log loss 0.60402 -> 0.60378 (-0.00024), within the 0.03000 tolerance",
       "model_artifact": "models/model_ht_over05.pkl",
-      "incumbent_changed_at": "2026-10-23T10:01:48Z",
+      "incumbent_changed_at": "2026-10-24T09:23:56Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-22",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": true,
@@ -372,11 +372,11 @@
       "status": "NO_NEW_DATA",
       "why": "only 0 new settled fixture(s) since the incumbent was built \u2014 too few to learn from. Healthy.",
       "model_artifact": "models/model_player_goals.pkl",
-      "incumbent_changed_at": "2026-10-23T10:01:48Z",
+      "incumbent_changed_at": "2026-10-24T09:23:56Z",
       "incumbent_age_days": 0.0,
       "training_input": "player_history.parquet",
       "training_input_latest_match": "2026-10-22",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": null
     }
