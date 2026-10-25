@@ -711,7 +711,6 @@
       "v9/output/retrain_log.json"
     ],
     "props_gate_env": "PROPS_MAX_LOGLOSS_RISE",
-    "props_gate_note": "player props still promote on PROPS_MAX_LOGLOSS_RISE - NOT covered by PG-1.0; open owner decision",
     "history": {
       "tolerance_env": "TRAIN_MAX_LOGLOSS_RISE",
       "tolerance_default_at_head": 0.03,
@@ -719,7 +718,20 @@
       "tolerance_changed_at": "v9 commit a3207713, 2026-09-24T08:26:27Z",
       "known_event": "The 2026-09-24 08:22:54Z retrain BLOCKED model_v9_standard for a +0.00533 rise against the then-deployed 0.00500 tolerance. The loosening commit landed at 08:26:27Z, four minutes later."
     },
-    "updated": "2026-10-25 (v9 0a5f7564)"
+    "updated": "2026-10-25 (v9 0a5f7564)",
+    "props_gate": {
+      "location": "v9/player_model/props_gate.py (sole writer of v9/models/model_player_<market>.pkl)",
+      "version": "PG-PROPS-1.0",
+      "config": "v9/config/promotion_gate.json -> props",
+      "definition": "Same two-period PROMOTED definition as PG-1.0, judged per MARKET (goals, goals2, assists, sot, sot2, sot3, sot4, cards; never pooled): holdout n>=1000 and >=100 events, material log-loss gain scaled by market entropy, match-date block-bootstrap CI upper<0, Brier/ECE/slope non-inferiority, canary, league regression; then prospective first-sight rows (v9/output/model_lineage/props_shadow_h2h.csv) n>=1000 and >=100 events, delta<0. No prospective data -> SHADOW_MORE.",
+      "decision_record": "v9/output/model_lineage/props_promotion_decisions.csv",
+      "retired": [
+        "PROPS_MAX_LOGLOSS_RISE",
+        "PROPS_FORCE_PROMOTE"
+      ],
+      "owner_decision": "2026-10-25 (v9 b8900ed0)",
+      "props_remain": "PAPER_ONLY"
+    }
   },
   "research_validity_registry": [
     {
