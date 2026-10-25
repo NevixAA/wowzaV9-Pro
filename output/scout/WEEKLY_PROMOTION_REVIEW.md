@@ -10,11 +10,11 @@ Blocked: 0
 Failed: 0
 
 Closest to the candidate gate:
-  Argentina Primera Nacional: needs {'settled_with_close': 266, 'results': 0, 'history_seasons': 0}
-  England Non League Premier - Southern Central: needs {'settled_with_close': 266, 'results': 0, 'history_seasons': 0}
-  Israel Liga Alef: needs {'settled_with_close': 267, 'results': 0, 'history_seasons': 0}
-  England Non League Premier - Southern South: needs {'settled_with_close': 267, 'results': 0, 'history_seasons': 0}
-  England Non League Premier - Isthmian: needs {'settled_with_close': 269, 'results': 0, 'history_seasons': 0}
+  Israel Liga Alef: needs {'settled_with_close': 251, 'results': 0, 'history_seasons': 0}
+  Argentina Primera Nacional: needs {'settled_with_close': 260, 'results': 0, 'history_seasons': 0}
+  USA USL Championship: needs {'settled_with_close': 260, 'results': 0, 'history_seasons': 0}
+  Algeria Ligue 2: needs {'settled_with_close': 262, 'results': 0, 'history_seasons': 0}
+  Germany 3. Liga: needs {'settled_with_close': 263, 'results': 0, 'history_seasons': 0}
 
 EXISTING_PRODUCTION_SELECTION_CHANGED = NO
 EXISTING_LEAGUE_MODELS_RETRAINED = NO
