@@ -2,14 +2,14 @@
 
 Registered 2026-10-14; counts props on matches from 2026-10-15. Rules frozen in src/player_v3/forward.py and registry/player_v3_forward/registration.json. EDGE needs >= 150 bets, a positive 90% ROI lower bound, positive median CLV and a beat-the-close share above the all-props baseline.
 
-Settled priced props in the window: **10536** · generated 2026-10-24 12:14 UTC
+Settled priced props in the window: **16760** · generated 2026-10-25 12:48 UTC
 
 | Market | Props | Log loss market / +Wowza | Bets | Hit | ROI (90%) | CLV median | Beat close (baseline) | Verdict |
 |---|---:|---|---:|---:|---|---:|---|---|
-| goals | 5839 | 0.28797 / 0.28363 | 43 | 0.2791 | 0.3072 [-0.1054, 1.4343] | 0.1 | 0.674 (0.432) | COLLECTING (43/150) |
-| goals cell: F, scorer, <30%, +5pts | 5839 | 0.28797 / 0.28363 | 17 | 0.2941 | 0.9312 [-0.1907, 4.0391] | 0.1333 | 0.706 (0.432) | COLLECTING (17/150) |
-| sot | 1852 | 0.52146 / 0.50935 | 7 | 0.4286 | 0.3214 [-0.4643, 1.6] | 0.0 | 0.429 (0.21) | COLLECTING (7/150) |
-| sot2 | 1536 | 0.23086 / 0.22372 | 7 | 0.0 | -1.0 [-1.0, -1.0] | 0.0476 | 0.714 (0.229) | COLLECTING (7/150) |
-| sot3 | 881 | 0.1113 / 0.10852 | 2 | 0.0 | -1.0 [None, None] | 0.7285 | 1.0 (0.258) | COLLECTING (2/150) |
+| goals | 9320 | 0.28253 / 0.27878 | 64 | 0.2344 | -0.0236 [-0.3405, 0.6064] | 0.1032 | 0.688 (0.467) | COLLECTING (64/150) |
+| goals cell: F, scorer, <30%, +5pts | 9320 | 0.28253 / 0.27878 | 29 | 0.2069 | 0.12 [-0.4464, 1.3107] | 0.1333 | 0.724 (0.467) | COLLECTING (29/150) |
+| sot | 2937 | 0.52786 / 0.51914 | 12 | 0.3333 | 0.0833 [-0.5312, 1.025] | 0.0 | 0.417 (0.214) | COLLECTING (12/150) |
+| sot2 | 2425 | 0.23835 / 0.23331 | 8 | 0.125 | -0.4587 [-1.0, 1.165] | 0.0651 | 0.75 (0.238) | COLLECTING (8/150) |
+| sot3 | 1411 | 0.10841 / 0.10667 | 4 | 0.25 | 0.5 [-1.0, 3.0] | 0.2 | 0.75 (0.264) | COLLECTING (4/150) |
 
 Paper only. Props stay paper-only in v9 whatever this shows; money needs a separate owner decision.
