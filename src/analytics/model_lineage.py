@@ -43,7 +43,8 @@ from src.data.entities import norm_name
 
 OUT = Path(__file__).resolve().parents[2] / "output" / "model_lineage"
 BOUNDARY = pd.Timedelta(minutes=60)
-MATERIAL_LL = 0.001        # the v9 gate's bar (src/champion_gate.py)
+MATERIAL_LL = 0.001        # v9 config/promotion_gate.json holdout.material_ll_improvement
+V9_GATE_VERSION = "PG-1.0" # bump with v9's config; a mismatch means this report uses a stale rule
 WEEK_FLAG = "WEEKLY_RESULT_VARIANCE_HIGH"
 
 #: ledger market -> v9 model type
@@ -307,7 +308,8 @@ def build(v9: Path, results: pd.DataFrame | None = None, now: pd.Timestamp | Non
     week = pd.DataFrame()
     if not rb.empty:
         dec = {"LEGACY_PROMOTED": "PROMOTED (old rule)", "LEGACY_BLOCKED": "BLOCKED (old rule)",
-               "PROMOTE": "PROMOTE", "KEEP_CHAMPION": "KEEP", "SHADOW_MORE": "SHADOW"}
+               "PROMOTE": "PROMOTE", "KEEP_CHAMPION": "KEEP", "SHADOW_MORE": "SHADOW",
+               "BOOTSTRAP": "BOOTSTRAP (first model)"}
         week = rb.assign(decision=rb["verdict"].map(dec).fillna(rb["verdict"]))[
             ["iso_week", "decided_at", "model_type", "challenger_version", "verdict", "decision",
              "ll_delta_at_decision", "future_N", "future_accuracy", "future_logloss_bets",

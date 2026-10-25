@@ -695,16 +695,31 @@
     }
   },
   "training_contract": {
-    "promotion_gate_location": "v9/pipeline.py",
-    "tolerance_env": "TRAIN_MAX_LOGLOSS_RISE",
-    "tolerance_default_at_head": 0.03,
-    "tolerance_previous": 0.005,
-    "tolerance_changed_at": "v9 commit a3207713, 2026-09-24T08:26:27Z",
-    "no_workflow_override_found": true,
-    "comparison_basis_field": "comparison_basis in output/retrain_log.json — 'same_holdout' is the honest comparison; 'stored_metrics_FALLBACK' is a WEAK COMPARISON across different test sets.",
-    "decision_record": "v9/output/retrain_log.json",
-    "known_event": "The 2026-09-24 08:22:54Z retrain BLOCKED model_v9_standard for a +0.00533 rise against the then-deployed 0.00500 tolerance. The loosening commit landed at 08:26:27Z, four minutes later.",
-    "props_gate_env": "PROPS_MAX_LOGLOSS_RISE"
+    "promotion_gate_location": "v9/src/promotion_gate.py (sole writer of models/registry/current_champions.json and serving .pkl files)",
+    "promotion_gate_config": "v9/config/promotion_gate.json",
+    "promotion_gate_version": "PG-1.0",
+    "promotion_definition": "PROMOTED = installed by the v9 gate after (1) qualifying per track on the untouched chronological holdout and (2) passing an independent prospective first-sight period per track (n>=1000). Nothing else is 'promoted'; Pro's own GATE/PROMOTE_CANDIDATE only makes a model a candidate for the v9 gate.",
+    "retired_mechanisms": [
+      "TRAIN_MAX_LOGLOSS_RISE tolerance",
+      "TRAIN_BLOCK_WORSE_CANDIDATE",
+      "src/champion_gate.py",
+      "v91_gate log-only gate"
+    ],
+    "decision_record": [
+      "v9/output/model_lineage/promotion_decisions.csv",
+      "v9/output/model_lineage/retrain_batches.csv",
+      "v9/output/retrain_log.json"
+    ],
+    "props_gate_env": "PROPS_MAX_LOGLOSS_RISE",
+    "props_gate_note": "player props still promote on PROPS_MAX_LOGLOSS_RISE - NOT covered by PG-1.0; open owner decision",
+    "history": {
+      "tolerance_env": "TRAIN_MAX_LOGLOSS_RISE",
+      "tolerance_default_at_head": 0.03,
+      "tolerance_previous": 0.005,
+      "tolerance_changed_at": "v9 commit a3207713, 2026-09-24T08:26:27Z",
+      "known_event": "The 2026-09-24 08:22:54Z retrain BLOCKED model_v9_standard for a +0.00533 rise against the then-deployed 0.00500 tolerance. The loosening commit landed at 08:26:27Z, four minutes later."
+    },
+    "updated": "2026-10-25 (v9 0a5f7564)"
   },
   "research_validity_registry": [
     {
