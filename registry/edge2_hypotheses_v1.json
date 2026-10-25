@@ -1,0 +1,111 @@
+{
+ "registry": "edge2_hypotheses",
+ "version": 1,
+ "registered_at": "2026-10-25",
+ "forward_start": "2026-10-26T00:00:00Z",
+ "frozen": true,
+ "change_policy": "Immutable. Any change (engine config, decision rule, metric, n, criteria) is a NEW version with a NEW forward_start - never an edit of this file, never backdated.",
+ "family": "H-EDGE2 v1 (market-first engine market_edge_v2, prospective first-sight shadow)",
+ "family_wise_correction": "Benjamini-Hochberg on the one-sided PRIMARY p-values of the hypotheses in this family that have reached ELIGIBLE_FOR_REVIEW, q <= 0.05. Secondary metrics are descriptive and never corrected into a pass.",
+ "confirmed_assignable_here": false,
+ "status_vocabulary": ["REGISTERED", "ACCRUING", "ELIGIBLE_FOR_REVIEW", "BLOCKED_CONFIG_CHANGED"],
+ "status_note": "CONFIRMED is never assigned by the evaluator (src/studies/edge2_forward.py). ELIGIBLE_FOR_REVIEW means the sample is large enough for the owner to review the pre-registered criteria; the evaluator reports which criteria are met, the decision is the owner's.",
+ "interim_policy": "No effect size, CI or p-value is published for a hypothesis before it reaches ELIGIBLE_FOR_REVIEW (counts only), so the forward test cannot be stopped on a peek.",
+ "engine": {
+  "engine_version": "market_edge_v2",
+  "repo": "NevixAA/wowza-betting",
+  "config_path": "config/market_edge_v2.json",
+  "config_sha256_lf": "a85ae7260859c1f06383e92b51e675d4372a8ca2018ebaec76aab87d66d44444",
+  "config_status_at_registration": "UNVALIDATED_DEFAULTS",
+  "config_last_commit": "23577263052ef511f876a4fc21aacd778504aeeb",
+  "code_path": "src/market_edge.py",
+  "code_sha256_lf": "bd415829f04360c551d727bb5706e0846736539cf0146d99f9a8bfb08b8a2bb6",
+  "v9_head_at_registration": "b8900ed0c6bc76833e1d39659b6851a060f4ca51",
+  "hash_rule": "sha256 of the file bytes with CRLF normalised to LF (identical on a Windows checkout and on raw.githubusercontent.com). If either hash differs from the registered value, every hypothesis is BLOCKED_CONFIG_CHANGED: rows produced by a different engine are not evidence for this one.",
+  "not_the_proposed_params": "v9 output/edge_engine_proposed_params.json (discovery-fitted, RETROSPECTIVE) is NOT what is tested here. This family tests the CURRENT committed config."
+ },
+ "evidence_source": {
+  "file": "v9 output/edge_engine_shadow.csv",
+  "rows": "selection_engine_version == market_edge_v2, FIRST SIGHT per (selection_engine_version, fixture_id, market): the earliest pre-kickoff row is kept, later runs never revise it",
+  "counted_rows": "prediction_ts >= forward_start AND prediction_ts < kickoff_utc. Rows logged before forward_start (the shadow started 2026-10-25T09:25Z) are PRE_REGISTRATION_NOT_COUNTED.",
+  "two_sided_rows": "market_source in {MEDIAN_TWO_SIDED_BOOKS, SINGLE_TWO_SIDED_BOOK} (same-book pairs only; a one-sided or missing price has no fair probability and is never scored)",
+  "settlement": "full-time goals from Pro data/season_2026_27/team_match_stats, joined league-scoped through v9 src/team_names (resolve_result), unique match within +-1 day of match_date; anything else stays unsettled",
+  "side_a": "OU25/OU15: OVER; BTTS: YES. p_decision and p_market_fair are converted to side A from the row's `side`.",
+  "gameweek": "distinct ISO (year, week) of kickoff_utc among settled two-sided rows"
+ },
+ "decision_rule": {
+  "states": "market_edge_v2 decision_state exactly as logged: NO_BET / OBSERVE / QUALIFIED / STRONG (definitions in v9 src/market_edge.py and docs/EDGE_ENGINE_AUDIT_2026_10.md section 4)",
+  "QUALIFIED": "ev_lower_bound > 0 AND >= 2 same-book two-sided books AND a track CLV record (n >= 50, clipped mean > 0 AND median > 0); caps: odds > 3.0 or |p_model - p_market_fair| > 0.20 -> at most OBSERVE",
+  "STRONG": "QUALIFIED conditions AND prospective CLV evidence for this engine version (n >= 150, CI lower > 0). Unreachable at registration (no evidence file).",
+  "selection_set": "decision_state in {QUALIFIED, STRONG}"
+ },
+ "primary_metric": {
+  "name": "paired log-loss difference, decision vs de-vigged market",
+  "definition": "per settled two-sided first-sight row: LL(p_decision_A) - LL(p_market_fair_A), all decision states. Negative = the engine's market-anchored probability beats the de-vigged market.",
+  "test": "one-sided, H1: mean < 0. 95% CI and p from a matchday (kickoff date) block bootstrap, 10,000 resamples, seed 20261026."
+ },
+ "secondary_metrics": [
+  "paired Brier difference (decision - market), same rows",
+  "calibration slope and ECE (10 bins) of p_decision_A and of p_market_fair_A",
+  "selection set (QUALIFIED/STRONG): n, certified CLV (book write within 30 min of kickoff, >= 3 two-sided books, power de-vig median; CLV% = odds * p_close_fair - 1) mean / median / positive % / coverage",
+  "selection set: flat 1u ROI with matchday block-bootstrap 95% CI, hit rate, max drawdown, longest losing streak",
+  "state counts (NO_BET / OBSERVE / QUALIFIED / STRONG) and two-sided coverage"
+ ],
+ "promotion_criteria": {
+  "PROBABILITY_LAYER_SUPPORTED": "ELIGIBLE_FOR_REVIEW AND primary CI upper < 0 AND BH q <= 0.05 within the family AND calibration slope of p_decision in [0.8, 1.2]",
+  "SELECTION_SUPPORTED": "PROBABILITY_LAYER_SUPPORTED AND >= 150 settled selections (QUALIFIED/STRONG) AND certified-CLV coverage >= 50% AND CLV mean 95% CI lower > 0 AND ROI 95% CI lower > -5%",
+  "note": "Neither is CONFIRMED and neither changes production. Production cutover additionally needs the owner's explicit approval (v9 change control) and a separate cutover plan."
+ },
+ "rejection_criteria": {
+  "REJECT": "ELIGIBLE_FOR_REVIEW AND primary CI lower > 0 (the engine's probability is worse than the market)",
+  "FUTILITY": "settled two-sided n >= 2 x min_n AND primary mean >= 0"
+ },
+ "retrospective_context_not_evidence": "v9 output/edge_engine_comparison.json (RETROSPECTIVE, 2026-08-15..10-22 first sight). It motivated the cells below and can never count toward a pass.",
+ "hypotheses": [
+  {
+   "id": "H-EDGE2-NF-OU25-01",
+   "track": "new_format",
+   "market": "OU25",
+   "min_n_settled_two_sided": 400,
+   "min_gameweeks": 8,
+   "statement": "On new-format O/U 2.5 first-sight rows, market_edge_v2's p_decision (de-vigged consensus + 0.10 x clipped logit residual) has lower log loss than the de-vigged market.",
+   "retrospective_context": "RETROSPECTIVE: holdout 2026-09-27..10-22 (n 273) market LL 0.6799 vs w=0.10 LL 0.6777; discovery-fitted w=0.05 beat the market by -0.0011 LL, 95% CI [-0.0019, -0.0004]. Live shadow coverage at registration: 99/99 two-sided.",
+   "expected_accrual": "~110 first-sight fixtures/week -> min_n in ~5 weeks; min_gameweeks binds (8 weeks)"
+  },
+  {
+   "id": "H-EDGE2-NF-BTTS-01",
+   "track": "new_format",
+   "market": "BTTS",
+   "min_n_settled_two_sided": 400,
+   "min_gameweeks": 8,
+   "statement": "On new-format BTTS first-sight rows, market_edge_v2's p_decision has lower log loss than the de-vigged market.",
+   "retrospective_context": "RETROSPECTIVE: model vs power-devig market Brier gain +0.0002, CI [-0.0053, +0.0061]; discovery-fitted w did not beat the market on holdout (+0.0006 LL). The legacy BTTS-YES record (+26.3% ROI, n 133) is not evidence for this engine.",
+   "expected_accrual": "~100/week, 99/99 two-sided on the live board"
+  },
+  {
+   "id": "H-EDGE2-NF-O15-01",
+   "track": "new_format",
+   "market": "OU15",
+   "min_n_settled_two_sided": 150,
+   "min_gameweeks": 8,
+   "statement": "On new-format O/U 1.5 first-sight rows WITH a same-book two-sided price, market_edge_v2's p_decision has lower log loss than the de-vigged market.",
+   "retrospective_context": "RETROSPECTIVE: n 69 two-sided only; discovery-fitted w=0.45 holdout -0.020 LL, CI [-0.044, +0.002], BH q 0.052 - not significant, n tiny.",
+   "expected_accrual": "SLOW: 7/99 two-sided on the live board (OddsAPI EU totals rarely quote Under 1.5). May need ~20 weeks."
+  },
+  {
+   "id": "H-EDGE2-STD-OU25-01",
+   "track": "standard",
+   "market": "OU25",
+   "min_n_settled_two_sided": 400,
+   "min_gameweeks": 8,
+   "statement": "On standard-format O/U 2.5 first-sight rows, market_edge_v2's p_decision has lower log loss than the de-vigged market.",
+   "retrospective_context": "RETROSPECTIVE: the market beats the model (Brier gain -0.0064, CI [-0.0115, -0.0005]); discovery-fitted w = 0.00 (no residual helps). Registered as the standard-format control: the expected result is FUTILITY or REJECT.",
+   "expected_accrual": "~80/week, 84/84 two-sided on the live board"
+  }
+ ],
+ "excluded_cells": {
+  "standard|BTTS": "not registered: retrospective decision LL equals the market (fitted w = 0.00), no prior signal; adding it only dilutes the family's BH correction",
+  "standard|OU15": "not registered: 0 of 84 standard fixtures had a two-sided O/U 1.5 price on the live board at registration",
+  "OU35 (both tracks)": "blocked_families in the engine config - the engine never leaves NO_BET"
+ }
+}

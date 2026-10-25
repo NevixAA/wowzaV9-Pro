@@ -15,7 +15,7 @@ on:
     - cron: '50 9 * * *'
   push:
     branches: [main]
-    paths: ['.github/workflows/pro_valuable_shadow.yml', 'src/studies/valuable/shadow.py']
+    paths: ['.github/workflows/pro_valuable_shadow.yml', 'src/studies/valuable/shadow.py', 'src/studies/edge2_forward.py']
   workflow_dispatch:
 
 concurrency:
@@ -38,11 +38,11 @@ jobs:
           python-version: '3.11'
       - run: pip install -r requirements.txt
       - name: Tests
-        run: python -m pytest tests/test_valuable_shadow.py tests/test_candidate_forward.py -q
+        run: python -m pytest tests/test_valuable_shadow.py tests/test_candidate_forward.py tests/test_edge2_forward.py -q
       - name: v9 history (partial clone, read-only)
         run: |
           git clone --filter=blob:none --sparse https://github.com/NevixAA/wowza-betting.git _v9
-          git -C _v9 sparse-checkout set --no-cone '/src/' '/config.py' '/config/' '/best_params*.json' '/output/best_params*.json'
+          git -C _v9 sparse-checkout set --no-cone '/src/' '/config.py' '/config/' '/best_params*.json' '/output/best_params*.json' '/output/edge_engine_shadow.csv'
       - name: Capture + settle
         run: |
           set -o pipefail
@@ -50,11 +50,13 @@ jobs:
           { echo '## VALUABLE shadow'; echo '```'; tail -n 20 shadow.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
       - name: Candidate forward-test progress (frozen registry, forward rows only)
         run: python -m src.studies.candidate_forward | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: H-EDGE2 forward progress (market_edge_v2 first-sight shadow, frozen registry v1)
+        run: python -m src.studies.edge2_forward --v9 "$GITHUB_WORKSPACE/_v9" | tee -a "$GITHUB_STEP_SUMMARY"
       - name: Commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          for f in output/valuable_shadow/valuable_shadow.csv output/valuable_shadow/valuable_shadow_state.json \n                   output/edge_reassessment/candidate_forward_progress.json; do
+          for f in output/valuable_shadow/valuable_shadow.csv output/valuable_shadow/valuable_shadow_state.json output/edge_reassessment/candidate_forward_progress.json output/edge_reassessment/edge2_forward_progress.json; do
             [ -e "$f" ] && git add -f "$f"
           done
           git diff --staged --quiet && exit 0
