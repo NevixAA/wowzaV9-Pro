@@ -50,29 +50,30 @@ Negative Δ = adding the model improved the forecast. No market × track shows a
 
 ## 4. Evidence per cell (staked tips since 10 Aug)
 
-19 cells tested (of 30; the rest are too small). Pooled prior +3.4%, between-cell sd 0.14. Reality-check p for the best cell: **0.063**.
+20 cells tested (of 37; the rest are too small). Pooled prior +3.0%, between-cell sd 0.13. Reality-check p for the best cell: **0.067**.
 
 | League | Market | n | Raw ROI | Shrunk ROI | P(edge>0) | FDR q | CLV 90% CS | Recommendation |
 |---|---|---|---|---|---|---|---|---|
-| Argentina Primera Division | btts | 88 | +30% | +19% | 0.98 | 0.12 | [-5.5, +2.0] | PAPER (n 88 < 150) |
-| Brazil Serie A | ou25 | 28 | +47% | +17% | 0.91 | 0.12 | [-7.4, +2.5] | PAPER (n 28 < 150) |
-| Serie B | ou25 | 22 | +25% | +9% | 0.76 | 0.70 | [-1.3, +11.8] | PAPER (n 22 < 150) |
-| Brazil Serie A | btts | 20 | +24% | +8% | 0.74 | 0.70 | [-21.0, +17.7] | PAPER (n 20 < 150) |
-| Sweden Allsvenskan | ou25 | 36 | +12% | +6% | 0.69 | 0.70 | [-4.8, +3.3] | PAPER (n 36 < 150) |
-| Argentina Primera Division | ou25 | 33 | +15% | +6% | 0.68 | 0.70 | [-4.2, +5.4] | PAPER (n 33 < 150) |
-| Japan J-League | ou25 | 30 | +10% | +5% | 0.67 | 0.70 | [-3.9, +9.6] | PAPER (n 30 < 150) |
-| Mexico Liga MX | ou25 | 34 | +9% | +5% | 0.66 | 0.70 | [-3.5, +7.0] | PAPER (CLV deterioration alarm) |
-| Finland Veikkausliiga | ou25 | 21 | +9% | +5% | 0.64 | 0.70 | [-6.2, +5.9] | PAPER (n 21 < 150) |
-| Argentina Primera Division | over15 | 97 | +4% | +4% | 0.66 | 0.70 | [+0.1, +2.9] | PAPER (n 97 < 150) |
-| La Liga 2 | ou25 | 37 | -2% | +2% | 0.57 | 0.91 | [-2.6, +4.1] | PAPER (n 37 < 150) |
-| Denmark Superliga | ou25 | 22 | -15% | -1% | 0.47 | 0.98 | [-4.5, +6.6] | PAPER (n 22 < 150) |
-| Bundesliga 2 | ou25 | 17 | -24% | -2% | 0.45 | 0.98 | [-11.9, +9.3] | PAPER (n 17 < 150) |
-| Austrian Bundesliga | ou25 | 21 | -23% | -3% | 0.41 | 0.98 | [-13.2, +3.9] | PAPER (n 21 < 150) |
-| Ireland Premier Division | ou25 | 20 | -25% | -3% | 0.40 | 0.98 | [-9.7, +2.8] | PAPER (n 20 < 150) |
-| Norway Eliteserien | ou25 | 23 | -33% | -3% | 0.40 | 0.98 | [-12.2, +5.1] | PAPER (n 23 < 150) |
-| China Super League | ou25 | 32 | -24% | -5% | 0.34 | 0.98 | [-9.3, +2.6] | PAPER (n 32 < 150) |
+| Argentina Primera Division | btts | 88 | +30% | +18% | 0.97 | 0.12 | [-5.5, +2.0] | PAPER (n 88 < 150) |
+| Brazil Serie A | ou25 | 28 | +47% | +16% | 0.91 | 0.12 | [-7.4, +2.5] | PAPER (n 28 < 150) |
+| Serie B | ou25 | 22 | +25% | +8% | 0.75 | 0.74 | [-1.3, +11.8] | PAPER (n 22 < 150) |
+| Brazil Serie A | btts | 20 | +24% | +8% | 0.73 | 0.74 | [-21.0, +17.7] | PAPER (n 20 < 150) |
+| Sweden Allsvenskan | ou25 | 36 | +12% | +6% | 0.69 | 0.74 | [-4.8, +3.3] | PAPER (n 36 < 150) |
+| Argentina Primera Division | ou25 | 33 | +15% | +6% | 0.67 | 0.74 | [-4.2, +5.4] | PAPER (n 33 < 150) |
+| Japan J-League | ou25 | 30 | +10% | +5% | 0.66 | 0.74 | [-3.9, +9.6] | PAPER (n 30 < 150) |
+| Mexico Liga MX | ou25 | 34 | +9% | +5% | 0.66 | 0.74 | [-3.5, +7.0] | PAPER (CLV deterioration alarm) |
+| Finland Veikkausliiga | ou25 | 21 | +9% | +4% | 0.64 | 0.74 | [-6.2, +5.9] | PAPER (n 21 < 150) |
+| Argentina Primera Division | over15 | 97 | +4% | +3% | 0.65 | 0.74 | [+0.1, +2.9] | PAPER (n 97 < 150) |
+| La Liga 2 | ou25 | 37 | -2% | +2% | 0.56 | 0.95 | [-2.6, +4.1] | PAPER (n 37 < 150) |
+| Japan J-League | btts | 10 | -18% | +0% | 0.51 | 0.97 | – | PAPER (n 10 < 150) |
+| Denmark Superliga | ou25 | 22 | -15% | -1% | 0.47 | 0.97 | [-4.5, +6.6] | PAPER (n 22 < 150) |
+| Bundesliga 2 | ou25 | 17 | -24% | -2% | 0.45 | 0.97 | [-11.9, +9.3] | PAPER (n 17 < 150) |
+| Austrian Bundesliga | ou25 | 21 | -23% | -3% | 0.41 | 0.97 | [-13.2, +3.9] | PAPER (n 21 < 150) |
+| Norway Eliteserien | ou25 | 23 | -33% | -3% | 0.40 | 0.97 | [-12.2, +5.1] | PAPER (n 23 < 150) |
+| Ireland Premier Division | ou25 | 20 | -25% | -3% | 0.40 | 0.97 | [-9.7, +2.8] | PAPER (n 20 < 150) |
+| China Super League | ou25 | 32 | -24% | -5% | 0.34 | 0.97 | [-9.3, +2.6] | PAPER (n 32 < 150) |
 | Championship | ou25 | 25 | -32% | -7% | 0.30 | 0.98 | [-7.8, +5.4] | PAPER (n 25 < 150) |
-| League One | ou25 | 23 | -49% | -11% | 0.20 | 0.98 | [-7.7, +3.5] | PAPER (n 23 < 150) |
+| League One | ou25 | 23 | -49% | -10% | 0.20 | 0.98 | [-7.7, +3.5] | PAPER (n 23 < 150) |
 
 ## 5. Market-anchored O/U 2.5 challenger
 
