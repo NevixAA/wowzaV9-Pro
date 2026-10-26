@@ -1,5 +1,5 @@
 {
-  "active_matches": 4,
+  "active_matches": 0,
   "active_window_horizon_hours": 6.0,
   "api_budget": {
     "abort_at": 60000,
@@ -13,49 +13,49 @@
     "status": "OK"
   },
   "coverage_problems": [
-    "T-1h coverage 29.5% is below the 30.0% floor"
+    "T-1h coverage 29.6% is below the 30.0% floor"
   ],
   "coverage_status": "WARN",
   "fixture_horizon": {
-    "next_24h": 13,
-    "next_3h": 4,
-    "next_6h": 4,
+    "next_24h": 9,
+    "next_3h": 0,
+    "next_6h": 0,
     "next_72h": 52
   },
   "fixtures_today": 14,
   "freshness": {
     "fixtures": {
       "age_hours": 0.01,
-      "last_observed_at": "2026-10-26T00:40:36Z",
+      "last_observed_at": "2026-10-26T05:16:39Z",
       "status": "OK"
     },
     "live_odds_snapshots": {
-      "age_hours": 0.53,
+      "age_hours": 5.13,
       "last_observed_at": "2026-10-26T00:09:18Z",
       "status": "OK"
     },
     "live_signals": {
-      "age_hours": 13.09,
+      "age_hours": 17.7,
       "last_observed_at": "2026-10-25T11:35:39Z",
       "status": "STALE"
     },
     "market_snapshots": {
       "age_hours": 0.01,
-      "last_observed_at": "2026-10-26T00:40:36Z",
+      "last_observed_at": "2026-10-26T05:16:39Z",
       "status": "OK"
     },
     "model_snapshots": {
-      "age_hours": 0.35,
+      "age_hours": 4.95,
       "last_observed_at": "2026-10-26T00:20:13Z",
       "status": "OK"
     },
     "player_props": {
-      "age_hours": 13.09,
+      "age_hours": 17.7,
       "last_observed_at": "2026-10-25T11:35:39Z",
       "status": "STALE"
     }
   },
-  "generated_at": "2026-10-26T00:41:09Z",
+  "generated_at": "2026-10-26T05:17:21Z",
   "observed_cadence": {
     "live_odds_snapshots": {
       "active_median_gap_min": 189.6,
@@ -85,64 +85,64 @@
     },
     "market_snapshots": {
       "active_median_gap_min": 237.4,
-      "active_missed_windows": 1251,
+      "active_missed_windows": 367,
       "active_n_observations": 60,
       "active_p90_gap_min": 388.6,
       "first": "2026-10-12T06:27:14Z",
-      "last": "2026-10-26T00:40:36Z",
+      "last": "2026-10-26T05:16:39Z",
       "max_gap_min": 544.1,
-      "median_gap_min": 261.0,
-      "missed_windows": 1860,
-      "n_observations": 82,
-      "p90_gap_min": 397.2
+      "median_gap_min": 262.5,
+      "missed_windows": 553,
+      "n_observations": 83,
+      "p90_gap_min": 396.5
     },
     "model_snapshots": {
       "active_median_gap_min": 265.1,
-      "active_missed_windows": 1073,
+      "active_missed_windows": 317,
       "active_n_observations": 49,
       "active_p90_gap_min": 423.9,
       "first": "2026-10-12T05:50:21Z",
       "last": "2026-10-26T00:20:13Z",
       "max_gap_min": 776.7,
       "median_gap_min": 275.6,
-      "missed_windows": 1880,
+      "missed_windows": 558,
       "n_observations": 71,
       "p90_gap_min": 428.1
     },
     "player_props": {
       "active_median_gap_min": 1469.7,
-      "active_missed_windows": 1835,
+      "active_missed_windows": 602,
       "active_n_observations": 10,
       "active_p90_gap_min": 3126.1,
       "first": "2026-10-12T15:31:20Z",
       "last": "2026-10-25T11:35:39Z",
       "max_gap_min": 1571.4,
       "median_gap_min": 1409.6,
-      "missed_windows": 1827,
+      "missed_windows": 594,
       "n_observations": 15,
       "p90_gap_min": 1467.6
     }
   },
   "odds_api_budget": {
     "credits_by_league_top12": {
-      "Argentina Primera Division": 22299,
-      "Brazil Serie A": 14034,
-      "Bundesliga 2": 11170,
-      "Championship": 17787,
-      "La Liga 2": 15636,
-      "League One": 19094,
-      "League Two": 19208,
-      "Mexico Liga MX": 12527,
-      "Norway Eliteserien": 9616,
-      "Serie B": 10895,
-      "Sweden Allsvenskan": 10353,
-      "USA MLS": 27880
+      "Argentina Primera Division": 22340,
+      "Brazil Serie A": 14059,
+      "Bundesliga 2": 11197,
+      "Championship": 17815,
+      "La Liga 2": 15655,
+      "League One": 19135,
+      "League Two": 19238,
+      "Mexico Liga MX": 12548,
+      "Norway Eliteserien": 9638,
+      "Serie B": 10935,
+      "Sweden Allsvenskan": 10378,
+      "USA MLS": 27928
     },
     "credits_by_market": {
-      "BTTS": 56969,
-      "OU15": 3555,
-      "OU25": 72112,
-      "OU35": 17919,
+      "BTTS": 57162,
+      "OU15": 3564,
+      "OU25": 72305,
+      "OU35": 17981,
       "btts_no": 14632,
       "btts_yes": 14632,
       "h2h_away": 7530,
@@ -159,14 +159,14 @@
       "under25": 14149,
       "under35": 6763
     },
-    "credits_remaining_month": 10276,
-    "credits_used_month": 89724,
-    "credits_used_today": 457,
-    "estimated_month_end_usage": 106978,
+    "credits_remaining_month": 9819,
+    "credits_used_month": 90181,
+    "credits_used_today": 914,
+    "estimated_month_end_usage": 107523,
     "is_estimate": true,
-    "mean_per_day": 3723.5,
+    "mean_per_day": 3730.0,
     "monthly_allowance": 100000,
-    "pct_of_monthly_allowance": 89.72,
+    "pct_of_monthly_allowance": 90.18,
     "source": "ESTIMATED from stored market_snapshots \u2014 no credit meter exists",
     "status": "OK"
   },
@@ -180,8 +180,8 @@
       "pct": 0.5
     },
     "T-24h": {
-      "observations": 29582,
-      "pct": 10.7
+      "observations": 29612,
+      "pct": 10.6
     },
     "T-30m": {
       "observations": 882,
@@ -193,19 +193,19 @@
     },
     "T-6h": {
       "observations": 6816,
-      "pct": 2.5
+      "pct": 2.4
     },
     "far": {
-      "observations": 220421,
+      "observations": 221020,
       "pct": 79.4
     },
     "post_kickoff": {
-      "observations": 13605,
+      "observations": 13626,
       "pct": 4.9
     }
   },
-  "scheduler_mode": "LIVE_MATCH",
+  "scheduler_mode": "NORMAL",
   "status": "WARN",
-  "target_interval_min": 10,
+  "target_interval_min": 30,
   "window_days": 14
 }
