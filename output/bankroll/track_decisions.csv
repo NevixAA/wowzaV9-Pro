@@ -1,10 +1,12 @@
 track,previous_state,previous_fraction,reasons,decision,proposed_fraction,proposed_state,n,matchdays,roi,shrunk_roi,roi_lo90,roi_hi90,clv_median,clv_recent_median,top_league,top_league_share,roi_last_30d,roi_last_60d,roi_last_90d,roi_full_prospective_record,delta
-new_format|BTTS,ACTIVE,0.0125,['increase blocked: median CLV >= 0 on 30+'],KEEP,0.0125,ACTIVE,123.0,42.0,0.3073,0.0701,0.1799,0.4364,0.0,0.0,Argentina Primera Division,0.699,0.2185,0.2932,0.3073,0.3073,0.0
-new_format|OU25,ACTIVE_LOW,0.005,"['increase blocked: shrunk ROI >= +1%, 90% lower bound > 0, both halves positive, median CLV >= 0 on 30+, quarter-Kelly supports the next band']",KEEP,0.005,ACTIVE_LOW,498.0,55.0,0.0302,-0.0085,-0.081,0.1378,0.0,0.0,Argentina Primera Division,0.147,0.1524,0.0459,0.0302,0.0302,0.0
-new_format|OVER15,ACTIVE_LOW,0.005,"['increase blocked: shrunk ROI >= +1%, 90% lower bound > 0, quarter-Kelly supports the next band']",KEEP,0.005,ACTIVE_LOW,100.0,43.0,0.0641,-0.0009,-0.0641,0.1815,0.0065,0.0032,Argentina Primera Division,0.93,0.2063,0.1012,0.0641,0.0641,0.0
-standard|OU25,PAPER,0.0,['paper track; money requires owner approval'],KEEP_PAPER,0.0,PAPER,361.0,47.0,-0.1386,-0.0763,-0.2286,-0.0382,0.0,0.0,La Liga 2,0.216,-0.033,-0.1124,-0.1386,-0.1386,0.0
-standard|BTTS,PAPER,0.0,['paper track; money requires owner approval'],KEEP_PAPER,0.0,PAPER,11.0,9.0,0.0623,-0.0263,-0.3489,0.45,0.0355,0.0355,Serie B,0.818,0.755,0.0623,0.0623,0.0623,0.0
-standard|OVER15,PAPER,0.0,['paper track; money requires owner approval'],KEEP_PAPER,0.0,PAPER,1.0,1.0,-1.0,-0.03,,,0.0,,Serie B,1.0,,,-1.0,-1.0,0.0
-new_format|OVER35,BLOCKED,0.0,[],KEEP_BLOCKED,0.0,BLOCKED,1.0,1.0,-1.0,-0.03,,,0.0,0.0,Norway Eliteserien,1.0,,-1.0,-1.0,-1.0,0.0
-standard|OVER35,BLOCKED,0.0,[],KEEP_BLOCKED,0.0,BLOCKED,,,,,,,,,,,,,,,0.0
+new_format|BTTS,ACTIVE,0.0125,"['increase blocked: median CLV >= 0 on 30+, quarter-Kelly supports the next band']",KEEP,0.0125,ACTIVE,133.0,45.0,0.2254,0.0312,0.0752,0.3695,0.0,0.0,Argentina Primera Division,0.684,-0.0176,0.1685,0.2254,0.2254,0.0
+new_format|OU25_OVER,ACTIVE_LOW,0.005,"['increase blocked: shrunk ROI >= +1%, 90% lower bound > 0, both halves positive, quarter-Kelly supports the next band']",KEEP,0.005,ACTIVE_LOW,147.0,46.0,0.0399,-0.0166,-0.1221,0.2125,0.0047,0.0066,Argentina Primera Division,0.483,0.1407,-0.0009,0.0399,0.0399,0.0
+new_format|OU25_UNDER,ACTIVE_LOW,0.005,['shrunk ROI -2.0% on n=402'],STOP,0.0,STOPPED,402.0,54.0,-0.0038,-0.0202,-0.1063,0.1026,0.0,0.0,Mexico Liga MX,0.139,0.045,0.0326,-0.0038,-0.0038,-0.005
+new_format|OVER15,ACTIVE_LOW,0.005,"['increase blocked: shrunk ROI >= +1%, 90% lower bound > 0, both halves positive, quarter-Kelly supports the next band']",KEEP,0.005,ACTIVE_LOW,106.0,46.0,0.0616,0.0007,-0.058,0.1749,0.0066,0.0065,Argentina Primera Division,0.925,0.1603,0.0547,0.0616,0.0616,0.0
+standard|OU25_OVER,PAPER,0.0,['paper track; money requires owner approval'],KEEP_PAPER,0.0,PAPER,197.0,46.0,-0.1243,-0.061,-0.2374,-0.0025,0.0,0.0,La Liga 2,0.31,-0.121,-0.0978,-0.1243,-0.1243,0.0
+standard|OU25_UNDER,PAPER,0.0,['paper track; money requires owner approval'],KEEP_PAPER,0.0,PAPER,197.0,41.0,-0.1478,-0.0696,-0.2583,-0.0292,0.0,0.0,Bundesliga 2,0.244,0.0165,-0.1011,-0.1478,-0.1478,0.0
+standard|BTTS,PAPER,0.0,['paper track; money requires owner approval'],KEEP_PAPER,0.0,PAPER,162.0,39.0,-0.0026,-0.0224,-0.1311,0.132,0.0,0.0,La Liga 2,0.253,-0.0176,0.0357,-0.0026,-0.0026,0.0
+standard|OVER15,PAPER,0.0,['paper track; money requires owner approval'],KEEP_PAPER,0.0,PAPER,11.0,9.0,-0.4664,-0.0474,-0.8682,-0.0627,0.0,-0.0032,La Liga 2,0.727,-0.285,-0.2662,-0.4664,-0.4664,0.0
+new_format|OVER35,BLOCKED,0.0,[],KEEP_BLOCKED,0.0,BLOCKED,2.0,2.0,-0.025,-0.03,,,-0.0051,-0.0051,Norway Eliteserien,1.0,0.95,-0.025,-0.025,-0.025,0.0
+standard|OVER35,BLOCKED,0.0,[],KEEP_BLOCKED,0.0,BLOCKED,1.0,1.0,-1.0,-0.03,,,0.0,0.0,Ligue 2,1.0,,-1.0,-1.0,-1.0,0.0
 player_props,BLOCKED_FROM_REAL,0.0,[],KEEP_BLOCKED,0.0,BLOCKED_FROM_REAL,,,,,,,,,,,,,,,0.0
