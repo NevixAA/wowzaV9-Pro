@@ -34,3 +34,13 @@ def test_price_trader_v1_matches_frozen_dict():
     from src.price_trader.research import REGISTRATION_V1
     p = ROOT / "registry/price_trader/registration_v1.json"
     assert json.loads(p.read_text(encoding="utf-8")) == REGISTRATION_V1
+
+
+def test_quality_tiers_v1_bytes_unchanged():
+    """Quality layers (Best/Second/Third) forward test, registered 2026-10-26, forward from 2026-10-27."""
+    lock = json.loads((ROOT / "registry/quality_tiers/LOCK_v1.json").read_text(encoding="utf-8"))
+    for rel, sha in lock["sha256"].items():
+        assert content_sha256(ROOT / rel) == sha, f"{rel} changed after registration"
+    reg = json.loads((ROOT / "registry/quality_tiers/registration_v1.json").read_text(encoding="utf-8"))
+    assert reg["production_changed"] == "NO" and "NEVER" in reg["statuses"]["CONFIRMED"]
+    assert reg["forward_window_start"] == "2026-10-27T00:00:00Z"
