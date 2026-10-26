@@ -1,0 +1,85 @@
+name: Pro Standard Repair (weekly loop)
+
+# Standard-league repair programme: weekly evidence loop, research only. It NEVER changes v9 -
+# it reads Pro's season store, the committed football-data files and v9's league_weekly_research.csv
+# (read-only checkout), and writes the scorecard + weekly report under output/standard_repair/.
+# The chronological benchmark itself (src/studies/standard_repair evaluate/ablation) needs v9's
+# training frame and is run on a workstation; this job carries those historical blocks forward and
+# refreshes the forward first-sight evidence, the rank panel and the diagnoses.
+#
+# Weekly, Monday 07:40 UTC (off the hour). A once-weekly cron is delivered reliably but late; nothing
+# here is time-sensitive. The monthly deep review runs on the first Monday of the month.
+# COST: zero API calls.
+
+on:
+  schedule:
+    - cron: '40 7 * * 1'
+  workflow_dispatch:
+    inputs:
+      monthly:
+        description: 'Also write the monthly deep review'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+concurrency:
+  group: pro-standard-repair
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      # ref: main, not the schedule-time SHA (queued runs otherwise check out a stale commit).
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check out v9 baseline (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install -r requirements.txt
+
+      - name: Weekly loop (tolerant)
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: |
+          python -m src.studies.standard_repair weekly || echo "::warning title=standard repair weekly::failed - previous outputs kept"
+          if [ "${{ github.event.inputs.monthly }}" = "true" ] || [ "$(date -u +%d)" -le 7 ]; then
+            python -m src.studies.standard_repair monthly || echo "::warning title=standard repair monthly::failed"
+          fi
+          [ -f output/standard_repair/WEEKLY.md ] && sed -n '1,40p' output/standard_repair/WEEKLY.md >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Commit outputs (per file)
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for f in output/standard_repair_weekly.json output/standard_repair/scorecard.json \
+                   output/standard_repair/scorecard.csv output/standard_repair/scorecard_history.jsonl \
+                   output/standard_repair/forward_first_sight.csv output/standard_repair/WEEKLY.md \
+                   output/standard_repair/monthly_*.json output/standard_repair/monthly_*.md; do
+            [ -f "$f" ] && git add -f "$f" || echo "  (skip, not present: $f)"
+          done
+          git diff --staged --quiet && { echo "no change"; exit 0; }
+          git commit -m "pro: standard repair weekly $(date -u '+%Y-%m-%d')"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main && git push && exit 0
+            echo "push race - retry $i"; sleep $((RANDOM % 5 + 3))
+          done
+          echo "::error title=push failed::Standard repair ran but outputs were not persisted."
+          exit 1

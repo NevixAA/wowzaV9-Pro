@@ -1,0 +1,120 @@
+{
+ "generated_at": "2026-10-26 12:40 UTC",
+ "previous_run": null,
+ "production_change": "NONE - research only; nothing here is read by v9",
+ "new_observations_first_sight": 2499,
+ "new_settlements": 0,
+ "forward_error": null,
+ "model_vs_market_forward": {
+  "BTTS": {
+   "n_first_sight": 833,
+   "price_coverage": 0.902,
+   "n_settled_priced": 430,
+   "gameweeks": 8,
+   "served_v9_dLL_vs_market": {
+    "delta": 0.002419,
+    "ci90": [
+     -0.009892,
+     0.011361
+    ],
+    "ci95": [
+     -0.013112,
+     0.012513
+    ],
+    "p_one_sided": 0.62269
+   },
+   "clv_lean_side": {
+    "coverage": 0.902,
+    "mean": -0.003
+   }
+  },
+  "OU15": {
+   "n_first_sight": 833,
+   "price_coverage": 0.006,
+   "n_settled_priced": 2,
+   "gameweeks": 2,
+   "clv_lean_side": {
+    "coverage": 0.006,
+    "mean": -0.0117
+   }
+  },
+  "OU25": {
+   "n_first_sight": 833,
+   "price_coverage": 0.927,
+   "n_settled_priced": 443,
+   "gameweeks": 9,
+   "served_v9_dLL_vs_market": {
+    "delta": 0.01205,
+    "ci90": [
+     0.003545,
+     0.020167
+    ],
+    "ci95": [
+     0.001424,
+     0.021738
+    ],
+    "p_one_sided": 0.98851
+   },
+   "clv_lean_side": {
+    "coverage": 0.927,
+    "mean": 0.0004
+   }
+  }
+ },
+ "best_challenger_by_market": {
+  "OU25": {
+   "validation_selected": "MKT_ENV",
+   "best_on_holdout": "LGBM_RESID_SIMPLE",
+   "beats_market": []
+  },
+  "BTTS": {
+   "validation_selected": "MKT_ENV",
+   "best_on_holdout": "MKT_SIMPLE_RECENCY",
+   "beats_market": []
+  },
+  "OU15": {
+   "validation_selected": "MKT_ENV",
+   "best_on_holdout": "LGBM_RESID_FULL",
+   "beats_market": []
+  }
+ },
+ "rank_panel": {
+  "BTTS YES": {
+   "n_settled": 9,
+   "hit_rate": 0.444,
+   "flat_roi": -0.188,
+   "clv_coverage": 0.333
+  },
+  "OU25 OVER": {
+   "n_settled": 8,
+   "hit_rate": 0.625,
+   "flat_roi": 0.009,
+   "clv_coverage": 0.5
+  },
+  "OU25 UNDER": {
+   "n_settled": 1,
+   "hit_rate": 1.0,
+   "flat_roi": 0.48,
+   "clv_coverage": 0.0
+  },
+  "OVER15 OVER": {
+   "n_settled": 9,
+   "hit_rate": 1.0,
+   "flat_roi": NaN,
+   "clv_coverage": 0.0
+  },
+  "OVER35 OVER": {
+   "n_settled": 9,
+   "hit_rate": 0.222,
+   "flat_roi": -1.0,
+   "clv_coverage": 0.111
+  }
+ },
+ "state_changes": [],
+ "new_evidence": [],
+ "next_actions": [
+  "No forward registration: keep collecting first-sight quotes; re-run the benchmark when 2026-Q4 completes and score the frozen validation-selected arms on it as a fresh holdout (no re-tuning).",
+  "7 tracks lack usable two-sided prices (BTTS/OU15 history; OU15 forward): price capture is the binding constraint, not modelling.",
+  "Never change v9 thresholds or enable anything from these numbers."
+ ]
+}

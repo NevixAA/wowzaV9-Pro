@@ -229,6 +229,24 @@ def _market_anchor():
             "report": "output/studies/market_anchor.json"}
 
 
+def _standard_repair():
+    r = _j("standard_repair/results.json")
+    if not r:
+        return None
+    key = {}
+    for m, v in (r.get("verdict") or {}).items():
+        M = r["markets"][m]
+        b = v.get("best_holdout_arm")
+        d = M["arms"][b]["holdout"]["dLL_vs_market"]
+        v9 = M["arms"]["V9"]["holdout"]["dLL_vs_market"]
+        key[f"{m} (team model, standard)"] = (f"beats market: {v.get('beats_market') or 'none'}; best {b} "
+                                             f"dLL {d['delta']:+.4f} (95% CI {d['ci95']}); v9 dLL {v9['delta']:+.4f}")
+    return {"status": "Standard repair: no model adds information after the de-vigged market on holdout; "
+                      "nothing pre-registered (team models, standard leagues)",
+            "date": r.get("generated_at"), "key": key,
+            "report": "docs/STANDARD_REPAIR_PROGRAM_2026_10.md"}
+
+
 def _league_calibration():
     r = _j("studies/league_calibration.json")
     if not r:
@@ -368,6 +386,7 @@ STUDIES = [
     ("ou_lineups", "O/U inputs: starting lineups", "models", _ou_lineups),
     ("market_anchor", "Market-anchored O/U review", "models", _market_anchor),
     ("league_calibration", "Per-league calibration of O/U", "models", _league_calibration),
+    ("standard_repair", "Standard repair programme (league x market x side)", "models", _standard_repair),
     ("valuable_deep_dive", "VALUABLE tier deep dive", "tips", _valuable),
     ("learned_tiers", "Learned per-league tiers (challenger)", "tips", _learned_tiers),
     ("calibration_form", "Calibration form: v9 vs log-odds Platt", "models", _calibration),

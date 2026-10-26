@@ -461,3 +461,19 @@ experiments/upgrade_studies_2026_10/
 !output/budget/runs/
 !output/budget/runs/*/
 !output/budget/runs/*/*.json
+
+# Standard repair programme (src/studies/standard_repair; docs/STANDARD_REPAIR_PROGRAM_2026_10.md).
+# Named file by file. NOT re-admitted: experiments/standard_repair_2026_10/*.parquet (v9 frame copy,
+# benchmark rows) - regenerable and already blocked by the *.parquet rule.
+!output/standard_repair/
+!output/standard_repair/results.json
+!output/standard_repair/results.csv
+!output/standard_repair/ablation.json
+!output/standard_repair/scorecard.json
+!output/standard_repair/scorecard.csv
+!output/standard_repair/scorecard_history.jsonl
+!output/standard_repair/forward_first_sight.csv
+!output/standard_repair/WEEKLY.md
+!output/standard_repair/monthly_*.json
+!output/standard_repair/monthly_*.md
+!output/standard_repair_weekly.json

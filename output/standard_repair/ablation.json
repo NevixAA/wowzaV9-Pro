@@ -1,0 +1,837 @@
+{
+ "lam": 0.1,
+ "rule": "* the model family and ridge strength are fixed in advance (logistic residual, lam = 0.1),\n  * each group is scored by (a) ADD-ONE: market + this group, and (b) LEAVE-ONE-OUT from all groups,\n    walk-forward over the four VALIDATION quarters (refit before each quarter),\n  * a group is KEPT only if add-one improves validation log loss AND the gain has the same sign in at\n    least 3 of the 4 validation quarters (season-to-season stability); otherwise REMOVED,\n  * the kept set is then scored ONCE on the untouched holdout and logged as its own experiment.",
+ "markets": {
+  "OU25": {
+   "groups": {
+    "rolling_goals": {
+     "add_one_dLL_vs_market": {
+      "delta": -9.5e-05,
+      "ci90": [
+       -0.000519,
+       0.000325
+      ],
+      "ci95": [
+       -0.000599,
+       0.000404
+      ],
+      "p_one_sided": 0.36332
+     },
+     "leave_one_out_dLL": 0.000102,
+     "quarters_improving": "2/4",
+     "decision": "REMOVE"
+    },
+    "attack_defence_strength": {
+     "add_one_dLL_vs_market": {
+      "delta": -3.7e-05,
+      "ci90": [
+       -0.000432,
+       0.000368
+      ],
+      "ci95": [
+       -0.000498,
+       0.000448
+      ],
+      "p_one_sided": 0.43328
+     },
+     "leave_one_out_dLL": -3.2e-05,
+     "quarters_improving": "2/4",
+     "decision": "REMOVE"
+    },
+    "season_home_away_strength": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000161,
+      "ci90": [
+       -0.000218,
+       0.000591
+      ],
+      "ci95": [
+       -0.000287,
+       0.000693
+      ],
+      "p_one_sided": 0.74413
+     },
+     "leave_one_out_dLL": 0.000386,
+     "quarters_improving": "2/4",
+     "decision": "REMOVE"
+    },
+    "home_advantage": {
+     "add_one_dLL_vs_market": {
+      "delta": 4.8e-05,
+      "ci90": [
+       -2.8e-05,
+       0.000121
+      ],
+      "ci95": [
+       -4.2e-05,
+       0.000138
+      ],
+      "p_one_sided": 0.85657
+     },
+     "leave_one_out_dLL": 0.000109,
+     "quarters_improving": "2/4",
+     "decision": "REMOVE"
+    },
+    "rest_congestion": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000103,
+      "ci90": [
+       -0.000174,
+       0.000405
+      ],
+      "ci95": [
+       -0.000239,
+       0.000469
+      ],
+      "p_one_sided": 0.72764
+     },
+     "leave_one_out_dLL": 7.6e-05,
+     "quarters_improving": "1/4",
+     "decision": "REMOVE"
+    },
+    "shots_shot_quality": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000478,
+      "ci90": [
+       7.9e-05,
+       0.00084
+      ],
+      "ci95": [
+       6e-06,
+       0.000911
+      ],
+      "p_one_sided": 0.97551
+     },
+     "leave_one_out_dLL": 0.000398,
+     "quarters_improving": "1/4",
+     "decision": "REMOVE"
+    },
+    "xg": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000847,
+      "ci90": [
+       0.000405,
+       0.001295
+      ],
+      "ci95": [
+       0.000337,
+       0.001397
+      ],
+      "p_one_sided": 1.0
+     },
+     "leave_one_out_dLL": 0.000344,
+     "quarters_improving": "0/4",
+     "decision": "REMOVE"
+    },
+    "corners_fouls": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000297,
+      "ci90": [
+       9.7e-05,
+       0.000498
+      ],
+      "ci95": [
+       6.3e-05,
+       0.000541
+      ],
+      "p_one_sided": 0.9945
+     },
+     "leave_one_out_dLL": 0.000323,
+     "quarters_improving": "1/4",
+     "decision": "REMOVE"
+    },
+    "half_time": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.00037,
+      "ci90": [
+       6.5e-05,
+       0.000688
+      ],
+      "ci95": [
+       4e-06,
+       0.000746
+      ],
+      "p_one_sided": 0.97651
+     },
+     "leave_one_out_dLL": 0.000142,
+     "quarters_improving": "1/4",
+     "decision": "REMOVE"
+    },
+    "league_scoring_env": {
+     "add_one_dLL_vs_market": {
+      "delta": -0.000458,
+      "ci90": [
+       -0.000785,
+       -0.000141
+      ],
+      "ci95": [
+       -0.000843,
+       -7.1e-05
+      ],
+      "p_one_sided": 0.01199
+     },
+     "leave_one_out_dLL": -0.000509,
+     "quarters_improving": "3/4",
+     "decision": "KEEP"
+    },
+    "poisson_vs_market": {
+     "add_one_dLL_vs_market": {
+      "delta": 5e-05,
+      "ci90": [
+       1.5e-05,
+       8.9e-05
+      ],
+      "ci95": [
+       7e-06,
+       9.5e-05
+      ],
+      "p_one_sided": 0.98751
+     },
+     "leave_one_out_dLL": 0.000202,
+     "quarters_improving": "1/4",
+     "decision": "REMOVE"
+    },
+    "market_dispersion": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000326,
+      "ci90": [
+       -0.000365,
+       0.001057
+      ],
+      "ci95": [
+       -0.000486,
+       0.001175
+      ],
+      "p_one_sided": 0.78011
+     },
+     "leave_one_out_dLL": 0.000221,
+     "quarters_improving": "2/4",
+     "decision": "REMOVE"
+    },
+    "odds_band": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000158,
+      "ci90": [
+       -3.1e-05,
+       0.000363
+      ],
+      "ci95": [
+       -7.4e-05,
+       0.000404
+      ],
+      "p_one_sided": 0.91754
+     },
+     "leave_one_out_dLL": 0.000216,
+     "quarters_improving": "0/4",
+     "decision": "REMOVE"
+    },
+    "interactions": {
+     "add_one_dLL_vs_market": {
+      "delta": 6.8e-05,
+      "ci90": [
+       -0.000255,
+       0.000393
+      ],
+      "ci95": [
+       -0.000313,
+       0.00045
+      ],
+      "p_one_sided": 0.64218
+     },
+     "leave_one_out_dLL": 3.2e-05,
+     "quarters_improving": "2/4",
+     "decision": "REMOVE"
+    },
+    "v9_residual": {
+     "add_one_dLL_vs_market": {
+      "delta": -1.1e-05,
+      "ci90": [
+       -0.000131,
+       0.000108
+      ],
+      "ci95": [
+       -0.000147,
+       0.000134
+      ],
+      "p_one_sided": 0.45477
+     },
+     "leave_one_out_dLL": -0.000117,
+     "quarters_improving": "2/4",
+     "decision": "REMOVE"
+    }
+   },
+   "kept_groups": [
+    "league_scoring_env"
+   ],
+   "all_groups_validation_dLL": 0.002179,
+   "kept_set_holdout_dLL_vs_market_cal": {
+    "delta": -5.5e-05,
+    "ci90": [
+     -0.00064,
+     0.000511
+    ],
+    "ci95": [
+     -0.000746,
+     0.000618
+    ],
+    "p_one_sided": 0.43028
+   },
+   "n_holdout": 3927
+  },
+  "BTTS": {
+   "groups": {
+    "rolling_goals": {
+     "add_one_dLL_vs_market": {
+      "delta": 3.4e-05,
+      "ci90": [
+       -9.9e-05,
+       0.000172
+      ],
+      "ci95": [
+       -0.000121,
+       0.000196
+      ],
+      "p_one_sided": 0.67116
+     },
+     "leave_one_out_dLL": 4.2e-05,
+     "quarters_improving": "1/4",
+     "decision": "REMOVE"
+    },
+    "attack_defence_strength": {
+     "add_one_dLL_vs_market": {
+      "delta": 2.7e-05,
+      "ci90": [
+       -9.5e-05,
+       0.000146
+      ],
+      "ci95": [
+       -0.000115,
+       0.000172
+      ],
+      "p_one_sided": 0.65617
+     },
+     "leave_one_out_dLL": -3.5e-05,
+     "quarters_improving": "2/4",
+     "decision": "REMOVE"
+    },
+    "season_home_away_strength": {
+     "add_one_dLL_vs_market": {
+      "delta": -6e-06,
+      "ci90": [
+       -0.00018,
+       0.000177
+      ],
+      "ci95": [
+       -0.00021,
+       0.000213
+      ],
+      "p_one_sided": 0.46827
+     },
+     "leave_one_out_dLL": -8e-06,
+     "quarters_improving": "3/4",
+     "decision": "KEEP"
+    },
+    "home_advantage": {
+     "add_one_dLL_vs_market": {
+      "delta": -7.7e-05,
+      "ci90": [
+       -0.000199,
+       4.8e-05
+      ],
+      "ci95": [
+       -0.000223,
+       7e-05
+      ],
+      "p_one_sided": 0.16592
+     },
+     "leave_one_out_dLL": -2.2e-05,
+     "quarters_improving": "3/4",
+     "decision": "KEEP"
+    },
+    "rest_congestion": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000594,
+      "ci90": [
+       7.4e-05,
+       0.001257
+      ],
+      "ci95": [
+       1.6e-05,
+       0.001412
+      ],
+      "p_one_sided": 0.97801
+     },
+     "leave_one_out_dLL": 0.000404,
+     "quarters_improving": "3/4",
+     "decision": "REMOVE"
+    },
+    "shots_shot_quality": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000226,
+      "ci90": [
+       -0.000118,
+       0.000608
+      ],
+      "ci95": [
+       -0.000178,
+       0.000693
+      ],
+      "p_one_sided": 0.83808
+     },
+     "leave_one_out_dLL": 0.000125,
+     "quarters_improving": "0/4",
+     "decision": "REMOVE"
+    },
+    "xg": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000523,
+      "ci90": [
+       -2.9e-05,
+       0.001091
+      ],
+      "ci95": [
+       -0.000131,
+       0.001199
+      ],
+      "p_one_sided": 0.93853
+     },
+     "leave_one_out_dLL": 0.00066,
+     "quarters_improving": "1/4",
+     "decision": "REMOVE"
+    },
+    "corners_fouls": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000221,
+      "ci90": [
+       1.6e-05,
+       0.000425
+      ],
+      "ci95": [
+       -2.8e-05,
+       0.000455
+      ],
+      "p_one_sided": 0.96152
+     },
+     "leave_one_out_dLL": 0.000531,
+     "quarters_improving": "1/4",
+     "decision": "REMOVE"
+    },
+    "half_time": {
+     "add_one_dLL_vs_market": {
+      "delta": -3.8e-05,
+      "ci90": [
+       -0.000356,
+       0.000286
+      ],
+      "ci95": [
+       -0.000411,
+       0.000344
+      ],
+      "p_one_sided": 0.41279
+     },
+     "leave_one_out_dLL": -8.7e-05,
+     "quarters_improving": "2/4",
+     "decision": "REMOVE"
+    },
+    "league_scoring_env": {
+     "add_one_dLL_vs_market": {
+      "delta": -0.000305,
+      "ci90": [
+       -0.000631,
+       3.9e-05
+      ],
+      "ci95": [
+       -0.0007,
+       9.2e-05
+      ],
+      "p_one_sided": 0.07546
+     },
+     "leave_one_out_dLL": -0.000396,
+     "quarters_improving": "4/4",
+     "decision": "KEEP"
+    },
+    "poisson_vs_market": {
+     "add_one_dLL_vs_market": {
+      "delta": -1.6e-05,
+      "ci90": [
+       -0.000243,
+       0.000218
+      ],
+      "ci95": [
+       -0.00028,
+       0.000279
+      ],
+      "p_one_sided": 0.45677
+     },
+     "leave_one_out_dLL": 8.7e-05,
+     "quarters_improving": "2/4",
+     "decision": "REMOVE"
+    },
+    "market_dispersion": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.00091,
+      "ci90": [
+       0.000268,
+       0.001563
+      ],
+      "ci95": [
+       0.000151,
+       0.001697
+      ],
+      "p_one_sided": 0.99
+     },
+     "leave_one_out_dLL": 0.000709,
+     "quarters_improving": "0/4",
+     "decision": "REMOVE"
+    },
+    "odds_band": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000122,
+      "ci90": [
+       3.8e-05,
+       0.000217
+      ],
+      "ci95": [
+       1.9e-05,
+       0.000238
+      ],
+      "p_one_sided": 0.992
+     },
+     "leave_one_out_dLL": 0.000269,
+     "quarters_improving": "1/4",
+     "decision": "REMOVE"
+    },
+    "interactions": {
+     "add_one_dLL_vs_market": {
+      "delta": 1.7e-05,
+      "ci90": [
+       -9.8e-05,
+       0.000123
+      ],
+      "ci95": [
+       -0.000118,
+       0.000141
+      ],
+      "p_one_sided": 0.5947
+     },
+     "leave_one_out_dLL": -2.8e-05,
+     "quarters_improving": "3/4",
+     "decision": "REMOVE"
+    },
+    "v9_residual": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000226,
+      "ci90": [
+       0.000112,
+       0.000345
+      ],
+      "ci95": [
+       9.2e-05,
+       0.000367
+      ],
+      "p_one_sided": 1.0
+     },
+     "leave_one_out_dLL": 1e-06,
+     "quarters_improving": "0/4",
+     "decision": "REMOVE"
+    }
+   },
+   "kept_groups": [
+    "season_home_away_strength",
+    "home_advantage",
+    "league_scoring_env"
+   ],
+   "all_groups_validation_dLL": 0.00273,
+   "kept_set_holdout_dLL_vs_market_cal": {
+    "delta": 0.000123,
+    "ci90": [
+     -0.000464,
+     0.000728
+    ],
+    "ci95": [
+     -0.000571,
+     0.000834
+    ],
+    "p_one_sided": 0.61469
+   },
+   "n_holdout": 3927
+  },
+  "OU15": {
+   "groups": {
+    "rolling_goals": {
+     "add_one_dLL_vs_market": {
+      "delta": -0.000178,
+      "ci90": [
+       -0.000525,
+       0.000172
+      ],
+      "ci95": [
+       -0.00057,
+       0.000248
+      ],
+      "p_one_sided": 0.1999
+     },
+     "leave_one_out_dLL": -6.6e-05,
+     "quarters_improving": "3/4",
+     "decision": "KEEP"
+    },
+    "attack_defence_strength": {
+     "add_one_dLL_vs_market": {
+      "delta": -7.3e-05,
+      "ci90": [
+       -0.00039,
+       0.000248
+      ],
+      "ci95": [
+       -0.000439,
+       0.000317
+      ],
+      "p_one_sided": 0.35982
+     },
+     "leave_one_out_dLL": -1.2e-05,
+     "quarters_improving": "2/4",
+     "decision": "REMOVE"
+    },
+    "season_home_away_strength": {
+     "add_one_dLL_vs_market": {
+      "delta": -4.9e-05,
+      "ci90": [
+       -0.000331,
+       0.000225
+      ],
+      "ci95": [
+       -0.000383,
+       0.000282
+      ],
+      "p_one_sided": 0.3943
+     },
+     "leave_one_out_dLL": 0.000263,
+     "quarters_improving": "2/4",
+     "decision": "REMOVE"
+    },
+    "home_advantage": {
+     "add_one_dLL_vs_market": {
+      "delta": 5e-05,
+      "ci90": [
+       -4.5e-05,
+       0.000155
+      ],
+      "ci95": [
+       -6.3e-05,
+       0.000175
+      ],
+      "p_one_sided": 0.78861
+     },
+     "leave_one_out_dLL": 0.000118,
+     "quarters_improving": "2/4",
+     "decision": "REMOVE"
+    },
+    "rest_congestion": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.001218,
+      "ci90": [
+       0.000176,
+       0.00272
+      ],
+      "ci95": [
+       0.000104,
+       0.003076
+      ],
+      "p_one_sided": 0.9945
+     },
+     "leave_one_out_dLL": 0.001135,
+     "quarters_improving": "1/4",
+     "decision": "REMOVE"
+    },
+    "shots_shot_quality": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000119,
+      "ci90": [
+       -0.000189,
+       0.000424
+      ],
+      "ci95": [
+       -0.000251,
+       0.000504
+      ],
+      "p_one_sided": 0.73863
+     },
+     "leave_one_out_dLL": -2.7e-05,
+     "quarters_improving": "3/4",
+     "decision": "REMOVE"
+    },
+    "xg": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000713,
+      "ci90": [
+       0.000446,
+       0.000995
+      ],
+      "ci95": [
+       0.000388,
+       0.001052
+      ],
+      "p_one_sided": 1.0
+     },
+     "leave_one_out_dLL": 0.000384,
+     "quarters_improving": "1/4",
+     "decision": "REMOVE"
+    },
+    "corners_fouls": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000122,
+      "ci90": [
+       -0.000178,
+       0.000406
+      ],
+      "ci95": [
+       -0.000234,
+       0.000454
+      ],
+      "p_one_sided": 0.75662
+     },
+     "leave_one_out_dLL": 0.0003,
+     "quarters_improving": "2/4",
+     "decision": "REMOVE"
+    },
+    "half_time": {
+     "add_one_dLL_vs_market": {
+      "delta": -7.5e-05,
+      "ci90": [
+       -0.000377,
+       0.000235
+      ],
+      "ci95": [
+       -0.000428,
+       0.000301
+      ],
+      "p_one_sided": 0.33883
+     },
+     "leave_one_out_dLL": -0.000157,
+     "quarters_improving": "2/4",
+     "decision": "REMOVE"
+    },
+    "league_scoring_env": {
+     "add_one_dLL_vs_market": {
+      "delta": -7.3e-05,
+      "ci90": [
+       -0.000302,
+       0.000159
+      ],
+      "ci95": [
+       -0.000344,
+       0.00021
+      ],
+      "p_one_sided": 0.30135
+     },
+     "leave_one_out_dLL": 4.4e-05,
+     "quarters_improving": "3/4",
+     "decision": "KEEP"
+    },
+    "poisson_vs_market": {
+     "add_one_dLL_vs_market": {
+      "delta": 2.3e-05,
+      "ci90": [
+       -0.0001,
+       0.000152
+      ],
+      "ci95": [
+       -0.000122,
+       0.000178
+      ],
+      "p_one_sided": 0.6052
+     },
+     "leave_one_out_dLL": 0.00013,
+     "quarters_improving": "2/4",
+     "decision": "REMOVE"
+    },
+    "market_dispersion": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000479,
+      "ci90": [
+       -9.1e-05,
+       0.001066
+      ],
+      "ci95": [
+       -0.000209,
+       0.001173
+      ],
+      "p_one_sided": 0.91354
+     },
+     "leave_one_out_dLL": 0.000277,
+     "quarters_improving": "0/4",
+     "decision": "REMOVE"
+    },
+    "odds_band": {
+     "add_one_dLL_vs_market": {
+      "delta": 6e-06,
+      "ci90": [
+       -5.9e-05,
+       7.2e-05
+      ],
+      "ci95": [
+       -7.2e-05,
+       8.6e-05
+      ],
+      "p_one_sided": 0.55822
+     },
+     "leave_one_out_dLL": 4e-05,
+     "quarters_improving": "2/4",
+     "decision": "REMOVE"
+    },
+    "interactions": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.00021,
+      "ci90": [
+       5.3e-05,
+       0.000376
+      ],
+      "ci95": [
+       2.1e-05,
+       0.0004
+      ],
+      "p_one_sided": 0.98351
+     },
+     "leave_one_out_dLL": -6e-05,
+     "quarters_improving": "0/4",
+     "decision": "REMOVE"
+    },
+    "v9_residual": {
+     "add_one_dLL_vs_market": {
+      "delta": 0.000283,
+      "ci90": [
+       -2.6e-05,
+       0.000608
+      ],
+      "ci95": [
+       -8e-05,
+       0.000664
+      ],
+      "p_one_sided": 0.92854
+     },
+     "leave_one_out_dLL": 2e-06,
+     "quarters_improving": "0/4",
+     "decision": "REMOVE"
+    }
+   },
+   "kept_groups": [
+    "rolling_goals",
+    "league_scoring_env"
+   ],
+   "all_groups_validation_dLL": 0.002754,
+   "kept_set_holdout_dLL_vs_market_cal": {
+    "delta": -0.000608,
+    "ci90": [
+     -0.001067,
+     -0.000169
+    ],
+    "ci95": [
+     -0.001135,
+     -7.9e-05
+    ],
+    "p_one_sided": 0.01199
+   },
+   "n_holdout": 3927
+  }
+ }
+}
