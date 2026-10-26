@@ -8,6 +8,7 @@ Promoted (shadow): 0
 Still collecting: 200
 Blocked: 0
 Failed: 0
+Awaiting multiple-testing confirmation: 0
 
 Closest to the candidate gate:
   Israel Liga Alef: needs {'settled_with_close': 250, 'results': 0, 'history_seasons': 0}

@@ -1,4 +1,4 @@
-# League scout — 2026-10-26T10:18 UTC
+# League scout — 2026-10-26T12:43 UTC
 
 Results stored: 241,752 · fixtures priced: 3,717 · model frozen: 3,675
 

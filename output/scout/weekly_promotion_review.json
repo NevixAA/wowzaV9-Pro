@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-26T10:19:05Z",
+ "generated_at": "2026-10-26T12:44:07Z",
  "week": "2026-W44",
  "calculation_version": "league_promotion-1.0.0",
  "leagues_monitored": 200,
@@ -209,6 +209,7 @@
   "Italy Serie D - Girone D",
   "Italy Serie D - Girone E"
  ],
+ "awaiting_confirmation": [],
  "details": {
   "Denmark 1. Division": {
    "previous_state": "PRICING",
@@ -2216,7 +2217,15 @@
   "promoted": 0,
   "failed": 0,
   "blocked": 0,
-  "still_collecting": 200
+  "still_collecting": 200,
+  "awaiting_confirmation": 0
+ },
+ "multiple_testing": {
+  "error": null,
+  "leagues_with_confirmed_market": [],
+  "leagues_confirming": [],
+  "registry": "registry/scout_hypotheses.json",
+  "rule": "SHADOW_APPROVED and the auto-onboard queue require >= 1 CONFIRMED league-market hypothesis"
  },
  "EXISTING_PRODUCTION_SELECTION_CHANGED": "NO",
  "EXISTING_LEAGUE_MODELS_RETRAINED": "NO",
