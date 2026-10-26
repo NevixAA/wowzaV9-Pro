@@ -6,6 +6,11 @@ name: Weekly League Promotion Review
 # validates only NEW candidates (data quality -> chronological model/market tests -> robustness ->
 # score), and writes output/scout/weekly_promotion_review.json + per-league artifacts.
 #
+# MULTIPLE-TESTING CONTROL (E3, 2026-10-26): every scouted league x market is a registered hypothesis
+# (registry/scout_hypotheses.json). A league reaches SHADOW_APPROVED - and the auto-onboard queue - only
+# with a CONFIRMED hypothesis: genuine close, matchday block bootstrap, BH-FDR across all ~800 cells,
+# confirmation on forward data after a write-once start, leave-one-period-out and concentration checks.
+#
 # Never touches v9 or v11: no config edits, no PRs, no retraining, no money. A league that passes
 # stops at SHADOW_APPROVED with an onboarding proposal, because v9's new-format model is global and
 # the existing-league regression harness is not built yet (fail closed).
@@ -20,7 +25,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['.github/workflows/weekly_league_promotion.yml', 'src/scout/promotion.py', 'src/scout/registry.py']
+    paths: ['.github/workflows/weekly_league_promotion.yml', 'src/scout/promotion.py', 'src/scout/registry.py', 'src/scout/hypotheses.py']
 
 concurrency:
   group: weekly-league-promotion
@@ -47,7 +52,7 @@ jobs:
           python-version: '3.11'
       - run: pip install -r requirements.txt
       - name: Tests
-        run: python -m pytest tests/test_league_promotion.py tests/test_regression_harness.py -q
+        run: python -m pytest tests/test_league_promotion.py tests/test_regression_harness.py tests/test_scout_hypotheses.py -q
       - name: Refresh scout status
         run: python -m src.scout.report
       - name: Weekly promotion review
@@ -63,7 +68,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           for p in output/scout/weekly_promotion_review.json output/scout/WEEKLY_PROMOTION_REVIEW.md \
-                   registry/league_lifecycle.json registry/wowza_league_registry.json output/scout/report.json output/scout/REPORT.md \
+                   registry/league_lifecycle.json registry/wowza_league_registry.json registry/scout_hypotheses.json output/scout/report.json output/scout/REPORT.md \
                    output/scout/league_status.json output/scout/auto_onboard_queue.json; do
             [ -e "$p" ] && git add "$p"
           done

@@ -21,6 +21,8 @@ def iso(tmp_path, monkeypatch):
     monkeypatch.setattr(P, "OUT", tmp_path / "scout")
     monkeypatch.setattr(P, "LIFECYCLE_FILE", tmp_path / "registry" / "league_lifecycle.json")
     monkeypatch.setattr(P, "wowza_leagues", lambda: {"Championship", "Mexico Liga MX"})
+    from src.scout import hypotheses as H
+    monkeypatch.setattr(H, "REGISTRY_FILE", tmp_path / "registry" / "scout_hypotheses.json")
     (tmp_path / "scout").mkdir()
     return tmp_path
 
@@ -88,7 +90,9 @@ def test_readable_league_validates_and_is_idempotent(iso, monkeypatch):
     r1 = P.run(_status(), week="2026-W42")
     assert r1["new_candidates"] == ["Testland Div 2"]
     d = r1["details"]["Testland Div 2"]
-    assert d["data_quality"] == "PASS" and d["new_state"] in ("SHADOW_APPROVED", "REJECTED_TEMPORARILY", "VALIDATION_FAILED")
+    # E3: SHADOW_APPROVED now needs a CONFIRMED hypothesis on FORWARD data; this store is all history,
+    # so a strong league stops at AWAITING_CONFIRMATION.
+    assert d["data_quality"] == "PASS" and d["new_state"] in ("AWAITING_CONFIRMATION", "REJECTED_TEMPORARILY", "VALIDATION_FAILED")
     folder = iso / "scout" / "promotions" / "testland_div_2"
     for f in ("league_onboarding_data_quality.json", "model_matrix.csv", "onboarding_proposal.json", "PROMOTION_REPORT.md"):
         assert (folder / f).exists(), f

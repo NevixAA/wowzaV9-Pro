@@ -31,6 +31,14 @@ VALIDATION (per candidate, independently)
                 is not a component
   states        <50 VALIDATION_FAILED · 50-64 REJECTED_TEMPORARILY (research) · 65-74 research/paper
                 candidate · >= 75 SHADOW_APPROVED
+  MULTIPLE-TESTING CONTROL (E3, 2026-10-26; src/scout/hypotheses.py)
+                ~800 league x market cells are watched, so the best-looking ones are mostly noise. A
+                score >= 75 now reaches SHADOW_APPROVED ONLY if at least one of the league's
+                registered hypotheses is CONFIRMED: genuine close, block bootstrap, BH-FDR across
+                every registered cell, confirmation on forward data after an immutable start,
+                leave-one-period-out and concentration checks. Otherwise AWAITING_CONFIRMATION
+                (re-checked weekly). Supported/paper markets are the CONFIRMED ones only, and the
+                auto-onboard queue re-checks this, so a leaderboard can never promote itself.
 
 INTEGRATION — FAIL CLOSED. v9's new-format model is ONE global model: adding a league changes every
 new-format league's model. A league reaching SHADOW_APPROVED is therefore run through the
@@ -57,9 +65,12 @@ CALC_VERSION = "league_promotion-1.0.0"
 
 STATES = ("DISCOVERED", "COLLECTING", "PRICING", "READABLE", "PROMOTION_CANDIDATE", "VALIDATING",
           "VALIDATION_FAILED", "SHADOW_APPROVED", "WOWZA_SUPPORTED", "PAPER_ACTIVE",
-          "REJECTED_TEMPORARILY", "DATA_QUALITY_BLOCKED")
+          "REJECTED_TEMPORARILY", "DATA_QUALITY_BLOCKED", "AWAITING_CONFIRMATION")
 STICKY = {"SHADOW_APPROVED", "WOWZA_SUPPORTED", "PAPER_ACTIVE"}
 RETRY_WEEKS = 4
+#: AWAITING_CONFIRMATION is re-checked every week (the forward evidence grows weekly), but never twice
+#: in one week, so a re-run stays idempotent.
+CONFIRMATION_RETRY_WEEKS = 1
 GATE = {"settled_with_close": 300, "results": 300, "history_seasons": 2, "current_season_settled": 40,
         "odds_coverage": 0.80, "key_markets_covered": 2}
 KEY_MARKETS = ("ou25", "btts", "ou15")
@@ -273,8 +284,12 @@ def promotion_score(dq: dict, mm: pd.DataFrame, extra: dict, row: dict) -> tuple
     return round(sum(parts.values()), 1), parts
 
 
-def validate(row: dict, extra: dict, res, odds, mdl, week: str) -> dict:
+def validate(row: dict, extra: dict, res, odds, mdl, week: str, mtc: dict | None = None) -> dict:
+    """mtc: this league's multiple-testing summary from src.scout.hypotheses.review
+    ({confirmed_markets, confirming_markets, states}). None or empty -> nothing is confirmed."""
     lid = int(row["league_id"])
+    mtc = mtc or {}
+    confirmed = list(mtc.get("confirmed_markets") or [])
     out_dir = OUT / "promotions" / slug(f"{row['country']} {row['league']}")
     out_dir.mkdir(parents=True, exist_ok=True)
     dq = data_quality(lid, res, odds)
@@ -291,7 +306,11 @@ def validate(row: dict, extra: dict, res, odds, mdl, week: str) -> dict:
     if len(mm) and "calibration_gap" in mm and mm["calibration_gap"].abs().max() > 0.15:
         hard.append("pathological model calibration (gap > 15 pts)")
     new = ("VALIDATION_FAILED" if hard or score < 50 else "REJECTED_TEMPORARILY" if score < 75 else "SHADOW_APPROVED")
-    supported = [r["market"] for _, r in mm.iterrows() if r.get("verdict") in ("MODEL_ADDS_TO_MARKET", "MODEL_PREDICTS_MARKET_BETTER")]
+    # E3: the score is descriptive; promotion needs a statistically CONFIRMED league-market hypothesis.
+    if new == "SHADOW_APPROVED" and not confirmed:
+        new = "AWAITING_CONFIRMATION"
+    raw_supported = [r["market"] for _, r in mm.iterrows() if r.get("verdict") in ("MODEL_ADDS_TO_MARKET", "MODEL_PREDICTS_MARKET_BETTER")]
+    supported = [m for m in raw_supported if m in confirmed]
     # Existing-league regression harness (src/scout/regression_harness.py, built 2026-10-14): v9's
     # new-format model is ONE global model, so a league that passes here must also not hurt the leagues
     # already in it. Runs only for SHADOW_APPROVED leagues (~5-8 min each). Any error fails closed.
@@ -324,12 +343,19 @@ def validate(row: dict, extra: dict, res, odds, mdl, week: str) -> dict:
         "country": row.get("country"), "current_season": extra.get("current_season"),
         "market_states": {m: ("PAPER" if m in supported else "RESEARCH") for m in R.SIDE},
         "hard_fails": hard,
+        "multiple_testing": {"confirmed_markets": confirmed,
+                             "confirming_markets": list(mtc.get("confirming_markets") or []),
+                             "hypothesis_states": mtc.get("states", {}),
+                             "raw_supported_markets_not_confirmed": [m for m in raw_supported if m not in confirmed],
+                             "registry": "registry/scout_hypotheses.json"},
     }
     (out_dir / "onboarding_proposal.json").write_text(json.dumps(proposal, indent=1, default=str), encoding="utf-8")
     (out_dir / "PROMOTION_REPORT.md").write_text(report_md(row, extra, dq, mm, proposal), encoding="utf-8")
+    reason = hard or ([f"score {score}; no CONFIRMED league-market hypothesis (multiple-testing control)"]
+                      if new == "AWAITING_CONFIRMATION" else [f"score {score}"])
     return {"new_state": new, "data_quality": "PASS", "promotion_score": score, "score_parts": parts,
             "supported_markets": supported, "paper_markets": supported, "hard_fails": hard,
-            "integration_route": route, "reason": hard or [f"score {score}"]}
+            "confirmed_markets": confirmed, "integration_route": route, "reason": reason}
 
 
 def _md_table(df: pd.DataFrame) -> str:
@@ -378,11 +404,22 @@ def run(status: dict | None = None, week: str | None = None) -> dict:
     week = week or pd.Timestamp.now(tz="UTC").strftime("%G-W%V")
     lc = load_lifecycle()
     have = wowza_leagues()
-    res = odds = mdl = None
+    # E3: every registered league x market hypothesis is reviewed every week — discovery evidence
+    # can open a confirmation window long before a league is READABLE. Fail closed: any error
+    # leaves nothing confirmed.
+    res, odds, mdl = _store()
+    try:
+        from src.scout import hypotheses as H
+        watch = [{"id": int(r["league_id"]), "country": r.get("country", ""), "name": r.get("league", "")}
+                 for r in status.get("leagues", []) if r.get("league_id") is not None]
+        mtc_all = H.review(res, odds, mdl, leagues=watch, week=week)
+        mtc_error = None
+    except Exception as e:                                           # noqa: BLE001
+        mtc_all, mtc_error = {}, f"{type(e).__name__}: {e}"
     review = {"generated_at": pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%dT%H:%M:%SZ"), "week": week,
               "calculation_version": CALC_VERSION, "leagues_monitored": len(status.get("leagues", [])),
               "new_candidates": [], "promoted": [], "failed": [], "blocked": [], "still_collecting": [],
-              "details": {}}
+              "awaiting_confirmation": [], "details": {}}
     for row in status.get("leagues", []):
         lid = str(row["league_id"])
         name = f"{row['country']} {row['league']}"
@@ -390,11 +427,12 @@ def run(status: dict | None = None, week: str | None = None) -> dict:
         if cur in STICKY:
             review["details"][name] = {"previous_state": cur, "new_state": cur, "reason": ["already approved - sticky"]}
             continue
-        if cur in ("DATA_QUALITY_BLOCKED", "VALIDATION_FAILED", "REJECTED_TEMPORARILY"):
+        if cur in ("DATA_QUALITY_BLOCKED", "VALIDATION_FAILED", "REJECTED_TEMPORARILY", "AWAITING_CONFIRMATION"):
+            wait = CONFIRMATION_RETRY_WEEKS if cur == "AWAITING_CONFIRMATION" else RETRY_WEEKS
             last = next((h for h in reversed(lc[lid]["history"]) if h["to"] == cur), None)
-            if last and _weeks_between(last["week"], week) < RETRY_WEEKS:
+            if last and _weeks_between(last["week"], week) < wait:
                 review["details"][name] = {"previous_state": cur, "new_state": cur,
-                                           "reason": [f"retry after {RETRY_WEEKS} weeks"]}
+                                           "reason": [f"retry after {wait} week(s)"]}
                 continue
         base = scout_state(row)
         if base != "READABLE":
@@ -407,8 +445,6 @@ def run(status: dict | None = None, week: str | None = None) -> dict:
                 "results": max(0, GATE["results"] - int(row.get("results", 0))),
                 "history_seasons": max(0, GATE["history_seasons"] - int(row.get("history_seasons", 0)))}}
             continue
-        if res is None:
-            res, odds, mdl = _store()
         extra = league_extra(int(row["league_id"]), res, odds)
         ok, gate = candidate_gate(row, extra, have)
         if not ok:
@@ -419,13 +455,21 @@ def run(status: dict | None = None, week: str | None = None) -> dict:
         transition(lc, lid, "PROMOTION_CANDIDATE", "candidate gate met", week)
         review["new_candidates"].append(name)
         transition(lc, lid, "VALIDATING", "validation started", week)
-        v = validate(row, extra, res, odds, mdl, week)
+        v = validate(row, extra, res, odds, mdl, week, mtc_all.get(int(row["league_id"])))
         transition(lc, lid, v["new_state"], "; ".join(map(str, v.get("reason", []))), week)
         review["details"][name] = {"previous_state": cur, **v}
-        bucket = {"SHADOW_APPROVED": "promoted", "DATA_QUALITY_BLOCKED": "blocked"}.get(v["new_state"], "failed")
+        bucket = {"SHADOW_APPROVED": "promoted", "DATA_QUALITY_BLOCKED": "blocked",
+                  "AWAITING_CONFIRMATION": "awaiting_confirmation"}.get(v["new_state"], "failed")
         review[bucket].append(name)
     save_lifecycle(lc)
-    review["counts"] = {k: len(review[k]) for k in ("new_candidates", "promoted", "failed", "blocked", "still_collecting")}
+    review["counts"] = {k: len(review[k]) for k in ("new_candidates", "promoted", "failed", "blocked",
+                                                    "still_collecting", "awaiting_confirmation")}
+    review["multiple_testing"] = {
+        "error": mtc_error,
+        "leagues_with_confirmed_market": sorted(int(k) for k, v in mtc_all.items() if v.get("confirmed_markets")),
+        "leagues_confirming": sorted(int(k) for k, v in mtc_all.items() if v.get("confirming_markets")),
+        "registry": "registry/scout_hypotheses.json",
+        "rule": "SHADOW_APPROVED and the auto-onboard queue require >= 1 CONFIRMED league-market hypothesis"}
     review["EXISTING_PRODUCTION_SELECTION_CHANGED"] = "NO"
     review["EXISTING_LEAGUE_MODELS_RETRAINED"] = "NO"
     review["NEW_LEAGUES_PROMOTED"] = review["promoted"]
@@ -445,8 +489,11 @@ def write_auto_onboard_queue() -> list[str]:
             pr = json.loads(f.read_text(encoding="utf-8"))
         except Exception:                                               # noqa: BLE001
             continue
+        # E3: a proposal without a CONFIRMED multiple-testing-controlled market (including every
+        # proposal written before the control existed) is never queued.
         if (pr.get("state") == "SHADOW_APPROVED" and pr.get("integration_route") == "REGRESSION_PASSED_AUTO_ONBOARD"
-                and (pr.get("regression") or {}).get("verdict") == "PASS" and not pr.get("hard_fails")):
+                and (pr.get("regression") or {}).get("verdict") == "PASS" and not pr.get("hard_fails")
+                and (pr.get("multiple_testing") or {}).get("confirmed_markets")):
             q.append({"league_id": int(pr["league_id"]), "league": pr["league"], "country": pr.get("country"),
                       "current_season": pr.get("current_season") or (pr.get("v9_config_entries_needed") or {}).get(
                           "current_season"), "week": pr.get("week"), "promotion_score": pr.get("promotion_score")})
@@ -469,7 +516,8 @@ def summary(r: dict) -> str:
     L = ["WOWZA WEEKLY LEAGUE SCOUT REVIEW", "", f"Week: {r['week']}", "",
          f"{r['leagues_monitored']} leagues monitored", f"New promotion candidates: {r['counts']['new_candidates']}",
          f"Promoted (shadow): {r['counts']['promoted']}", f"Still collecting: {r['counts']['still_collecting']}",
-         f"Blocked: {r['counts']['blocked']}", f"Failed: {r['counts']['failed']}", ""]
+         f"Blocked: {r['counts']['blocked']}", f"Failed: {r['counts']['failed']}",
+         f"Awaiting multiple-testing confirmation: {r['counts'].get('awaiting_confirmation', 0)}", ""]
     for name in r["promoted"]:
         d = r["details"][name]
         L += [f"PROMOTED (SHADOW): {name}", f"  Score: {d.get('promotion_score')}", f"  Paper markets: {d.get('paper_markets')}",
