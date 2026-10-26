@@ -187,6 +187,9 @@ def main(as_of: str | None = None, n_paths: int = 2000) -> int:
     prev_hist = sorted((f for f in (OUT / "history").glob("*-proposed*.json")
                         if f.stem[:7] < f"{as_of:%Y-%m}"), key=_key)
     prev_prop = json.loads(prev_hist[-1].read_text(encoding="utf-8")) if prev_hist else current
+    # a proposal written before v9's O/U side split keeps its values, keyed per side (else its O/U
+    # tracks would match no tip and the H candidate would silently stake nothing on O/U)
+    prev_prop = BD.align_policy_keys(prev_prop)
 
     cands = {"A_CURRENT": current, "B_FLAT_0.5": flat(current, 0.005, "flat-0.5"),
              "C_FLAT_1": flat(current, 0.01, "flat-1"), "D_FLAT_2": flat(current, 0.02, "flat-2"),

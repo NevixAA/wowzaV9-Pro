@@ -2,7 +2,13 @@
 
 One row per SENT staked tip (SNIPER/MARKSMAN, live source, paper leagues removed), settled:
     date, fixture, league, model_type, market, side, signal_tier, odds, result, unit (P/L per
-    1 unit staked, from the ledger), clv (ledger clv_pct / 100 when recorded)
+    1 unit staked, from the ledger), clv (ledger clv_pct / 100 when recorded), track
+
+TRACK KEY = v9's src/bankroll_policy.track_key(model_type, market, side) - the same function the
+production sizer uses, so evidence, decisions and sizing can never disagree on a key. Since v9's
+2026-10-26 owner decision O/U 2.5 is split by SIDE (new_format|OU25_OVER, new_format|OU25_UNDER,
+standard|OU25_OVER, standard|OU25_UNDER) and each side is reviewed as its own track under the same
+rules. Against a pre-split v9 checkout (no track_key) the legacy model_type|market key is used.
 """
 from __future__ import annotations
 
@@ -30,6 +36,39 @@ def v9_reader():
 
 def production_policy() -> dict:
     return v9_reader().load_policy(cfg.V9_LOCAL / "config" / "bankroll_policy.json")
+
+
+def track_key_fn(reader=None):
+    """v9's track_key when the checkout has it (O/U 2.5 per side), else the legacy model_type|market."""
+    tk = getattr(reader or v9_reader(), "track_key", None)
+    return tk if tk is not None else (lambda mt, mk, side=None: f"{mt}|{mk}")
+
+
+def align_policy_keys(policy: dict, reader=None) -> dict:
+    """A policy written before v9's O/U side split (e.g. last month's proposal in output/bankroll/history)
+    -> the same policy keyed per side: each `X|OU25` track and track_tier_multipliers entry is copied to
+    `X|OU25_OVER` and `X|OU25_UNDER` unchanged (exactly what v9 did on 2026-10-26). A policy already
+    split, or a pre-split v9 reader, is returned unchanged. Never changes a value."""
+    import copy
+    r = reader or v9_reader()
+    sides = (getattr(r, "SIDE_SPLIT_MARKETS", None) or {})
+    if not sides or not policy:
+        return policy
+    p = copy.deepcopy(policy)
+    for sect in ("tracks", "track_tier_multipliers"):
+        d = p.get(sect)
+        if not isinstance(d, dict):
+            continue
+        out = {}
+        for k, v in d.items():
+            mt, _, mk = str(k).partition("|")
+            if mk in sides:
+                for s in sides[mk]:
+                    out.setdefault(f"{mt}|{mk}_{s}", copy.deepcopy(v))
+            else:
+                out[k] = v
+        p[sect] = out
+    return p
 
 
 def _paper_leagues() -> set[str]:
@@ -81,7 +120,8 @@ def load_bets(from_date: str = PERFORMANCE_CUTOFF, include_unsettled: bool = Fal
     if not include_unsettled:
         d = d[d["unit"].notna()]
     d["fixture"] = d["date"].dt.strftime("%Y-%m-%d") + "|" + d["home"].astype(str) + "|" + d["away"].astype(str)
-    d["track"] = d["model_type"] + "|" + d["market"]
+    tk = track_key_fn()
+    d["track"] = [tk(mt, mk, sd) for mt, mk, sd in zip(d["model_type"], d["market"], d["side"])]
     d["month"] = d["date"].dt.to_period("M").astype(str)
     return (d.drop(columns=["source", "pnl", "clv_pct", "edge_pct"])
              .sort_values(["date", "fixture", "track"], kind="mergesort").reset_index(drop=True))

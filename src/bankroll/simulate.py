@@ -34,7 +34,8 @@ def day_plans(bets: pd.DataFrame, policy: dict) -> dict:
     R = v9_reader()
     plans = {}
     for d, g in bets.groupby("date", sort=True):
-        sel = g[["fixture", "league", "model_type", "market", "signal_tier", "odds"]]
+        # `side` routes O/U 2.5 to its per-side track (v9 2026-10-26); without it v9 stakes no O/U
+        sel = g[["fixture", "league", "model_type", "market", "side", "signal_tier", "odds"]]
         plans[d] = {lv: R.size_day(sel, policy, bankroll=100.0, peak=100.0,
                                    dd_floor=lv)["final_fraction"].to_numpy(float) for lv in LEVELS}
     return plans

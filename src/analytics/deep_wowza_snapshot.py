@@ -93,7 +93,16 @@ def build_tables(I: dict) -> dict[str, pd.DataFrame]:
     main = W[f"since_{MAIN_START}"]
     core, nonmls = C.in_window(U["CORE"], main), C.in_window(U["NON_MLS"], main)
     tracks = pol.get("tracks", {})
-    state = lambda t: tracks.get(t, {}).get("state", "UNLISTED")  # noqa: E731
+    def state(t):
+        """Policy state of model|market. O/U 2.5 is per side in v9 since 2026-10-26: one state when both
+        sides agree, else 'OVER:<s> / UNDER:<s>'."""
+        if t in tracks:
+            return tracks[t].get("state", "UNLISTED")
+        o, u = tracks.get(f"{t}_OVER"), tracks.get(f"{t}_UNDER")
+        if o is None and u is None:
+            return "UNLISTED"
+        so, su = (o or {}).get("state", "UNLISTED"), (u or {}).get("state", "UNLISTED")
+        return so if so == su else f"OVER:{so} / UNDER:{su}"
     T = {}
     tab = lambda g, by, ci=True: C.table(g, by, end, RECENT_FROM, ci)  # noqa: E731
     win_txt = f"{MAIN_START} -> {end.date()}"

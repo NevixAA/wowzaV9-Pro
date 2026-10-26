@@ -32,9 +32,15 @@ def pol(R):
 
 
 def sel(**kw):
-    base = {"fixture": "F1", "league": "Liga", "model_type": "new_format", "market": "BTTS",
+    base = {"fixture": "F1", "league": "Liga", "model_type": "new_format", "market": "BTTS", "side": "YES",
             "signal_tier": "SNIPER", "odds": 2.0}
     return {**base, **kw}
+
+
+def _nf_ou25_over() -> str:
+    """The NF O/U 2.5 OVER track key under the checked-out v9 (per side since 2026-10-26)."""
+    from src.bankroll.data import track_key_fn
+    return track_key_fn()("new_format", "OU25", "OVER")
 
 
 def test_balanced_base_and_tier(R, pol):
@@ -45,7 +51,7 @@ def test_balanced_base_and_tier(R, pol):
 
 
 def test_blocked_paper_and_odds(R, pol):
-    rows = pd.DataFrame([sel(fixture="a", market="OVER35"), sel(fixture="b", model_type="standard", market="OU25"),
+    rows = pd.DataFrame([sel(fixture="a", market="OVER35"), sel(fixture="b", model_type="standard", market="OU25", side="UNDER"),
                          sel(fixture="c", league="USA MLS"), sel(fixture="d", odds=2.61),
                          sel(fixture="e", market="OVER15", odds=1.40), sel(fixture="f", odds=3.2)])
     r = R.size_day(rows, pol, 100, 100)
@@ -55,7 +61,7 @@ def test_blocked_paper_and_odds(R, pol):
 
 
 def test_one_position_per_fixture_uses_evidence_not_edge(R, pol):
-    rows = pd.DataFrame([sel(market="OU25", odds=2.4), sel(market="BTTS", odds=1.9)])
+    rows = pd.DataFrame([sel(market="OU25", side="OVER", odds=2.4), sel(market="BTTS", odds=1.9)])
     r = R.size_day(rows, pol, 100, 100)
     kept = r[r["final_fraction"] > 0]
     assert len(kept) == 1 and kept.iloc[0]["market"] == "BTTS"       # higher evidence_score
@@ -103,7 +109,7 @@ def _bets(n_days=90, roi_bias=0.0, seed=0):
             rows.append({"date": d, "fixture": f"{d:%F}|{j}", "league": ["A", "B", "C"][j],
                          "model_type": "new_format", "market": "OU25", "side": "OVER",
                          "signal_tier": "SNIPER", "odds": 2.0, "result": "WIN" if win else "LOSS",
-                         "unit": 1.0 if win else -1.0, "clv": 0.01, "track": "new_format|OU25",
+                         "unit": 1.0 if win else -1.0, "clv": 0.01, "track": _nf_ou25_over(),
                          "month": d.strftime("%Y-%m")})
     return pd.DataFrame(rows)
 
@@ -112,7 +118,7 @@ def test_step_up_at_most_one_band(pol):
     from src.bankroll import allocator as A
     b = _bets(120, roi_bias=0.15)
     p, dec, _ = A.propose(pol, b, "2026-12-15")
-    d = {x["track"]: x for x in dec}["new_format|OU25"]
+    d = {x["track"]: x for x in dec}[_nf_ou25_over()]
     assert d["proposed_fraction"] - d["previous_fraction"] <= 0.0025 + 1e-12
     assert A.validate(p) == []
 
@@ -121,7 +127,7 @@ def test_fast_reduction(pol):
     from src.bankroll import allocator as A
     b = _bets(90, roi_bias=-0.25)
     p, dec, _ = A.propose(pol, b, "2026-11-10")
-    d = {x["track"]: x for x in dec}["new_format|OU25"]
+    d = {x["track"]: x for x in dec}[_nf_ou25_over()]
     assert d["decision"] in ("REDUCE", "STOP") and d["proposed_fraction"] < d["previous_fraction"]
 
 
