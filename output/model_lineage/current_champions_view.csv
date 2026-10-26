@@ -1,8 +1,8 @@
 model_type,current_champion,champion_since,training_cutoff,validated_ll,brier,fresh_oos_ll,prospective_n,live_N,live_roi,live_clv,current_challenger,challenger_status,delta_vs_champion,champion_health,next_action
-btts,btts_20261005T101905Z_238e3419,2026-10-05T10:19:05Z,unknown (legacy),,,,0,33,0.11242424242424241,0.007944827586206897,,LEGACY_BLOCKED,,HEALTHY,first CHAMPION_GATE retrain pending (next Sunday)
-ht_over05,ht_over05_20261018T080423Z_359b491a,2026-10-18T08:04:23Z,unknown (legacy),,,,0,0,,,,LEGACY_PROMOTED,,HEALTHY,first CHAMPION_GATE retrain pending (next Sunday)
-ht_over15,ht_over15_20261004T093828Z_6f370f63,2026-10-04T09:38:28Z,unknown (legacy),,,,0,0,,,,LEGACY_BLOCKED,,HEALTHY,first CHAMPION_GATE retrain pending (next Sunday)
-newformat,newformat_20261018T080423Z_9eb6b4b4,2026-10-18T08:04:23Z,unknown (legacy),,,,0,0,,,,LEGACY_PROMOTED,,HEALTHY,first CHAMPION_GATE retrain pending (next Sunday)
-over15,over15_20261018T080423Z_da4743a2,2026-10-18T08:04:23Z,unknown (legacy),,,,0,0,,,,LEGACY_PROMOTED,,HEALTHY,first CHAMPION_GATE retrain pending (next Sunday)
-over35,over35_20261005T101905Z_f546ce72,2026-10-05T10:19:05Z,unknown (legacy),,,,0,1,0.8400000000000001,-0.0108,,LEGACY_BLOCKED,,HEALTHY,first CHAMPION_GATE retrain pending (next Sunday)
-standard,standard_20261018T080423Z_64313878,2026-10-18T08:04:23Z,unknown (legacy),,,,0,0,,,,LEGACY_PROMOTED,,HEALTHY,first CHAMPION_GATE retrain pending (next Sunday)
+btts,btts_20261005T101905Z_238e3419,2026-10-05T10:19:05Z,unknown (legacy),0.68426,0.245592,0.68426,219,115,-0.10013043478260869,0.00031881188118811776,btts_20261025T082351Z_80ee2a42,KEEP_CHAMPION,0.000373,WATCH,keep champion; next retrain tries again
+ht_over05,ht_over05_20261018T080423Z_359b491a,2026-10-18T08:04:23Z,unknown (legacy),0.60119,0.205526,0.60119,0,0,,,ht_over05_20261025T082153Z_192a5b6b,KEEP_CHAMPION,-1e-06,HEALTHY,keep champion; next retrain tries again
+ht_over15,ht_over15_20261004T093828Z_6f370f63,2026-10-04T09:38:28Z,unknown (legacy),0.647481,0.227591,0.647481,0,0,,,ht_over15_20261025T082247Z_c89c6b96,KEEP_CHAMPION,-0.000152,HEALTHY,keep champion; next retrain tries again
+newformat,newformat_20261018T080423Z_9eb6b4b4,2026-10-25T08:46:05Z,unknown (legacy),0.675239,0.241222,0.675239,119,42,-0.08666666666666664,-0.024573809523809526,newformat_20261025T082056Z_cfa68e5c,PROMOTE,-0.001581,HEALTHY,new champion serving; watch health
+over15,over15_20261018T080423Z_da4743a2,2026-10-18T08:04:23Z,unknown (legacy),0.541535,0.178715,0.541535,219,2,0.44999999999999996,-0.0296,over15_20261025T082456Z_cbe7928c,KEEP_CHAMPION,-2.4e-05,WATCH,keep champion; next retrain tries again
+over35,over35_20261005T101905Z_f546ce72,2026-10-05T10:19:05Z,unknown (legacy),0.599843,0.20523,0.599843,219,6,0.6516666666666667,0.0102,over35_20261025T082602Z_c72a0cef,KEEP_CHAMPION,-6.6e-05,HEALTHY,keep champion; next retrain tries again
+standard,standard_20261018T080423Z_64313878,2026-10-18T08:04:23Z,unknown (legacy),0.68509,0.245998,0.68509,100,14,0.09357142857142854,0.024071428571428573,standard_20261025T082022Z_3a405c51,SHADOW_MORE,-0.000883,HEALTHY,shadow: collect graded head-to-head fixtures
