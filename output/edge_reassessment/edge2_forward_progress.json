@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-25T13:58:45Z",
+ "generated_at": "2026-10-26T12:43:24Z",
  "registry": "registry/edge2_hypotheses_v1.json",
  "registration_sha256_lf": "17238eb560906be283c5776f01be3a0e12266a11433ba867ae787fc4ed548517",
  "registration_intact": true,
@@ -10,12 +10,13 @@
   "code_sha256_lf": "bd415829f04360c551d727bb5706e0846736539cf0146d99f9a8bfb08b8a2bb6"
  },
  "engine_hashes_match_registration": true,
- "shadow_rows_read": 752,
+ "shadow_rows_read": 908,
  "settlement_source_available": true,
  "confirmed_assignable_here": false,
  "production_changed": "NO",
  "status_counts": {
-  "REGISTERED": 4
+  "ACCRUING": 3,
+  "REGISTERED": 1
  },
  "hypotheses": [
   {
@@ -24,18 +25,32 @@
    "market": "OU25",
    "min_n_settled_two_sided": 400,
    "min_gameweeks": 8,
-   "PRE_REGISTRATION_NOT_COUNTED": 100,
+   "PRE_REGISTRATION_NOT_COUNTED": 123,
    "forward": {
-    "logged": 0,
-    "two_sided": 0,
+    "logged": 6,
+    "two_sided": 6,
     "settled_two_sided": 0,
     "gameweeks": 0,
     "selections_QUALIFIED_STRONG": 0,
-    "states": {}
+    "states": {
+     "NO_BET": 6
+    }
    },
    "progress_pct": 0.0,
+   "descriptive": {
+    "matchdays": 0,
+    "logged_kickoff_days": 2,
+    "two_sided_share": 1.0,
+    "selection_rate": 0.0,
+    "odds_bands_selected": {},
+    "leagues": 4,
+    "top_league": "Mexico Liga MX",
+    "top_league_share": 0.333,
+    "sides_selected": {}
+   },
    "metrics": null,
-   "status": "REGISTERED"
+   "secondary": null,
+   "status": "ACCRUING"
   },
   {
    "id": "H-EDGE2-NF-BTTS-01",
@@ -43,18 +58,32 @@
    "market": "BTTS",
    "min_n_settled_two_sided": 400,
    "min_gameweeks": 8,
-   "PRE_REGISTRATION_NOT_COUNTED": 100,
+   "PRE_REGISTRATION_NOT_COUNTED": 123,
    "forward": {
-    "logged": 0,
-    "two_sided": 0,
+    "logged": 6,
+    "two_sided": 6,
     "settled_two_sided": 0,
     "gameweeks": 0,
     "selections_QUALIFIED_STRONG": 0,
-    "states": {}
+    "states": {
+     "NO_BET": 6
+    }
    },
    "progress_pct": 0.0,
+   "descriptive": {
+    "matchdays": 0,
+    "logged_kickoff_days": 2,
+    "two_sided_share": 1.0,
+    "selection_rate": 0.0,
+    "odds_bands_selected": {},
+    "leagues": 4,
+    "top_league": "Mexico Liga MX",
+    "top_league_share": 0.333,
+    "sides_selected": {}
+   },
    "metrics": null,
-   "status": "REGISTERED"
+   "secondary": null,
+   "status": "ACCRUING"
   },
   {
    "id": "H-EDGE2-NF-O15-01",
@@ -62,18 +91,32 @@
    "market": "OU15",
    "min_n_settled_two_sided": 150,
    "min_gameweeks": 8,
-   "PRE_REGISTRATION_NOT_COUNTED": 100,
+   "PRE_REGISTRATION_NOT_COUNTED": 123,
    "forward": {
-    "logged": 0,
-    "two_sided": 0,
+    "logged": 6,
+    "two_sided": 1,
     "settled_two_sided": 0,
     "gameweeks": 0,
     "selections_QUALIFIED_STRONG": 0,
-    "states": {}
+    "states": {
+     "NO_BET": 6
+    }
    },
    "progress_pct": 0.0,
+   "descriptive": {
+    "matchdays": 0,
+    "logged_kickoff_days": 2,
+    "two_sided_share": 0.167,
+    "selection_rate": 0.0,
+    "odds_bands_selected": {},
+    "leagues": 4,
+    "top_league": "Mexico Liga MX",
+    "top_league_share": 0.333,
+    "sides_selected": {}
+   },
    "metrics": null,
-   "status": "REGISTERED"
+   "secondary": null,
+   "status": "ACCRUING"
   },
   {
    "id": "H-EDGE2-STD-OU25-01",
@@ -81,7 +124,7 @@
    "market": "OU25",
    "min_n_settled_two_sided": 400,
    "min_gameweeks": 8,
-   "PRE_REGISTRATION_NOT_COUNTED": 88,
+   "PRE_REGISTRATION_NOT_COUNTED": 98,
    "forward": {
     "logged": 0,
     "two_sided": 0,
@@ -91,7 +134,19 @@
     "states": {}
    },
    "progress_pct": 0.0,
+   "descriptive": {
+    "matchdays": 0,
+    "logged_kickoff_days": 0,
+    "two_sided_share": null,
+    "selection_rate": null,
+    "odds_bands_selected": {},
+    "leagues": 0,
+    "top_league": null,
+    "top_league_share": null,
+    "sides_selected": {}
+   },
    "metrics": null,
+   "secondary": null,
    "status": "REGISTERED"
   }
  ]
