@@ -1,0 +1,108 @@
+{
+ "study": "quality_layers_best_second_third",
+ "version": 1,
+ "registered_at": "2026-10-26",
+ "requested_by": "owner 2026-10-26: replace gap-size tiers with three layers ranked by actual quality - Best / Second best / Third best",
+ "status": "REGISTERED",
+ "production_changed": "NO",
+ "independent_of": "registry/learned_tiers/registration_v1.json + amendment_v1_1.json (a different study: learned tiers over ALL candidates with fixed EV cut-offs; neither registration amends the other)",
+ "source": {
+  "repo": "NevixAA/wowza-betting (v9)",
+  "branch": "research/quality-tiers-2026-10",
+  "commits": {
+   "study": "70c40a91",
+   "shadow": "1f4b85d3"
+  },
+  "module": "src/research/quality_tiers.py (quality_version qt_v1)",
+  "report": "docs/QUALITY_TIERS_STUDY_2026_10.md",
+  "frozen_cuts": "docs/quality_tiers_2026_10/frozen_cuts_v1.json"
+ },
+ "score": {
+  "p_win": "per track (standard / new_format, never pooled) L2 logistic, C=0.5, standardised inputs: logit(fair market p) [two-sided de-vig where the opposite price exists, else 1/odds/1.08], logit(model p) - logit(fair p), odds>=3.00 flag, league rating as known at the time (sum pnl/(n+50) over tips played strictly before), market dummies (BTTS/OVER15/OVER35 vs OU25), Under dummy, market x fair and market x gap interactions",
+  "fit": "refitted each predict run on the frozen first-sight seed (season to 2026-10-26) + shadow rows the ledgers have settled, matches played strictly before the UTC day; >=150 settled tips per track",
+  "score": "p_win x odds - 1 (flat 1u expected profit)"
+ },
+ "layers": {
+  "definitions": {
+   "TERCILE": "per tip day within track x market, ranked by first-sight score: rank percentile (r-0.5)/n < 1/3 BEST, < 2/3 SECOND, else THIRD; ties by row key",
+   "FIXED": "score >= cut_hi BEST, >= cut_lo SECOND, else THIRD, with the per-cell cut-offs below (learned on the 2026-08-31..2026-10-04 discovery window)"
+  },
+  "chosen_definition_per_cell": {
+   "new_format|OU25": "TERCILE",
+   "new_format|BTTS": "FIXED",
+   "new_format|OVER15": "FIXED",
+   "new_format|OVER35": "TERCILE",
+   "standard|OU25": "FIXED",
+   "standard|BTTS": "TERCILE",
+   "standard|OVER15": "TERCILE",
+   "standard|OVER35": "TERCILE"
+  },
+  "fixed_cuts": {
+   "new_format|BTTS": [
+    0.133535,
+    0.254837
+   ],
+   "new_format|OU25": [
+    0.052834,
+    0.171008
+   ],
+   "new_format|OVER15": [
+    0.023083,
+    0.073831
+   ],
+   "new_format|OVER35": [
+    -0.543433,
+    -0.018936
+   ],
+   "standard|BTTS": [
+    0.016653,
+    0.115168
+   ],
+   "standard|OU25": [
+    -0.289036,
+    -0.145828
+   ],
+   "standard|OVER15": [
+    -0.949947,
+    -0.289963
+   ],
+   "standard|OVER35": [
+    -0.612006,
+    -0.034551
+   ]
+  },
+  "evaluator_note": "FIXED is written at first sight (layer_fixed column). TERCILE is recomputed by the evaluator from the logged first-sight scores of each tip day; no outcome enters either."
+ },
+ "data": {
+  "file": "v9 output/quality_tier_shadow.csv (FirstSightStore, digest sidecar, earliest row wins)",
+  "eligible_rows": "ledger_generated_at >= 2026-10-27T00:00:00Z AND lag_min <= 60 AND observed_at < kickoff_utc AND quality_version == 'qt_v1' AND p_win present",
+  "unit": "one row per fixture x market (match_day, home_team, away_team, market)",
+  "results": "WIN/LOSS from the v9 ledgers; flat 1u P&L at the LOGGED first-sight odds; VOID/PUSH/postponed excluded",
+  "cells": "track x market: new_format|OU25, new_format|BTTS, new_format|OVER15, new_format|OVER35, standard|OU25, standard|BTTS, standard|OVER15, standard|OVER35 - never pooled"
+ },
+ "forward_window_start": "2026-10-27T00:00:00Z",
+ "minimums_per_cell": {
+  "settled_tips": 150,
+  "matchdays": 20,
+  "per_layer": 30,
+  "note": "below any minimum the cell is ACCRUING (or INSUFFICIENT if the season ends first); no verdict, no peeking-based stop"
+ },
+ "primary_metric": "Best - Third flat ROI difference (pp), matchday block bootstrap (10,000 resamples, days resampled jointly for both layers), one-sided p of (Best - Third <= 0)",
+ "secondary_metrics": [
+  "monotonicity: ROI Best > Second > Third (point estimates) and Spearman(layer rank, pnl)",
+  "certified-close CLV by layer (close within 30 min of kickoff)",
+  "Brier of p_win vs the de-vigged price on the same rows",
+  "the same primary + monotonicity test on the FIRST-SIGHT gap tiers (SNIPER - VALUABLE) of the same rows"
+ ],
+ "multiplicity": "Benjamini-Hochberg across the cells that reach the minimums, q < 0.10",
+ "statuses": {
+  "ACCRUING": "minimums not reached",
+  "INSUFFICIENT": "the season ended before the minimums",
+  "FORWARD_SUPPORTED": "minimums met AND Best > Second > Third AND BH q < 0.10 AND Best - Third larger than the gap tiers' SNIPER - VALUABLE on the same rows",
+  "REJECTED": "minimums met and any FORWARD_SUPPORTED condition fails - the cell keeps ONE layer ('Tip')",
+  "CONFIRMED": "NEVER assigned by this registration or its evaluator"
+ },
+ "switch_on": "A FORWARD_SUPPORTED cell may be PROPOSED to the owner; production changes only with explicit owner approval, and stakes may follow layers only as a re-weighting inside the cell's existing budget (never a PAPER->real change, never above bankroll-policy caps).",
+ "historical_result": "DISCOVERY ONLY, cannot trigger anything: on the 2026-10-05..10-25 holdout every cell was ONE_LAYER (ORDER_FAILS or INSUFFICIENT); see the v9 report.",
+ "frozen": "features, C, MIN_TRAIN, league shrinkage, cut-offs, chosen definitions, eligibility, minimums, metric and statuses are not changed after forward data is seen; any change is registration_v2 with a new forward window"
+}
