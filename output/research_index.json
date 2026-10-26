@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-26 12:46 UTC",
+ "generated_at": "2026-10-26 12:49 UTC",
  "items": [
   {
    "id": "league_promotion",
@@ -110,6 +110,20 @@
    },
    "report": "output/studies/PROPS_SEGMENTS.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/PROPS_SEGMENTS.md"
+  },
+  {
+   "id": "standard_repair",
+   "title": "Standard repair programme (league x market x side)",
+   "area": "models",
+   "status": "Standard repair: no model adds information after the de-vigged market on holdout; nothing pre-registered (team models, standard leagues)",
+   "date": "2026-10-26 12:29 UTC",
+   "key": {
+    "OU25 (team model, standard)": "beats market: none; best LGBM_RESID_SIMPLE dLL -0.0007 (95% CI [-0.001788, 0.000386]); v9 dLL +0.0114",
+    "BTTS (team model, standard)": "beats market: none; best MKT_SIMPLE_RECENCY dLL -0.0006 (95% CI [-0.001353, 0.00029]); v9 dLL +0.0045",
+    "OU15 (team model, standard)": "beats market: none; best LGBM_RESID_FULL dLL -0.0013 (95% CI [-0.0023, -0.000341]); v9 dLL +0.0096"
+   },
+   "report": "docs/STANDARD_REPAIR_PROGRAM_2026_10.md",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/docs/STANDARD_REPAIR_PROGRAM_2026_10.md"
   },
   {
    "id": "btts_contradiction",
