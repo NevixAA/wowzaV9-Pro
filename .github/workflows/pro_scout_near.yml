@@ -15,7 +15,12 @@ name: Pro League Scout — closing prices
 
 on:
   schedule:
-    # EVERY 3 HOURS, EACH RUN LIVING ~2h45m. Hourly 50-minute runs delivered 11 of ~72 slots over
+    # 2026-10-26 (E2): runs now live ~5h30m (330 min, timeout 350 < GitHub's 360 cap). The loop
+    # samples each fixture once per close band (T-2h/T-1h/T-30m/T-10m) instead of every 10
+    # minutes, so a longer life costs calls only when fixtures are actually near kickoff; idle
+    # passes read the store, not the API. Replay on recorded runs: near-kickoff coverage
+    # ~55-64% -> ~93-97% at fewer calls (output/budget/collection_policy_replay.json).
+    # EVERY 3 HOURS, EACH RUN LIVING ~2h45m (superseded above). Hourly 50-minute runs delivered 11 of ~72 slots over
     # 2026-10-08..11 (15%), and only 52% of scout fixtures were seen in their last 75 minutes.
     # Long runs make coverage depend on GitHub delivering a FEW runs a day — which it does — rather
     # than on hitting each hour. The concurrency group queues a late run behind a running one, so
@@ -24,7 +29,7 @@ on:
   workflow_dispatch:
     inputs:
       minutes:
-        description: 'Loop length in minutes (default 165)'
+        description: 'Loop length in minutes (default 330)'
         required: false
 
 concurrency:
@@ -37,7 +42,7 @@ permissions:
 jobs:
   near:
     runs-on: ubuntu-latest
-    timeout-minutes: 185
+    timeout-minutes: 350
     steps:
       # ref: main, not the triggering SHA. 2026-10-16 and 10-17: the 23:00 run waited behind the
       # previous near run (concurrency), started from the snapshot taken when it was SCHEDULED - before
@@ -55,7 +60,7 @@ jobs:
           APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
         run: |
           set -o pipefail
-          M="${{ github.event.inputs.minutes }}"; [ -n "$M" ] || M=165
+          M="${{ github.event.inputs.minutes }}"; [ -n "$M" ] || M=330
           python -m src.scout.collect --near-loop "$M" 2>&1 | tee near.txt
       - name: Commit
         if: always()
@@ -63,7 +68,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           # one path per add: a multi-path add stages nothing if any one path is missing
-          for p in data/season_*/scout_odds output/scout/last_near_run.json; do
+          for p in data/season_*/scout_odds output/scout/last_near_run.json output/budget/runs; do
             [ -e "$p" ] && git add "$p"
           done
           git diff --staged --quiet && { echo "nothing new"; exit 0; }

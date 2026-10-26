@@ -270,7 +270,14 @@ def collect(days: int = 14) -> tuple[dict, dict]:
     # ---- API budget, read from v9's own meter -----------------------------------------
     api = _api_budget()
     odds_budget = _odds_api_budget(mkt)
-    budgets = {"odds_api_budget": odds_budget}
+    # Pro's own METERED API-Football spend (E2 run ledger, output/budget/runs): recorded per-run
+    # call counts, the same projection and thresholds.
+    try:
+        from src.monitoring import collection_policy as _pol
+        pro_af = _pol.budget(now)
+    except Exception as e:                                         # noqa: BLE001
+        pro_af = {"status": "UNREADABLE", "error": f"{type(e).__name__}: {e}"}
+    budgets = {"odds_api_budget": odds_budget, "pro_api_football_budget": pro_af}
 
     health = {
         "generated_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -289,6 +296,7 @@ def collect(days: int = 14) -> tuple[dict, dict]:
         "freshness": freshness,
         "api_budget": api,
         "odds_api_budget": odds_budget,
+        "pro_api_football_budget": pro_af,
         "odds_spend_by_horizon": _credits_by_horizon(mkt, fx),
         "active_window_horizon_hours": ACTIVE_HORIZON_H,
         # Worst monthly budget verdict, surfaced at the top level so a reader of only the

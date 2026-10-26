@@ -452,3 +452,12 @@ experiments/upgrade_studies_2026_10/
 !output/studies/btts_contradiction.json
 !output/studies/BTTS_CONTRADICTION.md
 !output/studies/btts_contradiction_first_logged.csv
+
+# API run ledger + cost-aware collection policy (src/monitoring/collection_policy.py, E2 2026-10-26).
+# One small JSON per metered run (recorded call counts), new file per run so concurrent workflows can
+# never conflict on it. Scoped to output/budget/ only; nothing else writes there.
+!output/budget/
+!output/budget/collection_policy_replay.json
+!output/budget/runs/
+!output/budget/runs/*/
+!output/budget/runs/*/*.json

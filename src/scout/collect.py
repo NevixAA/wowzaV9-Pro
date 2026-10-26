@@ -131,28 +131,82 @@ def step_results(fx: pd.DataFrame, dry: bool) -> int:
     return n
 
 
-def step_odds(c: af.Client, watch: list[dict], fx: pd.DataFrame, dry: bool) -> pd.DataFrame:
+def _last_polls(now: pd.Timestamp) -> tuple[dict, dict]:
+    """{league_id: last poll Timestamp}, {league_id: consecutive unchanged polls} from the RUN
+    LEDGER (recorded sweep records), never from a file mtime. A league absent from the ledger is
+    treated as never polled, so the first sweep after deploy polls everything once."""
+    from src.monitoring import collection_policy as pol
+    runs = pol.load_runs(now - pd.Timedelta(days=4))
+    last, streak = {}, {}
+    if runs.empty or "detail" not in runs.columns:
+        return last, streak
+    for r in runs[runs["collector"] == "scout_sweep"].itertuples():
+        polled = r.detail.get("leagues_polled") if isinstance(r.detail, dict) else None
+        for lid, n_changed in (polled or {}).items():
+            lid = int(lid)
+            last[lid] = r.ts
+            streak[lid] = 0 if int(n_changed) else streak.get(lid, 0) + 1
+    return last, streak
+
+
+def step_odds(c: af.Client, watch: list[dict], fx: pd.DataFrame, dry: bool,
+              summary: dict | None = None) -> pd.DataFrame:
+    """Poll each watched league with an upcoming fixture WHEN IT IS DUE under the cost-aware
+    policy (src/monitoring/collection_policy.py, E2 2026-10-26): every sweep inside T-6h of the
+    league's next kickoff, every 3h to T-24h, 8h to T-72h, daily beyond — halved for registered
+    experiments, doubled beyond T-24h when the last two polls changed nothing — and subject to
+    the monthly budget guard, which sheds far-horizon leagues first and never sheds a
+    near-close one."""
+    from src.monitoring import collection_policy as pol
     now = int(time.time())
+    now_ts = pd.Timestamp.now(tz="UTC")
     snap = cfg.utc_now_iso()
     up = fx[(fx["kickoff_ts"] > now) & ~fx["status"].isin(parse.FINISHED)] if not fx.empty else fx
     active = up.groupby("league_id")["season"].first().to_dict() if not up.empty else {}
-    rows = []
+    nearest = up.groupby("league_id")["kickoff_ts"].min().to_dict() if not up.empty else {}
+    last, streak = _last_polls(now_ts)
+    flags = pol.league_flags()
+    guard = pol.Guard(now_ts)
+    rows, polled_ids, skipped = [], [], {"not_due": 0, "budget": 0}
     for lg in watch:                                     # registry order = priority order
-        if lg["id"] not in active:
+        lid = lg["id"]
+        if lid not in active:
             continue
-        resp = c.get_all_pages("/odds", {"league": lg["id"], "season": active[lg["id"]]})
+        mtk = (nearest[lid] - now) / 60.0
+        fl = flags.get(int(lid), {})
+        prio = pol.priority_class(mtk, experiment=fl.get("experiment", False),
+                                  candidate=fl.get("candidate", False))
+        ago = None if lid not in last else (now_ts - last[lid]).total_seconds() / 60.0
+        if not pol.is_due(mtk, ago, prio, streak.get(lid, 0)):
+            skipped["not_due"] += 1
+            continue
+        if not guard.allowed(prio):
+            skipped["budget"] += 1
+            continue
+        before = c.calls
+        resp = c.get_all_pages("/odds", {"league": lid, "season": active[lid]})
+        guard.spend(c.calls - before)
         rows.extend(parse.odds_rows(resp, snap, now))
+        polled_ids.append(lid)
     prev = _read_recent("scout_odds", QUOTE_LOOKBACK_DAYS)
-    last = {}
+    last_q = {}
     if not prev.empty:
         prev = prev.sort_values("snapshot_ts")
-        last = {(r.fixture_id, r.market, r.selection, r.bookmaker): r.odds
-                for r in prev.drop_duplicates(["fixture_id", "market", "selection", "bookmaker"],
-                                              keep="last").itertuples()}
-    keep = parse.changed(rows, last)
+        last_q = {(r.fixture_id, r.market, r.selection, r.bookmaker): r.odds
+                  for r in prev.drop_duplicates(["fixture_id", "market", "selection", "bookmaker"],
+                                                keep="last").itertuples()}
+    keep = parse.changed(rows, last_q)
     n = _append("scout_odds", keep, "odds", dry)
-    print(f"[scout] odds: {len(active)} league(s) with fixtures, {len(rows):,} quote(s) seen, "
-          f"{n:,} stored (change-log)")
+    changed_by_lg = pd.Series([r["league_id"] for r in keep]).value_counts().to_dict() if keep else {}
+    if summary is not None:
+        summary["leagues_polled"] = {str(x): int(changed_by_lg.get(x, 0)) for x in polled_ids}
+        summary["leagues_skipped"] = skipped
+        summary["league_seasons"] = {str(k): str(v) for k, v in active.items()}
+        summary["budget_status"] = guard.b.get("status")
+        summary["max_priority_polled"] = guard.max_priority
+    print(f"[scout] odds: {len(active)} league(s) with fixtures, {len(polled_ids)} polled "
+          f"({skipped['not_due']} not due, {skipped['budget']} shed by budget "
+          f"{guard.b.get('status')}), {len(rows):,} quote(s) seen, {n:,} stored (change-log)")
     return pd.DataFrame(rows)
 
 
@@ -190,18 +244,34 @@ def step_freeze(quotes: pd.DataFrame, fx: pd.DataFrame, dry: bool) -> int:
 
 
 # ── near-kickoff loop ─────────────────────────────────────────────────────────────────────────
-NEAR_WINDOW_MIN = 75       # fixtures kicking off within this many minutes are watched
-NEAR_SPACING_MIN = 10      # one look per fixture every ~10 minutes
+NEAR_WINDOW_MIN = 120      # fixtures kicking off within this many minutes are watched (policy bands)
+NEAR_SPACING_MIN = 5       # a pass every ~5 minutes; each fixture is CALLED at most once per band
 
 
-def near_targets(window_min: float = NEAR_WINDOW_MIN) -> pd.DataFrame:
+def near_targets(window_min: float = NEAR_WINDOW_MIN, o: pd.DataFrame | None = None) -> pd.DataFrame:
     """Fixtures already priced by a sweep whose kickoff is within the window."""
-    o = _read_recent("scout_odds", QUOTE_LOOKBACK_DAYS)
+    o = _read_recent("scout_odds", QUOTE_LOOKBACK_DAYS) if o is None else o
     if o.empty:
         return o
     now = time.time()
     f = o.drop_duplicates("fixture_id")[["fixture_id", "league_id", "kickoff_ts"]]
     return f[(f["kickoff_ts"] > now) & (f["kickoff_ts"] <= now + window_min * 60)]
+
+
+def sampled_bands(o: pd.DataFrame) -> set:
+    """(fixture_id, band) pairs already OBSERVED, from the stored rows' own minutes_to_kickoff.
+    Inside 3h every observation is stored (parse.changed), so the store is the record — a run
+    that restarts mid-window does not re-buy a band an earlier run already captured."""
+    from src.monitoring import collection_policy as pol
+    if o.empty or "minutes_to_kickoff" not in o.columns:
+        return set()
+    w = o[(o["minutes_to_kickoff"] > 0) & (o["minutes_to_kickoff"] <= NEAR_WINDOW_MIN)]
+    out = set()
+    for f, m in zip(w["fixture_id"], w["minutes_to_kickoff"]):
+        b = pol.near_band(float(m))
+        if b is not None:
+            out.add((int(f), b))
+    return out
 
 
 def near_loop(c: af.Client, minutes: float, dry: bool) -> dict:
@@ -211,43 +281,102 @@ def near_loop(c: af.Client, minutes: float, dry: bool) -> dict:
     own first two slots were skipped outright. A job that starts whenever and then samples against
     REAL kickoff times is robust to that; a cron aimed at "T-10 minutes" is not.
 
-    WHY ONLY THE LAST ~75 MINUTES. Measured 2026-10-08 on 119 fixtures: API-Football's price was
-    ~4 hours old more than an hour before kickoff, and ~12 minutes old inside the final hour. Earlier
-    samples would only re-read the same number.
+    ONE SAMPLE PER CLOSE BAND (E2, 2026-10-26). Each watched fixture is called once in each of
+    T-120..60m, T-60..30m, T-30..10m and T-10..1m (collection_policy.NEAR_BANDS) — the bands
+    scheduler_health reports — instead of every 10 minutes through its last 75 minutes (~7 calls).
+    API-Football's price is ~12 minutes old inside the final hour (measured 2026-10-08), so a
+    second read inside one band mostly re-reads the same number. Fixtures of one league due in
+    the same pass share one /odds?league&season&date call when that costs fewer calls.
 
     Every observation inside the final 3 hours is stored (parse.changed keeps them all), so the
-    close is OBSERVED with a timestamp. One /odds?fixture call per watched fixture per pass.
+    close is OBSERVED with a timestamp.
     """
+    from src.monitoring import collection_policy as pol
     end = time.time() + minutes * 60
     passes = stored = 0
     calls0 = c.calls
-    seen = set()
+    seen, league_calls, fixture_calls = set(), 0, 0
+    # (fixture, band) pairs ATTEMPTED this run: a fixture whose call returns no price must not be
+    # re-called every pass for the rest of its band.
+    attempted: set = set()
+    seasons = _league_seasons()
     while time.time() < end - 60:
-        T = near_targets()
+        o = _read_recent("scout_odds", QUOTE_LOOKBACK_DAYS)
+        T = near_targets(o=o)
         if T.empty:
             time.sleep(min(300, max(0, end - time.time() - 60)))
             continue
         now = int(time.time())
+        T = T.assign(band=[pol.near_band((k - now) / 60.0) for k in T["kickoff_ts"]])
+        done = sampled_bands(o) | attempted
+        mask = [b is not None and (int(f), b) not in done for f, b in zip(T["fixture_id"], T["band"])]
+        due = T[mask]
+        attempted |= {(int(f), b) for f, b in zip(due["fixture_id"], due["band"])}
+        if due.empty:
+            time.sleep(min(NEAR_SPACING_MIN * 60, max(0, end - time.time() - 60)))
+            continue
         snap = cfg.utc_now_iso()
+        upcoming = o[o["kickoff_ts"] > now].drop_duplicates("fixture_id")
         rows = []
-        for fid in T["fixture_id"].astype(int):
-            body = c.get("/odds", {"fixture": fid}) or {}
-            rows.extend(parse.odds_rows(body.get("response") or [], snap, now))
-            seen.add(fid)
-        prev = _read_recent("scout_odds", QUOTE_LOOKBACK_DAYS)
+        for kind, _id, _cost in pol.plan_near_calls(due, _same_day_counts(upcoming, due)):
+            if kind == "league" and str(_id) in seasons:
+                days = sorted({datetime.fromtimestamp(int(k), timezone.utc).strftime("%Y-%m-%d")
+                               for k in due[due["league_id"] == _id]["kickoff_ts"]})
+                for day in days:
+                    resp = c.get_all_pages("/odds", {"league": _id, "season": seasons[str(_id)],
+                                                     "date": day})
+                    rows.extend(parse.odds_rows(resp, snap, now))
+                league_calls += 1
+                seen |= set(due[due["league_id"] == _id]["fixture_id"].astype(int))
+                continue
+            fids = ([_id] if kind == "fixture"
+                    else due[due["league_id"] == _id]["fixture_id"].astype(int).tolist())
+            for fid in fids:
+                body = c.get("/odds", {"fixture": fid}) or {}
+                rows.extend(parse.odds_rows(body.get("response") or [], snap, now))
+                seen.add(fid)
+                fixture_calls += 1
         last = {}
-        if not prev.empty:
-            prev = prev.sort_values("snapshot_ts")
+        if not o.empty:
+            prev = o.sort_values("snapshot_ts")
             last = {(r.fixture_id, r.market, r.selection, r.bookmaker): r.odds
                     for r in prev.drop_duplicates(["fixture_id", "market", "selection", "bookmaker"],
                                                   keep="last").itertuples()}
         stored += _append("scout_odds", parse.changed(rows, last), f"near{passes}", dry)
         passes += 1
-        print(f"[scout near] pass {passes}: {len(T)} fixture(s) inside {NEAR_WINDOW_MIN} min, "
+        print(f"[scout near] pass {passes}: {len(due)} fixture-band(s) due of {len(T)} watched, "
               f"{len(rows)} quote(s), {stored} stored so far")
         time.sleep(min(NEAR_SPACING_MIN * 60, max(0, end - time.time() - 60)))
     return {"passes": passes, "fixtures_watched": len(seen), "rows_stored": stored,
-            "api_calls": c.calls - calls0}
+            "api_calls": c.calls - calls0, "league_calls": league_calls,
+            "fixture_calls": fixture_calls}
+
+
+def _league_seasons() -> dict:
+    """{league_id: season} as the latest recorded sweep saw it (the near loop has no fixtures
+    call of its own, and /odds?league needs a season). Empty -> per-fixture calls only."""
+    from src.monitoring import collection_policy as pol
+    runs = pol.load_runs(pd.Timestamp.now(tz="UTC") - pd.Timedelta(days=3))
+    if runs.empty or "detail" not in runs.columns:
+        return {}
+    for r in runs[runs["collector"] == "scout_sweep"].iloc[::-1].itertuples():
+        d = r.detail if isinstance(r.detail, dict) else {}
+        if d.get("league_seasons"):
+            return d["league_seasons"]
+    return {}
+
+
+def _same_day_counts(upcoming: pd.DataFrame, due: pd.DataFrame) -> dict:
+    """{league_id: priced fixtures on the due fixtures' kickoff day(s)} — what a league+date
+    call costs in pages."""
+    if upcoming.empty:
+        return {}
+    def day(s):
+        return pd.to_datetime(s, unit="s", utc=True).dt.strftime("%Y-%m-%d")
+    u = upcoming.assign(day=day(upcoming["kickoff_ts"]))
+    d = due.assign(day=day(due["kickoff_ts"]))
+    m = u.merge(d[["league_id", "day"]].drop_duplicates(), on=["league_id", "day"])
+    return m.groupby("league_id")["fixture_id"].nunique().to_dict()
 
 
 def main() -> int:
@@ -270,6 +399,7 @@ def main() -> int:
         if not a.dry_run:
             OUT.mkdir(parents=True, exist_ok=True)
             (OUT / "last_near_run.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
+        _ledger("scout_near", summary, c, a.dry_run)
         print(json.dumps(summary))
         return 0
     watch = reg.load()
@@ -280,7 +410,7 @@ def main() -> int:
         fx = step_dates(c, ids)
         summary["fixtures_in_window"] = int(len(fx))
         summary["results_stored"] = step_results(fx, a.dry_run)
-        quotes = step_odds(c, watch, fx, a.dry_run)       # first among the bounded steps: unrecoverable
+        quotes = step_odds(c, watch, fx, a.dry_run, summary)  # first among the bounded steps: unrecoverable
         summary["quotes_seen"] = int(len(quotes))
         summary["model_frozen"] = step_freeze(quotes, fx, a.dry_run)
         summary["history_rows"] = step_history(c, watch, a.history_budget, a.dry_run)
@@ -293,8 +423,24 @@ def main() -> int:
     if not a.dry_run:
         OUT.mkdir(parents=True, exist_ok=True)
         (OUT / "last_run.json").write_text(json.dumps(summary, indent=1), encoding="utf-8")
+    _ledger("scout_sweep", summary, c, a.dry_run)
     print(json.dumps(summary))
     return 0
+
+
+def _ledger(collector: str, summary: dict, c: af.Client, dry: bool) -> None:
+    """One run-ledger record (output/budget/runs) with the RECORDED call count. Never fatal:
+    a ledger failure must not cost a run its prices."""
+    try:
+        from src.monitoring import collection_policy as pol
+        keep = ("leagues_polled", "leagues_skipped", "league_seasons", "budget_status",
+                "max_priority_polled", "passes", "fixtures_watched", "league_calls",
+                "fixture_calls", "status")
+        pol.record_run(collector, summary.get("started"), summary.get("finished"), c.calls,
+                       quota_remaining=c.remaining,
+                       detail={k: summary[k] for k in keep if k in summary}, dry=dry)
+    except Exception as e:                                             # noqa: BLE001
+        print(f"[scout] ledger record not written ({type(e).__name__}: {e})")
 
 
 if __name__ == "__main__":

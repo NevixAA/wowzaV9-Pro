@@ -1,0 +1,74 @@
+{
+ "generated_at": "2026-10-26T12:24:45Z",
+ "window_days": 14,
+ "replay_span_days": 13.55,
+ "recorded_runs": {
+  "scout_sweep": 66,
+  "scout_near": 57
+ },
+ "calibration": {
+  "sweep_recorded_over_modelled": 2.557,
+  "near_recorded_over_modelled": 0.934
+ },
+ "calls_per_month": {
+  "before": {
+   "scout_sweep": 42559,
+   "scout_near": 19638,
+   "total": 62196
+  },
+  "after": {
+   "scout_sweep": 29676,
+   "scout_near": 10721,
+   "total": 40397
+  },
+  "allowance": 100000,
+  "headroom_target_pct": 80.0
+ },
+ "league_polls": {
+  "before": 6319,
+  "after": 4217
+ },
+ "coverage_pct_of_kicked_off_fixtures": {
+  "n_fixtures": 2222,
+  "before": {
+   "T-10m": 56.2,
+   "T-30m": 57.3,
+   "T-1h": 63.7,
+   "T-3h": 67.9,
+   "T-6h": 49.8,
+   "T-24h": 95.6,
+   "far": 75.9
+  },
+  "after": {
+   "T-10m": 93.0,
+   "T-30m": 94.3,
+   "T-1h": 93.7,
+   "T-3h": 96.8,
+   "T-6h": 49.8,
+   "T-24h": 95.6,
+   "far": 75.6
+  }
+ },
+ "assumptions": [
+  "same GitHub deliveries as recorded (run start times from the ledger); near runs lengthened to 330 min in the after case",
+  "a league /odds call returns every priced upcoming fixture of that league (pages of 10)",
+  "a fixture is pollable from its first stored price (first snapshot_ts) onward",
+  "modelled calls are scaled by the recorded/modelled ratio of the before case"
+ ],
+ "sensitivity_policy_only_near_runs_165min": {
+  "calls_per_month_after": {
+   "scout_sweep": 29676,
+   "scout_near": 6909,
+   "total": 36586
+  },
+  "coverage_after": {
+   "T-10m": 55.1,
+   "T-30m": 57.3,
+   "T-1h": 63.7,
+   "T-3h": 76.7,
+   "T-6h": 49.8,
+   "T-24h": 95.6,
+   "far": 75.6
+  }
+ }
+}
