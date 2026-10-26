@@ -1,33 +1,33 @@
 {
  "calculation_version": "price_trader-1.0.0",
- "generated_at": "2026-10-25 12:48 UTC",
- "trades": 1517,
- "tradable": 1245,
+ "generated_at": "2026-10-26 14:36 UTC",
+ "trades": 1547,
+ "tradable": 1275,
  "status": {
-  "OK": 1245,
+  "OK": 1275,
   "NO_ENTRY_PRICE": 271,
   "NO_PRICE_DATA": 1
  },
  "chronological": {
-  "train_until": "2026-09-10",
-  "validation_until": "2026-10-03",
+  "train_until": "2026-09-11",
+  "validation_until": "2026-10-04",
   "selected_league_markets": [],
   "exit_rule_chosen_on_validation": "POLICY_V1",
   "holdout_all_signals": {
    "set": "holdout, all signals",
-   "n_signals": 508,
-   "n_greened": 470,
-   "green_rate": 0.0532,
-   "avg_locked_roi": -0.10282,
-   "median_locked_roi": -0.0934,
-   "total_locked_units": -48.327,
-   "avg_roi_on_capital": -0.04338,
-   "avg_hours_held": 122.2,
+   "n_signals": 511,
+   "n_greened": 484,
+   "green_rate": 0.0558,
+   "avg_locked_roi": -0.10242,
+   "median_locked_roi": -0.09391,
+   "total_locked_units": -49.571,
+   "avg_roi_on_capital": -0.04327,
+   "avg_hours_held": 116.4,
    "worst_trade": -0.4478,
    "roi_p05_p50_p95": [
-    -0.10845,
-    -0.10268,
-    -0.09703
+    -0.10854,
+    -0.10236,
+    -0.09626
    ]
   },
   "holdout_selected": {
@@ -49,48 +49,48 @@
   }
  },
  "instant_arb": {
-  "snapshots_checked": 59143,
-  "INSTANT_ARB_AVAILABLE_share": 0.0105,
-  "arb_snapshots": 621,
+  "snapshots_checked": 60455,
+  "INSTANT_ARB_AVAILABLE_share": 0.0103,
+  "arb_snapshots": 625,
   "median_margin": 0.0086,
   "note": "bookmaker-only, before stake limits; THEORETICAL_ONLY on capacity"
  },
  "primary": {
   "rule": "POLICY_V1",
   "direction": "WOWZA",
-  "n_signals": 1244,
-  "n_greened": 1164,
-  "green_rate": 0.0747,
-  "avg_locked_roi": -0.09739,
-  "median_locked_roi": -0.09078,
-  "total_locked_units": -113.364,
-  "avg_roi_on_capital": -0.0418,
-  "avg_hours_held": 112.3,
+  "n_signals": 1274,
+  "n_greened": 1204,
+  "green_rate": 0.0739,
+  "avg_locked_roi": -0.09782,
+  "median_locked_roi": -0.09214,
+  "total_locked_units": -117.777,
+  "avg_roi_on_capital": -0.04194,
+  "avg_hours_held": 110.7,
   "worst_trade": -0.4478,
   "roi_p05_p50_p95": [
-   -0.1021,
-   -0.09734,
-   -0.09248
+   -0.10236,
+   -0.09783,
+   -0.09308
   ]
  },
  "movement_all": [
   {
    "league": "ALL",
    "market": "ALL",
-   "n": 1164,
-   "wowza_toward_rate": 0.4364,
-   "wowza_green_rate": 0.0653,
-   "anchor_green_rate": 0.0627,
-   "net_locked_wowza": -113.025,
-   "net_locked_anchor": -109.835,
-   "net_locked_random": -106.07,
-   "wowza_minus_anchor_per_trade": -0.00274,
+   "n": 1204,
+   "wowza_toward_rate": 0.4402,
+   "wowza_green_rate": 0.0648,
+   "anchor_green_rate": 0.0581,
+   "net_locked_wowza": -117.438,
+   "net_locked_anchor": -113.533,
+   "net_locked_random": -110.525,
+   "wowza_minus_anchor_per_trade": -0.00324,
    "ci90": [
-    -0.00551,
-    -0.00022
+    -0.00617,
+    -0.00055
    ],
-   "avg_favourable": 0.0369,
-   "avg_adverse": -0.1065
+   "avg_favourable": 0.0361,
+   "avg_adverse": -0.1068
   }
  ]
 }
