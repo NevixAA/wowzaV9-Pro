@@ -269,6 +269,8 @@ def collect(days: int = 14) -> tuple[dict, dict]:
 
     # ---- API budget, read from v9's own meter -----------------------------------------
     api = _api_budget()
+    odds_budget = _odds_api_budget(mkt)
+    budgets = {"odds_api_budget": odds_budget}
 
     health = {
         "generated_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -286,12 +288,17 @@ def collect(days: int = 14) -> tuple[dict, dict]:
         "observed_cadence": cadence,
         "freshness": freshness,
         "api_budget": api,
-        "odds_api_budget": _odds_api_budget(mkt),
+        "odds_api_budget": odds_budget,
         "odds_spend_by_horizon": _credits_by_horizon(mkt, fx),
         "active_window_horizon_hours": ACTIVE_HORIZON_H,
+        # Worst monthly budget verdict, surfaced at the top level so a reader of only the
+        # headline fields (v9's dashboard) sees it.
+        "budget_status": overall_budget_status(budgets),
+        "budget_thresholds": {"WARN_above_pct": BUDGET_WARN_PCT, "RED_above_pct": BUDGET_RED_PCT,
+                              "RED_also_when": "month-to-date usage >= allowance"},
         # A judgement, kept separate from the measurements so a threshold change can never be
         # mistaken for the data changing.
-        "status": _status(cadence, freshness, target, api),
+        "status": _status(cadence, freshness, target, api, budgets),
     }
 
     # ---- coverage: what did we actually capture ---------------------------------------
@@ -457,6 +464,90 @@ def _api_budget() -> dict:
             "note": "set V9_LOCAL, or check v9 out beside Pro, to read output/api_usage_log.csv"}
 
 
+# ── Monthly budget projection and status (owner brief 2026-10-26, E1) ─────────────────────────
+#
+# THE BUG THIS REPLACES. `_odds_api_budget` computed an estimated month-end usage of ~107,500
+# against an allowance of 100,000 and then hard-coded "status": "OK" — the projection was never
+# compared with anything. A budget line that cannot turn amber is decoration.
+#
+# THRESHOLDS, explicit and shared by every monthly budget in this module:
+#
+#     projected <= 100% of allowance                        -> OK
+#     100% < projected <= 110%                              -> WARN   (on course to overrun)
+#     projected > 110%, OR month-to-date already >= 100%    -> RED    (materially over / exhausted)
+#
+# The boundaries are inclusive on the lower state: exactly 100.0% is OK, exactly 110.0% is WARN.
+BUDGET_WARN_PCT = 100.0
+BUDGET_RED_PCT = 110.0
+TRAILING_DAYS = 7
+
+
+def project_month_end(used_mtd: float, now: pd.Timestamp, *,
+                      trailing_used: float | None = None,
+                      trailing_days: float = TRAILING_DAYS) -> dict:
+    """Projected month-end usage from RECORDED counts. Never from file mtime.
+
+    FORMULA (documented here and echoed into the artifact):
+
+        elapsed_days   = (now - first instant of the month) in fractional days, floored at 1.0
+        remaining_days = days_in_month - (now - month start in fractional days)
+        rate_mtd       = used_mtd / elapsed_days
+        rate_trailing  = trailing_used / trailing_days          (when a trailing count is given)
+        projected      = used_mtd + max(rate_mtd, rate_trailing) * remaining_days
+
+    WHY MAX OF TWO RATES. The month-to-date rate is slow to react: a collector that doubled its
+    spend last week is averaged with three quiet weeks. The trailing rate reacts but is noisy.
+    Taking the larger one makes the projection conservative in the direction that matters — a
+    budget alarm that fires a few days early is cheap, one that fires after the overrun is not.
+
+    WHY THE 1-DAY FLOOR. In the first hours of a month `used / elapsed` explodes (500 calls in one
+    hour is "372,000 a month"). Flooring the denominator at one day stops a spurious RED on the
+    1st; the trailing rate still carries a genuinely high spend across the month boundary.
+
+    The previous formula, `used / now.day * days_in_month`, counted the current partial day as a
+    whole day, which UNDER-projects for most of every day (at 05:00 on the 26th it divided by 26
+    when only 25.2 days had elapsed).
+    """
+    now = pd.Timestamp(now)
+    now = now.tz_localize("UTC") if now.tzinfo is None else now.tz_convert("UTC")
+    start = now.normalize().replace(day=1)
+    dim = pd.Period(now.strftime("%Y-%m")).days_in_month
+    elapsed_raw = (now - start).total_seconds() / 86400.0
+    elapsed = max(1.0, elapsed_raw)
+    remaining = max(0.0, dim - elapsed_raw)
+    rate_mtd = float(used_mtd) / elapsed
+    rate_tr = (float(trailing_used) / trailing_days
+               if trailing_used is not None and trailing_days > 0 else None)
+    rate = max(rate_mtd, rate_tr) if rate_tr is not None else rate_mtd
+    return {
+        "used_month_to_date": int(used_mtd),
+        "elapsed_days": round(elapsed_raw, 3),
+        "remaining_days": round(remaining, 3),
+        "days_in_month": dim,
+        "rate_per_day_mtd": round(rate_mtd, 1),
+        "rate_per_day_trailing": None if rate_tr is None else round(rate_tr, 1),
+        "rate_basis": ("trailing" if rate_tr is not None and rate_tr > rate_mtd else "month_to_date"),
+        "projected_month_end": int(round(float(used_mtd) + rate * remaining)),
+        "formula": ("projected = used_mtd + max(used_mtd / max(1, elapsed_days), "
+                    f"trailing_{int(trailing_days)}d_used / {int(trailing_days)}) * remaining_days; "
+                    "counts from recorded timestamps, never file mtime"),
+    }
+
+
+def budget_status(projected: float | None, used_mtd: float | None,
+                  allowance: float | None) -> tuple[str, float | None]:
+    """(status, projected % of allowance) — OK / WARN / RED, thresholds above. UNKNOWN when
+    there is no allowance or no projection: an unmeasured budget is never reported as OK."""
+    if not allowance or projected is None:
+        return "UNKNOWN", None
+    pct = 100.0 * float(projected) / float(allowance)
+    if (used_mtd is not None and float(used_mtd) >= float(allowance)) or pct > BUDGET_RED_PCT:
+        return "RED", round(pct, 2)
+    if pct > BUDGET_WARN_PCT:
+        return "WARN", round(pct, 2)
+    return "OK", round(pct, 2)
+
+
 def _odds_api_budget(mkt: pd.DataFrame) -> dict:
     """The Odds API credit picture — Prompt 1.5 section 19.
 
@@ -475,7 +566,19 @@ def _odds_api_budget(mkt: pd.DataFrame) -> dict:
     had not moved" — spend that section 20 wants moved to the close.
     """
     out: dict = {"source": "ESTIMATED from stored market_snapshots — no credit meter exists",
-                 "is_estimate": True, "monthly_allowance": 100_000}
+                 "is_estimate": True, "monthly_allowance": 100_000,
+                 # What the unit actually is, stated so nobody reads it as a bill. Measured
+                 # 2026-10-26: market_snapshots.observed_at equals Pro's ingest time (lag 0) for
+                 # both sources (v9:predictions, v9:odds_histories) — the rows are Pro's own HTTP
+                 # reads of v9's committed files, and Pro holds no OddsAPI key at all
+                 # (pro_collect.yml header). The count is a PROXY for how much odds state Pro
+                 # re-records, not credits anyone was charged. It is still judged against the
+                 # allowance, conservatively, because no better meter exists.
+                 "unit": "distinct (fixture, market, capture-minute) in Pro's market_snapshots",
+                 "is_billed_credit_count": False,
+                 "thresholds": {"OK": f"projected <= {BUDGET_WARN_PCT:.0f}% of allowance",
+                                "WARN": f"{BUDGET_WARN_PCT:.0f}% < projected <= {BUDGET_RED_PCT:.0f}%",
+                                "RED": f"projected > {BUDGET_RED_PCT:.0f}% or month-to-date >= 100%"}}
     if mkt.empty or "observed_at" not in mkt.columns:
         out["status"] = "NO_DATA"
         return out
@@ -496,17 +599,21 @@ def _odds_api_budget(mkt: pd.DataFrame) -> dict:
     per_day = d.groupby("day")["unit"].nunique()
     month = d[d["obs"] >= now.normalize().replace(day=1)]
     used_month = int(month["unit"].nunique())
-    days_elapsed = max(1, now.day)
-    days_in_month = pd.Period(now.strftime("%Y-%m")).days_in_month
+    trailing = d[d["obs"] >= now - pd.Timedelta(days=TRAILING_DAYS)]
+    proj = project_month_end(used_month, now, trailing_used=int(trailing["unit"].nunique()))
+    allowance = out["monthly_allowance"]
+    status, pct = budget_status(proj["projected_month_end"], used_month, allowance)
 
     out.update({
-        "status": "OK",
+        "status": status,
         "credits_used_today": int(per_day.get(now.date(), 0)),
         "credits_used_month": used_month,
-        "credits_remaining_month": max(0, 100_000 - used_month),
-        "estimated_month_end_usage": int(used_month / days_elapsed * days_in_month),
+        "credits_remaining_month": max(0, allowance - used_month),
+        "estimated_month_end_usage": proj["projected_month_end"],
+        "projected_pct_of_allowance": pct,
+        "projection": proj,
         "mean_per_day": round(float(per_day.mean()), 1),
-        "pct_of_monthly_allowance": round(100.0 * used_month / 100_000, 2),
+        "pct_of_monthly_allowance": round(100.0 * used_month / allowance, 2),
     })
     if "market" in d.columns:
         out["credits_by_market"] = {str(k): int(v) for k, v in
@@ -541,15 +648,35 @@ def _credits_by_horizon(mkt: pd.DataFrame, fx: pd.DataFrame) -> dict:
     return out
 
 
-def _status(cadence: dict, freshness: dict, target: float, api: dict) -> str:
+def overall_budget_status(budgets: dict) -> str:
+    """Worst of the monthly budget statuses (RED > WARN > OK). UNKNOWN/NO_DATA budgets do not
+    raise the level on their own — they are reported per budget — so a missing meter cannot
+    turn the whole board red, and cannot turn it green either (it simply adds nothing)."""
+    order = {"OK": 0, "WARN": 1, "RED": 2}
+    worst = "OK"
+    for b in (budgets or {}).values():
+        s = (b or {}).get("status")
+        if s in order and order[s] > order[worst]:
+            worst = s
+    return worst
+
+
+def _status(cadence: dict, freshness: dict, target: float, api: dict,
+            budgets: dict | None = None) -> str:
     """PASS / WARN / FAIL, judged on the ACTIVE-window cadence where one exists.
 
     Judging on the all-time p90 was making this permanently FAIL for a reason that is not a
     fault: a quiet overnight gap is not a missed capture, and a health signal that is always red
     is one nobody reads — the same trap PLANNED_OPTIONAL was introduced to escape on the
     registry side.
+
+    MONTHLY BUDGETS FEED THE TOP-LEVEL STATUS (E1, 2026-10-26). v9's dashboard reads only this
+    file's top-level `status` (dashboard_data/pro.py::health_artifacts), so a budget verdict kept
+    inside a sub-block never reached anyone. A RED budget makes the file FAIL, a WARN budget
+    makes it at least WARN.
     """
-    if api.get("status") == "ABORT":
+    b = overall_budget_status(budgets or {})
+    if api.get("status") == "ABORT" or b == "RED":
         return "FAIL"
     stale = [k for k, v in freshness.items() if v.get("status") == "STALE"]
     core = ("market_snapshots", "model_snapshots")
@@ -565,7 +692,7 @@ def _status(cadence: dict, freshness: dict, target: float, api: dict) -> str:
             p90 = c.get("p90_gap_min") or 0
         if p90 > target * 3:
             slow.append(k)
-    if slow or stale or api.get("status") == "ALERT":
+    if slow or stale or api.get("status") == "ALERT" or b == "WARN":
         return "WARN"
     return "PASS"
 
@@ -632,6 +759,10 @@ def main() -> int:
     print(f"[scheduler] mode={health['scheduler_mode']} target={health['target_interval_min']}min "
           f"fixtures_today={health['fixtures_today']} active={health['active_matches']} "
           f"status={health['status']}")
+    ob = health.get("odds_api_budget", {})
+    print(f"    budget: {health.get('budget_status')} | odds proxy {ob.get('status')} "
+          f"projected {ob.get('estimated_month_end_usage')} / {ob.get('monthly_allowance')} "
+          f"({ob.get('projected_pct_of_allowance')}%)")
     for t, c in health["observed_cadence"].items():
         if c.get("n_observations", 0) < 2:
             print(f"    {t:22} {c.get('n_observations', 0)} observation(s) — no cadence to measure")
