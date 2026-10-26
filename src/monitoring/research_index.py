@@ -336,7 +336,25 @@ def _ou_studies():
             "date": r.get("generated_at") or e.get("generated_at"), "key": {}, "report": "output/studies/REPORT.md"}
 
 
+def _btts_contradiction():
+    r = _j("studies/btts_contradiction.json")
+    v = r.get("verdict") or {}
+    if not v:
+        return None
+    h = (r.get("headline") or {}).get("all_nf_tips", {}).get("first_logged", {})
+    ex = (r.get("D_league_and_regime") or {}).get("ex_argentina", {})
+    return {"status": f"NF BTTS {h.get('roi', 0):+.1%} on {h.get('n')} tips = {str(v.get('PRIMARY_EXPLANATION')).replace('_', ' ').lower()}"
+                      f" (Argentina {100 * float(v.get('ARGENTINA_UNITS_SHARE') or 0):.0f}% of units; ex-Argentina "
+                      f"{ex.get('roi', 0):+.1%}); not model skill, no stake change",
+            "date": r.get("generated_at"),
+            "key": {k: v.get(k) for k in ("PRIMARY_EXPLANATION", "TIMING_PRICE_ARTIFACT", "CERTIFIED_CLV_POSITIVE",
+                                          "MODEL_ADDS_TO_MARKET", "BEATS_MODEL_FREE_PRICE_RULE", "PROFITABLE_EX_ARGENTINA",
+                                          "REGIME_COOLED", "STAKE_CHANGE_RECOMMENDED")},
+            "report": "output/studies/BTTS_CONTRADICTION.md"}
+
+
 STUDIES = [
+    ("btts_contradiction", "NF BTTS contradiction: ROI vs CLV", "tips", _btts_contradiction),
     ("player_v3", "Player Model V3 / Edge Lab", "players", _player_v3),
     ("player_v3_forward", "Player V3 forward test (pre-registered)", "players", _forward),
     ("fantasy_v3", "Fantasy (FPL): v9 vs Player V3 projections", "players", _fantasy_v3),
