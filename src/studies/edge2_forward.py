@@ -9,10 +9,15 @@ cfg.V9_LOCAL - else raw HTTP). Read-only towards v9.
 What it reports per hypothesis:
     counts           logged first-sight rows in the forward window, two-sided rows, settled rows,
                      gameweeks, decision-state counts, selections (QUALIFIED/STRONG)
+    descriptive      COUNTS ONLY, always (no outcome read): settled matchdays, two-sided share, selection
+                     rate, odds bands / sides of selections, league concentration (dashboard report, 2026-10-26)
     status           REGISTERED / ACCRUING / ELIGIBLE_FOR_REVIEW / BLOCKED_CONFIG_CHANGED
     metrics          ONLY once ELIGIBLE_FOR_REVIEW (interim policy: no effect size before eligibility),
                      then the pre-registered primary test, BH across the eligible family members, and
                      which promotion / rejection criteria are met. The owner decides.
+    secondary        ONLY once ELIGIBLE_FOR_REVIEW: the registered secondary metrics (model / market /
+                     market+Wowza log loss and Brier, selection-set ROI with matchday CI, hit rate; CLV is
+                     reported unavailable - the shadow log has no certified close).
 
 CONFIRMED is never assigned here. Nothing in production changes.
 """
@@ -202,6 +207,70 @@ def primary(s: pd.DataFrame) -> dict:
             "calibration_slope_market": _slope(y, s["p_mkt_a"].to_numpy(float))}
 
 
+ODDS_BANDS = [1.0, 1.6, 1.9, 2.2, 2.5, 3.0, 99.0]
+SELECTION = ("QUALIFIED", "STRONG")
+
+
+def descriptive(fwd: pd.DataFrame, settled: pd.DataFrame) -> dict:
+    """COUNTS ONLY — no outcome is read, so it is publishable before ELIGIBLE_FOR_REVIEW (interim policy).
+    Dashboard report fields (owner brief 2026-10-26, part D): matchdays, bet frequency, odds distribution,
+    league and side concentration. Selections = decision_state QUALIFIED/STRONG."""
+    if fwd is None or fwd.empty:
+        return {"matchdays": 0, "logged_kickoff_days": 0, "two_sided_share": None, "selection_rate": None,
+                "odds_bands_selected": {}, "leagues": 0, "top_league": None, "top_league_share": None,
+                "sides_selected": {}}
+    sel = fwd[fwd["decision_state"].isin(SELECTION)]
+    lg = fwd["league"].value_counts(normalize=True)
+    bands = pd.cut(pd.to_numeric(sel["odds"], errors="coerce"), ODDS_BANDS) if len(sel) else None
+    return {
+        "matchdays": int(settled["_ko"].dt.normalize().nunique()) if len(settled) else 0,
+        "logged_kickoff_days": int(fwd["_ko"].dt.normalize().nunique()),
+        "two_sided_share": round(float(fwd["two_sided"].mean()), 3),
+        "selection_rate": round(len(sel) / len(fwd), 3),
+        "odds_bands_selected": ({str(k): int(v) for k, v in bands.value_counts(sort=False).items()}
+                                if bands is not None else {}),
+        "leagues": int(fwd["league"].nunique()), "top_league": str(lg.index[0]),
+        "top_league_share": round(float(lg.iloc[0]), 3),
+        "sides_selected": {str(k): int(v) for k, v in sel["side"].value_counts().items()} if len(sel) else {}}
+
+
+def secondary(st: pd.DataFrame) -> dict:
+    """Pre-registered SECONDARY metrics — computed ONLY for an ELIGIBLE_FOR_REVIEW hypothesis (never an
+    interim peek). Descriptive, never corrected into a pass:
+      probability quality  LL / Brier of model (p_model_raw), market (de-vigged) and decision
+                           (market + Wowza residual) on the settled two-sided rows, side A
+      selection set        flat 1u ROI at the logged odds with a matchday block-bootstrap 95% CI, hit rate
+      CLV                  certified close is NOT in the shadow log -> reported as unavailable, never filled
+    """
+    y = st["y_a"].to_numpy(float)
+    q = {}
+    for name, col in (("model", "p_mod_a"), ("market", "p_mkt_a"), ("market_plus_wowza", "p_dec_a")):
+        p = pd.to_numeric(st[col], errors="coerce").to_numpy(float) if col in st.columns else np.full(len(y), np.nan)
+        ok = np.isfinite(p)
+        q[name] = {"n": int(ok.sum()),
+                   "log_loss": round(float(_ll(y[ok], p[ok]).mean()), 6) if ok.any() else None,
+                   "brier": round(float(((p[ok] - y[ok]) ** 2).mean()), 6) if ok.any() else None}
+    sel = st[st["decision_state"].isin(SELECTION)]
+    out = {"probability_quality": q, "selection": {"n": int(len(sel))},
+           "clv": {"status": "NO_CERTIFIED_CLOSE_IN_SHADOW_LOG", "coverage": 0.0, "mean": None,
+                   "note": "edge_engine_shadow.csv carries no closing price; certified CLV needs a close source"}}
+    if len(sel):
+        is_a = sel["side"].astype(str).str.upper() == sel["market"].map(SIDE_A)
+        won = np.where(is_a, sel["y_a"], 1 - sel["y_a"]).astype(float)
+        odds = pd.to_numeric(sel["odds"], errors="coerce").to_numpy(float)
+        pnl = np.where(won == 1, odds - 1.0, -1.0)
+        ok = np.isfinite(odds) & (odds > 1.0)
+        if ok.any():
+            days = pd.to_datetime(sel["kickoff_utc"], utc=True).dt.tz_convert(None).dt.normalize().to_numpy()[ok]
+            bs = _boot(pnl[ok], days) if len(np.unique(days)) >= 3 else None
+            out["selection"].update(
+                priced=int(ok.sum()), roi=round(float(pnl[ok].mean()), 4), hit_rate=round(float(won[ok].mean()), 4),
+                roi_ci95=None if bs is None else [round(float(np.percentile(bs, 2.5)), 4),
+                                                   round(float(np.percentile(bs, 97.5)), 4)],
+                matchdays=int(len(np.unique(days))))
+    return out
+
+
 # ───────────────────────────── evaluation ─────────────────────────────
 def prepare(shadow: pd.DataFrame, engine_version: str) -> pd.DataFrame:
     if shadow is None or shadow.empty:
@@ -216,6 +285,8 @@ def prepare(shadow: pd.DataFrame, engine_version: str) -> pd.DataFrame:
     s["two_sided"] = s["market_source"].isin(TWO_SIDED)
     s["p_dec_a"] = side_a(s, "p_decision")
     s["p_mkt_a"] = side_a(s, "p_market_fair")
+    if "p_model_raw" in s.columns:
+        s["p_mod_a"] = side_a(s, "p_model_raw")
     return s
 
 
@@ -245,7 +316,8 @@ def evaluate(reg: dict, shadow: pd.DataFrame, results=None, resolve=None, hashes
                          "gameweeks": gw, "selections_QUALIFIED_STRONG": int(len(sel)),
                          "states": {k: int(v) for k, v in fwd["decision_state"].value_counts().items()} if len(fwd) else {}},
              "progress_pct": round(min(100.0, 100 * len(st) / h["min_n_settled_two_sided"]), 1),
-             "metrics": None}
+             "descriptive": descriptive(fwd, st),
+             "metrics": None, "secondary": None}
         if drift:
             r["status"] = "BLOCKED_CONFIG_CHANGED"
         elif now < start or len(fwd) == 0:
@@ -253,6 +325,7 @@ def evaluate(reg: dict, shadow: pd.DataFrame, results=None, resolve=None, hashes
         elif len(st) >= h["min_n_settled_two_sided"] and gw >= h["min_gameweeks"]:
             r["status"] = "ELIGIBLE_FOR_REVIEW"
             r["metrics"] = primary(st)
+            r["secondary"] = secondary(st)
             r["_n"] = len(st)
         else:
             r["status"] = "ACCRUING"

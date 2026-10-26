@@ -102,3 +102,50 @@ def test_hgate_entries_marked_additively_and_evaluator_unchanged():
                             "market": CF.MARKET.get(h["market"], h["market"]), "side": "OVER", "raw_edge": 30,
                             "result": "WIN", "flat_pnl": 1.0, "clv": 1.0} for h in reg["hypotheses"]])
     assert json.dumps(CF.evaluate(reg, shadow), default=str) == json.dumps(CF.evaluate(stripped, shadow), default=str)
+
+
+def test_descriptive_is_counts_only_and_secondary_waits_for_eligibility():
+    """Dashboard report fields (owner brief 2026-10-26 part D): counts are published while ACCRUING,
+    outcome metrics (secondary) only at ELIGIBLE_FOR_REVIEW - the registry's interim policy."""
+    rows = [_row(1, "2026-10-26T09:00:00Z", "2026-10-30T20:00:00Z", state="QUALIFIED", side="OVER"),
+            _row(2, "2026-10-26T09:00:00Z", "2026-10-31T20:00:00Z", state="NO_BET", side="UNDER"),
+            _row(3, "2026-10-26T09:00:00Z", "2026-10-31T20:00:00Z", state="STRONG", side="UNDER",
+                 src="ONE_SIDED")]
+    for r, o in zip(rows, (2.1, 1.8, 3.4)):
+        r["odds"] = o
+    res = _results(rows, [(2, 1), (0, 0), (1, 1)])
+    out = E.evaluate(REG, pd.DataFrame(rows), res, _ident, HASHES, pd.Timestamp("2026-11-02T00:00Z"))
+    h = next(r for r in out if r["id"] == "H-EDGE2-NF-OU25-01")
+    assert h["status"] == "ACCRUING" and h["metrics"] is None and h["secondary"] is None
+    d = h["descriptive"]
+    assert d["matchdays"] == 2                          # settled two-sided rows on 30/10 and 31/10
+    assert d["selection_rate"] == round(2 / 3, 3) and d["sides_selected"] == {"OVER": 1, "UNDER": 1}
+    assert d["odds_bands_selected"]["(1.9, 2.2]"] == 1 and d["odds_bands_selected"]["(3.0, 99.0]"] == 1
+    assert d["top_league"] == "L" and d["top_league_share"] == 1.0 and d["two_sided_share"] == round(2 / 3, 3)
+    assert not {"roi", "clv", "log_loss", "brier"} & set(d)     # nothing outcome-derived
+
+
+def test_secondary_metrics_at_eligibility():
+    rng = np.random.default_rng(5)
+    rows, goals = [], []
+    for i in range(420):
+        ko = (pd.Timestamp("2026-10-27T18:00Z") + pd.Timedelta(days=int(i // 7))).strftime("%Y-%m-%dT%H:%M:%SZ")
+        pts = (pd.Timestamp(ko) - pd.Timedelta(hours=30)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        r = _row(i, pts, ko, state="QUALIFIED" if i % 3 == 0 else "NO_BET", pdec=0.5, pmkt=0.5)
+        r["odds"], r["p_model_raw"] = 2.0, 0.6
+        rows.append(r)
+        goals.append((2, 1) if rng.uniform() < 0.5 else (0, 0))
+    res = _results(rows, goals)
+    out = E.evaluate(REG, pd.DataFrame(rows), res, _ident, HASHES, pd.Timestamp("2027-06-01T00:00Z"))
+    h = next(r for r in out if r["id"] == "H-EDGE2-NF-OU25-01")
+    assert h["status"] == "ELIGIBLE_FOR_REVIEW"
+    sec = h["secondary"]
+    y = np.array([1.0 if g == (2, 1) else 0.0 for g in goals])
+    assert sec["probability_quality"]["market"]["brier"] == round(float(((0.5 - y) ** 2).mean()), 6)
+    assert sec["probability_quality"]["model"]["brier"] == round(float(((0.6 - y) ** 2).mean()), 6)
+    sel = y[::3]
+    assert sec["selection"]["n"] == len(sel)
+    assert sec["selection"]["roi"] == round(float(np.where(sel == 1, 1.0, -1.0).mean()), 4)
+    lo, hi = sec["selection"]["roi_ci95"]
+    assert lo <= sec["selection"]["roi"] <= hi
+    assert sec["clv"]["coverage"] == 0.0 and sec["clv"]["mean"] is None
