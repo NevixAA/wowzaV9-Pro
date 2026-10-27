@@ -1,6 +1,6 @@
-# League scout — 2026-10-27T05:43 UTC
+# League scout — 2026-10-27T12:45 UTC
 
-Results stored: 241,814 · fixtures priced: 3,795 · model frozen: 3,743
+Results stored: 241,816 · fixtures priced: 3,810 · model frozen: 3,758
 
 COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kickoff close
 
@@ -196,16 +196,19 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Egypt Second League | btts | 29 | COLLECTING | +0.034 | – | – |
 | 2 | Poland Ekstraklasa | ou15 | 28 | COLLECTING | -0.016 | – | -100.0% (1) |
 | 2 | Poland II Liga - East | ou15 | 28 | COLLECTING | -0.008 | – | +9.4% (5) |
+| 2 | Indonesia Liga 1 | ou15 | 28 | COLLECTING | +0.017 | – | – |
 | 2 | Poland Ekstraklasa | ou25 | 28 | COLLECTING | +0.062 | – | +2.5% (2) |
 | 2 | Poland II Liga - East | ou25 | 28 | COLLECTING | -0.020 | – | +22.8% (9) |
+| 2 | Indonesia Liga 1 | ou25 | 28 | COLLECTING | +0.025 | – | -39.2% (6) |
 | 2 | Poland Ekstraklasa | ou35 | 28 | COLLECTING | +0.022 | – | -30.0% (2) |
 | 2 | Poland II Liga - East | ou35 | 28 | COLLECTING | +0.010 | – | +28.4% (8) |
+| 2 | Indonesia Liga 1 | ou35 | 28 | COLLECTING | +0.052 | – | – |
 | 2 | Poland Ekstraklasa | btts | 28 | COLLECTING | +0.005 | – | – |
 | 2 | Poland II Liga - East | btts | 28 | COLLECTING | +0.022 | – | +3.4% (7) |
+| 2 | Indonesia Liga 1 | btts | 28 | COLLECTING | +0.015 | – | – |
 | 2 | France Ligue 2 | ou15 | 27 | COLLECTING | -0.004 | – | -100.0% (5) |
 | 2 | Netherlands Eredivisie | ou15 | 27 | COLLECTING | +0.116 | – | – |
 | 2 | Turkey Süper Lig | ou15 | 27 | COLLECTING | +0.058 | – | -68.0% (4) |
-| 2 | Indonesia Liga 1 | ou15 | 27 | COLLECTING | +0.017 | – | – |
 | 2 | Peru Primera División | ou15 | 27 | COLLECTING | -0.005 | – | -18.8% (4) |
 | 2 | Czech-Republic 3. liga - MSFL | ou15 | 27 | COLLECTING | -0.074 | – | – |
 | 2 | USA USL League One | ou15 | 27 | COLLECTING | +0.052 | – | – |
@@ -214,7 +217,6 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | France Ligue 2 | ou25 | 27 | COLLECTING | +0.009 | – | -28.6% (7) |
 | 2 | Netherlands Eredivisie | ou25 | 27 | COLLECTING | -0.017 | – | -20.0% (7) |
 | 2 | Turkey Süper Lig | ou25 | 27 | COLLECTING | +0.041 | – | +45.7% (6) |
-| 2 | Indonesia Liga 1 | ou25 | 27 | COLLECTING | +0.026 | – | -39.2% (6) |
 | 2 | Peru Primera División | ou25 | 27 | COLLECTING | +0.045 | – | -30.6% (8) |
 | 2 | Czech-Republic 3. liga - MSFL | ou25 | 27 | COLLECTING | -0.057 | – | -51.5% (10) |
 | 2 | USA USL League One | ou25 | 27 | COLLECTING | +0.093 | – | +88.3% (3) |
@@ -223,7 +225,6 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | France Ligue 2 | ou35 | 27 | COLLECTING | -0.017 | – | -37.8% (6) |
 | 2 | Netherlands Eredivisie | ou35 | 27 | COLLECTING | -0.017 | – | -50.7% (7) |
 | 2 | Turkey Süper Lig | ou35 | 27 | COLLECTING | -0.074 | – | -25.8% (6) |
-| 2 | Indonesia Liga 1 | ou35 | 27 | COLLECTING | +0.054 | – | – |
 | 2 | Peru Primera División | ou35 | 27 | COLLECTING | +0.051 | – | +25.0% (3) |
 | 2 | Czech-Republic 3. liga - MSFL | ou35 | 27 | COLLECTING | +0.020 | – | – |
 | 2 | USA USL League One | ou35 | 27 | COLLECTING | +0.017 | – | – |
@@ -232,7 +233,6 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | France Ligue 2 | btts | 27 | COLLECTING | +0.020 | – | -43.8% (6) |
 | 2 | Netherlands Eredivisie | btts | 27 | COLLECTING | +0.074 | – | -21.5% (2) |
 | 2 | Turkey Süper Lig | btts | 27 | COLLECTING | +0.014 | – | -56.8% (4) |
-| 2 | Indonesia Liga 1 | btts | 27 | COLLECTING | +0.014 | – | – |
 | 2 | Peru Primera División | btts | 27 | COLLECTING | +0.019 | – | -13.7% (6) |
 | 2 | Czech-Republic 3. liga - MSFL | btts | 27 | COLLECTING | -0.035 | – | – |
 | 2 | USA USL League One | btts | 27 | COLLECTING | +0.003 | – | – |
@@ -434,34 +434,34 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Morocco Botola Pro | ou15 | 17 | COLLECTING | +0.006 | – | +50.0% (1) |
 | 2 | Nicaragua Primera Division | ou15 | 17 | COLLECTING | +0.050 | – | – |
 | 2 | Iraq Iraqi League | ou15 | 17 | COLLECTING | +0.035 | – | – |
+| 2 | Netherlands Derde Divisie | ou25 | 17 | COLLECTING | -0.049 | – | -42.0% (5) |
 | 2 | Belgium Jupiler Pro League | ou25 | 17 | COLLECTING | +0.163 | – | -10.0% (3) |
 | 2 | Morocco Botola Pro | ou25 | 17 | COLLECTING | +0.038 | – | -100.0% (1) |
 | 2 | Nicaragua Primera Division | ou25 | 17 | COLLECTING | +0.042 | – | -13.0% (5) |
 | 2 | Iraq Iraqi League | ou25 | 17 | COLLECTING | +0.035 | – | +27.2% (6) |
+| 2 | Netherlands Derde Divisie | ou35 | 17 | COLLECTING | -0.028 | – | – |
 | 2 | Belgium Jupiler Pro League | ou35 | 17 | COLLECTING | +0.136 | – | -44.3% (3) |
 | 2 | Nicaragua Primera Division | ou35 | 17 | COLLECTING | +0.117 | – | – |
 | 2 | Iraq Iraqi League | ou35 | 17 | COLLECTING | -0.033 | – | – |
+| 2 | Netherlands Derde Divisie | btts | 17 | COLLECTING | +0.011 | – | – |
 | 2 | Belgium Jupiler Pro League | btts | 17 | COLLECTING | +0.104 | – | -50.0% (4) |
 | 2 | Morocco Botola Pro | btts | 17 | COLLECTING | -0.015 | – | +46.7% (3) |
 | 2 | Nicaragua Primera Division | btts | 17 | COLLECTING | +0.020 | – | – |
 | 2 | Iraq Iraqi League | btts | 17 | COLLECTING | -0.011 | – | – |
+| 2 | Netherlands Derde Divisie | ou15 | 16 | COLLECTING | -0.123 | – | – |
 | 2 | Qatar Stars League | ou15 | 16 | COLLECTING | +0.037 | – | -100.0% (1) |
 | 2 | Jamaica Premier League | ou15 | 16 | COLLECTING | -0.011 | – | – |
 | 2 | Slovenia 2. SNL | ou15 | 16 | COLLECTING | +0.073 | – | – |
-| 2 | Netherlands Derde Divisie | ou25 | 16 | COLLECTING | -0.027 | – | -42.0% (5) |
 | 2 | Qatar Stars League | ou25 | 16 | COLLECTING | +0.050 | – | +25.0% (2) |
 | 2 | Jamaica Premier League | ou25 | 16 | COLLECTING | +0.043 | – | -3.8% (8) |
 | 2 | Slovenia 2. SNL | ou25 | 16 | COLLECTING | -0.009 | – | +85.0% (1) |
-| 2 | Netherlands Derde Divisie | ou35 | 16 | COLLECTING | -0.010 | – | – |
 | 2 | Morocco Botola Pro | ou35 | 16 | COLLECTING | +0.091 | – | – |
 | 2 | Qatar Stars League | ou35 | 16 | COLLECTING | +0.064 | – | -19.0% (2) |
 | 2 | Jamaica Premier League | ou35 | 16 | COLLECTING | +0.031 | – | – |
 | 2 | Slovenia 2. SNL | ou35 | 16 | COLLECTING | -0.005 | – | – |
-| 2 | Netherlands Derde Divisie | btts | 16 | COLLECTING | +0.060 | – | – |
 | 2 | Qatar Stars League | btts | 16 | COLLECTING | -0.040 | – | +25.0% (2) |
 | 2 | Jamaica Premier League | btts | 16 | COLLECTING | +0.007 | – | – |
 | 2 | Slovenia 2. SNL | btts | 16 | COLLECTING | +0.045 | – | – |
-| 2 | Netherlands Derde Divisie | ou15 | 15 | COLLECTING | -0.166 | – | – |
 | 2 | Wales Premier League | ou15 | 15 | COLLECTING | +0.018 | – | – |
 | 2 | Chile Primera División | ou15 | 15 | COLLECTING | +0.087 | – | +100.0% (2) |
 | 2 | Northern-Ireland Championship | ou15 | 15 | COLLECTING | +0.049 | – | -100.0% (1) |
