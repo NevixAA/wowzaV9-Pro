@@ -371,7 +371,41 @@ def _btts_contradiction():
             "report": "output/studies/BTTS_CONTRADICTION.md"}
 
 
+def _monthly_learning():
+    """September vs October 2026 learning evidence (src/studies/monthly_learning.py). Reads the written
+    JSON only - the dashboard never recomputes it."""
+    r = _j("monthly_learning_comparison.json")
+    if not r:
+        return None
+    a = (r.get("betting") or {}).get("A", {})
+    ou = (a.get("ou25") or {}).get("all", {})
+    nfb = (a.get("tracks") or {}).get("NF BTTS", {})
+    rm = (r.get("retraining") or {}).get("by_month", {})
+
+    def roi(c, m):
+        x = (c.get(m) or {}).get("roi")
+        return "n/a" if x is None else f"{100 * x:+.1f}%"
+
+    def ci(c):
+        v = c.get("delta_roi_ci90") or [None, None]
+        return "n/a" if v[0] is None else f"[{100 * v[0]:+.1f}%, {100 * v[1]:+.1f}%]"
+    return {"status": f"OU25 ROI Sep {roi(ou, 'sep')} -> Oct {roi(ou, 'oct')} (change CI {ci(ou)}, not significant); "
+                      f"NF BTTS {roi(nfb, 'sep')} -> {roi(nfb, 'oct')} (CI {ci(nfb)}); promotion rate "
+                      f"{rm.get('2026-09', {}).get('promotion_rate')} -> {rm.get('2026-10', {}).get('promotion_rate')}; "
+                      "Standard = PRE_REPAIR",
+            "date": r.get("generated_at"),
+            "key": {"OU25 all Sep": f"{roi(ou, 'sep')} n {(ou.get('sep') or {}).get('n')}",
+                    "OU25 all Oct": f"{roi(ou, 'oct')} n {(ou.get('oct') or {}).get('n')}",
+                    "OU25 change 90% CI": ci(ou),
+                    "NF BTTS change 90% CI": ci(nfb),
+                    "promotions Sep": f"{rm.get('2026-09', {}).get('promoted')}/{rm.get('2026-09', {}).get('candidates')}",
+                    "promotions Oct": f"{rm.get('2026-10', {}).get('promoted')}/{rm.get('2026-10', {}).get('candidates')}",
+                    "production changes": "NO"},
+            "report": "docs/SEPTEMBER_VS_OCTOBER_LEARNING_EVIDENCE_2026.md"}
+
+
 STUDIES = [
+    ("monthly_learning", "September vs October 2026 learning evidence", "models", _monthly_learning),
     ("btts_contradiction", "NF BTTS contradiction: ROI vs CLV", "tips", _btts_contradiction),
     ("player_v3", "Player Model V3 / Edge Lab", "players", _player_v3),
     ("player_v3_forward", "Player V3 forward test (pre-registered)", "players", _forward),
