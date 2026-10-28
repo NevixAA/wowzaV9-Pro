@@ -318,3 +318,58 @@ def test_trusted_from_and_forward_phase():
     assert TR.table()["STANDARD_HISTORICAL_SIDE_MARKET_ROI"]["trusted_from"].startswith("NEVER")
     assert TR.forward_phase("2026-10-01", None) == "PRE_REPAIR_FORWARD"
     assert TR.forward_phase("2026-11-02", "2026-11-01T00:00:00Z") == "POST_REPAIR_FORWARD"
+
+
+# ── genuine BTTS prices (owner follow-up 2026-10-28) ──────────────────────────────────────────
+def _capture_csv(tmp_path):
+    rows = [
+        # historical backfill, two-sided, 00Z
+        ("2025-01-04", "2025-01-04T00:00:00Z", "2025-01-04", "", "Serie B", "Hellas Verona vs Bari", "btts_yes", 1.90),
+        ("2025-01-04", "2025-01-04T00:00:00Z", "2025-01-04", "", "Serie B", "Hellas Verona vs Bari", "btts_no", 1.90),
+        # one-sided only -> dropped
+        ("2025-01-05", "2025-01-05T00:00:00Z", "2025-01-05", "", "Serie B", "Pisa vs Como", "btts_yes", 1.80),
+        # forward, first-half mislabel (YES 5.5) -> removed, so not two-sided
+        ("2026-08-10", "2026-08-10T09:00:00Z", "2026-08-10", "2026-08-10T18:00:00Z", "Serie B", "Pisa vs Bari", "btts_yes", 5.50),
+        ("2026-08-10", "2026-08-10T09:00:00Z", "2026-08-10", "2026-08-10T18:00:00Z", "Serie B", "Pisa vs Bari", "btts_no", 1.20),
+        # forward after TRUSTED_FROM: earliest pre-kickoff quote per side is the entry
+        ("2026-09-06", "2026-09-06T08:00:00Z", "2026-09-06", "2026-09-06T14:00:00Z", "Serie B", "Bari vs Pisa", "btts_yes", 2.00),
+        ("2026-09-06", "2026-09-06T08:00:00Z", "2026-09-06", "2026-09-06T14:00:00Z", "Serie B", "Bari vs Pisa", "btts_no", 1.80),
+        ("2026-09-06", "2026-09-06T13:00:00Z", "2026-09-06", "2026-09-06T14:00:00Z", "Serie B", "Bari vs Pisa", "btts_yes", 1.70),
+    ]
+    p = tmp_path / "cap.csv"
+    pd.DataFrame(rows, columns=["snapshot_date", "snapshot_ts", "match_date", "kickoff_utc", "league", "match",
+                                "market", "odds"]).to_csv(p, index=False)
+    return p
+
+
+def test_btts_real_quotes_classes_and_filters(tmp_path):
+    from src.studies.standard_repair import btts_real as BR
+    q, meta = BR.load_quotes(_capture_csv(tmp_path))
+    assert meta["btts_1h_rows_removed"] == 1
+    assert set(q["match"]) == {"Hellas Verona vs Bari", "Bari vs Pisa"}          # one-sided / 1H rows gone
+    h = q.set_index("match")
+    assert h.loc["Hellas Verona vs Bari", "price_class"] == BR.HIST_CLASS
+    assert h.loc["Bari vs Pisa", "price_class"] == BR.FWD_CLASS
+    assert h.loc["Bari vs Pisa", "btts_yes"] == 2.00                             # earliest, not the later 1.70
+
+
+def test_btts_real_attach_matches_and_labels(tmp_path):
+    from src.studies.standard_repair import btts_real as BR
+    q, _ = BR.load_quotes(_capture_csv(tmp_path))
+    std = pd.DataFrame({"league": "Serie B", "date": pd.to_datetime(["2025-01-04", "2026-09-06", "2026-09-13"]),
+                        "home_team": ["Verona", "Bari", "Como"], "away_team": ["Bari", "Pisa", "Pisa"]})
+    amap = {"Serie B": {"Hellas Verona": "Verona"}}
+    resolve = lambda nm, cands: nm if nm in cands else None
+    s, rep = BR.attach(std, amap, quotes=q, resolve=resolve)
+    assert rep["matched"] == 2 and rep["match_rate"] == 1.0
+    assert abs(s.loc[0, "pm_BTTS_REAL"] - 0.5) < 1e-9 and s.loc[0, "btts_price_class"] == BR.HIST_CLASS
+    assert pd.isna(s.loc[2, "pm_BTTS_REAL"]) and pd.isna(s.loc[2, "market_class_BTTS_REAL"])
+    assert s.loc[1, "market_class_BTTS_REAL"] == BR.REAL_CLASS
+
+
+def test_btts_real_money_uses_real_side_price():
+    from src.studies.standard_repair.benchmark import _side_money
+    g = pd.DataFrame({"y": [1, 0, 1, 0], "pm": [0.5] * 4, "week": ["w1", "w1", "w2", "w2"],
+                      "btts_yes_odds": [2.0, 2.0, 1.8, 1.8], "btts_no_odds": [1.8, 1.8, 2.0, 2.0]})
+    yes = _side_money(g, True, "BTTS_REAL")
+    assert yes["roi_n"] == 4 and abs(yes["roi"] - ((1.0 - 1 + 0.8 - 1) / 4)) < 1e-9 and yes["clv_prob_pp"] is None

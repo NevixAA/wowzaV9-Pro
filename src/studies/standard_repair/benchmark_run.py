@@ -11,7 +11,7 @@ import pandas as pd
 from config import pro_config as cfg
 from src.studies.standard_repair import forensic as F
 from src.studies.standard_repair import identity as ID
-from src.studies.standard_repair.benchmark import (CONFIRM_START, EVAL_START, GROUPS, MARKETS, WF, _features, _metrics,
+from src.studies.standard_repair.benchmark import (BASE_MARKET, CONFIRM_START, EVAL_START, GROUPS, MARKETS, WF, _features, _metrics,
                                                    candidates, evaluate, frame_variant, market_table, rank_test, run_wf)
 from src.studies.standard_repair.candidates import _pred, pen_logit
 from src.studies.standard_repair.data import logit
@@ -124,8 +124,9 @@ def analyse(d: pd.DataFrame) -> dict:
         pm = f"pm_{m}"
         cand = candidates(d, m)
         dm = d.join(cand)
-        wf_cols = [c for c in dm.columns if c.endswith(f"|{m}")]
-        core = [c for c in (f"LEGACY_V9_REPRO|{m}", f"LEGACY_ON_CANON|{m}", f"V9_REPAIRED|{m}") if c in dm.columns]
+        bm = BASE_MARKET.get(m, m)                     # BTTS_REAL scores the BTTS model predictions
+        wf_cols = [c for c in dm.columns if c.endswith(f"|{bm}")]
+        core = [c for c in (f"LEGACY_V9_REPRO|{bm}", f"LEGACY_ON_CANON|{bm}", f"V9_REPAIRED|{bm}") if c in dm.columns]
         E = dm[(dm["date"] >= pd.Timestamp(EVAL_START)) & dm[pm].notna() & dm[f"y_{m}"].notna()]
         E = E.dropna(subset=core + PRO_ARMS).copy()
         E = E.rename(columns={pm: "pm", f"y_{m}": "y", **{c: c.split("|")[0] for c in wf_cols}})
@@ -161,10 +162,13 @@ def analyse(d: pd.DataFrame) -> dict:
                                         "by_league_mean_abs_dp_pp": {lg: round(float(v) * 100, 3)
                                                                      for lg, v in dd.groupby(h["league"]).mean().items()}}
         results[m] = {"rows_identical": int(len(E)), "gameweeks": int(E["week"].nunique()), "arms_identical_rows": full,
-                      "market_class": "GENUINE_PREMATCH_TWO_SIDED" if m == "OU25" else "SYNTHETIC_MARKET_PROXY",
+                      "market_class": {"OU25": "GENUINE_PREMATCH_TWO_SIDED (FD_PREMATCH_APPROX)",
+                                       "BTTS_REAL": "GENUINE_TWO_SIDED (" + "+".join(sorted(E["btts_price_class"].dropna().astype(str).unique())) + ")"}
+                      .get(m, "SYNTHETIC_MARKET_PROXY"),
+                      "rows_by_league": E["league"].value_counts().to_dict(),
                       "period_rows": E["period"].value_counts().to_dict(), "probability_deltas": pdl,
                       "date_range": [str(E["date"].min().date()), str(E["date"].max().date())]}
-        if m in ("OU25", "BTTS"):
+        if m in ("OU25", "BTTS", "BTTS_REAL"):
             for g in GROUPS:
                 alt = candidates(d, m, groups=[x for x in GROUPS if x != g], arms=("MKT_RESID_LR",))["MKT_RESID_LR"]
                 h = E.assign(alt=alt.reindex(E.index).to_numpy()).dropna(subset=["alt"])

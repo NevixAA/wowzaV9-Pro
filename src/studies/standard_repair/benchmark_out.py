@@ -33,6 +33,55 @@ def _ci(x, g):
 
 
 # ── reconciliation ──────────────────────────────────────────────────────────────────────────────
+def btts_reconciliation(analysis: dict, amap: dict) -> list:
+    """BTTS: (a) v9's legacy BTTS backtest priced its bets at the 1.85 fallback - re-price the same
+    placed YES tips at the REAL two-sided quote where one exists; (b) the July real-odds study's
+    Serie B / La Liga 2 BTTS pockets, re-tested on the repaired data on identical rows."""
+    from src.studies.standard_repair import btts_real as BR
+    rows = []
+    p = F._v9_file("output/backtest_results_btts.csv")
+    if p.exists():
+        keep = {"date", "league", "home_team", "away_team", "btts", "odds_btts", "price_synthetic", "p_btts",
+                "edge", "signal_tier", "bet", "pnl"}
+        b = pd.read_csv(p, low_memory=False, usecols=lambda c: c in keep)
+        b = b[b["league"].isin(BET)].copy()
+        b["date"] = pd.to_datetime(b["date"]).dt.normalize()
+        b["week"] = b["date"].dt.strftime("%G-W%V")
+        b = ID.apply_aliases(b, amap)
+        placed = b[b["signal_tier"].isin(["SNIPER", "MARKSMAN", "VALUABLE"])].copy()
+        real, rep_ = BR.attach(placed.drop_duplicates(["league", "date", "home_team", "away_team"]), amap)
+        j = placed.merge(real, on=["league", "date", "home_team", "away_team"], how="left")
+        j["pnl_real"] = np.where(j["btts_yes_odds"].notna(), np.where(j["btts"] == 1, j["btts_yes_odds"] - 1, -1.0), np.nan)
+        j["pnl_185_same_rows"] = np.where(j["btts_yes_odds"].notna(), j["pnl"], np.nan)
+        for lg, g in list(j.groupby("league")) + [("ALL", j)]:
+            n_fb = int(PR.is_fallback("BTTS", g["odds_btts"]).sum())
+            for col, fac, note in (("pnl", "B0_published_legacy_BTTS_backtest", f"{n_fb} of {len(g)} placed rows priced at the 1.85 fallback"),
+                                   ("pnl_185_same_rows", "B1_legacy_pnl_same_rows_with_real_price", "rows that also have a real two-sided quote"),
+                                   ("pnl_real", "B2_same_tips_at_REAL_BTTS_YES_price", "real quote: PREMATCH_SNAPSHOT_00Z / FORWARD_EARLIEST_PREKO")):
+                s2 = g.dropna(subset=[col])
+                rows.append({"factor": fac, "scope": lg, "bets": int(len(s2)), "gameweeks": int(s2["week"].nunique()),
+                             "roi": round(float(s2[col].mean()), 4) if len(s2) else None,
+                             "roi_ci95": _ci(s2[col], s2["week"]) if len(s2) >= 20 else None, "note": note})
+        rows.append({"factor": "B_match_report", "scope": "ALL",
+                     "note": f"real-quote match rate on legacy BTTS tips {rep_['match_rate']}"})
+    side = analysis["side"]
+    for lg in ("Serie B", "La Liga 2"):
+        for sd in ("YES", "NO"):
+            for arm in ("LEGACY_V9_REPRO", "V9_REPAIRED", "MKT_RESID_LR", "MKT_RESID_HGB"):
+                for per in ("ALL", "DISCOVERY", "CONFIRMATION"):
+                    r = side[(side["market"] == "BTTS_REAL") & (side["league"] == lg) & (side["side"] == sd)
+                             & (side["arm"] == arm) & (side["period"] == per)]
+                    if r.empty:
+                        continue
+                    r = r.iloc[0]
+                    rows.append({"factor": "B3_july_claim_retest_real_BTTS", "scope": f"{lg} BTTS {sd} {arm} {per}",
+                                 "bets": r.get("roi_n"), "gameweeks": r["gameweeks"], "roi": r.get("roi"),
+                                 "roi_ci95": r.get("roi_ci95"), "dLL_vs_market": r["dLL_vs_market"],
+                                 "dLL_ci95": r["dLL_ci95"], "n": r["n"],
+                                 "note": "identical rows vs the REAL two-sided BTTS price; every lean, no threshold"})
+    return rows
+
+
 def reconciliation(analysis: dict, amap: dict) -> pd.DataFrame:
     """Why does v9's legacy backtest show profitable Standard leagues when the benchmark finds no pooled
     edge? Each row changes ONE thing on v9's own legacy backtest rows (or compares two benchmark arms)."""
@@ -127,6 +176,7 @@ def reconciliation(analysis: dict, amap: dict) -> pd.DataFrame:
                          "roi": None, "roi_ci95": None, "dLL_vs_market": round(v[0], 5), "dLL_ci95": v[1], "n": v[2],
                          "note": "probability quality vs the genuine pre-match market on identical rows (negative = beats market)"})
     # league composition: spread of league dLL for the legacy repro
+    rows += btts_reconciliation(analysis, amap)
     lr = lgd[(lgd["arm"] == "LEGACY_V9_REPRO") & (lgd["market"] == "OU25") & (lgd["period"] == "ALL")]
     if len(lr):
         rows.append({"factor": "14_league_composition", "scope": "OU25 per league", "note":
@@ -187,7 +237,7 @@ def lms_table(side: pd.DataFrame, lg: pd.DataFrame) -> pd.DataFrame:
             for label, r in (("LEGACY_V9", pick("LEGACY_V9_REPRO")), ("REPAIRED_V9", pick(rep)), ("BEST_CHALLENGER", best)):
                 if r is None:
                     continue
-                cert = mk == "OU25"
+                cert = mk in ("OU25", "BTTS_REAL")
                 rows.append({"league": lgn, "market": mk, "side": sd, "model": label, "arm": r["arm"],
                              "n": r["n"], "gameweeks": r["gameweeks"], "log_loss": r["log_loss"], "brier": r["brier"],
                              "cal_slope": r.get("cal_slope"), "ece": r.get("ece"),
@@ -195,8 +245,10 @@ def lms_table(side: pd.DataFrame, lg: pd.DataFrame) -> pd.DataFrame:
                              "dBrier_vs_market": r["dBrier_vs_market"], "dBrier_ci95": r["dBrier_ci95"],
                              "clv_prob_pp": r.get("clv_prob_pp") if cert else None,
                              "roi": r.get("roi") if cert else None, "roi_ci95": r.get("roi_ci95") if cert else None,
-                             "roi_clv_status": "FD_PREMATCH_APPROX entry / FD_CLOSING close" if cert else "NOT CERTIFIABLE (synthetic market proxy, no real price)",
-                             "market_class": "GENUINE_PREMATCH_TWO_SIDED" if cert else "SYNTHETIC_MARKET_PROXY"})
+                             "roi_clv_status": ({"OU25": "FD_PREMATCH_APPROX entry / FD_CLOSING close",
+                                                 "BTTS_REAL": "real two-sided entry (PREMATCH_SNAPSHOT_00Z / FORWARD_EARLIEST_PREKO); no close -> CLV blank"}
+                                                .get(mk, "NOT CERTIFIABLE (synthetic market proxy, no real price)")),
+                             "market_class": "GENUINE_TWO_SIDED" if cert else "SYNTHETIC_MARKET_PROXY"})
     return pd.DataFrame(rows)
 
 
@@ -279,6 +331,7 @@ def write(skip_wf: bool = False, only=None) -> dict:
                    else "COMPLETE"),
         "arms_expected": sorted(expected), "arms_missing": missing,
         "side_track_study_r1": side_tab.to_dict("records"),
+        "btts_real_market": mt.attrs.get("btts_real_report"),
         "eval_start": EVAL_START, "confirm_start": CONFIRM_START,
         "markets": A["results"], "alias_copies_in_legacy_scoring": copies,
         "headline": head.to_dict("records"),

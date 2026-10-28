@@ -58,8 +58,15 @@ OUT = F.OUT
 WF = F.REBUILD / "wf"
 EVAL_START = "2024-07-01"
 CONFIRM_START = "2026-01-01"
-MARKETS = {"OU25": "over25", "BTTS": "btts", "OU15": "over15"}
-SIDES = {"OU25": ("OVER", "UNDER"), "BTTS": ("YES", "NO"), "OU15": ("OVER", "UNDER")}
+MARKETS = {"OU25": "over25", "BTTS": "btts", "OU15": "over15", "BTTS_REAL": "btts"}
+SIDES = {"OU25": ("OVER", "UNDER"), "BTTS": ("YES", "NO"), "OU15": ("OVER", "UNDER"), "BTTS_REAL": ("YES", "NO")}
+#: BTTS_REAL = rows with a GENUINE two-sided BTTS quote (btts_real.py); the model arms are the BTTS
+#: predictions, the residual anchor is the real price where it exists else the synthetic proxy.
+#: "BTTS" stays the SYNTHETIC_MARKET_PROXY comparison on all rows (labelled as such).
+BASE_MARKET = {"BTTS_REAL": "BTTS"}
+ANCHOR = {"BTTS_REAL": "pm_BTTS_MIX"}
+#: per market: (first-side entry odds, other-side entry odds, de-vigged close of the first side or None)
+MONEY = {"OU25": ("entry_over", "entry_under", "pclose_OU25"), "BTTS_REAL": ("btts_yes_odds", "btts_no_odds", None)}
 GROUPS = {
     "form_goals": ["home_scored_last5", "away_scored_last5", "home_conceded_last5", "away_conceded_last5",
                    "home_over25_last5", "away_over25_last5"],
@@ -132,7 +139,16 @@ def market_table(std: pd.DataFrame, amap: dict) -> pd.DataFrame:
     m["market_class_BTTS"] = m["market_class_OU15"] = np.where(m["pm_BTTS"].notna(), "SYNTHETIC_MARKET_PROXY", None)
     keep = k + ["pm_OU25", "n_books", "pclose_OU25", "entry_over", "entry_under", "close_over", "close_under",
                 "pm_BTTS", "pm_OU15", "market_class_OU25", "market_class_BTTS", "market_class_OU15"]
-    return m[keep]
+    m = m[keep]
+    # GENUINE two-sided BTTS where v9's captures hold one (historical 00Z backfill + trusted forward)
+    from src.studies.standard_repair import btts_real as BR
+    real, report = BR.attach(std, amap)
+    m = m.merge(real, on=k, how="left")
+    m["pm_BTTS_MIX"] = m["pm_BTTS_REAL"].fillna(m["pm_BTTS"])
+    m["market_class_BTTS_ROW"] = np.where(m["pm_BTTS_REAL"].notna(), BR.REAL_CLASS,
+                                          np.where(m["pm_BTTS"].notna(), BR.SYN_CLASS, None))
+    m.attrs["btts_real_report"] = report
+    return m
 
 
 # ── v9 walk-forward runs (v9's own trainer, in the v9 checkout) ───────────────────────────────────
@@ -191,7 +207,7 @@ def _features(d: pd.DataFrame) -> pd.DataFrame:
     x["form_lh"], x["form_la"] = lh, la
     fp = poisson_market_probs(lh.to_numpy(), la.to_numpy())
     for m in MARKETS:
-        x[f"form_pois_{m}"] = fp[m]
+        x[f"form_pois_{m}"] = fp[BASE_MARKET.get(m, m)]
     return x
 
 
@@ -206,7 +222,7 @@ def _env_rate(d: pd.DataFrame, y: str) -> pd.Series:
 def candidates(d: pd.DataFrame, market: str, groups: list[str] | None = None, window: str = "all",
                arms=("MKT_RESID_LR", "MKT_RESID_HGB", "BASE_RATE", "POISSON_FORM")) -> pd.DataFrame:
     y = f"y_{market}"
-    pm = f"pm_{market}"
+    pm = ANCHOR.get(market, f"pm_{market}")
     d = d.copy()
     d["form_gap"] = logit(d[f"form_pois_{market}"]) - logit(d[pm])
     d["env_rate"] = _env_rate(d, y)
@@ -271,16 +287,20 @@ def _metrics(p, y, pm, weeks) -> dict:
     return out
 
 
-def _side_money(g: pd.DataFrame, side_over: bool) -> dict:
-    """OU25 only: flat 1u at the FD_PREMATCH_APPROX entry of the side the arm leans to; CLV against the
-    FD_CLOSING de-vigged probability. No threshold."""
-    odds = np.where(side_over, g["entry_over"], g["entry_under"])
+def _side_money(g: pd.DataFrame, side_over: bool, market: str = "OU25") -> dict:
+    """Real-price markets only (OU25: FD_PREMATCH_APPROX entry, FD_CLOSING close; BTTS_REAL: the real
+    two-sided quote, no historical close -> CLV blank). Flat 1u on the side the arm leans to. No threshold."""
+    eo, eu, pcl = MONEY[market]
+    odds = np.where(side_over, g[eo], g[eu]).astype(float)
     won = np.where(side_over, g["y"] == 1, g["y"] == 0)
     ok = np.isfinite(odds) & (odds > 1)
     pnl = np.where(won, odds - 1, -1.0)[ok]
     pe = np.where(side_over, g["pm"], 1 - g["pm"])
-    pc = np.where(side_over, g["pclose_OU25"], 1 - g["pclose_OU25"])
-    clv = (pc - pe)[ok & np.isfinite(pc)]
+    if pcl is not None:
+        pc = np.where(side_over, g[pcl], 1 - g[pcl])
+        clv = (pc - pe)[ok & np.isfinite(pc)]
+    else:
+        clv = np.array([])
     r = {"roi": round(float(pnl.mean()), 4) if len(pnl) else None, "roi_n": int(ok.sum()),
          "clv_prob_pp": round(float(clv.mean()) * 100, 3) if len(clv) else None, "clv_n": int(len(clv))}
     if len(pnl) >= 20:
@@ -314,9 +334,10 @@ def evaluate(E: pd.DataFrame, arms: list[str], market: str) -> tuple[list, list,
                         continue
                     row = {"market": market, "arm": arm, "period": period, "league": lg, "side": side,
                            **_metrics(h[arm], h["y"], h["pm"], h["week"])}
-                    if market == "OU25":
-                        row.update(_side_money(h.assign(y=h["y"]), s_i == 0))
-                        row["price_status"] = "CERTIFIABLE_FD_PREMATCH_APPROX"
+                    if market in MONEY:
+                        row.update(_side_money(h, s_i == 0, market))
+                        row["price_status"] = ("CERTIFIABLE_FD_PREMATCH_APPROX" if market == "OU25" else
+                                               "REAL_TWO_SIDED_" + "+".join(sorted(h["btts_price_class"].dropna().astype(str).unique())))
                     else:
                         row.update({"roi": None, "clv_prob_pp": None, "price_status": "NOT_CERTIFIABLE_SYNTHETIC_MARKET_PROXY"})
                     side_rows.append(row)
@@ -334,9 +355,9 @@ def rank_test(E: pd.DataFrame, arm: str, market: str) -> list:
         if len(h) < 20:
             continue
         r = {"market": market, "arm": arm, "top_k": k, **_metrics(h[arm], h["y"], h["pm"], h["week"])}
-        if market == "OU25":
+        if market in MONEY:
             over = (h[arm] > h["pm"]).to_numpy()
-            mo, mu = _side_money(h[over], True), _side_money(h[~over], False)
+            mo, mu = _side_money(h[over], True, market), _side_money(h[~over], False, market)
             n = mo["roi_n"] + mu["roi_n"]
             r["roi"] = round(((mo["roi"] or 0) * mo["roi_n"] + (mu["roi"] or 0) * mu["roi_n"]) / n, 4) if n else None
             r["roi_n"] = n
