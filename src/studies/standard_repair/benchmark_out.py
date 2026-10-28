@@ -18,7 +18,8 @@ from src.studies.standard_repair import identity as ID
 from src.studies.standard_repair import prices as PR
 from src.studies.standard_repair import v9r_registry as VR
 from src.studies.standard_repair.benchmark import CONFIRM_START, EVAL_START, LEGACY_THRESH, SIDES
-from src.studies.standard_repair.benchmark_run import REPAIRED_RECIPE, analyse, build_dataset
+from src.studies.standard_repair.benchmark_run import (REPAIRED_RECIPE, WF_PLAN, _has_recipe, analyse, build_dataset,
+                                                       repaired_plan)
 from src.studies.standard_repair.data import FD_CODES, power_devig
 from src.studies.standard_repair.evaluate import block_boot
 
@@ -243,6 +244,11 @@ def write(skip_wf: bool = False, only=None) -> dict:
     A = analyse(d)
     amap = json.loads(F.ALIASES.read_text(encoding="utf-8"))["map"]
     has_rep = any(a == "V9_REPAIRED" for a in A["comp"]["arm"].unique())
+    expected = set(WF_PLAN) | (set(repaired_plan()) if _has_recipe() else set())
+    missing = sorted(expected - set(copies))
+    # R1's pooled vs standard-only vs NF-only side study (its own four-block holdout), if it ran
+    sides = sorted((F.REBUILD / "sides").glob("side_track_comparison_*.csv"))
+    side_tab = pd.concat([pd.read_csv(x) for x in sides], ignore_index=True) if sides else pd.DataFrame()
     fp = FP.current(*F.load_benchmark_frame(), data_cutoff=dq["data_cutoff"],
                     imputer_version=("persisted_train_only (R1)" if has_rep else None),
                     model_recipe_version=(REPAIRED_RECIPE if has_rep else None))
@@ -261,13 +267,18 @@ def write(skip_wf: bool = False, only=None) -> dict:
     FP.stamp_csv(A["side"], fp).to_csv(OUT / "repaired_by_side.csv", index=False)
     FP.stamp_csv(lms, fp).to_csv(OUT / "league_market_side.csv", index=False)
     FP.stamp_csv(rec, fp).to_csv(OUT / "reconciliation.csv", index=False)
+    if len(side_tab):
+        FP.stamp_csv(side_tab, fp).to_csv(OUT / "side_track_comparison.csv", index=False)
     if len(panel):
         FP.stamp_csv(panel, fp).to_csv(OUT / "top5_panel_repair.csv", index=False)
     comp = A["comp"]
     head = comp[(comp["period"].isin(["ALL", "DISCOVERY", "CONFIRMATION"])) & (comp["scope"] == "ALL")]
     bench = {
         "title": "Standard v9 forensic repair - repaired benchmark (Phase 2)",
-        "status": "COMPLETE" if has_rep else "PARTIAL_NO_V9_REPAIRED_RECIPE",
+        "status": ("PARTIAL_NO_V9_REPAIRED_RECIPE" if not has_rep else "PARTIAL_MISSING_ARMS" if missing
+                   else "COMPLETE"),
+        "arms_expected": sorted(expected), "arms_missing": missing,
+        "side_track_study_r1": side_tab.to_dict("records"),
         "eval_start": EVAL_START, "confirm_start": CONFIRM_START,
         "markets": A["results"], "alias_copies_in_legacy_scoring": copies,
         "headline": head.to_dict("records"),
@@ -292,6 +303,11 @@ def main(argv: list[str]) -> int:
     only = None
     if "--only" in argv:
         only = argv[argv.index("--only") + 1].split(",")
+    if "--wf-only" in argv:
+        # CI matrix shard: run only these walk-forward arms (gate still enforced), no analysis
+        build_dataset(skip_wf=False, only=only)
+        print("walk-forward arms done:", only)
+        return 0
     b = write(skip_wf=skip, only=only)
     print(json.dumps({"status": b["status"], "n_cells": b["n_cells_tested"],
                       "confirmed": [c for c in b["discovery_confirmation"] if c["status"] == "CONFIRMED"]}, indent=1, default=str))

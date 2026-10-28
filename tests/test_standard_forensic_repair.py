@@ -240,8 +240,20 @@ def test_failed_core_workflow_returns_failed(tmp_path, monkeypatch):
     (non-zero exit); a failed job marks everything STALE."""
     wf = yaml.safe_load((ROOT / ".github/workflows/pro_standard_repair.yml").read_text(encoding="utf-8"))
     steps = wf["jobs"]["repair"]["steps"]
-    sci = [s for s in steps if s.get("name", "").startswith(("Forensic", "Feature parity", "Repaired benchmark", "Weekly PRE_REPAIR"))]
-    assert len(sci) == 4
+    sci = [s for s in steps if s.get("name", "").startswith(("Forensic", "Weekly PRE_REPAIR"))]
+    assert len(sci) == 2
+    # the heavy phase-2 benchmark (manual, GitHub Actions only): every step that runs science must fail
+    # loudly, it never commits to main, and an incomplete arm set fails the run
+    bw = yaml.safe_load((ROOT / ".github/workflows/pro_standard_repair_benchmark.yml").read_text(encoding="utf-8"))
+    on = bw.get("on", bw.get(True))
+    assert set(on) == {"workflow_dispatch"}
+    for job in bw["jobs"].values():
+        for st in job["steps"]:
+            run = st.get("run", "")
+            if "python" in run and any(k in run for k in ("standard_repair", "standard_feature_audit")):
+                assert "|| echo" not in run and "|| true" not in run and "continue-on-error" not in st, st.get("name")
+    text = (ROOT / ".github/workflows/pro_standard_repair_benchmark.yml").read_text(encoding="utf-8")
+    assert "main|master" in text and 'b["status"] == "COMPLETE"' in text
     for s in sci:
         assert "|| echo" not in s["run"] and "|| true" not in s["run"], s["name"]
         assert "continue-on-error" not in s

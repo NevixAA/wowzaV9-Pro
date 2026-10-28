@@ -1,6 +1,6 @@
 {
  "title": "Standard v9 forensic repair - repaired benchmark (Phase 2)",
- "status": "COMPLETE",
+ "status": "PARTIAL_LOCAL_PRE_CRASH_UNVERIFIED",
  "eval_start": "2024-07-01",
  "confirm_start": "2026-01-01",
  "markets": {
@@ -17563,5 +17563,13 @@
  "frame_hash": "fd11fec500b13b97",
  "feature_version": "af8e18e713d3df5f",
  "model_recipe_version": "v9_repaired@",
- "price_source_version": "d241974a6df81e9e"
+ "price_source_version": "d241974a6df81e9e",
+ "arms_missing": [
+  "V9_REPAIRED_POOLED_SIDE",
+  "V9_REPAIRED_MKT_ASOF",
+  "V9_REPAIRED_MKT_CLOSING",
+  "V9_REPAIRED_W_RECENT2",
+  "R1_SIDES (pooled vs std-only vs NF-only)"
+ ],
+ "provenance_warning": "Computed on the owner's laptop 2026-10-28 08:52 UTC before a crash, from frames built with a v9 extract at f792f06b (legacy arms) and R1's worktree 1444b4b2 (repaired arms), football-data from Pro's committed fd_raw WITHOUT E2_2324 (League One 2023/24 prices). Not reproduced in CI. Superseded by the first run of pro_standard_repair_benchmark.yml; do not cite as final."
 }
