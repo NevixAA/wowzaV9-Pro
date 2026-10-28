@@ -57,8 +57,8 @@ def _fd_dir() -> Path:
     return Path(os.getenv("FD_DIR") or FD_RAW)
 
 
-def _run_build(out: Path, alias_map: Path | None = None) -> dict:
-    v9 = Path(os.getenv("V9_LOCAL") or cfg.V9_LOCAL)
+def _run_build(out: Path, alias_map: Path | None = None, extra: list | None = None, v9: Path | None = None) -> dict:
+    v9 = v9 or Path(os.getenv("V9_LOCAL") or cfg.V9_LOCAL)
     py = os.getenv("V9_PYTHON") or sys.executable
     script = Path(__file__).resolve().parent / "frame_build.py"
     cmd = [py, str(script), "--out", str(out), "--fd-dir", str(_fd_dir())]
@@ -67,6 +67,7 @@ def _run_build(out: Path, alias_map: Path | None = None) -> dict:
         cmd += ["--v9-sha", sha]
     if alias_map:
         cmd += ["--alias-map", str(alias_map)]
+    cmd += list(extra or [])
     env = dict(os.environ, PYTHONIOENCODING="utf-8", APIFOOTBALL_KEY="")
     r = subprocess.run(cmd, cwd=str(v9), env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
     if r.returncode != 0:
@@ -97,6 +98,22 @@ def rebuild() -> dict:
     return {"legacy": {k: m_leg.get(k) for k in ("rows_standard", "standard_frame_key_hash", "mode")},
             "canonical": {k: m_can.get(k) for k in ("rows_standard", "standard_frame_key_hash", "alias_rows_removed")},
             "aliases": sum(len(v) for v in al["map"].values()), "quarantined_standard_rows": int(len(qs))}
+
+
+def rebuild_repaired() -> dict:
+    """Frames for the V9_REPAIRED arms, built INSIDE the repaired v9 checkout (V9_REPAIRED_LOCAL =
+    R1's recipe branch) with the same loader inputs, Pro's alias map handed to R1's identity repair,
+    and each market-feature mode. Skipped (and reported) when no repaired checkout is configured."""
+    rl = os.getenv("V9_REPAIRED_LOCAL")
+    if not rl or not (Path(rl) / "src" / "standard_repair.py").exists():
+        return {"status": "SKIPPED_NO_REPAIRED_CHECKOUT"}
+    out = {}
+    for pm in ("none", "asof", "closing"):
+        m = _run_build(REBUILD / f"repaired_{pm}", None,
+                       ["--recipe", "v9_repaired", "--price-mode", pm, "--identity-map", str(ALIASES),
+                        "--v9-sha", os.getenv("V9_REPAIRED_SHA", "")], v9=Path(rl))
+        out[pm] = {k: m.get(k) for k in ("rows_standard", "standard_frame_key_hash")}
+    return out
 
 
 def load_benchmark_frame() -> tuple[pd.DataFrame, dict]:
@@ -359,9 +376,10 @@ def write_health(now: dict | None = None) -> dict:
         obj = json.loads(p.read_text(encoding="utf-8"))
         # compare at the output's own cutoff
         fr, man = load_benchmark_frame()
+        # the declared imputer / recipe NAME comes from the output; its code hash is recomputed now
+        sfp = obj.get("fingerprint") or {}
         nowc = FP.current(fr, man, data_cutoff=obj.get("data_cutoff"),
-                          imputer_version=(obj.get("fingerprint") or {}).get("imputer_version") if name == "data_quality.json" else None,
-                          model_recipe_version=(obj.get("fingerprint") or {}).get("model_recipe_version") if name == "data_quality.json" else None)
+                          imputer_version=sfp.get("imputer_version"), model_recipe_version=sfp.get("model_recipe_version"))
         arts[name] = {**FP.compare(obj.get("fingerprint"), nowc), "generated_at": obj.get("generated_at"),
                       "data_cutoff": obj.get("data_cutoff"), "output_status": obj.get("status")}
     pre = OUT / "pre_repair" / "MANIFEST.json"
@@ -393,6 +411,8 @@ def main(argv: list[str]) -> int:
         dq = audit(strict=True)
         print(json.dumps({"status": dq["status"], "data_cutoff": dq["data_cutoff"],
                           "identity": dq["identity"]["benchmark"]}, indent=1, default=str))
+    if cmd in ("rebuild-repaired", "all"):
+        print(json.dumps(rebuild_repaired(), indent=1, default=str))
     if cmd == "health":
         print(json.dumps(write_health()["STANDARD_REPAIR_BENCHMARK"]))
     return 0

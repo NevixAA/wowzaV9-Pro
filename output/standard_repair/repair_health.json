@@ -1,38 +1,43 @@
 {
- "STANDARD_REPAIR_BENCHMARK": "STALE",
+ "STANDARD_REPAIR_BENCHMARK": "CURRENT",
  "run_status": "success",
  "DATA_QUALITY": "CURRENT",
- "generated_at": "2026-10-28T07:46:25.738783+00:00",
+ "generated_at": "2026-10-28T09:03:09.832775+00:00",
  "artifacts": {
   "data_quality.json": {
    "status": "CURRENT",
    "reason": "all critical fingerprints match",
    "mismatched": [],
-   "generated_at": "2026-10-28T07:46:23.070659+00:00",
+   "generated_at": "2026-10-28T09:03:03.166220+00:00",
    "data_cutoff": "2026-10-26",
    "output_status": "PASS"
   },
   "repaired_benchmark.json": {
-   "status": "MISSING"
+   "status": "CURRENT",
+   "reason": "all critical fingerprints match",
+   "mismatched": [],
+   "generated_at": "2026-10-28T08:52:06.079262+00:00",
+   "data_cutoff": "2026-10-26",
+   "output_status": "COMPLETE"
   }
  },
  "current_fingerprint": {
   "schema": "standard_repair_fingerprint/1",
-  "generated_at": "2026-10-28T07:46:23.070659+00:00",
+  "generated_at": "2026-10-28T09:03:03.166220+00:00",
   "data_cutoff": "2026-10-26",
   "v9_commit": "f792f06b798c81cf5c6508bd1152103753d0e349",
-  "pro_commit": "4203992ebf4400f9accee0e717b9e96c683f369c",
-  "frame_hash_at_cutoff": "2908a114f953ad26",
+  "pro_commit": "ea008d26b1031e77f8c28407049fdca9a5834778",
+  "frame_hash_at_cutoff": "fd11fec500b13b97",
   "frame_rows_after_cutoff": 0,
   "raw_fd_finished_hash": "59aeb9a7588ea032",
   "raw_fd_current_hash": "cd54884ec7246d86",
   "archive_hash": "93943e73f4e0c8a3",
   "feature_schema_version": "af8e18e713d3df5f",
   "team_canon_version": "222d6e12816637b7",
-  "imputer_version": "v9_batch_median",
+  "imputer_version": "v9_batch_median@",
   "price_source_version": "d241974a6df81e9e",
-  "model_recipe_version": "legacy_v9",
-  "research_code_hash": "bd63b21472f8c337",
+  "model_recipe_version": "legacy_v9@",
+  "research_code_hash": "67f132b09b848e13",
   "frame_build_version": "frame_build/1.0",
   "frame_build_mode": "fd_dir"
  },

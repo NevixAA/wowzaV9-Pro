@@ -17,6 +17,9 @@ def main(argv: list[str]) -> int:
     if cmd == "forensic":                       # Phase 1 of the 2026-10-28 forensic repair
         from src.studies.standard_repair import forensic
         return forensic.main(argv[1:])
+    if cmd == "benchmark":                      # Phase 2 (requires a PASS, CURRENT data_quality.json)
+        from src.studies.standard_repair import benchmark_out
+        return benchmark_out.main(argv[1:])
     if cmd == "freeze-pre-repair":
         from src.studies.standard_repair import pre_repair
         print(json.dumps(pre_repair.freeze(), indent=1))

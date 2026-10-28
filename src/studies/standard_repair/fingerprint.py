@@ -118,11 +118,12 @@ def current(frame: pd.DataFrame | None = None, manifest: dict | None = None, dat
                                            "fe": inp.get("src/feature_engineering.py")}),
         "team_canon_version": combine({"team_names": inp.get("src/team_names.py"),
                                        "data_loader": inp.get("src/data_loader.py")}),
-        "imputer_version": imputer_version or DEFAULT_IMPUTER,
+        # name@hash(v9 src/model.py): a recipe/imputer is the declared name AND the code that implements it
+        "imputer_version": f"{(imputer_version or DEFAULT_IMPUTER).split('@')[0]}@{(inp.get('src/model.py') or '')[:12]}",
         "price_source_version": combine({"rules": PRICE_SOURCE_VERSION, "fd": finished,
                                          "captures": inp.get("output/standard_sidemarket_odds_history.csv")
                                          and "v9_captures"}),
-        "model_recipe_version": model_recipe_version or DEFAULT_RECIPE,
+        "model_recipe_version": f"{(model_recipe_version or DEFAULT_RECIPE).split('@')[0]}@{(inp.get('src/model.py') or '')[:12]}",
         "research_code_hash": research_code_hash(),
         "frame_build_version": (manifest or {}).get("frame_build_version"),
         "frame_build_mode": (manifest or {}).get("mode"),

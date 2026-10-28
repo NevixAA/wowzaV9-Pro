@@ -40,7 +40,8 @@ permissions:
 jobs:
   repair:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    # ~25 min per walk-forward arm on a 2-core runner: core arms weekly, all arms on the monthly run
+    timeout-minutes: 340
     steps:
       # ref: main, not the schedule-time SHA (queued runs otherwise check out a stale commit).
       - uses: actions/checkout@v4
@@ -53,6 +54,18 @@ jobs:
         with:
           repository: NevixAA/wowza-betting
           path: _v9
+          fetch-depth: 1
+
+      # The repaired v9 recipe (R1, 2026-10-28) lives on a v9 research branch until the owner merges it.
+      # Set the repository variable V9_REPAIRED_REF to that branch; without it the V9_REPAIRED arms are
+      # skipped and repaired_benchmark.json says PARTIAL_NO_V9_REPAIRED_RECIPE (never silently "complete").
+      - name: Check out repaired v9 recipe (read-only, optional)
+        if: ${{ vars.V9_REPAIRED_REF != '' }}
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: ${{ vars.V9_REPAIRED_REF }}
+          path: _v9r
           fetch-depth: 1
 
       - uses: actions/setup-python@v5
@@ -95,17 +108,30 @@ jobs:
           python -m src.studies.standard_repair freeze-pre-repair
           python -m src.studies.standard_repair forensic rebuild
           python -m src.studies.standard_repair forensic audit
+          if [ -d _v9r ]; then
+            export V9_REPAIRED_LOCAL="$PWD/_v9r" V9_REPAIRED_SHA="$(git -C _v9r rev-parse HEAD)"
+            python -m src.studies.standard_repair forensic rebuild-repaired
+          fi
+
+      - name: Feature parity (repaired recipe; FAILS the job on a REQUIRED-feature FAIL)
+        if: ${{ vars.V9_REPAIRED_REF != '' }}
+        env:
+          PYTHONIOENCODING: utf-8
+        run: |
+          cd _v9r
+          python scripts/standard_feature_audit.py --out ../output/standard_repair/feature_parity.csv             --json-out ../experiments/standard_repair_2026_10/rebuild/feature_parity.json --fail-on-required
 
       - name: Repaired benchmark (Phase 2; FAILS the job on failure)
         env:
+          V9_REPAIRED_LOCAL: ${{ vars.V9_REPAIRED_REF != '' && format('{0}/_v9r', github.workspace) || '' }}
           V9_LOCAL: ${{ github.workspace }}/_v9
           FD_DIR: ${{ github.workspace }}/_fd
           PYTHONIOENCODING: utf-8
         run: |
-          if python -c "import src.studies.standard_repair.benchmark" 2>/dev/null; then
+          if [ "${{ github.event.inputs.monthly }}" = "true" ] || [ "$(date -u +%d)" -le 7 ]; then
             python -m src.studies.standard_repair benchmark
           else
-            echo "Phase-2 benchmark module not present yet - repair_health will report the benchmark MISSING/STALE"
+            python -m src.studies.standard_repair benchmark --only LEGACY_V9_REPRO,LEGACY_ON_CANON,V9_REPAIRED,V9_REPAIRED_POOLED_SIDE
           fi
 
       - name: Weekly PRE_REPAIR_FORWARD loop (first-sight integrity; FAILS the job on failure)
@@ -148,7 +174,9 @@ jobs:
                    output/standard_repair/feature_parity.csv output/standard_repair/repaired_benchmark.json \
                    output/standard_repair/repaired_by_league.csv output/standard_repair/repaired_by_side.csv \
                    output/standard_repair/model_comparison.csv output/standard_repair/reconciliation.csv \
-                   output/standard_repair/pre_repair/MANIFEST.json; do
+                   output/standard_repair/pre_repair/MANIFEST.json output/standard_repair/league_market_side.csv \
+                   output/standard_repair/top5_panel_repair.csv registry/standard_repair/v9r_experiments.json \
+                   output/standard_repair/v9r_first_sight.csv; do
             [ -f "$f" ] && git add "$f" || echo "  (skip, not present: $f)"
           done
           git diff --staged --quiet && { echo "no change"; exit 0; }

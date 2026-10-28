@@ -42,7 +42,7 @@ FRAME_BUILD_VERSION = "frame_build/1.0"
 SOURCE_FILES = ("output/fd_history.parquet", "output/backtest_all_leagues.csv",
                 "output/standard_sidemarket_odds_history.csv", "output/standard_odds_history.csv",
                 "output/newformat_odds_history.csv", "output/af_history.parquet",
-                "src/data_loader.py", "src/feature_engineering.py", "src/team_names.py", "config.py",
+                "src/data_loader.py", "src/feature_engineering.py", "src/team_names.py", "config.py", "src/model.py",
                 "models/model_v9_standard.pkl")
 PRICE_COLS = ("odds_over25", "odds_under25", "odds_btts", "odds_over15", "odds_over35")
 
@@ -73,6 +73,10 @@ def main() -> int:
     ap.add_argument("--online", action="store_true", help="let v9's loader download the live season")
     ap.add_argument("--v9-sha", default="", help="v9 commit when cwd is not a git checkout")
     ap.add_argument("--fd-dir", default="", help="serve v9's football-data download from these files")
+    ap.add_argument("--recipe", default="legacy_v9", help="legacy_v9 (v9 build_features) or v9_repaired (R1)")
+    ap.add_argument("--price-mode", default="closing", help="v9_repaired market-feature mode: none|asof|closing")
+    ap.add_argument("--identity-map", default="", help="v9_repaired: alias map passed to R1's prepare_history")
+    ap.add_argument("--keep-covid", action="store_true", help="do NOT drop v9's COVID seasons before features")
     ap.add_argument("--alias-map", default="", help="identity.py alias map applied after v9's canonicaliser")
     a = ap.parse_args()
     out = Path(a.out)
@@ -227,7 +231,27 @@ def main() -> int:
 
     # force CI mode even on a workstation that has the local workbook
     config.SUMMARY_XLSX = Path(out / "__no_workbook__.xlsx")
-    raw = dl.load_all_matches(force=True)
+    # READ-ONLY against the v9 checkout: v9's loader refreshes output/fd_history.parquet whenever it
+    # "downloaded" something; never let it write inside the checkout.
+    _orig_to_parquet = pd.DataFrame.to_parquet
+    cwd = Path.cwd().resolve()
+    blocked: list = []
+
+    def _guarded(self, path, *args, **kw):
+        try:
+            inside = Path(path).resolve().is_relative_to(cwd)
+        except Exception:                                                     # noqa: BLE001
+            inside = False
+        if inside:
+            blocked.append(str(path))
+            return None
+        return _orig_to_parquet(self, path, *args, **kw)
+    pd.DataFrame.to_parquet = _guarded
+    try:
+        raw = dl.load_all_matches(force=True)
+    finally:
+        pd.DataFrame.to_parquet = _orig_to_parquet
+    captured["blocked_writes"] = blocked
     t_load = time.time() - t0
 
     # ── source classification (current vs archive season) ────────────────────────────────────
@@ -252,7 +276,24 @@ def main() -> int:
             pre_std[c] = pre_std[c].astype("string")
     pre_std.to_parquet(out / "raw_precanon_standard.parquet", index=False)
 
-    feat = build_features(raw)
+    # v9's mode_train drops the COVID seasons from the RAW matches BEFORE building features, so the
+    # first post-COVID rolling windows never see 2019/20-2020/21 matches. Reproduce that exactly.
+    n_covid = 0
+    if config.EXCLUDE_COVID_SEASONS and not a.keep_covid:
+        m = raw["season"].astype(str).isin(set(map(str, config.COVID_SEASONS)))
+        n_covid = int(m.sum())
+        raw = raw[~m]
+    rep_identity = None
+    if a.recipe == "v9_repaired":
+        # R1's repaired recipe (v9 worktree with src/standard_repair.py): identity canonicalised and
+        # de-duplicated BEFORE features, league-scoped canonical as-of features, price mode explicit.
+        from src import standard_repair as SR
+        raw2, rep_identity = SR.prepare_history(raw, "v9_repaired", alias_map=a.identity_map or None)
+        fdp = SR.load_fd_entry_prices(a.fd_dir) if a.price_mode == "asof" else None
+        feat = SR.feature_frame(raw2, "v9_repaired", price_mode=a.price_mode, fd_prices=fdp)
+        rep_identity = {k: v for k, v in (rep_identity or {}).items() if k != "quarantine_rows"} |             {"quarantine_rows": len((rep_identity or {}).get("quarantine_rows", []))}
+    else:
+        feat = build_features(raw)
     feat["track"] = np.where(feat["league"].isin(config.STANDARD_FORMAT_LEAGUES), "standard",
                              np.where(feat["league"].isin(config.NEW_FORMAT_LEAGUES), "new_format", "other"))
     feat["covid_excluded"] = feat["season"].astype(str).isin(set(map(str, config.COVID_SEASONS))) \
@@ -297,6 +338,8 @@ def main() -> int:
         "standard_frame_key_hash": frame_hash, "standard_frame_full_hash": full_hash,
         "alias_map_sha256": sha256_file(Path(a.alias_map)) if a.alias_map else None,
         "alias_rows_removed": captured.get("alias_rows_removed", 0),
+        "covid_rows_dropped_before_features": n_covid,
+        "recipe": a.recipe, "price_mode": a.price_mode, "r1_identity_report": rep_identity,
         "rows_total": int(len(feat)), "rows_standard": int(len(std)),
         "standard_date_range": [str(pd.to_datetime(std["date"]).min().date()),
                                 str(pd.to_datetime(std["date"]).max().date())],

@@ -240,8 +240,8 @@ def test_failed_core_workflow_returns_failed(tmp_path, monkeypatch):
     (non-zero exit); a failed job marks everything STALE."""
     wf = yaml.safe_load((ROOT / ".github/workflows/pro_standard_repair.yml").read_text(encoding="utf-8"))
     steps = wf["jobs"]["repair"]["steps"]
-    sci = [s for s in steps if s.get("name", "").startswith(("Forensic", "Repaired benchmark", "Weekly PRE_REPAIR"))]
-    assert len(sci) == 3
+    sci = [s for s in steps if s.get("name", "").startswith(("Forensic", "Feature parity", "Repaired benchmark", "Weekly PRE_REPAIR"))]
+    assert len(sci) == 4
     for s in sci:
         assert "|| echo" not in s["run"] and "|| true" not in s["run"], s["name"]
         assert "continue-on-error" not in s
