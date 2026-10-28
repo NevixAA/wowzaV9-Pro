@@ -1,0 +1,274 @@
+name: Pro Standard Repair BENCHMARK (forensic phase 2, manual)
+
+# Owner brief 2026-10-28 (Standard v9 forensic repair), phase 2. Heavy work runs HERE, never on the
+# owner's laptop. Manual dispatch only. Research only: nothing here is read by v9 serving, stakes or
+# Telegram; v9 is checked out read-only; results are committed back to the RESEARCH branch named in
+# `pro_ref` (never main - the job refuses).
+#
+# Jobs
+#   frame    football-data download (all Standard codes, 2019/20..2026/27 incl. E2_2324) -> v9's own
+#            loader + feature builder inside the v9 checkout (legacy + identity-canonical frames, and
+#            the repaired recipe's frames for market modes none / asof / closing) -> identity /
+#            provenance / price audit -> data_quality.json (must PASS). Uploads frames as an artifact.
+#   wf       matrix of walk-forward shards (v9's own trainer, quarterly blocks from 2024-07-01):
+#            LEGACY_V9_REPRO, LEGACY_ON_CANON, V9_REPAIRED, side scope pooled vs standard-only,
+#            market-feature NONE / TRUE_ASOF / CLOSING_CONTAMINATED, history windows; R1's side-track
+#            study (pooled vs Std-only vs NF-only); R1's feature-parity audit. One process per shard,
+#            so memory stays bounded (frames are ~70k rows).
+#   analyse  identical-row evaluation vs MARKET, Pro-side candidates (market-anchored residuals,
+#            Poisson, base rate), feature-group ablation, history windows, calibration, discovery /
+#            confirmation with BH-FDR, rank test, reconciliation, Top-5 panel, health. Commits outputs
+#            to pro_ref and uploads them as an artifact.
+# Any scientific failure fails the run (no `|| echo`). Runner: ubuntu-latest (2 vCPU / 7 GB on private
+# repos); each shard trains one model at a time.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pro_ref:
+        description: 'Pro research branch to run AND to commit results to (never main)'
+        required: true
+        default: 'research/standard-forensic-repair'
+      v9_ref:
+        description: 'v9 (wowza-betting) ref with the legacy_v9 / v9_repaired recipe switch'
+        required: true
+        default: 'research/standard-forensic-repair-r1'
+
+concurrency:
+  group: pro-standard-repair-benchmark
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  PYTHONIOENCODING: utf-8
+  REBUILD: experiments/standard_repair_2026_10/rebuild
+
+jobs:
+  frame:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Refuse main
+        run: |
+          case "${{ inputs.pro_ref }}" in main|master) echo "::error::pro_ref must be a research branch"; exit 1;; esac
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.pro_ref }}
+      - uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: ${{ inputs.v9_ref }}
+          path: _v9
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          pip install -r requirements.txt
+          pip install "scikit-learn>=1.9.0,<1.10.0" lightgbm
+      - name: football-data raw files (committed copy, refreshed; fails if a needed file is missing)
+        run: |
+          set -euo pipefail
+          mkdir -p _fd
+          cp experiments/ou_info_inputs_2026_10/fd_raw/*.csv _fd/
+          for code in E1 E2 E3 EC D2 F2 SP2 I2 G1 P1 SC0 SC1 SC2 SC3 B1 N1 T1; do
+            for s in 1920 2021 2122 2223 2324 2425 2526 2627; do
+              f="_fd/${code}_${s}.csv"
+              if curl -sfL --retry 3 --max-time 60 "https://www.football-data.co.uk/mmz4281/${s}/${code}.csv" -o "$f.tmp" \
+                 && head -c 200 "$f.tmp" | grep -q "Date"; then mv "$f.tmp" "$f"; else rm -f "$f.tmp"; fi
+              sleep 0.2
+            done
+          done
+          for code in ARG AUT BRA CHN DNK FIN IRL JPN MEX NOR SWE USA ROU; do
+            curl -sfL --retry 3 --max-time 60 "https://www.football-data.co.uk/new/${code}.csv" -o "_fd/new_${code}.csv.tmp" \
+              && mv "_fd/new_${code}.csv.tmp" "_fd/new_${code}.csv" || rm -f "_fd/new_${code}.csv.tmp"
+          done
+          test -f _fd/E2_2324.csv || { echo "::error::League One 2023/24 (E2_2324) still missing"; exit 1; }
+          ls _fd | wc -l
+      - name: Frames + data-quality audit (FAILS on any integrity failure)
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+          V9_REPAIRED_LOCAL: ${{ github.workspace }}/_v9
+          FD_DIR: ${{ github.workspace }}/_fd
+        run: |
+          export V9_SHA="$(git -C _v9 rev-parse HEAD)" V9_REPAIRED_SHA="$(git -C _v9 rev-parse HEAD)"
+          python -m src.studies.standard_repair freeze-pre-repair
+          python -m src.studies.standard_repair forensic rebuild
+          python -m src.studies.standard_repair forensic audit
+          python -m src.studies.standard_repair forensic rebuild-repaired
+          du -sh "$REBUILD"; free -m
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frames
+          retention-days: 7
+          path: |
+            ${{ env.REBUILD }}/legacy/
+            ${{ env.REBUILD }}/canonical/
+            ${{ env.REBUILD }}/repaired_none/
+            ${{ env.REBUILD }}/repaired_asof/
+            ${{ env.REBUILD }}/repaired_closing/
+            output/standard_repair/
+            _fd/
+
+  wf:
+    needs: frame
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        shard:
+          - LEGACY_V9_REPRO
+          - LEGACY_ON_CANON
+          - V9_REPAIRED
+          - V9_REPAIRED_POOLED_SIDE,LEGACY_CANON_STD_SIDE
+          - LEGACY_CANON_MKT_ASOF,LEGACY_CANON_MKT_NONE,V9_REPAIRED_MKT_ASOF,V9_REPAIRED_MKT_CLOSING
+          - LEGACY_CANON_W_MODERN,LEGACY_CANON_W_RECENT2
+          - LEGACY_CANON_W_RECENT3,LEGACY_CANON_W_WEIGHTED
+          - V9_REPAIRED_W_MODERN,V9_REPAIRED_W_RECENT2
+          - R1_SIDES
+          - R1_FEATURE_PARITY
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.pro_ref }}
+      - uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: ${{ inputs.v9_ref }}
+          path: _v9
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          pip install -r requirements.txt
+          pip install "scikit-learn>=1.9.0,<1.10.0" lightgbm
+      - uses: actions/download-artifact@v4
+        with:
+          name: frames
+          path: .
+      - name: Shard ${{ matrix.shard }}
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+          V9_REPAIRED_LOCAL: ${{ github.workspace }}/_v9
+          FD_DIR: ${{ github.workspace }}/_fd
+        run: |
+          set -euo pipefail
+          mkdir -p "$REBUILD/wf" "$REBUILD/sides" out_shard
+          ALIAS="$PWD/output/standard_repair/identity_aliases.json"
+          case "${{ matrix.shard }}" in
+            R1_SIDES)
+              cd _v9
+              python -m src.standard_repair sides --recipe v9_repaired --out "../$REBUILD/sides" --alias-map "$ALIAS"
+              python -m src.standard_repair sides --recipe legacy_v9 --out "../$REBUILD/sides"
+              cd ..
+              rm -f "$REBUILD"/sides/*.pkl
+              cp "$REBUILD"/sides/*.csv out_shard/ ;;
+            R1_FEATURE_PARITY)
+              cd _v9
+              python scripts/standard_feature_audit.py --out ../out_shard/feature_parity.csv \
+                --json-out ../out_shard/feature_parity.json --fail-on-required
+              cd .. ;;
+            *)
+              python -m src.studies.standard_repair benchmark --wf-only --only "${{ matrix.shard }}"
+              cp "$REBUILD"/wf/*.parquet "$REBUILD"/wf/*.json out_shard/ ;;
+          esac
+          ls -la out_shard; free -m
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shard-${{ strategy.job-index }}
+          retention-days: 7
+          path: out_shard/
+
+  analyse:
+    needs: [frame, wf]
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.pro_ref }}
+      - uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: ${{ inputs.v9_ref }}
+          path: _v9
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          pip install -r requirements.txt
+          pip install "scikit-learn>=1.9.0,<1.10.0" lightgbm
+      - uses: actions/download-artifact@v4
+        with:
+          name: frames
+          path: .
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: shard-*
+          path: _shards
+      - name: Collect shards
+        run: |
+          set -euo pipefail
+          mkdir -p "$REBUILD/wf" "$REBUILD/sides"
+          find _shards -name '*.parquet' -exec cp {} "$REBUILD/wf/" \;
+          find _shards -name '*.json' ! -name 'feature_parity.json' -exec cp {} "$REBUILD/wf/" \;
+          find _shards -name 'side_track_comparison_*.csv' -exec cp {} "$REBUILD/sides/" \;
+          find _shards -name 'feature_parity.csv' -exec cp {} output/standard_repair/feature_parity.csv \;
+          test -f output/standard_repair/feature_parity.csv || { echo "::error::feature parity shard produced nothing"; exit 1; }
+          ls "$REBUILD/wf" "$REBUILD/sides"
+      - name: Analyse (identical rows; FAILS on parity / data-quality / integrity failure)
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+          V9_REPAIRED_LOCAL: ${{ github.workspace }}/_v9
+          FD_DIR: ${{ github.workspace }}/_fd
+        run: |
+          python -m src.studies.standard_repair benchmark --skip-wf
+          python - <<'PY'
+          import json, sys
+          b = json.load(open("output/standard_repair/repaired_benchmark.json"))
+          print("status", b["status"], "missing", b.get("arms_missing"))
+          sys.exit(0 if b["status"] == "COMPLETE" else 1)
+          PY
+      - name: Health (always)
+        if: always()
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+          FD_DIR: ${{ github.workspace }}/_fd
+          JOB_STATUS: ${{ job.status }}
+        run: python -m src.studies.standard_repair forensic health
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: standard-repair-results
+          retention-days: 30
+          path: output/standard_repair/
+      - name: Commit results to the research branch (never main)
+        if: success()
+        run: |
+          case "${{ inputs.pro_ref }}" in main|master) exit 1;; esac
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for f in output/standard_repair/data_quality.json output/standard_repair/source_coverage.csv \
+                   output/standard_repair/price_coverage.csv output/standard_repair/identity_aliases.json \
+                   output/standard_repair/identity_quarantine.csv output/standard_repair/repair_health.json \
+                   output/standard_repair/feature_parity.csv output/standard_repair/repaired_benchmark.json \
+                   output/standard_repair/repaired_by_league.csv output/standard_repair/repaired_by_side.csv \
+                   output/standard_repair/model_comparison.csv output/standard_repair/reconciliation.csv \
+                   output/standard_repair/league_market_side.csv output/standard_repair/top5_panel_repair.csv \
+                   output/standard_repair/side_track_comparison.csv output/standard_repair/pre_repair/MANIFEST.json \
+                   registry/standard_repair/v9r_experiments.json; do
+            [ -f "$f" ] && git add "$f" || echo "  (not present: $f)"
+          done
+          git diff --staged --quiet && { echo "no change"; exit 0; }
+          git commit -m "research(standard): CI benchmark $(date -u '+%Y-%m-%d %H:%M') v9 ${{ inputs.v9_ref }}"
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin "${{ inputs.pro_ref }}" && git push origin "HEAD:${{ inputs.pro_ref }}" && exit 0
+            sleep $((RANDOM % 5 + 3))
+          done
+          exit 1
