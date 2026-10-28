@@ -1,6 +1,6 @@
-# League scout — 2026-10-28T01:49 UTC
+# League scout — 2026-10-28T09:03 UTC
 
-Results stored: 241,899 · fixtures priced: 3,918 · model frozen: 3,863
+Results stored: 241,901 · fixtures priced: 3,975 · model frozen: 3,920
 
 COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kickoff close
 
@@ -158,10 +158,10 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Algeria Ligue 2 | ou25 | 38 | COLLECTING | -0.016 | -0.11 | -21.4% (7) |
 | 2 | Algeria Ligue 2 | ou35 | 38 | COLLECTING | -0.044 | 0.26 | – |
 | 2 | Algeria Ligue 2 | btts | 38 | COLLECTING | +0.043 | 0.63 | – |
-| 2 | Colombia Primera A | ou15 | 36 | COLLECTING | -0.003 | -0.54 | -100.0% (2) |
-| 2 | Colombia Primera A | ou25 | 36 | COLLECTING | +0.010 | 0.26 | -0.1% (7) |
-| 2 | Colombia Primera A | ou35 | 36 | COLLECTING | -0.037 | 0.54 | +23.8% (4) |
-| 2 | Colombia Primera A | btts | 36 | COLLECTING | +0.010 | -0.6 | -43.8% (4) |
+| 2 | Colombia Primera A | ou15 | 37 | COLLECTING | -0.001 | -0.43 | -100.0% (2) |
+| 2 | Colombia Primera A | ou25 | 37 | COLLECTING | +0.006 | 0.21 | -0.1% (7) |
+| 2 | Colombia Primera A | ou35 | 37 | COLLECTING | -0.042 | 0.53 | +23.8% (4) |
+| 2 | Colombia Primera A | btts | 37 | COLLECTING | +0.012 | -0.61 | -43.8% (4) |
 | 2 | England Non League Premier - Northern | ou15 | 35 | COLLECTING | -0.016 | -0.66 | – |
 | 2 | England Non League Premier - Northern | ou25 | 35 | COLLECTING | -0.006 | -1.6 | -7.6% (11) |
 | 2 | England Non League Premier - Northern | ou35 | 35 | COLLECTING | +0.003 | -0.71 | – |
@@ -746,7 +746,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Spain Tercera División RFEF - Group 6 | ou25 | 2 | COLLECTING | -0.241 | – | -100.0% (1) |
 | 2 | Spain Tercera División RFEF - Group 9 | ou25 | 2 | COLLECTING | +0.058 | – | – |
 | 2 | Spain Tercera División RFEF - Group 16 | ou25 | 2 | COLLECTING | +0.010 | – | +73.0% (1) |
-| 2 | Mongolia Premier League | ou25 | 2 | COLLECTING | +0.089 | – | -100.0% (1) |
+| 2 | Mongolia Premier League | ou25 | 2 | COLLECTING | +0.086 | – | -100.0% (1) |
 | 2 | Philippines PFL | ou25 | 2 | COLLECTING | +0.200 | – | +93.5% (2) |
 | 2 | Morocco Botola 2 | ou35 | 2 | COLLECTING | +0.087 | – | – |
 | 2 | Finland Kakkonen - Lohko A | ou35 | 2 | COLLECTING | +0.312 | – | -100.0% (1) |
@@ -758,7 +758,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Spain Tercera División RFEF - Group 6 | ou35 | 2 | COLLECTING | -0.510 | – | – |
 | 2 | Spain Tercera División RFEF - Group 9 | ou35 | 2 | COLLECTING | +0.071 | – | – |
 | 2 | Spain Tercera División RFEF - Group 16 | ou35 | 2 | COLLECTING | +0.043 | – | – |
-| 2 | Mongolia Premier League | ou35 | 2 | COLLECTING | +0.293 | – | – |
+| 2 | Mongolia Premier League | ou35 | 2 | COLLECTING | +0.294 | – | – |
 | 2 | Philippines PFL | ou35 | 2 | COLLECTING | +0.355 | – | – |
 | 2 | Morocco Botola 2 | btts | 2 | COLLECTING | -0.091 | – | – |
 | 2 | Finland Kakkonen - Lohko A | btts | 2 | COLLECTING | -0.079 | – | – |
@@ -769,7 +769,7 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Spain Tercera División RFEF - Group 6 | btts | 2 | COLLECTING | -0.156 | – | – |
 | 2 | Spain Tercera División RFEF - Group 9 | btts | 2 | COLLECTING | +0.211 | – | – |
 | 2 | Spain Tercera División RFEF - Group 16 | btts | 2 | COLLECTING | +0.272 | – | – |
-| 2 | Mongolia Premier League | btts | 2 | COLLECTING | +0.691 | – | – |
+| 2 | Mongolia Premier League | btts | 2 | COLLECTING | +0.690 | – | – |
 | 2 | Philippines PFL | btts | 2 | COLLECTING | +0.116 | – | – |
 | 2 | Belgium Second Amateur Division - ACFF | ou15 | 1 | COLLECTING | +0.098 | – | – |
 | 2 | Ivory-Coast Ligue 1 | ou15 | 1 | COLLECTING | -0.136 | – | – |
