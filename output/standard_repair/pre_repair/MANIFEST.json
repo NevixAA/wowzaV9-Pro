@@ -1,0 +1,137 @@
+{
+ "frozen_at": "2026-10-28T07:37:46.618678+00:00",
+ "pro_commit": "4203992ebf4400f9accee0e717b9e96c683f369c",
+ "status": "PRE_REPAIR",
+ "note": "NOT FINAL. Produced before the 2026-10-28 forensic repair (batch-median imputation, closing-price feature, train/serve skew, residual club aliases, pooled side models, meta-evaluation leakage). Not proof of no edge; not proof of edge.",
+ "files": [
+  {
+   "original": "output/standard_repair/results.json",
+   "frozen_copy": "output/standard_repair/pre_repair/results.json",
+   "sha256": "48e3b698eace0d406e04e6d4492f6c29c58554938ca29c49ed3d4ff73ea335fc",
+   "status": "PRE_REPAIR"
+  },
+  {
+   "original": "output/standard_repair/results.csv",
+   "frozen_copy": "output/standard_repair/pre_repair/results.csv",
+   "sha256": "175fc39ddcc8199f4a507145a5756c1621b4e2fc3ed31875501e905e197efd2a",
+   "status": "PRE_REPAIR"
+  },
+  {
+   "original": "output/standard_repair/ablation.json",
+   "frozen_copy": "output/standard_repair/pre_repair/ablation.json",
+   "sha256": "572c94d5d4c9ff563194f048d88ac20c622a4bfbdf6ad67dcc9fda37444dddc8",
+   "status": "PRE_REPAIR"
+  },
+  {
+   "original": "output/standard_repair/scorecard.json",
+   "frozen_copy": "output/standard_repair/pre_repair/scorecard.json",
+   "sha256": "6b51b502fcc3c4fd0d5a0f88794abe7961082cd666b447ea1c0ff493e0ffcceb",
+   "status": "PRE_REPAIR"
+  },
+  {
+   "original": "output/standard_repair/scorecard.csv",
+   "frozen_copy": "output/standard_repair/pre_repair/scorecard.csv",
+   "sha256": "96214203e780cb74a696aad1d837ce7826e1341151ed4efafec251dc9068aaac",
+   "status": "PRE_REPAIR"
+  },
+  {
+   "original": "output/standard_repair/scorecard_history.jsonl",
+   "frozen_copy": "output/standard_repair/pre_repair/scorecard_history.jsonl",
+   "sha256": "c35ffb2844eef92238b30bf602189f7b9d338d3bca837e93387635791b1d1c29",
+   "status": "PRE_REPAIR"
+  },
+  {
+   "original": "output/standard_repair/forward_first_sight.csv",
+   "frozen_copy": "output/standard_repair/pre_repair/forward_first_sight.csv",
+   "sha256": "3ad54655766f125ba17c3b0b86467787b64b3e1b36139d989053a8266f18e876",
+   "status": "PRE_REPAIR"
+  },
+  {
+   "original": "output/standard_repair/WEEKLY.md",
+   "frozen_copy": "output/standard_repair/pre_repair/WEEKLY.md",
+   "sha256": "2f45ec2c7ac3d0c95fed0a15d4a5addab13d73fd84bc11a43a2ae3659c551eec",
+   "status": "PRE_REPAIR"
+  },
+  {
+   "original": "output/standard_repair/monthly_2026-10.json",
+   "frozen_copy": "output/standard_repair/pre_repair/monthly_2026-10.json",
+   "sha256": "6044b3b90b7f526bab9da3b6a1e08350f3dc4f3affc398a5568c91e20fee85b8",
+   "status": "PRE_REPAIR"
+  },
+  {
+   "original": "output/standard_repair/monthly_2026-10.md",
+   "frozen_copy": "output/standard_repair/pre_repair/monthly_2026-10.md",
+   "sha256": "0ea1190f3612158f0f7b5bfabeea9b0ff7ea5687040eaf4471be3b0f9200d270",
+   "status": "PRE_REPAIR"
+  },
+  {
+   "original": "registry/standard_repair/experiments.json",
+   "frozen_copy": "output/standard_repair/pre_repair/registry__experiments.json",
+   "sha256": "69e8175bd9b9089709789953e4366e565061b49df621a7dc975408142e66825d",
+   "status": "PRE_REPAIR"
+  },
+  {
+   "original": "registry/standard_repair/journey.jsonl",
+   "frozen_copy": "output/standard_repair/pre_repair/registry__journey.jsonl",
+   "sha256": "d17ff4442fec7d5a829a7d954121a5872db4738b08a4876e9032867d01115fe1",
+   "status": "PRE_REPAIR"
+  }
+ ],
+ "legacy_v9_backtest": {
+  "path": "v9:output/backtest_by_league_standard.csv",
+  "sha256": "46ee4b1fbcc1c91a5b5ce5ff49b297b21da31a1ff2d71be85764f20010dd882c",
+  "status": "LEGACY_BACKTEST_UNVERIFIED",
+  "note": "closing-price entries, batch-median features, threshold-selected; use neither sign as truth",
+  "content": [
+   {
+    "league": "Bundesliga 2",
+    "bets": 40.0,
+    "wins": 10.0,
+    "profit": -6.67,
+    "roi_%": -16.67
+   },
+   {
+    "league": "Championship",
+    "bets": 703.0,
+    "wins": 283.0,
+    "profit": -37.41,
+    "roi_%": -5.32
+   },
+   {
+    "league": "La Liga 2",
+    "bets": 148.0,
+    "wins": 51.0,
+    "profit": 8.19,
+    "roi_%": 5.53
+   },
+   {
+    "league": "League One",
+    "bets": 44.0,
+    "wins": 19.0,
+    "profit": 6.09,
+    "roi_%": 13.84
+   },
+   {
+    "league": "League Two",
+    "bets": 31.0,
+    "wins": 15.0,
+    "profit": 11.85,
+    "roi_%": 38.23
+   },
+   {
+    "league": "Ligue 2",
+    "bets": 50.0,
+    "wins": 18.0,
+    "profit": 1.75,
+    "roi_%": 3.5
+   },
+   {
+    "league": "Serie B",
+    "bets": 103.0,
+    "wins": 45.0,
+    "profit": 12.54,
+    "roi_%": 12.17
+   }
+  ]
+ }
+}

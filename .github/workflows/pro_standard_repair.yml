@@ -1,15 +1,22 @@
-name: Pro Standard Repair (weekly loop)
+name: Pro Standard Repair (forensic rebuild + weekly loop)
 
-# Standard-league repair programme: weekly evidence loop, research only. It NEVER changes v9 -
-# it reads Pro's season store, the committed football-data files and v9's league_weekly_research.csv
-# (read-only checkout), and writes the scorecard + weekly report under output/standard_repair/.
-# The chronological benchmark itself (src/studies/standard_repair evaluate/ablation) needs v9's
-# training frame and is run on a workstation; this job carries those historical blocks forward and
-# refreshes the forward first-sight evidence, the rank panel and the diagnoses.
+# Standard-league repair programme. Research only: it NEVER writes into v9 (v9 is checked out read-only
+# into _v9) and changes nothing that serves or stakes.
 #
-# Weekly, Monday 07:40 UTC (off the hour). A once-weekly cron is delivered reliably but late; nothing
+# FORENSIC REPAIR (owner brief 2026-10-28). The benchmark is REBUILT FROM A CLEAN CHECKOUT on every run:
+#   1. football-data raw files: Pro's committed fd_raw, refreshed here for every season the price audit
+#      needs (the owner's laptop cannot reach the site; CI can).
+#   2. v9's own loader + feature builder, run inside the v9 checkout (frame_build.py), legacy and
+#      identity-repaired, with row provenance and input hashes.
+#   3. identity / provenance / price audit -> output/standard_repair/data_quality.json.
+#   4. repair_health.json: every Standard research output is CURRENT / BEHIND / STALE against the
+#      fingerprint of what was just rebuilt. A failed run leaves STALE, never an old result looking current.
+# SCIENTIFIC STEPS FAIL THE JOB (no `|| echo`): frame build, audits, price validation, benchmark,
+# first-sight integrity. Only the visual report step is tolerant.
+#
+# Weekly, Monday 07:40 UTC (off the hour). Once-weekly crons are delivered reliably but late; nothing
 # here is time-sensitive. The monthly deep review runs on the first Monday of the month.
-# COST: zero API calls.
+# COST: zero API calls (football-data.co.uk only: ~90 small CSVs).
 
 on:
   schedule:
@@ -33,7 +40,7 @@ permissions:
 jobs:
   repair:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
     steps:
       # ref: main, not the schedule-time SHA (queued runs otherwise check out a stale commit).
       - uses: actions/checkout@v4
@@ -52,34 +59,118 @@ jobs:
         with:
           python-version: '3.11'
 
-      - run: pip install -r requirements.txt
+      # Pro's requirements + what v9's loader/trainer import. scikit-learn is pinned to v9's range so
+      # v9's pickled champion (feature list) loads exactly as in production.
+      - run: |
+          pip install -r requirements.txt
+          pip install "scikit-learn>=1.9.0,<1.10.0" lightgbm
 
-      - name: Weekly loop (tolerant)
+      - name: football-data raw files (committed copy, refreshed)
+        run: |
+          set -euo pipefail
+          mkdir -p _fd
+          cp experiments/ou_info_inputs_2026_10/fd_raw/*.csv _fd/
+          ok=0; miss=0
+          for code in E1 E2 E3 EC D2 F2 SP2 I2 G1 P1 SC0 SC1 SC2 SC3 B1 N1 T1; do
+            for s in 1920 2021 2122 2223 2324 2425 2526 2627; do
+              f="_fd/${code}_${s}.csv"
+              if curl -sfL --max-time 60 "https://www.football-data.co.uk/mmz4281/${s}/${code}.csv" -o "$f.tmp" \
+                 && head -c 200 "$f.tmp" | grep -q "Date"; then mv "$f.tmp" "$f"; ok=$((ok+1)); else rm -f "$f.tmp"; miss=$((miss+1)); fi
+              sleep 0.2
+            done
+          done
+          for code in ARG AUT BRA CHN DNK FIN IRL JPN MEX NOR SWE USA ROU; do
+            curl -sfL --max-time 60 "https://www.football-data.co.uk/new/${code}.csv" -o "_fd/new_${code}.csv.tmp" \
+              && mv "_fd/new_${code}.csv.tmp" "_fd/new_${code}.csv" || rm -f "_fd/new_${code}.csv.tmp"
+          done
+          echo "football-data: $ok refreshed, $miss unavailable (committed copy kept where present)"
+
+      - name: Forensic rebuild + data-quality audit (FAILS the job on any integrity failure)
         env:
           V9_LOCAL: ${{ github.workspace }}/_v9
+          FD_DIR: ${{ github.workspace }}/_fd
+          PYTHONIOENCODING: utf-8
         run: |
-          python -m src.studies.standard_repair weekly || echo "::warning title=standard repair weekly::failed - previous outputs kept"
-          if [ "${{ github.event.inputs.monthly }}" = "true" ] || [ "$(date -u +%d)" -le 7 ]; then
-            python -m src.studies.standard_repair monthly || echo "::warning title=standard repair monthly::failed"
+          export V9_SHA="$(git -C _v9 rev-parse HEAD)"
+          python -m src.studies.standard_repair freeze-pre-repair
+          python -m src.studies.standard_repair forensic rebuild
+          python -m src.studies.standard_repair forensic audit
+
+      - name: Repaired benchmark (Phase 2; FAILS the job on failure)
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+          FD_DIR: ${{ github.workspace }}/_fd
+          PYTHONIOENCODING: utf-8
+        run: |
+          if python -c "import src.studies.standard_repair.benchmark" 2>/dev/null; then
+            python -m src.studies.standard_repair benchmark
+          else
+            echo "Phase-2 benchmark module not present yet - repair_health will report the benchmark MISSING/STALE"
           fi
+
+      - name: Weekly PRE_REPAIR_FORWARD loop (first-sight integrity; FAILS the job on failure)
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+          PYTHONIOENCODING: utf-8
+        run: |
+          python -m src.studies.standard_repair weekly
+          if [ "${{ github.event.inputs.monthly }}" = "true" ] || [ "$(date -u +%d)" -le 7 ]; then
+            python -m src.studies.standard_repair monthly
+          fi
+
+      - name: Health (always - a failed run must leave STALE, never a stale result looking current)
+        if: always()
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+          FD_DIR: ${{ github.workspace }}/_fd
+          PYTHONIOENCODING: utf-8
+          JOB_STATUS: ${{ job.status }}
+        run: python -m src.studies.standard_repair forensic health
+
+      - name: Step summary (visual only - tolerant)
+        if: always()
+        run: |
+          [ -f output/standard_repair/repair_health.json ] && head -c 3000 output/standard_repair/repair_health.json >> "$GITHUB_STEP_SUMMARY" || true
           [ -f output/standard_repair/WEEKLY.md ] && sed -n '1,40p' output/standard_repair/WEEKLY.md >> "$GITHUB_STEP_SUMMARY" || true
 
       - name: Commit outputs (per file)
-        if: always()
+        if: success()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           for f in output/standard_repair_weekly.json output/standard_repair/scorecard.json \
                    output/standard_repair/scorecard.csv output/standard_repair/scorecard_history.jsonl \
                    output/standard_repair/forward_first_sight.csv output/standard_repair/WEEKLY.md \
-                   output/standard_repair/monthly_*.json output/standard_repair/monthly_*.md; do
-            [ -f "$f" ] && git add -f "$f" || echo "  (skip, not present: $f)"
+                   output/standard_repair/monthly_*.json output/standard_repair/monthly_*.md \
+                   output/standard_repair/data_quality.json output/standard_repair/source_coverage.csv \
+                   output/standard_repair/price_coverage.csv output/standard_repair/identity_aliases.json \
+                   output/standard_repair/identity_quarantine.csv output/standard_repair/repair_health.json \
+                   output/standard_repair/feature_parity.csv output/standard_repair/repaired_benchmark.json \
+                   output/standard_repair/repaired_by_league.csv output/standard_repair/repaired_by_side.csv \
+                   output/standard_repair/model_comparison.csv output/standard_repair/reconciliation.csv \
+                   output/standard_repair/pre_repair/MANIFEST.json; do
+            [ -f "$f" ] && git add "$f" || echo "  (skip, not present: $f)"
           done
           git diff --staged --quiet && { echo "no change"; exit 0; }
-          git commit -m "pro: standard repair weekly $(date -u '+%Y-%m-%d')"
+          git commit -m "pro: standard repair $(date -u '+%Y-%m-%d')"
           for i in 1 2 3 4 5; do
             git pull --rebase --autostash origin main && git push && exit 0
             echo "push race - retry $i"; sleep $((RANDOM % 5 + 3))
           done
           echo "::error title=push failed::Standard repair ran but outputs were not persisted."
+          exit 1
+
+      - name: Commit health only (failed run)
+        if: failure()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          [ -f output/standard_repair/repair_health.json ] || exit 1
+          git add output/standard_repair/repair_health.json
+          git diff --staged --quiet && exit 1
+          git commit -m "pro: standard repair FAILED $(date -u '+%Y-%m-%d') - health STALE"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main && git push && exit 1
+            sleep $((RANDOM % 5 + 3))
+          done
           exit 1

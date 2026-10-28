@@ -83,6 +83,7 @@ def weekly() -> dict:
                                  "flat_roi": round(float(pd.to_numeric(g["flat_pnl"], errors="coerce").mean()), 3),
                                  "clv_coverage": round(float(pd.to_numeric(g["clv_pct"], errors="coerce").notna().mean()), 3)}
     w = {"generated_at": _now().strftime("%Y-%m-%d %H:%M UTC"), "previous_run": since,
+         "repair_status": "PRE_REPAIR", "forward_phase": "PRE_REPAIR_FORWARD",
          "production_change": "NONE - research only; nothing here is read by v9",
          "new_observations_first_sight": new_obs, "new_settlements": settled_now - settled_prev,
          "forward_error": fwd_err, "model_vs_market_forward": _fwd_market_summary(fwd),
