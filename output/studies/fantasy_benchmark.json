@@ -1,87 +1,88 @@
 {
  "calculation_version": "fantasy_benchmark-1.0.0",
- "generated_at": "2026-10-27 12:24 UTC",
+ "generated_at": "2026-10-28 08:56 UTC",
  "gameweeks": [
   4,
   5,
   6,
-  7
+  7,
+  8
  ],
- "player_gameweeks": 858,
+ "player_gameweeks": 1109,
  "champion": "FPL_EP_NEXT",
  "pooled_all_gws": {
   "FPL_EP_NEXT": {
-   "n": 858,
-   "mae": 1.258,
-   "rmse": 2.3415,
-   "spearman": 0.7392,
-   "bias": -0.0914
+   "n": 1109,
+   "mae": 1.8368,
+   "rmse": 3.5517,
+   "spearman": 0.7311,
+   "bias": -0.8004
   },
   "WOWZA": {
-   "n": 858,
-   "mae": 1.9868,
-   "rmse": 2.8123,
-   "spearman": 0.5889,
-   "bias": 1.0277
+   "n": 1109,
+   "mae": 2.394,
+   "rmse": 3.6478,
+   "spearman": 0.582,
+   "bias": 0.3116
   },
   "BLEND_50": {
-   "n": 858,
-   "mae": 1.5266,
-   "rmse": 2.347,
-   "spearman": 0.7229,
-   "bias": 0.4681
+   "n": 1109,
+   "mae": 2.0231,
+   "rmse": 3.4261,
+   "spearman": 0.714,
+   "bias": -0.2444
   }
  },
  "pooled_out_of_sample": {
   "FPL_EP_NEXT": {
-   "n": 571,
-   "mae": 1.1177,
-   "rmse": 2.2009,
-   "spearman": 0.7462,
-   "bias": -0.1019
+   "n": 822,
+   "mae": 1.9414,
+   "rmse": 3.8289,
+   "spearman": 0.7444,
+   "bias": -1.0552
   },
   "WOWZA": {
-   "n": 571,
-   "mae": 1.8571,
-   "rmse": 2.7127,
-   "spearman": 0.5997,
-   "bias": 1.0167
+   "n": 822,
+   "mae": 2.4461,
+   "rmse": 3.8483,
+   "spearman": 0.5942,
+   "bias": 0.0539
   },
   "BLEND_50": {
-   "n": 571,
-   "mae": 1.3933,
-   "rmse": 2.2259,
-   "spearman": 0.7273,
-   "bias": 0.4574
+   "n": 822,
+   "mae": 2.1039,
+   "rmse": 3.6782,
+   "spearman": 0.7229,
+   "bias": -0.5007
   },
   "BLEND_WF": {
-   "n": 571,
-   "mae": 1.1177,
-   "rmse": 2.2009,
-   "spearman": 0.7462,
-   "bias": -0.1019
+   "n": 822,
+   "mae": 1.9414,
+   "rmse": 3.8289,
+   "spearman": 0.7444,
+   "bias": -1.0552
   },
   "RESIDUAL_WF": {
-   "n": 571,
-   "mae": 1.2063,
-   "rmse": 2.1306,
-   "spearman": 0.7301,
-   "bias": 0.0377
+   "n": 822,
+   "mae": 2.0124,
+   "rmse": 3.7891,
+   "spearman": 0.7279,
+   "bias": -0.946
   }
  },
  "vs_fpl_out_of_sample": {
   "WOWZA": {
-   "mae_minus_fpl": 0.7394,
+   "mae_minus_fpl": 0.5047,
    "ci90": [
-    0.6153,
-    0.8589
+    0.395,
+    0.6106
    ]
   },
   "BLEND_50": {
-   "mae_minus_fpl": 0.2756,
+   "mae_minus_fpl": 0.1625,
    "ci90": [
-    0.2131,
-    0.3401
+    0.1047,
+    0.2176
    ]
   },
   "BLEND_WF": {
@@ -92,18 +93,18 @@
    ]
   },
   "RESIDUAL_WF": {
-   "mae_minus_fpl": 0.0886,
+   "mae_minus_fpl": 0.071,
    "ci90": [
-    0.0494,
-    0.1276
+    0.0354,
+    0.1069
    ]
   }
  },
  "residual_coefficient_wowza_in_sample": {
-  "coef": 0.243,
+  "coef": 0.41,
   "ci90_player_bootstrap": [
-   0.1662,
-   0.3156
+   0.3117,
+   0.5239
   ],
   "note": "descriptive; the out-of-sample rows decide"
  },
@@ -261,6 +262,46 @@
     "bias": 0.1269
    },
    "blend_weight_used": 0.0
+  },
+  {
+   "gw": 8,
+   "n": 251,
+   "FPL_EP_NEXT": {
+    "n": 251,
+    "mae": 3.8151,
+    "rmse": 6.0822,
+    "spearman": 0.7193,
+    "bias": -3.2239
+   },
+   "WOWZA": {
+    "n": 251,
+    "mae": 3.786,
+    "rmse": 5.6354,
+    "spearman": 0.5598,
+    "bias": -2.1363
+   },
+   "BLEND_50": {
+    "n": 251,
+    "mae": 3.7204,
+    "rmse": 5.7476,
+    "spearman": 0.6923,
+    "bias": -2.6801
+   },
+   "BLEND_WF": {
+    "n": 251,
+    "mae": 3.8151,
+    "rmse": 6.0822,
+    "spearman": 0.7193,
+    "bias": -3.2239
+   },
+   "RESIDUAL_WF": {
+    "n": 251,
+    "mae": 3.8461,
+    "rmse": 6.0574,
+    "spearman": 0.7066,
+    "bias": -3.1837
+   },
+   "blend_weight_used": 0.0
   }
  ],
  "component_lineage": [
@@ -300,5 +341,5 @@
    "source": "sum of the above with fixture difficulty"
   }
  ],
- "sample_note": "4 settled gameweeks \u2014 far too few to promote anything"
+ "sample_note": "5 settled gameweeks \u2014 far too few to promote anything"
 }
