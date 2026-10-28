@@ -7,29 +7,14 @@
  "frame": {
   "build": "frame_build/1.0",
   "mode": "fd_dir",
-  "v9_commit": "f792f06b798c81cf5c6508bd1152103753d0e349",
+  "v9_commit": "5fa47f6f10d575d5e4748233ba8a6567a3728750",
   "legacy_rows_standard": 35148,
   "canonical_rows_standard": 31341,
   "benchmark_rows_standard": 31341,
   "alias_rows_removed": 9687,
   "quarantined_standard_rows": 0,
-  "fd_files_missing": [
-   "new_ARG.csv",
-   "new_AUT.csv",
-   "new_BRA.csv",
-   "new_CHN.csv",
-   "new_DNK.csv",
-   "new_FIN.csv",
-   "new_IRL.csv",
-   "new_JPN.csv",
-   "new_MEX.csv",
-   "new_NOR.csv",
-   "new_SWE.csv",
-   "new_USA.csv"
-  ],
-  "fd_raw_files_missing_for_price_audit": [
-   "E2_2324.csv"
-  ]
+  "fd_files_missing": [],
+  "fd_raw_files_missing_for_price_audit": []
  },
  "identity": {
   "legacy_v9_frame": {
@@ -402,19 +387,19 @@
     }
    ],
    "v9_canonicaliser": {
-    "raw_rows": 63887,
+    "raw_rows": 64161,
     "raw_rows_renamed": 1064,
     "spellings_merged": 23,
     "examples": [
      {
       "league": "Bundesliga 2",
-      "raw": "FC Kaiserslautern",
-      "canon": "Kaiserslautern"
+      "raw": "Wehen",
+      "canon": "SV Wehen"
      },
      {
       "league": "Bundesliga 2",
-      "raw": "Wehen",
-      "canon": "SV Wehen"
+      "raw": "FC Kaiserslautern",
+      "canon": "Kaiserslautern"
      },
      {
       "league": "Bundesliga 2",
@@ -428,6 +413,11 @@
      },
      {
       "league": "Bundesliga 2",
+      "raw": "FC Schalke 04",
+      "canon": "Schalke 04"
+     },
+     {
+      "league": "Bundesliga 2",
       "raw": "SV Elversberg",
       "canon": "Elversberg"
      },
@@ -435,11 +425,6 @@
       "league": "Bundesliga 2",
       "raw": "FC St. Pauli",
       "canon": "St Pauli"
-     },
-     {
-      "league": "Bundesliga 2",
-      "raw": "FC Schalke 04",
-      "canon": "Schalke 04"
      },
      {
       "league": "Bundesliga 2",
@@ -483,13 +468,13 @@
      },
      {
       "league": "Bundesliga 2",
-      "raw": "Fortuna Düsseldorf",
-      "canon": "Fortuna Dusseldorf"
+      "raw": "1. FC Nürnberg",
+      "canon": "Nurnberg"
      },
      {
       "league": "Bundesliga 2",
-      "raw": "1. FC Nürnberg",
-      "canon": "Nurnberg"
+      "raw": "Fortuna Düsseldorf",
+      "canon": "Fortuna Dusseldorf"
      },
      {
       "league": "La Liga 2",
@@ -508,13 +493,13 @@
      },
      {
       "league": "Bundesliga 2",
-      "raw": "1. FC Heidenheim",
-      "canon": "Heidenheim"
+      "raw": "VfL Wolfsburg",
+      "canon": "Wolfsburg"
      },
      {
       "league": "Bundesliga 2",
-      "raw": "VfL Wolfsburg",
-      "canon": "Wolfsburg"
+      "raw": "1. FC Heidenheim",
+      "canon": "Heidenheim"
      },
      {
       "league": "Bundesliga 2",
@@ -943,14 +928,13 @@
    }
   },
   "ou25_frame_price_class_all": {
-   "FD_CLOSING": 21748,
-   "ARCHIVE_UNKNOWN": 5973,
-   "FD_CLOSING_EQ_PREMATCH": 2667,
-   "UNVERIFIED": 860,
-   "NO_PRICE": 88,
-   "CAPTURE_LAST": 5
+   "FD_CLOSING": 27947,
+   "FD_CLOSING_EQ_PREMATCH": 3267,
+   "NO_PRICE": 78,
+   "UNVERIFIED": 34,
+   "CAPTURE_LAST": 15
   },
-  "ou25_frame_price_equals_closing_share_where_both_known": 0.8908,
+  "ou25_frame_price_equals_closing_share_where_both_known": 0.8953,
   "entry_ne_closing_fields": true,
   "min_books_certified_close": 3
  },
@@ -1097,8 +1081,8 @@
     "2026-10-25"
    ],
    "rows_by_source": {
-    "FOOTBALL_DATA_ARCHIVE": 934,
-    "BACKTEST_ARCHIVE": 612,
+    "FOOTBALL_DATA_ARCHIVE": 935,
+    "BACKTEST_ARCHIVE": 611,
     "FOOTBALL_DATA_CURRENT": 80
    },
    "fixture_duplicates_legacy": 0,
@@ -1118,10 +1102,10 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8198,
+   "serving_feature_completeness": 0.8177,
    "serving_feature_min_completeness": {
-    "feature": "away_xg_last5",
-    "share": 0.1802
+    "feature": "home_xg_last5",
+    "share": 0.155
    },
    "degraded_feature_rows": 15,
    "degraded_feature_share": 0.0092,
@@ -1133,22 +1117,20 @@
     "live_feature_health_ts": "2026-10-28T05:35:45.689838+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.8069,
-    "OU25_close_FD_CLOSING": 0.8069,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
+    "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1179,
-     "ARCHIVE_UNKNOWN": 306,
-     "FD_CLOSING_EQ_PREMATCH": 133,
-     "UNVERIFIED": 8
+     "FD_CLOSING": 1467,
+     "FD_CLOSING_EQ_PREMATCH": 159
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
     "BTTS_real_forward_two_sided_fixtures_v9_capture": 41,
     "OU15_real_forward_two_sided_fixtures_v9_capture": 41,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 41,
     "frame_side_price_share": {
-     "BTTS": 0.0683,
-     "OU15": 0.0062,
-     "OU35": 0.0062
+     "BTTS": 0.0523,
+     "OU15": 0.0012,
+     "OU35": 0.0012
     },
     "forward_pro_snapshots": {}
    },
@@ -1224,10 +1206,10 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8153,
+   "serving_feature_completeness": 0.8159,
    "serving_feature_min_completeness": {
-    "feature": "away_xg_last5",
-    "share": 0.1615
+    "feature": "home_xg_last5",
+    "share": 0.1727
    },
    "degraded_feature_rows": 29,
    "degraded_feature_share": 0.018,
@@ -1239,23 +1221,23 @@
     "live_feature_health_ts": "2026-10-28T05:35:45.689838+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.777,
-    "OU25_close_FD_CLOSING": 0.777,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 0.9758,
+    "OU25_close_FD_CLOSING": 0.9758,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1103,
-     "ARCHIVE_UNKNOWN": 302,
-     "FD_CLOSING_EQ_PREMATCH": 148,
-     "UNVERIFIED": 52,
-     "NO_PRICE": 5
+     "FD_CLOSING": 1393,
+     "FD_CLOSING_EQ_PREMATCH": 178,
+     "UNVERIFIED": 34,
+     "NO_PRICE": 4,
+     "CAPTURE_LAST": 1
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 601,
     "BTTS_real_forward_two_sided_fixtures_v9_capture": 72,
     "OU15_real_forward_two_sided_fixtures_v9_capture": 90,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 90,
     "frame_side_price_share": {
-     "BTTS": 0.0665,
-     "OU15": 0.0087,
-     "OU35": 0.0087
+     "BTTS": 0.0509,
+     "OU15": 0.0,
+     "OU35": 0.0006
     },
     "forward_pro_snapshots": {
      "BTTS": {
@@ -1388,23 +1370,22 @@
     "live_feature_health_ts": "2026-10-28T05:35:45.689838+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.7981,
-    "OU25_close_FD_CLOSING": 0.7981,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 0.9955,
+    "OU25_close_FD_CLOSING": 0.9955,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 2104,
-     "ARCHIVE_UNKNOWN": 550,
-     "FD_CLOSING_EQ_PREMATCH": 221,
-     "UNVERIFIED": 25,
-     "NO_PRICE": 13
+     "FD_CLOSING": 2623,
+     "FD_CLOSING_EQ_PREMATCH": 277,
+     "NO_PRICE": 11,
+     "CAPTURE_LAST": 2
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 1010,
     "BTTS_real_forward_two_sided_fixtures_v9_capture": 133,
     "OU15_real_forward_two_sided_fixtures_v9_capture": 156,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 156,
     "frame_side_price_share": {
-     "BTTS": 0.0659,
-     "OU15": 0.0041,
-     "OU35": 0.0041
+     "BTTS": 0.0518,
+     "OU15": 0.0003,
+     "OU35": 0.0003
     },
     "forward_pro_snapshots": {
      "BTTS": {
@@ -1516,10 +1497,10 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8186,
+   "serving_feature_completeness": 0.8164,
    "serving_feature_min_completeness": {
     "feature": "home_xg_last5",
-    "share": 0.1718
+    "share": 0.1471
    },
    "degraded_feature_rows": 18,
    "degraded_feature_share": 0.0111,
@@ -1531,22 +1512,20 @@
     "live_feature_health_ts": "2026-10-28T05:35:45.689838+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.801,
-    "OU25_close_FD_CLOSING": 0.801,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
+    "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1124,
-     "ARCHIVE_UNKNOWN": 304,
-     "FD_CLOSING_EQ_PREMATCH": 172,
-     "UNVERIFIED": 18
+     "FD_CLOSING": 1422,
+     "FD_CLOSING_EQ_PREMATCH": 196
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
     "BTTS_real_forward_two_sided_fixtures_v9_capture": 71,
     "OU15_real_forward_two_sided_fixtures_v9_capture": 71,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 71,
     "frame_side_price_share": {
-     "BTTS": 0.0618,
-     "OU15": 0.0062,
-     "OU35": 0.0062
+     "BTTS": 0.0606,
+     "OU15": 0.0,
+     "OU35": 0.0
     },
     "forward_pro_snapshots": {}
    },
@@ -1623,10 +1602,10 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8154,
+   "serving_feature_completeness": 0.8144,
    "serving_feature_min_completeness": {
-    "feature": "home_xg_last5",
-    "share": 0.1717
+    "feature": "away_xg_last5",
+    "share": 0.1613
    },
    "degraded_feature_rows": 14,
    "degraded_feature_share": 0.0112,
@@ -1638,13 +1617,11 @@
     "live_feature_health_ts": "2026-10-28T05:35:45.689838+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.7945,
-    "OU25_close_FD_CLOSING": 0.7945,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 0.9976,
+    "OU25_close_FD_CLOSING": 0.9976,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 896,
-     "ARCHIVE_UNKNOWN": 240,
-     "FD_CLOSING_EQ_PREMATCH": 94,
-     "UNVERIFIED": 13,
+     "FD_CLOSING": 1128,
+     "FD_CLOSING_EQ_PREMATCH": 115,
      "NO_PRICE": 3
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
@@ -1652,9 +1629,9 @@
     "OU15_real_forward_two_sided_fixtures_v9_capture": 79,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 79,
     "frame_side_price_share": {
-     "BTTS": 0.0698,
-     "OU15": 0.0088,
-     "OU35": 0.0088
+     "BTTS": 0.0658,
+     "OU15": 0.0016,
+     "OU35": 0.0016
     },
     "forward_pro_snapshots": {}
    },
@@ -1727,7 +1704,7 @@
    "serving_feature_completeness": 0.8201,
    "serving_feature_min_completeness": {
     "feature": "home_xg_last5",
-    "share": 0.1878
+    "share": 0.1903
    },
    "degraded_feature_rows": 32,
    "degraded_feature_share": 0.0131,
@@ -1739,24 +1716,22 @@
     "live_feature_health_ts": "2026-10-28T05:35:45.689838+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.7958,
-    "OU25_close_FD_CLOSING": 0.7958,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 0.993,
+    "OU25_close_FD_CLOSING": 0.993,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1794,
-     "ARCHIVE_UNKNOWN": 460,
-     "FD_CLOSING_EQ_PREMATCH": 151,
-     "UNVERIFIED": 22,
-     "NO_PRICE": 16,
-     "CAPTURE_LAST": 1
+     "FD_CLOSING": 2249,
+     "FD_CLOSING_EQ_PREMATCH": 178,
+     "NO_PRICE": 14,
+     "CAPTURE_LAST": 3
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 900,
     "BTTS_real_forward_two_sided_fixtures_v9_capture": 113,
     "OU15_real_forward_two_sided_fixtures_v9_capture": 129,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 129,
     "frame_side_price_share": {
-     "BTTS": 0.0691,
-     "OU15": 0.0102,
-     "OU35": 0.0102
+     "BTTS": 0.0573,
+     "OU15": 0.0065,
+     "OU35": 0.0065
     },
     "forward_pro_snapshots": {
      "BTTS": {
@@ -1892,10 +1867,10 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8233,
+   "serving_feature_completeness": 0.8235,
    "serving_feature_min_completeness": {
     "feature": "away_xg_last5",
-    "share": 0.1712
+    "share": 0.1691
    },
    "degraded_feature_rows": 22,
    "degraded_feature_share": 0.0076,
@@ -1907,23 +1882,22 @@
     "live_feature_health_ts": "2026-10-28T05:35:45.689838+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.604,
-    "OU25_close_FD_CLOSING": 0.604,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 0.9952,
+    "OU25_close_FD_CLOSING": 0.9952,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1573,
-     "UNVERIFIED": 588,
-     "ARCHIVE_UNKNOWN": 550,
-     "FD_CLOSING_EQ_PREMATCH": 184,
-     "NO_PRICE": 14
+     "FD_CLOSING": 2603,
+     "FD_CLOSING_EQ_PREMATCH": 292,
+     "NO_PRICE": 12,
+     "CAPTURE_LAST": 2
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 1103,
     "BTTS_real_forward_two_sided_fixtures_v9_capture": 131,
     "OU15_real_forward_two_sided_fixtures_v9_capture": 155,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 155,
     "frame_side_price_share": {
-     "BTTS": 0.0667,
-     "OU15": 0.0062,
-     "OU35": 0.0062
+     "BTTS": 0.0557,
+     "OU15": 0.0,
+     "OU35": 0.0003
     },
     "forward_pro_snapshots": {
      "BTTS": {
@@ -2060,13 +2034,13 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8258,
+   "serving_feature_completeness": 0.8272,
    "serving_feature_min_completeness": {
     "feature": "home_xg_last5",
-    "share": 0.1797
+    "share": 0.1982
    },
-   "degraded_feature_rows": 14,
-   "degraded_feature_share": 0.0048,
+   "degraded_feature_rows": 15,
+   "degraded_feature_share": 0.0051,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [
@@ -2075,24 +2049,22 @@
     "live_feature_health_ts": "2026-10-28T05:35:45.689838+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.7943,
-    "OU25_close_FD_CLOSING": 0.7947,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 0.9952,
+    "OU25_close_FD_CLOSING": 0.9956,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 2019,
-     "ARCHIVE_UNKNOWN": 551,
-     "FD_CLOSING_EQ_PREMATCH": 303,
-     "UNVERIFIED": 36,
-     "NO_PRICE": 11,
-     "CAPTURE_LAST": 2
+     "FD_CLOSING": 2546,
+     "FD_CLOSING_EQ_PREMATCH": 363,
+     "NO_PRICE": 10,
+     "CAPTURE_LAST": 3
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 1103,
     "BTTS_real_forward_two_sided_fixtures_v9_capture": 141,
     "OU15_real_forward_two_sided_fixtures_v9_capture": 165,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 165,
     "frame_side_price_share": {
-     "BTTS": 0.0667,
-     "OU15": 0.0089,
-     "OU35": 0.0092
+     "BTTS": 0.0585,
+     "OU15": 0.001,
+     "OU35": 0.0014
     },
     "forward_pro_snapshots": {
      "BTTS": {
@@ -2218,10 +2190,10 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.809,
+   "serving_feature_completeness": 0.8075,
    "serving_feature_min_completeness": {
-    "feature": "away_xg_last5",
-    "share": 0.1688
+    "feature": "home_xg_last5",
+    "share": 0.1487
    },
    "degraded_feature_rows": 27,
    "degraded_feature_share": 0.0147,
@@ -2233,22 +2205,20 @@
     "live_feature_health_ts": "2026-10-28T05:35:45.689838+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.7843,
-    "OU25_close_FD_CLOSING": 0.7843,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
+    "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1292,
-     "ARCHIVE_UNKNOWN": 378,
-     "FD_CLOSING_EQ_PREMATCH": 148,
-     "UNVERIFIED": 18
+     "FD_CLOSING": 1665,
+     "FD_CLOSING_EQ_PREMATCH": 171
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 610,
     "BTTS_real_forward_two_sided_fixtures_v9_capture": 37,
     "OU15_real_forward_two_sided_fixtures_v9_capture": 37,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 37,
     "frame_side_price_share": {
-     "BTTS": 0.0605,
-     "OU15": 0.0033,
-     "OU35": 0.0044
+     "BTTS": 0.0572,
+     "OU15": 0.0,
+     "OU35": 0.0
     },
     "forward_pro_snapshots": {
      "BTTS": {
@@ -2374,13 +2344,13 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.7384,
+   "serving_feature_completeness": 0.7374,
    "serving_feature_min_completeness": {
     "feature": "away_corners_pg_roll",
     "share": 0.0667
    },
-   "degraded_feature_rows": 25,
-   "degraded_feature_share": 0.0087,
+   "degraded_feature_rows": 26,
+   "degraded_feature_share": 0.009,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [
@@ -2389,22 +2359,20 @@
     "live_feature_health_ts": "2026-10-28T05:35:45.689838+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.8161,
-    "OU25_close_FD_CLOSING": 0.8206,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 0.9955,
+    "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1996,
-     "ARCHIVE_UNKNOWN": 506,
-     "FD_CLOSING_EQ_PREMATCH": 365,
-     "UNVERIFIED": 10
+     "FD_CLOSING": 2465,
+     "FD_CLOSING_EQ_PREMATCH": 412
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
     "BTTS_real_forward_two_sided_fixtures_v9_capture": 114,
     "OU15_real_forward_two_sided_fixtures_v9_capture": 114,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 114,
     "frame_side_price_share": {
-     "BTTS": 0.0702,
-     "OU15": 0.008,
-     "OU35": 0.0104
+     "BTTS": 0.0612,
+     "OU15": 0.0,
+     "OU35": 0.0
     },
     "forward_pro_snapshots": {}
    },
@@ -2464,10 +2432,10 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.818,
+   "serving_feature_completeness": 0.8183,
    "serving_feature_min_completeness": {
-    "feature": "home_xg_last5",
-    "share": 0.184
+    "feature": "away_xg_last5",
+    "share": 0.1827
    },
    "degraded_feature_rows": 18,
    "degraded_feature_share": 0.0112,
@@ -2479,22 +2447,20 @@
     "live_feature_health_ts": "2026-10-28T05:35:45.689838+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.8042,
-    "OU25_close_FD_CLOSING": 0.8042,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
+    "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1202,
-     "ARCHIVE_UNKNOWN": 305,
-     "FD_CLOSING_EQ_PREMATCH": 92,
-     "UNVERIFIED": 10
+     "FD_CLOSING": 1487,
+     "FD_CLOSING_EQ_PREMATCH": 122
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
     "BTTS_real_forward_two_sided_fixtures_v9_capture": 52,
     "OU15_real_forward_two_sided_fixtures_v9_capture": 52,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 52,
     "frame_side_price_share": {
-     "BTTS": 0.0665,
-     "OU15": 0.0112,
-     "OU35": 0.0112
+     "BTTS": 0.0447,
+     "OU15": 0.0012,
+     "OU35": 0.0019
     },
     "forward_pro_snapshots": {}
    },
@@ -2554,10 +2520,10 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8171,
+   "serving_feature_completeness": 0.8176,
    "serving_feature_min_completeness": {
     "feature": "home_xg_last5",
-    "share": 0.1548
+    "share": 0.1632
    },
    "degraded_feature_rows": 16,
    "degraded_feature_share": 0.0167,
@@ -2569,22 +2535,20 @@
     "live_feature_health_ts": "2026-10-28T05:35:45.689838+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.8023,
-    "OU25_close_FD_CLOSING": 0.8023,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
+    "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 666,
-     "ARCHIVE_UNKNOWN": 179,
-     "FD_CLOSING_EQ_PREMATCH": 101,
-     "UNVERIFIED": 10
+     "FD_CLOSING": 846,
+     "FD_CLOSING_EQ_PREMATCH": 110
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
     "BTTS_real_forward_two_sided_fixtures_v9_capture": 40,
     "OU15_real_forward_two_sided_fixtures_v9_capture": 40,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 40,
     "frame_side_price_share": {
-     "BTTS": 0.0795,
-     "OU15": 0.0105,
-     "OU35": 0.0105
+     "BTTS": 0.0565,
+     "OU15": 0.0,
+     "OU35": 0.0
     },
     "forward_pro_snapshots": {}
    },
@@ -2642,13 +2606,13 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.6734,
+   "serving_feature_completeness": 0.6739,
    "serving_feature_min_completeness": {
     "feature": "home_ht_scored_last5",
     "share": 0.0225
    },
-   "degraded_feature_rows": 10,
-   "degraded_feature_share": 0.0113,
+   "degraded_feature_rows": 9,
+   "degraded_feature_share": 0.0101,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [
@@ -2657,21 +2621,20 @@
     "live_feature_health_ts": "2026-10-28T05:35:45.689838+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.7971,
-    "OU25_close_FD_CLOSING": 0.7971,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
+    "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 609,
-     "ARCHIVE_UNKNOWN": 180,
-     "FD_CLOSING_EQ_PREMATCH": 98
+     "FD_CLOSING": 770,
+     "FD_CLOSING_EQ_PREMATCH": 117
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
     "BTTS_real_forward_two_sided_fixtures_v9_capture": 16,
     "OU15_real_forward_two_sided_fixtures_v9_capture": 16,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 16,
     "frame_side_price_share": {
-     "BTTS": 0.071,
-     "OU15": 0.0045,
-     "OU35": 0.0045
+     "BTTS": 0.053,
+     "OU15": 0.0,
+     "OU35": 0.0
     },
     "forward_pro_snapshots": {}
    },
@@ -2729,13 +2692,13 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.6666,
+   "serving_feature_completeness": 0.6676,
    "serving_feature_min_completeness": {
     "feature": "home_ht_scored_last5",
     "share": 0.0
    },
-   "degraded_feature_rows": 8,
-   "degraded_feature_share": 0.009,
+   "degraded_feature_rows": 7,
+   "degraded_feature_share": 0.0079,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [
@@ -2744,21 +2707,20 @@
     "live_feature_health_ts": "2026-10-28T05:35:45.689838+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.7971,
-    "OU25_close_FD_CLOSING": 0.7971,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
+    "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 632,
-     "ARCHIVE_UNKNOWN": 180,
-     "FD_CLOSING_EQ_PREMATCH": 75
+     "FD_CLOSING": 777,
+     "FD_CLOSING_EQ_PREMATCH": 110
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
     "BTTS_real_forward_two_sided_fixtures_v9_capture": 10,
     "OU15_real_forward_two_sided_fixtures_v9_capture": 10,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 10,
     "frame_side_price_share": {
-     "BTTS": 0.0823,
-     "OU15": 0.0079,
-     "OU35": 0.0079
+     "BTTS": 0.0451,
+     "OU15": 0.0,
+     "OU35": 0.0
     },
     "forward_pro_snapshots": {}
    },
@@ -2818,10 +2780,10 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8222,
+   "serving_feature_completeness": 0.8234,
    "serving_feature_min_completeness": {
     "feature": "away_xg_last5",
-    "share": 0.1675
+    "share": 0.1833
    },
    "degraded_feature_rows": 5,
    "degraded_feature_share": 0.0042,
@@ -2833,22 +2795,20 @@
     "live_feature_health_ts": "2026-10-28T05:35:45.689838+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.8,
-    "OU25_close_FD_CLOSING": 0.8,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
+    "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 869,
-     "ARCHIVE_UNKNOWN": 228,
-     "FD_CLOSING_EQ_PREMATCH": 91,
-     "UNVERIFIED": 12
+     "FD_CLOSING": 1098,
+     "FD_CLOSING_EQ_PREMATCH": 102
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
     "BTTS_real_forward_two_sided_fixtures_v9_capture": 51,
     "OU15_real_forward_two_sided_fixtures_v9_capture": 51,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 51,
     "frame_side_price_share": {
-     "BTTS": 0.07,
-     "OU15": 0.0067,
-     "OU35": 0.0067
+     "BTTS": 0.05,
+     "OU15": 0.0033,
+     "OU35": 0.0033
     },
     "forward_pro_snapshots": {}
    },
@@ -2911,10 +2871,10 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8138,
+   "serving_feature_completeness": 0.8147,
    "serving_feature_min_completeness": {
     "feature": "home_xg_last5",
-    "share": 0.1538
+    "share": 0.1638
    },
    "degraded_feature_rows": 36,
    "degraded_feature_share": 0.018,
@@ -2926,24 +2886,22 @@
     "live_feature_health_ts": "2026-10-28T05:35:45.689838+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.7873,
-    "OU25_close_FD_CLOSING": 0.7878,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 0.9855,
+    "OU25_close_FD_CLOSING": 0.986,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1431,
-     "ARCHIVE_UNKNOWN": 377,
-     "FD_CLOSING_EQ_PREMATCH": 147,
-     "NO_PRICE": 26,
-     "UNVERIFIED": 20,
-     "CAPTURE_LAST": 2
+     "FD_CLOSING": 1788,
+     "FD_CLOSING_EQ_PREMATCH": 187,
+     "NO_PRICE": 24,
+     "CAPTURE_LAST": 4
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 760,
     "BTTS_real_forward_two_sided_fixtures_v9_capture": 84,
     "OU15_real_forward_two_sided_fixtures_v9_capture": 90,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 90,
     "frame_side_price_share": {
-     "BTTS": 0.0609,
-     "OU15": 0.0095,
-     "OU35": 0.0095
+     "BTTS": 0.0494,
+     "OU15": 0.001,
+     "OU35": 0.001
     },
     "forward_pro_snapshots": {
      "BTTS": {
@@ -3048,8 +3006,8 @@
     "2026-10-26"
    ],
    "rows_by_source": {
-    "FOOTBALL_DATA_ARCHIVE": 1028,
-    "BACKTEST_ARCHIVE": 689,
+    "FOOTBALL_DATA_ARCHIVE": 1027,
+    "BACKTEST_ARCHIVE": 690,
     "FOOTBALL_DATA_CURRENT": 81
    },
    "fixture_duplicates_legacy": 0,
@@ -3069,10 +3027,10 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8135,
+   "serving_feature_completeness": 0.8141,
    "serving_feature_min_completeness": {
-    "feature": "away_xg_last5",
-    "share": 0.1418
+    "feature": "home_xg_last5",
+    "share": 0.1452
    },
    "degraded_feature_rows": 23,
    "degraded_feature_share": 0.0128,
@@ -3084,22 +3042,20 @@
     "live_feature_health_ts": "2026-10-28T05:35:45.689838+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.7803,
-    "OU25_close_FD_CLOSING": 0.7803,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
+    "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1259,
-     "ARCHIVE_UNKNOWN": 377,
-     "FD_CLOSING_EQ_PREMATCH": 144,
-     "UNVERIFIED": 18
+     "FD_CLOSING": 1620,
+     "FD_CLOSING_EQ_PREMATCH": 178
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
     "BTTS_real_forward_two_sided_fixtures_v9_capture": 62,
     "OU15_real_forward_two_sided_fixtures_v9_capture": 62,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 62,
     "frame_side_price_share": {
-     "BTTS": 0.0695,
-     "OU15": 0.0061,
-     "OU35": 0.0061
+     "BTTS": 0.0617,
+     "OU15": 0.0022,
+     "OU35": 0.0033
     },
     "forward_pro_snapshots": {}
    },
@@ -3133,29 +3089,29 @@
  },
  "fingerprint": {
   "schema": "standard_repair_fingerprint/1",
-  "generated_at": "2026-10-28T09:03:03.166220+00:00",
+  "generated_at": "2026-10-28T09:50:57.958234+00:00",
   "data_cutoff": "2026-10-26",
-  "v9_commit": "f792f06b798c81cf5c6508bd1152103753d0e349",
-  "pro_commit": "ea008d26b1031e77f8c28407049fdca9a5834778",
-  "frame_hash_at_cutoff": "fd11fec500b13b97",
+  "v9_commit": "5fa47f6f10d575d5e4748233ba8a6567a3728750",
+  "pro_commit": "4acfd8166ef6a8879af6c3332ff5308cb2cefd2e",
+  "frame_hash_at_cutoff": "026e4f3491825037",
   "frame_rows_after_cutoff": 0,
-  "raw_fd_finished_hash": "59aeb9a7588ea032",
-  "raw_fd_current_hash": "cd54884ec7246d86",
-  "archive_hash": "93943e73f4e0c8a3",
-  "feature_schema_version": "af8e18e713d3df5f",
-  "team_canon_version": "222d6e12816637b7",
-  "imputer_version": "v9_batch_median@",
-  "price_source_version": "d241974a6df81e9e",
-  "model_recipe_version": "legacy_v9@",
-  "research_code_hash": "67f132b09b848e13",
+  "raw_fd_finished_hash": "31c869008a7c6322",
+  "raw_fd_current_hash": "6675919c7b7a48ac",
+  "archive_hash": "9f864edad2bf3dc7",
+  "feature_schema_version": "741dfbaa79dc4c6e",
+  "team_canon_version": "d47cc88b55c78c99",
+  "imputer_version": "v9_batch_median@66b4222bbc98",
+  "price_source_version": "7e8d943a98f3e68b",
+  "model_recipe_version": "legacy_v9@66b4222bbc98",
+  "research_code_hash": "e2c2cb93ac7637c9",
   "frame_build_version": "frame_build/1.0",
   "frame_build_mode": "fd_dir"
  },
- "generated_at": "2026-10-28T09:03:03.166220+00:00",
- "v9_commit": "f792f06b798c81cf5c6508bd1152103753d0e349",
- "pro_commit": "ea008d26b1031e77f8c28407049fdca9a5834778",
- "frame_hash": "fd11fec500b13b97",
- "feature_version": "af8e18e713d3df5f",
- "model_recipe_version": "legacy_v9@",
- "price_source_version": "d241974a6df81e9e"
+ "generated_at": "2026-10-28T09:50:57.958234+00:00",
+ "v9_commit": "5fa47f6f10d575d5e4748233ba8a6567a3728750",
+ "pro_commit": "4acfd8166ef6a8879af6c3332ff5308cb2cefd2e",
+ "frame_hash": "026e4f3491825037",
+ "feature_version": "741dfbaa79dc4c6e",
+ "model_recipe_version": "legacy_v9@66b4222bbc98",
+ "price_source_version": "7e8d943a98f3e68b"
 }
