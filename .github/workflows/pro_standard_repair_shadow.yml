@@ -1,0 +1,235 @@
+name: Pro Standard Repair FORWARD SHADOW (STD-V9R-SHADOW-2026Q4)
+
+# Owner-approved 2026-10-28. RESEARCH / SHADOW ONLY: nothing here is read by v9 selection, tips,
+# stakes, thresholds, models or Telegram. v9 (NevixAA/wowza-betting) is only ever checked out
+# read-only; results are committed to Pro main, staged file by file.
+# Registration: registry/standard_repair/forward_shadow_v1.json (frozen, hash-checked).
+#
+# Jobs (one workflow, picked by the cron that fired or by the dispatch input):
+#   train   weekly Mon 02:35 UTC + dispatch. v9 main HEAD (records its SHA) -> V9_REPAIRED Standard
+#           payloads (over25/btts/over15) + MKT_RESID_LR / MKT_RESID_HGB (OU25) on rows strictly before
+#           today's UTC date -> payloads + frozen alias map uploaded as a GitHub RELEASE (tag
+#           std-shadow-<version>) -> round-trip sha256 check -> ONE new immutable entry appended to
+#           registry/standard_repair/forward_shadow_models.json. A retrain never replaces a version.
+#   score   every 3 h. Active model version -> v9 code at THAT version's commit (train/serve code
+#           identity) + v9 main's committed board/odds -> repaired as-of features for upcoming
+#           Standard fixtures -> all arms + genuine market -> APPEND first-sight rows only.
+#   settle  daily 07:20 UTC. Results (football-data via v9's loader) + certified closes -> settled
+#           file -> report json/md.
+# Scientific steps have no `|| echo`: any integrity failure fails the run.
+
+on:
+  schedule:
+    - cron: '35 2 * * 1'
+    - cron: '50 */3 * * *'
+    - cron: '20 7 * * *'
+  workflow_dispatch:
+    inputs:
+      job:
+        description: 'train | score | settle'
+        required: true
+        default: 'train'
+        type: choice
+        options: [train, score, settle]
+
+concurrency:
+  group: pro-standard-repair-shadow
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  PYTHONIOENCODING: utf-8
+  SK_PIN: 'scikit-learn>=1.9.0,<1.10.0'
+
+jobs:
+  train:
+    if: (github.event_name == 'schedule' && github.event.schedule == '35 2 * * 1') || (github.event_name == 'workflow_dispatch' && inputs.job == 'train')
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: main
+          path: _v9
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          pip install -r requirements.txt
+          pip install "$SK_PIN" lightgbm
+      - name: Registration integrity
+        run: python -m src.studies.standard_repair.shadow check
+      - name: football-data raw files (committed copy, current seasons refreshed)
+        run: |
+          set -euo pipefail
+          mkdir -p _fd
+          cp experiments/ou_info_inputs_2026_10/fd_raw/*.csv _fd/
+          for code in E1 E2 E3 EC D2 F2 SP2 I2 G1 P1 SC0 SC1 SC2 SC3 B1 N1 T1; do
+            for s in 1920 2021 2122 2223 2324 2425 2526 2627; do
+              f="_fd/${code}_${s}.csv"
+              if curl -sfL --retry 3 --max-time 60 "https://www.football-data.co.uk/mmz4281/${s}/${code}.csv" -o "$f.tmp" \
+                 && head -c 200 "$f.tmp" | grep -q "Date"; then mv "$f.tmp" "$f"; else rm -f "$f.tmp"; fi
+              sleep 0.2
+            done
+          done
+          ls _fd | wc -l
+      - name: Train (V9_REPAIRED in the v9 checkout, MKT_RESID in Pro) - FAILS on any integrity failure
+        run: python -m src.studies.standard_repair.shadow train --v9-code _v9 --fd-dir _fd --work _work
+      - name: Store payloads as a release (not git blobs)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="$(python -c "import json;print(json.load(open('_work/entry.json'))['release_tag'])")"
+          VER="$(python -c "import json;print(json.load(open('_work/entry.json'))['model_version'])")"
+          ls -la _work/release
+          gh release create "$TAG" _work/release/* --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+            --title "Standard shadow model $VER" \
+            --notes "STD-V9R-SHADOW-2026Q4 frozen model version $VER (research only, no production effect). sha256 of every asset is in registry/standard_repair/forward_shadow_models.json."
+          mkdir -p _verify
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" -D _verify
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from src.studies.standard_repair import shadow_registry as R
+          R.verify_assets(json.load(open("_work/entry.json")), Path("_verify"))
+          print("release round-trip sha256 OK")
+          PY
+      - name: Append the new model version to the ledger
+        run: python -m src.studies.standard_repair.shadow ledger-append --entry _work/entry.json
+      - name: Commit ledger
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add registry/standard_repair/forward_shadow_models.json
+          git commit -m "pro: standard shadow model version $(python -m src.studies.standard_repair.shadow active --field model_version)"
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep $((RANDOM % 5 + 3))
+          done
+          exit 1
+
+  score:
+    if: (github.event_name == 'schedule' && github.event.schedule == '50 */3 * * *') || (github.event_name == 'workflow_dispatch' && inputs.job == 'score')
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt lightgbm
+      - name: Active model version (FAILS when none - dispatch train first)
+        id: ver
+        run: |
+          set -euo pipefail
+          python -m src.studies.standard_repair.shadow check
+          echo "tag=$(python -m src.studies.standard_repair.shadow active --field release_tag)" >> "$GITHUB_OUTPUT"
+          echo "v9=$(python -m src.studies.standard_repair.shadow active --field v9_commit)" >> "$GITHUB_OUTPUT"
+          echo "sk=$(python -m src.studies.standard_repair.shadow active --field sklearn)" >> "$GITHUB_OUTPUT"
+      - name: Exact scikit-learn of the model version (pickles)
+        run: pip install "scikit-learn==${{ steps.ver.outputs.sk }}"
+      - name: v9 board + odds (main, read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: main
+          path: _v9data
+          fetch-depth: 1
+          sparse-checkout: |
+            output/book_quotes
+            output/book_odds_snapshots_archive
+          sparse-checkout-cone-mode: true
+      - name: v9 code at the model version's commit (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: ${{ steps.ver.outputs.v9 }}
+          path: _v9code
+          fetch-depth: 1
+      - name: Download frozen payloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release download "${{ steps.ver.outputs.tag }}" --repo "$GITHUB_REPOSITORY" -D _models
+      - name: Score (first-sight append only) - FAILS on any integrity failure
+        run: python -m src.studies.standard_repair.shadow score --v9-code _v9code --v9-data _v9data --models _models --work _work
+      - name: Commit (per file)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          [ -f output/standard_repair/forward_shadow.csv ] && git add output/standard_repair/forward_shadow.csv
+          for f in output/standard_repair/forward_shadow_sightings/*.csv; do
+            [ -f "$f" ] && git add "$f"
+          done
+          git diff --staged --quiet && { echo "no change"; exit 0; }
+          git commit -m "pro: standard shadow score $(date -u '+%Y-%m-%d %H:%M') UTC"
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep $((RANDOM % 5 + 3))
+          done
+          exit 1
+
+  settle:
+    if: (github.event_name == 'schedule' && github.event.schedule == '20 7 * * *') || (github.event_name == 'workflow_dispatch' && inputs.job == 'settle')
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt lightgbm
+      - name: Active model version
+        id: ver
+        run: |
+          set -euo pipefail
+          python -m src.studies.standard_repair.shadow check
+          echo "v9=$(python -m src.studies.standard_repair.shadow active --field v9_commit)" >> "$GITHUB_OUTPUT"
+          echo "sk=$(python -m src.studies.standard_repair.shadow active --field sklearn)" >> "$GITHUB_OUTPUT"
+      - run: pip install "scikit-learn==${{ steps.ver.outputs.sk }}"
+      - uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: main
+          path: _v9data
+          fetch-depth: 1
+          sparse-checkout: |
+            output/book_quotes
+            output/book_odds_snapshots_archive
+          sparse-checkout-cone-mode: true
+      - uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: ${{ steps.ver.outputs.v9 }}
+          path: _v9code
+          fetch-depth: 1
+      - name: Settle (results + certified closes) - FAILS on any integrity failure
+        run: python -m src.studies.standard_repair.shadow settle --v9-code _v9code --v9-data _v9data --work _work
+      - name: Report
+        run: python -m src.studies.standard_repair.shadow report
+      - name: Commit (per file)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for f in output/standard_repair/forward_shadow_settled.csv output/standard_repair/forward_shadow_report.json \
+                   output/standard_repair/forward_shadow_report.md; do
+            [ -f "$f" ] && git add "$f"
+          done
+          git diff --staged --quiet && { echo "no change"; exit 0; }
+          git commit -m "pro: standard shadow settle/report $(date -u '+%Y-%m-%d %H:%M') UTC"
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            sleep $((RANDOM % 5 + 3))
+          done
+          exit 1

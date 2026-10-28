@@ -247,6 +247,24 @@ def _standard_repair():
             "report": "docs/STANDARD_REPAIR_PROGRAM_2026_10.md"}
 
 
+def _standard_repair_shadow():
+    r = _j("standard_repair/forward_shadow_report.json")
+    if not r:
+        return None
+    cv = r.get("coverage") or {}
+    key = {"rows": f"first-sight {cv.get('first_sight_rows', 0)}, settled {cv.get('settled', 0)}, "
+                   f"certified closes {cv.get('certified_closes', 0)}",
+           "model versions": ", ".join(cv.get("model_versions") or []) or "-"}
+    for hid, h in (r.get("primary") or {}).items():
+        dk = next((k for k in h if k.startswith("dLL_vs_") and not k.endswith("ci95")), None)
+        key[f"{hid} {h.get('hypothesis', '')}"] = (f"{h.get('decision')} - n {h.get('n', 0)}, matchdays "
+                                                  f"{h.get('matchdays', 0)}, dLL {h.get(dk) if dk else '-'} "
+                                                  f"(95% CI {h.get(dk + '_ci95') if dk else '-'})")
+    return {"status": f"Standard repair FORWARD SHADOW {r.get('experiment_id')} ({r.get('phase')}): {r.get('status')}"
+                      " - research only, no production effect (team models, standard leagues)",
+            "date": r.get("generated_at"), "key": key, "report": "output/standard_repair/forward_shadow_report.md"}
+
+
 def _league_calibration():
     r = _j("studies/league_calibration.json")
     if not r:
@@ -421,6 +439,7 @@ STUDIES = [
     ("market_anchor", "Market-anchored O/U review", "models", _market_anchor),
     ("league_calibration", "Per-league calibration of O/U", "models", _league_calibration),
     ("standard_repair", "Standard repair programme (league x market x side)", "models", _standard_repair),
+    ("standard_repair_shadow", "Standard repair forward shadow (pre-registered)", "models", _standard_repair_shadow),
     ("valuable_deep_dive", "VALUABLE tier deep dive", "tips", _valuable),
     ("learned_tiers", "Learned per-league tiers (challenger)", "tips", _learned_tiers),
     ("calibration_form", "Calibration form: v9 vs log-odds Platt", "models", _calibration),

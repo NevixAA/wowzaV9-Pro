@@ -1,0 +1,227 @@
+{
+ "experiment_id": "STD-V9R-SHADOW-2026Q4",
+ "title": "Standard repair FORWARD SHADOW test: current v9 vs repaired v9 vs market-anchored residuals vs market",
+ "registration_version": 1,
+ "registered_at": "2026-10-28T11:45:00Z",
+ "approved": "owner approval 2026-10-28 (Standard forensic repair brief); registration written before any forward row exists",
+ "phase": "POST_REPAIR_FORWARD",
+ "kind": "FORWARD_SHADOW - research only. No change to v9 selection, tips, stakes, thresholds, models or Telegram. v9 is checked out read-only.",
+ "observation_rule": "A row counts only if scored_at > registered_at and it was written by a scoring run that used a model version from registry/standard_repair/forward_shadow_models.json. Observations therefore start at the first scoring run after the first TRAIN. Rows are never pooled with PRE_REPAIR_FORWARD evidence (output/standard_repair/pre_repair/*, forward_first_sight.csv) nor with v9r_first_sight.csv.",
+ "leagues": [
+  "Championship",
+  "League One",
+  "League Two",
+  "Bundesliga 2",
+  "La Liga 2",
+  "Ligue 2",
+  "Serie B"
+ ],
+ "markets": {
+  "OU25": {
+   "role": "PRIMARY",
+   "arms": [
+    "CURRENT_V9_SERVED",
+    "V9_REPAIRED",
+    "MKT_RESID_LR",
+    "MKT_RESID_HGB",
+    "MARKET"
+   ],
+   "price_requirement": "GENUINE_FORWARD_TWO_SIDED (>= 3 books quoting both sides at first sight)"
+  },
+  "BTTS": {
+   "role": "SECONDARY",
+   "arms": [
+    "CURRENT_V9_SERVED",
+    "V9_REPAIRED",
+    "MARKET"
+   ],
+   "price_requirement": "GENUINE_FORWARD_TWO_SIDED (>= 3 books, YES and NO)",
+   "note": "MKT_RESID_* not registered for BTTS: its historical anchor exists only as a SYNTHETIC_MARKET_PROXY, so training and serving anchors would differ in kind."
+  },
+  "OU15": {
+   "role": "SECONDARY",
+   "arms": [
+    "CURRENT_V9_SERVED",
+    "V9_REPAIRED",
+    "MARKET"
+   ],
+   "price_requirement": "GENUINE_FORWARD_TWO_SIDED (>= 3 books, OVER and UNDER 1.5)",
+   "note": "as BTTS. No row is ever written on a synthetic price; SYNTHETIC_MARKET_PROXY rows (none in v1) would be excluded from every certified ROI / CLV claim."
+  }
+ },
+ "arms": {
+  "CURRENT_V9_SERVED": "the probability v9 production serves for the fixture in its committed output/predictions.csv (p_over25 / p_btts / p_over15) at the moment of first sight; v9's own model_version column is recorded",
+  "V9_REPAIRED": "v9 recipe v9_repaired (persisted train-only imputer, one canonical train/serve feature builder src/features_repaired.py, league-scoped, four-block stacking, date-derived weights, identity-canonical history), price_mode none, Standard-track payload per target, trained on rows strictly before the training cutoff",
+  "MKT_RESID_LR": "logit p = a + b*logit(p_market) + ridge(lam 0.02) on standardised GROUPS features + league intercepts (Phase-2 benchmark arm, src/studies/standard_repair/shadow_models.py)",
+  "MKT_RESID_HGB": "HistGradientBoosting(150, lr 0.03, depth 3, min leaf 300, l2 5) on GROUPS + league dummies + logit(p_market); Platt blend [logit m, raw - logit m] on the last 20% of training rows by date (Phase-2 benchmark arm)",
+  "MARKET": "de-vigged genuine two-sided forward consensus at first sight: per book LOCF of the last quote <= scoring time, power de-vig per book, median across books (ODDSAPI book_odds_snapshots + API-Football book_quotes, v9 committed files)"
+ },
+ "unit": "league x market x side. Side = the direction an arm leans relative to MARKET at first sight (p_arm > p_market -> OVER/YES, else UNDER/NO). No threshold is applied anywhere.",
+ "first_sight": {
+  "definition": "first scoring run after registration at which every registered arm of the market is scorable for the fixture at the same instant: board generated < 24 h before, kickoff strictly in the future, rolling form present (invariant 8), genuine two-sided price",
+  "immutability": "plain append to output/standard_repair/forward_shadow.csv; an existing row_id (fixture_key|market) is never written again; later and incomplete observations go to output/standard_repair/forward_shadow_sightings/<date>.csv",
+  "identical_rows": "all arms of a market are compared on exactly the same first-sight rows",
+  "pre_match_only": "no row is written at or after kickoff"
+ },
+ "metrics": {
+  "primary": "mean paired log-loss difference (arm minus baseline) on identical settled first-sight rows, vs MARKET and vs CURRENT_V9_SERVED",
+  "secondary": [
+   "Brier and Brier difference",
+   "calibration intercept / slope / ECE (n >= 30)",
+   "CLV in probability points vs the CERTIFIED_T30 close only (>= 3 two-sided books, capture observed within 30 min of kickoff)",
+   "flat 1u ROI on the arm's lean side at the FIRST-LOGGED median entry price (genuine prices only)"
+  ],
+  "inference": "matchday block bootstrap (ISO-week blocks, 2000 resamples, seed 20261026); always N, matchdays and 95% CI"
+ },
+ "hypotheses": {
+  "CONFIRMATORY": [
+   {
+    "id": "H1",
+    "market": "OU25",
+    "arm": "V9_REPAIRED",
+    "baseline": "CURRENT_V9_SERVED",
+    "text": "repaired v9 has lower OU25 log loss than the v9 probability production serves"
+   },
+   {
+    "id": "H2",
+    "market": "OU25",
+    "arm": "MKT_RESID_HGB",
+    "baseline": "MARKET",
+    "text": "MKT_RESID_HGB has lower OU25 log loss than the genuine de-vigged market"
+   },
+   {
+    "id": "H3",
+    "market": "OU25",
+    "arm": "MKT_RESID_LR",
+    "baseline": "MARKET",
+    "text": "MKT_RESID_LR has lower OU25 log loss than the genuine de-vigged market"
+   },
+   {
+    "id": "H4",
+    "market": "OU25",
+    "arm": "V9_REPAIRED",
+    "baseline": "MARKET",
+    "text": "repaired v9 has lower OU25 log loss than the genuine de-vigged market"
+   }
+  ],
+  "DISCOVERY": "every league x market x side cell of every arm vs MARKET, BH-FDR within (market, arm). DISCOVERY never promotes anything; a candidate cell needs a NEW registration (new id) and its own confirmation rows.",
+  "benchmark_expectation_not_a_prior_result": "Phase-2 CI benchmark (Pro 01c10512): OU25 dLL vs market legacy 0.0184, V9_REPAIRED 0.0111, MKT_RESID_HGB 0.0007 (2026 confirmation 0.0003, CI incl. 0); no cell passed BH. H2/H3 are therefore expected to be hard to confirm."
+ },
+ "decision_rules": {
+  "primary": {
+   "min_n": 500,
+   "min_matchdays": 8,
+   "alpha_one_sided": 0.05,
+   "multiplicity": "Holm across the confirmatory hypotheses ready at the decision",
+   "rule": "CONFIRMED iff dLL < 0, 95% CI upper bound < 0 and Holm-adjusted one-sided p <= 0.05; evaluated ONCE at the first daily report where min_n and min_matchdays are met, then frozen (later reports keep monitoring but never change the decision)"
+  },
+  "secondary": {
+   "min_n": 300,
+   "min_matchdays": 8,
+   "note": "BTTS / OU15 reported, never decide or promote"
+  },
+  "cells": {
+   "min_n": 60,
+   "min_matchdays": 8,
+   "bh_q": 0.1,
+   "label": "DISCOVERY_CANDIDATE / DISCOVERY_NULL / COLLECTING"
+  },
+  "no_promotion": "Nothing in this experiment changes production. A CONFIRMED hypothesis is evidence for an owner decision through Pro -> v9's PG-1.0 process, not a promotion."
+ },
+ "frozen_inputs": {
+  "recipe_versions": {
+   "feature_recipe_version": "v9r-features-1.0",
+   "model_recipe_version": "v9_repaired-1.0",
+   "imputer_version": "v9-train-only-imputer-1.0",
+   "identity_version": "v9r-identity-1.0"
+  },
+  "v9_recipe_commit_at_registration": "058da893a32a701d672bae64094753b37d6dd7e4",
+  "v9_code_policy": "TRAIN uses v9 main HEAD and records its SHA; SCORE checks out exactly that SHA for feature building and verifies the source digests and recipe versions match the model version (train/serve code identity). A recipe-version change in v9 makes TRAIN fail: a changed recipe is a new experiment id.",
+  "feature_manifest": {
+   "V9_REPAIRED": "src.features_repaired.feature_cols_for('none', STANDARD_SERVING_FEATURES) - the exact list per target is written into every model version",
+   "MKT_RESID": {
+    "columns": [
+     "home_scored_last5",
+     "away_scored_last5",
+     "home_conceded_last5",
+     "away_conceded_last5",
+     "home_over25_last5",
+     "away_over25_last5",
+     "home_attack_str",
+     "away_attack_str",
+     "home_defense_str",
+     "away_defense_str",
+     "home_season_goals_h",
+     "away_season_goals_a",
+     "home_season_conceded_h",
+     "away_season_conceded_a",
+     "home_cs_rate_h",
+     "away_cs_rate_a",
+     "combined_sot_ratio",
+     "home_sot_last5",
+     "away_sot_last5",
+     "home_shots_last5",
+     "away_shots_last5",
+     "home_corners_pg_roll",
+     "away_corners_pg_roll",
+     "home_fouls_pg_roll",
+     "away_fouls_pg_roll",
+     "home_ht_scored_last5",
+     "away_ht_scored_last5",
+     "home_ht_conceded_last5",
+     "away_ht_conceded_last5",
+     "combined_ht_goals_avg",
+     "home_ht_over05_rate",
+     "away_ht_over05_rate",
+     "home_advantage",
+     "away_home_adv_factor",
+     "home_rest_days",
+     "away_rest_days",
+     "p_over25_poisson_dc",
+     "form_gap",
+     "league_avg_goals",
+     "env_rate"
+    ],
+    "plus": "league dummies (training leagues) and logit(p_market)",
+    "pro_side": "form_pois_OU25 / form_gap (benchmark._features) and env_rate = league OU2.5 rate over the last 80 played matches dated strictly before the fixture"
+   }
+  },
+  "imputer": {
+   "V9_REPAIRED": "persisted train-only imputer inside each payload (v9 src/imputer.py)",
+   "MKT_RESID_LR": "train medians + means + sds persisted in the payload",
+   "MKT_RESID_HGB": "native NaN handling"
+  },
+  "alias_map": {
+   "path": "registry/standard_repair/forward_shadow_v1_aliases.json",
+   "sha256": "7ee523a3523008b813b4125e969f24265154640b402b5e5b019b1c3759f41f32",
+   "origin": "Pro output/standard_repair/identity_aliases.json at 01c10512"
+  },
+  "market_source": {
+   "forward": "v9 output/book_odds_snapshots.csv (+archive) and output/book_quotes/<date>.csv, LOCF per book and side, power de-vig, median, >= 3 two-sided books",
+   "training_anchor": "football-data PRE-MATCH OU2.5 (Avg/B365/Pinnacle/BFE, class FD_PREMATCH_APPROX; closing columns never read), median power de-vig",
+   "declared_skew": "training anchor and forward anchor come from different book sets and capture times",
+   "training_anchor_min_coverage": 0.6
+  },
+  "results_source": "football-data via v9's own loader (src.standard_repair.load_history), joined on the canonical history club names recorded at first sight, date +-3 days, ambiguous -> unsettled; unsettled 14 days after kickoff -> VOID_NO_RESULT",
+  "close_certification": "CERTIFIED_T30 = >= 3 two-sided books at kickoff (LOCF) and a capture observation of that fixture+market within 30 minutes before kickoff; everything else is UNCERTIFIED and excluded from CLV"
+ },
+ "model_versions": {
+  "ledger": "registry/standard_repair/forward_shadow_models.json",
+  "policy": "weekly TRAIN (and on dispatch) appends a NEW immutable version (payload sha256s, GitHub release holding the payloads, v9 commit, cutoff, feature lists, library versions); SCORE uses the newest version trained before the scoring time, verifies every payload sha256 and records model_version on each row; nothing is replaced silently",
+  "storage": "payloads are GitHub release assets (tag std-shadow-<version>), not git blobs: ~4 MB per weekly version would otherwise accumulate in git history forever, and Actions artifacts expire (max 90 days) before a forward test can be audited"
+ },
+ "exclusions": [
+  "fixtures with missing rolling form (invariant 8)",
+  "fixtures without a genuine two-sided price at any pre-kickoff scoring run",
+  "board older than 24 h",
+  "post-kickoff observations"
+ ],
+ "outputs": [
+  "output/standard_repair/forward_shadow.csv",
+  "output/standard_repair/forward_shadow_sightings/<date>.csv",
+  "output/standard_repair/forward_shadow_settled.csv",
+  "output/standard_repair/forward_shadow_report.json",
+  "output/standard_repair/forward_shadow_report.md"
+ ],
+ "content_sha256": "1235b828d815eeb28c7c3c5f83d55bbc65df4b9bfe21c0a76c52ac5faa784dd7"
+}
