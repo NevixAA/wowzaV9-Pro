@@ -310,6 +310,8 @@ def build(res: dict | None = None, rows: pd.DataFrame | None = None, fwd: pd.Dat
                 t["experiment_id"] = f"{tid}-V1"
                 tracks.append(t)
     sc = {"generated_at": pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%d %H:%M UTC"),
+          "repair_status": "PRE_REPAIR",              # 2026-10-28 forensic repair: NOT FINAL (pre_repair.py)
+          "forward_phase": "PRE_REPAIR_FORWARD",
           "scope": "Standard leagues only; New Format untouched", "ladder":
               ["RESEARCH_REPAIR", "CHALLENGER_READY", "FORWARD_SHADOW", "ELIGIBLE_FOR_REVIEW", "OWNER_REVIEW", "PAPER",
                "ACTIVE_LOW", "ACTIVE"],

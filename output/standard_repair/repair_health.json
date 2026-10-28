@@ -1,0 +1,46 @@
+{
+ "STANDARD_REPAIR_BENCHMARK": "CURRENT",
+ "run_status": "success",
+ "DATA_QUALITY": "CURRENT",
+ "generated_at": "2026-10-28T10:26:46.582272+00:00",
+ "artifacts": {
+  "data_quality.json": {
+   "status": "CURRENT",
+   "reason": "all critical fingerprints match",
+   "mismatched": [],
+   "generated_at": "2026-10-28T09:50:57.958234+00:00",
+   "data_cutoff": "2026-10-26",
+   "output_status": "PASS"
+  },
+  "repaired_benchmark.json": {
+   "status": "CURRENT",
+   "reason": "all critical fingerprints match",
+   "mismatched": [],
+   "generated_at": "2026-10-28T10:26:36.632159+00:00",
+   "data_cutoff": "2026-10-26",
+   "output_status": "COMPLETE"
+  }
+ },
+ "current_fingerprint": {
+  "schema": "standard_repair_fingerprint/1",
+  "generated_at": "2026-10-28T10:26:44.211991+00:00",
+  "data_cutoff": "2026-10-26",
+  "v9_commit": "5fa47f6f10d575d5e4748233ba8a6567a3728750",
+  "pro_commit": "4acfd8166ef6a8879af6c3332ff5308cb2cefd2e",
+  "frame_hash_at_cutoff": "026e4f3491825037",
+  "frame_rows_after_cutoff": 0,
+  "raw_fd_finished_hash": "31c869008a7c6322",
+  "raw_fd_current_hash": "6675919c7b7a48ac",
+  "archive_hash": "9f864edad2bf3dc7",
+  "feature_schema_version": "741dfbaa79dc4c6e",
+  "team_canon_version": "d47cc88b55c78c99",
+  "imputer_version": "v9_batch_median@66b4222bbc98",
+  "price_source_version": "7e8d943a98f3e68b",
+  "model_recipe_version": "legacy_v9@66b4222bbc98",
+  "research_code_hash": "e2c2cb93ac7637c9",
+  "frame_build_version": "frame_build/1.0",
+  "frame_build_mode": "fd_dir"
+ },
+ "pre_repair_outputs": "FROZEN (see output/standard_repair/pre_repair/MANIFEST.json)",
+ "rule": "STALE or MISSING must never be shown as current; the dashboard shows the status verbatim"
+}
