@@ -1,4 +1,4 @@
-# Best leagues — results by league (2026-W44, updated 2026-10-28 11:47 UTC)
+# Best leagues — results by league (2026-W44, updated 2026-10-28 13:06 UTC)
 
 All settled live tips, paper leagues out. Ranked by shrunk ROI (pulled toward the all-league average by 50 pseudo-tips). The 90% CI is shown for reading; PROVEN / LOSING need the interval clear of zero at a Bonferroni-corrected level (one-sided 5% / number of leagues), and PROVEN >= 100 tips.
 
