@@ -93,7 +93,8 @@ jobs:
                    output/studies/top_picks_weekly.csv output/studies/TOP_PICKS_WEEKLY.md \
                    output/studies/league_results_weekly.csv output/studies/LEAGUE_RESULTS.md \
                    output/studies/league_ratings.json \
-                   output/studies/fantasy_benchmark.json output/studies/fantasy_challenger_log.csv \n                   output/studies/btts_league_regime.json output/studies/BTTS_LEAGUE_REGIME.md; do
+                   output/studies/fantasy_benchmark.json output/studies/fantasy_challenger_log.csv \
+                   output/studies/btts_league_regime.json output/studies/BTTS_LEAGUE_REGIME.md; do
             [ -e "$p" ] && git add "$p"
           done
           git diff --staged --quiet && exit 0
