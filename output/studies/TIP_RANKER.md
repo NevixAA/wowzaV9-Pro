@@ -1,8 +1,8 @@
-# Tip ranker — which 5 should a person take? (2026-10-28 13:06 UTC)
+# Tip ranker — which 5 should a person take? (2026-10-29 08:17 UTC)
 
-1,844 settled tips; 46 match days with >= 10 tips scored walk-forward (ranker fitted on earlier days only).
+1,852 settled tips; 46 match days with >= 10 tips scored walk-forward (ranker fitted on earlier days only).
 
-Honest P(win): Brier ranker 0.243 · bookmaker price alone 0.2419 · raw model 0.2479 (lower is better). Mean P(win) 0.475 vs raw model 0.545; realised 0.483.
+Honest P(win): Brier ranker 0.243 · bookmaker price alone 0.2419 · raw model 0.248 (lower is better). Mean P(win) 0.475 vs raw model 0.545; realised 0.483.
 
 | List | Hit rate | ROI | Hits/day of 5 | 0/5 days | 4+/5 days | Hit vs random (90% CI) | ROI vs random | Hit vs current | ROI vs current |
 |---|---|---|---|---|---|---|---|---|---|

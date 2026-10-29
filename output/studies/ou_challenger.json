@@ -1,8 +1,8 @@
 {
  "window_from": "2026-08-10",
- "decision_fixtures": 1876,
- "settled_matched": 1479,
- "oos_fixtures": 1187,
+ "decision_fixtures": 1897,
+ "settled_matched": 1493,
+ "oos_fixtures": 1201,
  "weekly_coefficients": [
   {
    "week": "2026-08-31/2026-09-06",
@@ -79,37 +79,37 @@
  ],
  "probabilistic_oos": {
   "market": {
-   "logloss": 0.68309,
-   "brier": 0.24506
+   "logloss": 0.68245,
+   "brier": 0.24477
   },
   "v9": {
-   "logloss": 0.69543,
-   "brier": 0.25111
+   "logloss": 0.69519,
+   "brier": 0.251
   },
   "challenger": {
-   "logloss": 0.68415,
-   "brier": 0.24555
+   "logloss": 0.68356,
+   "brier": 0.24527
   }
  },
  "challenger_minus_v9_logloss": {
-  "mean": -0.01128,
+  "mean": -0.01163,
   "ci90": [
-   -0.0183,
-   -0.0041
+   -0.0184,
+   -0.0048
   ]
  },
  "tips_at_5pct_edge": {
   "v9": {
-   "n": 326,
-   "under_share": 0.798,
-   "units": -32.63,
-   "roi": -0.1001,
+   "n": 333,
+   "under_share": 0.799,
+   "units": -35.33,
+   "roi": -0.1061,
    "roi_ci90": [
-    -0.1999,
-    -0.0009
+    -0.2056,
+    -0.0012
    ],
-   "mean_clv_pp": -3.97,
-   "avg_odds_taken": 2.428
+   "mean_clv_pp": -3.98,
+   "avg_odds_taken": 2.432
   },
   "challenger": {
    "n": 0
@@ -118,16 +118,16 @@
  "tips_by_track": {
   "new_format": {
    "v9": {
-    "n": 223,
-    "under_share": 0.96,
-    "units": -5.97,
-    "roi": -0.0268,
+    "n": 229,
+    "under_share": 0.961,
+    "units": -9.49,
+    "roi": -0.0414,
     "roi_ci90": [
-     -0.1548,
-     0.0941
+     -0.1631,
+     0.0773
     ],
-    "mean_clv_pp": -3.82,
-    "avg_odds_taken": 2.486
+    "mean_clv_pp": -3.87,
+    "avg_odds_taken": 2.492
    },
    "challenger": {
     "n": 0
@@ -135,16 +135,16 @@
   },
   "standard": {
    "v9": {
-    "n": 103,
-    "under_share": 0.447,
-    "units": -26.66,
-    "roi": -0.2589,
+    "n": 104,
+    "under_share": 0.442,
+    "units": -25.84,
+    "roi": -0.2485,
     "roi_ci90": [
-     -0.4259,
-     -0.0484
+     -0.4092,
+     -0.0315
     ],
-    "mean_clv_pp": -4.29,
-    "avg_odds_taken": 2.304
+    "mean_clv_pp": -4.23,
+    "avg_odds_taken": 2.299
    },
    "challenger": {
     "n": 0
@@ -152,11 +152,11 @@
   }
  },
  "current_weights": {
-  "a": 0.05,
-  "b_market": 0.773,
+  "a": 0.051,
+  "b_market": 0.782,
   "c_model": 0.0,
-  "c_model_unconstrained": -0.364,
-  "n_train": 1479
+  "c_model_unconstrained": -0.362,
+  "n_train": 1493
  },
- "forward_logged_this_run": 0
+ "forward_logged_this_run": 21
 }
