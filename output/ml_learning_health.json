@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-28T11:36:17Z",
+  "generated_at": "2026-10-29T11:44:26Z",
   "calc_version": "1.0.0",
   "worst": "NO_NEW_DATA",
   "counts": {
@@ -7,11 +7,11 @@
     "PASS": 5
   },
   "settlements_fingerprint": {
-    "rows": 104950,
-    "latest_match": "2026-10-26",
+    "rows": 107265,
+    "latest_match": "2026-10-27",
     "earliest_match": "2025-08-02",
     "leagues": 24,
-    "fingerprint": "a451ec413e320baf"
+    "fingerprint": "55ed06e9a97e7481"
   },
   "last_genuine_learning_event": {
     "date": "2026-10-25",
@@ -32,11 +32,11 @@
       "status": "PASS",
       "why": "challenger trained and REJECTED \u2014 SHADOW_MORE: possibly better (delta -0.00088, CI [-0.00218, +0.00034]) but not proven: material_improvement, ci_excludes_zero. A rejection is a healthy learning outcome, not a failure.",
       "model_artifact": "models/model_v9_standard.pkl",
-      "incumbent_changed_at": "2026-10-28T11:19:30Z",
+      "incumbent_changed_at": "2026-10-29T10:37:55Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-27",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": false,
@@ -110,11 +110,11 @@
       "status": "NO_NEW_DATA",
       "why": "only 0 new settled fixture(s) since the incumbent was built \u2014 too few to learn from. Healthy.",
       "model_artifact": "models/model_v9_newformat.pkl",
-      "incumbent_changed_at": "2026-10-28T11:19:30Z",
+      "incumbent_changed_at": "2026-10-29T10:37:55Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-27",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": null
     },
@@ -123,11 +123,11 @@
       "status": "PASS",
       "why": "challenger trained and REJECTED \u2014 KEEP_CHAMPION: challenger not better: delta +0.000373 (0.68426 -> 0.68463); worse or tied keeps the champion. A rejection is a healthy learning outcome, not a failure.",
       "model_artifact": "models/model_v9_btts.pkl",
-      "incumbent_changed_at": "2026-10-28T11:19:30Z",
+      "incumbent_changed_at": "2026-10-29T10:37:55Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-27",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": false,
@@ -203,11 +203,11 @@
       "status": "PASS",
       "why": "challenger trained and REJECTED \u2014 KEEP_CHAMPION: statistically tied: delta -0.000024, CI [-0.00082, +0.00067] does not even admit a material (0.001) gain. A rejection is a healthy learning outcome, not a failure.",
       "model_artifact": "models/model_v9_over15.pkl",
-      "incumbent_changed_at": "2026-10-28T11:19:30Z",
+      "incumbent_changed_at": "2026-10-29T10:37:55Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-27",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": false,
@@ -281,11 +281,11 @@
       "status": "PASS",
       "why": "challenger trained and REJECTED \u2014 KEEP_CHAMPION: statistically tied: delta -0.000066, CI [-0.00051, +0.00043] does not even admit a material (0.001) gain. A rejection is a healthy learning outcome, not a failure.",
       "model_artifact": "models/model_v9_over35.pkl",
-      "incumbent_changed_at": "2026-10-28T11:19:30Z",
+      "incumbent_changed_at": "2026-10-29T10:37:55Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-27",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": false,
@@ -359,11 +359,11 @@
       "status": "PASS",
       "why": "challenger trained and REJECTED \u2014 KEEP_CHAMPION: statistically tied: delta -0.000001, CI [-0.00033, +0.00039] does not even admit a material (0.001) gain. A rejection is a healthy learning outcome, not a failure.",
       "model_artifact": "models/model_ht_over05.pkl",
-      "incumbent_changed_at": "2026-10-28T11:19:30Z",
+      "incumbent_changed_at": "2026-10-29T10:37:55Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-27",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": false,
@@ -437,11 +437,11 @@
       "status": "NO_NEW_DATA",
       "why": "only 0 new settled fixture(s) since the incumbent was built \u2014 too few to learn from. Healthy.",
       "model_artifact": "models/model_player_goals.pkl",
-      "incumbent_changed_at": "2026-10-28T11:19:30Z",
+      "incumbent_changed_at": "2026-10-29T10:37:55Z",
       "incumbent_age_days": 0.0,
       "training_input": "player_history.parquet",
-      "training_input_latest_match": "2026-10-27",
-      "training_input_age_days": 1,
+      "training_input_latest_match": "2026-10-29",
+      "training_input_age_days": 0,
       "new_settled_since_incumbent": 0,
       "last_decision": null
     }
