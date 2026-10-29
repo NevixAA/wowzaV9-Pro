@@ -3,6 +3,7 @@ name: Pro Studies (daily)
 
 # Re-runs the October 2026 upgrade studies every day so the evidence updates itself:
 #   argentina_btts   is the Argentina BTTS gap (realised vs implied) still open?
+#   btts_league_regime  Serie B BTTS YES forward test: league regime vs model (owner 2026-10-29)
 #   ou_studies       does the model add anything to the market once the price is known?
 #   evidence         per-cell shrinkage, FDR, sequential CLV -> recommendations (never money)
 #   ou_challenger    market-anchored O/U 2.5 challenger + its first-sight forward record
@@ -63,7 +64,7 @@ jobs:
           key: studies-results-${{ github.run_id }}
           restore-keys: studies-results-
       - name: Tests
-        run: python -m pytest tests/test_studies.py tests/test_props_segments.py tests/test_calibration_shadow.py -q
+        run: python -m pytest tests/test_studies.py tests/test_props_segments.py tests/test_calibration_shadow.py tests/test_btts_league_regime.py -q
       - name: Run studies
         env:
           APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
@@ -72,7 +73,7 @@ jobs:
           set -o pipefail
           # Argentina's season cache must refresh: it holds matches still being played.
           rm -f experiments/upgrade_studies_2026_10/argentina_fixtures_2026.json
-          for m in argentina_btts ou_studies evidence ou_challenger props_segments calibration_shadow props_calibration tip_ranker top_picks_weekly league_results fantasy_benchmark report; do
+          for m in argentina_btts btts_league_regime ou_studies evidence ou_challenger props_segments calibration_shadow props_calibration tip_ranker top_picks_weekly league_results fantasy_benchmark report; do
             python -m src.studies.$m > "studies_$m.txt" 2>&1 || { echo "::error title=$m failed::"; tail -30 "studies_$m.txt"; exit 1; }
           done
           cat studies_report.txt
@@ -92,7 +93,7 @@ jobs:
                    output/studies/top_picks_weekly.csv output/studies/TOP_PICKS_WEEKLY.md \
                    output/studies/league_results_weekly.csv output/studies/LEAGUE_RESULTS.md \
                    output/studies/league_ratings.json \
-                   output/studies/fantasy_benchmark.json output/studies/fantasy_challenger_log.csv; do
+                   output/studies/fantasy_benchmark.json output/studies/fantasy_challenger_log.csv \n                   output/studies/btts_league_regime.json output/studies/BTTS_LEAGUE_REGIME.md; do
             [ -e "$p" ] && git add "$p"
           done
           git diff --staged --quiet && exit 0

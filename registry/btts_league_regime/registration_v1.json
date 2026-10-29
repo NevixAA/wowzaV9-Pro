@@ -1,0 +1,55 @@
+{
+ "registry": "btts_league_regime",
+ "version": 1,
+ "registered_at": "2026-10-29T09:00:00Z",
+ "registered_by": "Nevo (owner) - 'Serie B BTTS YES: should I start a forward test? yes.' (2026-10-29)",
+ "frozen": "definitions below are NEVER edited after registration; a change is a new version file",
+ "production_behaviour": "UNCHANGED - research only, never a live gate, never a stake",
+ "why": [
+  "BTTS NO deep check 2026-10-29 (v9 walk-forward p_btts x real two-sided BTTS prices, 6,361 Standard matches 2024-08..2026-09):",
+  "the BTTS market prices YES too LOW in Serie B (implied 49.6% vs realised 54.6%) and La Liga 2 (49.1% vs 54.0%),",
+  "so blind YES returned +5.2% (Serie B) and +4.5% (La Liga 2) while blind NO lost -13.9% and -14.7%.",
+  "The model adds nothing on top: it flags 82% of Serie B matches as YES (+6.9%) vs +5.2% blind, and its",
+  "disagreement with the price does not rank results (all quintiles realise +1.3..+2.2pp over the price).",
+  "Same shape as Argentina BTTS (src/studies/argentina_btts.py): a league regime, not model skill.",
+  "Serie B BTTS YES with the model is already registered as H-GATE-13 (registry/candidate_forward_tests.json);",
+  "this file adds the CONTROL that tells league from model."
+ ],
+ "selection_caveat": "chosen after looking at 7 leagues x 2 sides (14 cells) on the same data - the historical ROI is a discovery number, not evidence",
+ "hypotheses": [
+  {
+   "id": "H-BTTS-REGIME-SB",
+   "league": "Serie B",
+   "af_league_id": 136,
+   "market": "BTTS",
+   "side": "YES",
+   "strategy": "back BTTS YES on EVERY Serie B match with a two-sided v9 Standard side-market price; no model",
+   "entry_price": "FIRST pre-kickoff btts_yes quote in v9 output/standard_sidemarket_odds_history.csv (two-sided, overround 1.00-1.15, both sides <= 3.2)",
+   "closing_price": "LAST pre-kickoff btts_yes quote (CLV = entry/close - 1)",
+   "historical": {
+    "2024/25": {"n": 380, "realised_yes": 0.542, "implied_yes": 0.492, "roi": 0.057},
+    "2025/26": {"n": 380, "realised_yes": 0.542, "implied_yes": 0.500, "roi": 0.034},
+    "2026/27_to_2026-09-20": {"n": 39, "realised_yes": 0.615, "implied_yes": 0.490, "roi": 0.174}
+   },
+   "forward_start": "2026-10-30",
+   "min_forward_n": 150,
+   "required_matchdays": 10,
+   "statistical_test": "flat 1u ROI at entry price, 95% matchday-block bootstrap; one-sided t",
+   "pass_criterion": "n>=150 AND matchdays>=10 AND ROI 95% CI lower > 0 AND mean CLV >= 0 -> FORWARD_SUPPORTED",
+   "fail_criterion": "n>=150 AND ROI 95% CI upper < 0 -> REJECTED; or n>=300 AND ROI <= 0 -> REJECTED"
+  },
+  {
+   "id": "H-BTTS-MODEL-SB",
+   "league": "Serie B",
+   "market": "BTTS",
+   "side": "YES",
+   "strategy": "does model selection add to the league? H-GATE-13 picks (v9 raw edge >= 0.02, first sight, from output/valuable_shadow/valuable_shadow.csv) vs H-BTTS-REGIME-SB matches NOT picked, same forward window, same entry-price rule",
+   "forward_start": "2026-10-30",
+   "min_forward_n_each_arm": 60,
+   "statistical_test": "difference in flat ROI (picked - not picked), 95% matchday-block bootstrap",
+   "pass_criterion": "both arms n>=60 AND difference CI lower > 0 -> MODEL_ADDS",
+   "fail_criterion": "both arms n>=60 AND difference CI upper < 0.05 -> MODEL_ADDS_NOTHING (league regime only)",
+   "note": "if the model keeps flagging ~80% of matches, the not-picked arm fills slowly; report progress honestly, never relax the threshold"
+  }
+ ]
+}
