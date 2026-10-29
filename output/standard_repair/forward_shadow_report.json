@@ -1,0 +1,616 @@
+{
+ "experiment_id": "STD-V9R-SHADOW-2026Q4",
+ "phase": "POST_REPAIR_FORWARD",
+ "generated_at": "2026-10-29T14:28:58.960144+00:00",
+ "registration_sha256": "1235b828d815eeb28c7c3c5f83d55bbc65df4b9bfe21c0a76c52ac5faa784dd7",
+ "registered_at": "2026-10-28T11:45:00Z",
+ "pro_commit": "7a601930ab9ba4d56f4d8c9ba20fd38908738a8d",
+ "status": "COLLECTING",
+ "note": "RESEARCH / SHADOW ONLY - no effect on v9 selection, tips, stakes, thresholds, models or Telegram.",
+ "coverage": {
+  "first_sight_rows": 234,
+  "fixtures": 90,
+  "by_league_market": {
+   "Bundesliga 2": {
+    "BTTS": 9,
+    "OU15": 9,
+    "OU25": 9
+   },
+   "Championship": {
+    "BTTS": 10,
+    "OU15": 10,
+    "OU25": 23
+   },
+   "La Liga 2": {
+    "BTTS": 8,
+    "OU15": 8,
+    "OU25": 10
+   },
+   "League One": {
+    "BTTS": 12,
+    "OU15": 12,
+    "OU25": 14
+   },
+   "League Two": {
+    "BTTS": 12,
+    "OU15": 12,
+    "OU25": 13
+   },
+   "Ligue 2": {
+    "BTTS": 8,
+    "OU15": 8,
+    "OU25": 8
+   },
+   "Serie B": {
+    "BTTS": 13,
+    "OU15": 13,
+    "OU25": 13
+   }
+  },
+  "settled": 9,
+  "pending": 225,
+  "void": 0,
+  "certified_closes": 9,
+  "model_versions": [
+   "STDSHADOW-20261028-62e7bbb8"
+  ],
+  "first_scored_at": "2026-10-28T11:54:30.892547+00:00",
+  "last_scored_at": "2026-10-29T06:32:37.921459+00:00"
+ },
+ "primary": {
+  "H1": {
+   "hypothesis": "repaired v9 has lower OU25 log loss than the v9 probability production serves",
+   "n": 3,
+   "matchdays": 1,
+   "log_loss": 0.67189,
+   "brier": 0.2394,
+   "dLL_vs_CURRENT_V9_SERVED": 0.056458,
+   "dLL_vs_CURRENT_V9_SERVED_ci95": null,
+   "p_one_sided_vs_CURRENT_V9_SERVED": null,
+   "dBrier_vs_CURRENT_V9_SERVED": 0.027687,
+   "min_n": 500,
+   "min_matchdays": 8,
+   "ready": false,
+   "decision": "COLLECTING"
+  },
+  "H2": {
+   "hypothesis": "MKT_RESID_HGB has lower OU25 log loss than the genuine de-vigged market",
+   "n": 3,
+   "matchdays": 1,
+   "log_loss": 0.67522,
+   "brier": 0.2412,
+   "dLL_vs_MARKET": -0.008475,
+   "dLL_vs_MARKET_ci95": null,
+   "p_one_sided_vs_MARKET": null,
+   "dBrier_vs_MARKET": -0.004117,
+   "min_n": 500,
+   "min_matchdays": 8,
+   "ready": false,
+   "decision": "COLLECTING"
+  },
+  "H3": {
+   "hypothesis": "MKT_RESID_LR has lower OU25 log loss than the genuine de-vigged market",
+   "n": 3,
+   "matchdays": 1,
+   "log_loss": 0.65769,
+   "brier": 0.23263,
+   "dLL_vs_MARKET": -0.026006,
+   "dLL_vs_MARKET_ci95": null,
+   "p_one_sided_vs_MARKET": null,
+   "dBrier_vs_MARKET": -0.012685,
+   "min_n": 500,
+   "min_matchdays": 8,
+   "ready": false,
+   "decision": "COLLECTING"
+  },
+  "H4": {
+   "hypothesis": "repaired v9 has lower OU25 log loss than the genuine de-vigged market",
+   "n": 3,
+   "matchdays": 1,
+   "log_loss": 0.67189,
+   "brier": 0.2394,
+   "dLL_vs_MARKET": -0.011808,
+   "dLL_vs_MARKET_ci95": null,
+   "p_one_sided_vs_MARKET": null,
+   "dBrier_vs_MARKET": -0.005916,
+   "min_n": 500,
+   "min_matchdays": 8,
+   "ready": false,
+   "decision": "COLLECTING"
+  }
+ },
+ "secondary": {
+  "OU25": {
+   "role": "PRIMARY",
+   "arms": {
+    "CURRENT_V9_SERVED": {
+     "vs_MARKET": {
+      "n": 3,
+      "matchdays": 1,
+      "log_loss": 0.61543,
+      "brier": 0.21171,
+      "dLL_vs_MARKET": -0.068267,
+      "dLL_vs_MARKET_ci95": null,
+      "p_one_sided_vs_MARKET": null,
+      "dBrier_vs_MARKET": -0.033603
+     },
+     "money": {
+      "roi": 0.8667,
+      "roi_n": 3,
+      "clv_pp": 0.225,
+      "clv_n": 3
+     }
+    },
+    "V9_REPAIRED": {
+     "vs_MARKET": {
+      "n": 3,
+      "matchdays": 1,
+      "log_loss": 0.67189,
+      "brier": 0.2394,
+      "dLL_vs_MARKET": -0.011808,
+      "dLL_vs_MARKET_ci95": null,
+      "p_one_sided_vs_MARKET": null,
+      "dBrier_vs_MARKET": -0.005916
+     },
+     "money": {
+      "roi": -0.3333,
+      "roi_n": 3,
+      "clv_pp": -0.131,
+      "clv_n": 3
+     },
+     "vs_CURRENT_V9_SERVED": {
+      "n": 3,
+      "matchdays": 1,
+      "log_loss": 0.67189,
+      "brier": 0.2394,
+      "dLL_vs_CURRENT_V9_SERVED": 0.056458,
+      "dLL_vs_CURRENT_V9_SERVED_ci95": null,
+      "p_one_sided_vs_CURRENT_V9_SERVED": null,
+      "dBrier_vs_CURRENT_V9_SERVED": 0.027687
+     }
+    },
+    "MKT_RESID_LR": {
+     "vs_MARKET": {
+      "n": 3,
+      "matchdays": 1,
+      "log_loss": 0.65769,
+      "brier": 0.23263,
+      "dLL_vs_MARKET": -0.026006,
+      "dLL_vs_MARKET_ci95": null,
+      "p_one_sided_vs_MARKET": null,
+      "dBrier_vs_MARKET": -0.012685
+     },
+     "money": {
+      "roi": 0.2333,
+      "roi_n": 3,
+      "clv_pp": 0.225,
+      "clv_n": 3
+     },
+     "vs_CURRENT_V9_SERVED": {
+      "n": 3,
+      "matchdays": 1,
+      "log_loss": 0.65769,
+      "brier": 0.23263,
+      "dLL_vs_CURRENT_V9_SERVED": 0.042261,
+      "dLL_vs_CURRENT_V9_SERVED_ci95": null,
+      "p_one_sided_vs_CURRENT_V9_SERVED": null,
+      "dBrier_vs_CURRENT_V9_SERVED": 0.020918
+     }
+    },
+    "MKT_RESID_HGB": {
+     "vs_MARKET": {
+      "n": 3,
+      "matchdays": 1,
+      "log_loss": 0.67522,
+      "brier": 0.2412,
+      "dLL_vs_MARKET": -0.008475,
+      "dLL_vs_MARKET_ci95": null,
+      "p_one_sided_vs_MARKET": null,
+      "dBrier_vs_MARKET": -0.004117
+     },
+     "money": {
+      "roi": 0.2333,
+      "roi_n": 3,
+      "clv_pp": 0.225,
+      "clv_n": 3
+     },
+     "vs_CURRENT_V9_SERVED": {
+      "n": 3,
+      "matchdays": 1,
+      "log_loss": 0.67522,
+      "brier": 0.2412,
+      "dLL_vs_CURRENT_V9_SERVED": 0.059791,
+      "dLL_vs_CURRENT_V9_SERVED_ci95": null,
+      "p_one_sided_vs_CURRENT_V9_SERVED": null,
+      "dBrier_vs_CURRENT_V9_SERVED": 0.029485
+     }
+    }
+   },
+   "market_price_class": "GENUINE_FORWARD_TWO_SIDED only (no synthetic proxy rows in v1)"
+  },
+  "BTTS": {
+   "role": "SECONDARY",
+   "arms": {
+    "CURRENT_V9_SERVED": {
+     "vs_MARKET": {
+      "n": 3,
+      "matchdays": 1,
+      "log_loss": 0.63272,
+      "brier": 0.22039,
+      "dLL_vs_MARKET": -0.015201,
+      "dLL_vs_MARKET_ci95": null,
+      "p_one_sided_vs_MARKET": null,
+      "dBrier_vs_MARKET": -0.007566
+     },
+     "money": {
+      "roi": -0.29,
+      "roi_n": 3,
+      "clv_pp": -0.393,
+      "clv_n": 3
+     }
+    },
+    "V9_REPAIRED": {
+     "vs_MARKET": {
+      "n": 3,
+      "matchdays": 1,
+      "log_loss": 0.67642,
+      "brier": 0.24164,
+      "dLL_vs_MARKET": 0.028493,
+      "dLL_vs_MARKET_ci95": null,
+      "p_one_sided_vs_MARKET": null,
+      "dBrier_vs_MARKET": 0.01369
+     },
+     "money": {
+      "roi": 0.2933,
+      "roi_n": 3,
+      "clv_pp": -0.083,
+      "clv_n": 3
+     },
+     "vs_CURRENT_V9_SERVED": {
+      "n": 3,
+      "matchdays": 1,
+      "log_loss": 0.67642,
+      "brier": 0.24164,
+      "dLL_vs_CURRENT_V9_SERVED": 0.043695,
+      "dLL_vs_CURRENT_V9_SERVED_ci95": null,
+      "p_one_sided_vs_CURRENT_V9_SERVED": null,
+      "dBrier_vs_CURRENT_V9_SERVED": 0.021255
+     }
+    }
+   },
+   "market_price_class": "GENUINE_FORWARD_TWO_SIDED only (no synthetic proxy rows in v1)"
+  },
+  "OU15": {
+   "role": "SECONDARY",
+   "arms": {
+    "CURRENT_V9_SERVED": {
+     "vs_MARKET": {
+      "n": 3,
+      "matchdays": 1,
+      "log_loss": 0.58017,
+      "brier": 0.20123,
+      "dLL_vs_MARKET": -0.0899,
+      "dLL_vs_MARKET_ci95": null,
+      "p_one_sided_vs_MARKET": null,
+      "dBrier_vs_MARKET": -0.034494
+     },
+     "money": {
+      "roi": 1.0433,
+      "roi_n": 3,
+      "clv_pp": 0.668,
+      "clv_n": 3
+     }
+    },
+    "V9_REPAIRED": {
+     "vs_MARKET": {
+      "n": 3,
+      "matchdays": 1,
+      "log_loss": 0.65408,
+      "brier": 0.22937,
+      "dLL_vs_MARKET": -0.015992,
+      "dLL_vs_MARKET_ci95": null,
+      "p_one_sided_vs_MARKET": null,
+      "dBrier_vs_MARKET": -0.006357
+     },
+     "money": {
+      "roi": 0.6433,
+      "roi_n": 3,
+      "clv_pp": 0.668,
+      "clv_n": 3
+     },
+     "vs_CURRENT_V9_SERVED": {
+      "n": 3,
+      "matchdays": 1,
+      "log_loss": 0.65408,
+      "brier": 0.22937,
+      "dLL_vs_CURRENT_V9_SERVED": 0.073908,
+      "dLL_vs_CURRENT_V9_SERVED_ci95": null,
+      "p_one_sided_vs_CURRENT_V9_SERVED": null,
+      "dBrier_vs_CURRENT_V9_SERVED": 0.028137
+     }
+    }
+   },
+   "market_price_class": "GENUINE_FORWARD_TWO_SIDED only (no synthetic proxy rows in v1)"
+  }
+ },
+ "cells": [
+  {
+   "market": "OU25",
+   "league": "Serie B",
+   "side": "OVER",
+   "arm": "CURRENT_V9_SERVED",
+   "n": 2,
+   "matchdays": 1,
+   "log_loss": 0.58387,
+   "brier": 0.19622,
+   "dLL_vs_MARKET": -0.0951,
+   "dLL_vs_MARKET_ci95": null,
+   "p_one_sided_vs_MARKET": null,
+   "dBrier_vs_MARKET": -0.046755,
+   "roi": 0.85,
+   "roi_n": 2,
+   "clv_pp": 0.338,
+   "clv_n": 2,
+   "eligible": false,
+   "label": "COLLECTING"
+  },
+  {
+   "market": "OU25",
+   "league": "Serie B",
+   "side": "UNDER",
+   "arm": "CURRENT_V9_SERVED",
+   "n": 1,
+   "matchdays": 1,
+   "log_loss": 0.67855,
+   "brier": 0.2427,
+   "dLL_vs_MARKET": -0.014599,
+   "dLL_vs_MARKET_ci95": null,
+   "p_one_sided_vs_MARKET": null,
+   "dBrier_vs_MARKET": -0.007299,
+   "roi": 0.9,
+   "roi_n": 1,
+   "clv_pp": 0.0,
+   "clv_n": 1,
+   "eligible": false,
+   "label": "COLLECTING"
+  },
+  {
+   "market": "OU25",
+   "league": "Serie B",
+   "side": "OVER",
+   "arm": "V9_REPAIRED",
+   "n": 2,
+   "matchdays": 1,
+   "log_loss": 0.70075,
+   "brier": 0.2538,
+   "dLL_vs_MARKET": -0.028145,
+   "dLL_vs_MARKET_ci95": null,
+   "p_one_sided_vs_MARKET": null,
+   "dBrier_vs_MARKET": -0.014044,
+   "roi": 0.0,
+   "roi_n": 2,
+   "clv_pp": 0.07,
+   "clv_n": 2,
+   "dLL_vs_CURRENT_V9_SERVED": 0.02105,
+   "eligible": false,
+   "label": "COLLECTING"
+  },
+  {
+   "market": "OU25",
+   "league": "Serie B",
+   "side": "UNDER",
+   "arm": "V9_REPAIRED",
+   "n": 1,
+   "matchdays": 1,
+   "log_loss": 0.61417,
+   "brier": 0.2106,
+   "dLL_vs_MARKET": 0.020866,
+   "dLL_vs_MARKET_ci95": null,
+   "p_one_sided_vs_MARKET": null,
+   "dBrier_vs_MARKET": 0.010341,
+   "roi": -1.0,
+   "roi_n": 1,
+   "clv_pp": -0.535,
+   "clv_n": 1,
+   "dLL_vs_CURRENT_V9_SERVED": 0.127276,
+   "eligible": false,
+   "label": "COLLECTING"
+  },
+  {
+   "market": "OU25",
+   "league": "Serie B",
+   "side": "OVER",
+   "arm": "MKT_RESID_LR",
+   "n": 3,
+   "matchdays": 1,
+   "log_loss": 0.65769,
+   "brier": 0.23263,
+   "dLL_vs_MARKET": -0.026006,
+   "dLL_vs_MARKET_ci95": null,
+   "p_one_sided_vs_MARKET": null,
+   "dBrier_vs_MARKET": -0.012685,
+   "roi": 0.2333,
+   "roi_n": 3,
+   "clv_pp": 0.225,
+   "clv_n": 3,
+   "dLL_vs_CURRENT_V9_SERVED": 0.042261,
+   "eligible": false,
+   "label": "COLLECTING"
+  },
+  {
+   "market": "OU25",
+   "league": "Serie B",
+   "side": "OVER",
+   "arm": "MKT_RESID_HGB",
+   "n": 3,
+   "matchdays": 1,
+   "log_loss": 0.67522,
+   "brier": 0.2412,
+   "dLL_vs_MARKET": -0.008475,
+   "dLL_vs_MARKET_ci95": null,
+   "p_one_sided_vs_MARKET": null,
+   "dBrier_vs_MARKET": -0.004117,
+   "roi": 0.2333,
+   "roi_n": 3,
+   "clv_pp": 0.225,
+   "clv_n": 3,
+   "dLL_vs_CURRENT_V9_SERVED": 0.059791,
+   "eligible": false,
+   "label": "COLLECTING"
+  },
+  {
+   "market": "BTTS",
+   "league": "Serie B",
+   "side": "NO",
+   "arm": "CURRENT_V9_SERVED",
+   "n": 3,
+   "matchdays": 1,
+   "log_loss": 0.63272,
+   "brier": 0.22039,
+   "dLL_vs_MARKET": -0.015201,
+   "dLL_vs_MARKET_ci95": null,
+   "p_one_sided_vs_MARKET": null,
+   "dBrier_vs_MARKET": -0.007566,
+   "roi": -0.29,
+   "roi_n": 3,
+   "clv_pp": -0.393,
+   "clv_n": 3,
+   "eligible": false,
+   "label": "COLLECTING"
+  },
+  {
+   "market": "BTTS",
+   "league": "Serie B",
+   "side": "YES",
+   "arm": "V9_REPAIRED",
+   "n": 1,
+   "matchdays": 1,
+   "log_loss": 0.62039,
+   "brier": 0.21369,
+   "dLL_vs_MARKET": -0.010015,
+   "dLL_vs_MARKET_ci95": null,
+   "p_one_sided_vs_MARKET": null,
+   "dBrier_vs_MARKET": -0.004983,
+   "roi": 0.75,
+   "roi_n": 1,
+   "clv_pp": 0.464,
+   "clv_n": 1,
+   "dLL_vs_CURRENT_V9_SERVED": -0.060952,
+   "eligible": false,
+   "label": "COLLECTING"
+  },
+  {
+   "market": "BTTS",
+   "league": "Serie B",
+   "side": "NO",
+   "arm": "V9_REPAIRED",
+   "n": 2,
+   "matchdays": 1,
+   "log_loss": 0.70443,
+   "brier": 0.25562,
+   "dLL_vs_MARKET": 0.047748,
+   "dLL_vs_MARKET_ci95": null,
+   "p_one_sided_vs_MARKET": null,
+   "dBrier_vs_MARKET": 0.023026,
+   "roi": 0.065,
+   "roi_n": 2,
+   "clv_pp": -0.357,
+   "clv_n": 2,
+   "dLL_vs_CURRENT_V9_SERVED": 0.096018,
+   "eligible": false,
+   "label": "COLLECTING"
+  },
+  {
+   "market": "OU15",
+   "league": "Serie B",
+   "side": "OVER",
+   "arm": "CURRENT_V9_SERVED",
+   "n": 2,
+   "matchdays": 1,
+   "log_loss": 0.26261,
+   "brier": 0.05448,
+   "dLL_vs_MARKET": -0.001987,
+   "dLL_vs_MARKET_ci95": null,
+   "p_one_sided_vs_MARKET": null,
+   "dBrier_vs_MARKET": -0.000659,
+   "roi": 0.265,
+   "roi_n": 2,
+   "clv_pp": 1.002,
+   "clv_n": 2,
+   "eligible": false,
+   "label": "COLLECTING"
+  },
+  {
+   "market": "OU15",
+   "league": "Serie B",
+   "side": "UNDER",
+   "arm": "CURRENT_V9_SERVED",
+   "n": 1,
+   "matchdays": 1,
+   "log_loss": 1.2153,
+   "brier": 0.49474,
+   "dLL_vs_MARKET": -0.265727,
+   "dLL_vs_MARKET_ci95": null,
+   "p_one_sided_vs_MARKET": null,
+   "dBrier_vs_MARKET": -0.102163,
+   "roi": 2.6,
+   "roi_n": 1,
+   "clv_pp": 0.0,
+   "clv_n": 1,
+   "eligible": false,
+   "label": "COLLECTING"
+  },
+  {
+   "market": "OU15",
+   "league": "Serie B",
+   "side": "OVER",
+   "arm": "V9_REPAIRED",
+   "n": 1,
+   "matchdays": 1,
+   "log_loss": 0.29236,
+   "brier": 0.06426,
+   "dLL_vs_MARKET": -0.023609,
+   "dLL_vs_MARKET_ci95": null,
+   "p_one_sided_vs_MARKET": null,
+   "dBrier_vs_MARKET": -0.009134,
+   "roi": 0.33,
+   "roi_n": 1,
+   "clv_pp": 2.004,
+   "clv_n": 1,
+   "dLL_vs_CURRENT_V9_SERVED": -0.02255,
+   "eligible": false,
+   "label": "COLLECTING"
+  },
+  {
+   "market": "OU15",
+   "league": "Serie B",
+   "side": "UNDER",
+   "arm": "V9_REPAIRED",
+   "n": 2,
+   "matchdays": 1,
+   "log_loss": 0.83494,
+   "brier": 0.31192,
+   "dLL_vs_MARKET": -0.012184,
+   "dLL_vs_MARKET_ci95": null,
+   "p_one_sided_vs_MARKET": null,
+   "dBrier_vs_MARKET": -0.004968,
+   "roi": 0.8,
+   "roi_n": 2,
+   "clv_pp": 0.0,
+   "clv_n": 2,
+   "dLL_vs_CURRENT_V9_SERVED": 0.122137,
+   "eligible": false,
+   "label": "COLLECTING"
+  }
+ ],
+ "by_model_version": {
+  "STDSHADOW-20261028-62e7bbb8": {
+   "n": 9,
+   "markets": {
+    "OU25": 3,
+    "BTTS": 3,
+    "OU15": 3
+   }
+  }
+ }
+}
