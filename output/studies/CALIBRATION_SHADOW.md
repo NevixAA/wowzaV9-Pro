@@ -1,4 +1,4 @@
-# Calibration shadow — v9 Platt vs log-odds Platt (2026-10-29 08:17 UTC)
+# Calibration shadow — v9 Platt vs log-odds Platt (2026-10-29 13:14 UTC)
 
 Rule registered 2026-10-14 (module docstring). Overall: **WAITING_FOR_SHADOW_ROWS**. Logged rows: team 0, props 0.
 
