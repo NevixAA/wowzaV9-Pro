@@ -1,6 +1,6 @@
-# League scout — 2026-10-29T19:56 UTC
+# League scout — 2026-10-30T00:29 UTC
 
-Results stored: 241,972 · fixtures priced: 4,182 · model frozen: 4,127
+Results stored: 241,981 · fixtures priced: 4,199 · model frozen: 4,144
 
 COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kickoff close
 
@@ -114,22 +114,22 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 1 | Belgium Challenger Pro League | ou25 | 12 | COLLECTING | -0.111 | – | -100.0% (3) |
 | 1 | Belgium Challenger Pro League | ou35 | 12 | COLLECTING | -0.070 | – | -4.7% (3) |
 | 1 | Belgium Challenger Pro League | btts | 12 | COLLECTING | -0.043 | – | +36.7% (3) |
+| 1 | France Ligue 3 | ou15 | 10 | COLLECTING | +0.008 | – | – |
 | 1 | Scotland League Two | ou15 | 10 | COLLECTING | +0.006 | – | -100.0% (2) |
 | 1 | Switzerland Challenge League | ou15 | 10 | COLLECTING | +0.061 | – | – |
+| 1 | France Ligue 3 | ou25 | 10 | COLLECTING | +0.051 | – | +72.5% (2) |
 | 1 | Scotland League Two | ou25 | 10 | COLLECTING | +0.025 | – | -100.0% (2) |
 | 1 | Switzerland Challenge League | ou25 | 10 | COLLECTING | +0.087 | – | – |
+| 1 | France Ligue 3 | ou35 | 10 | COLLECTING | -0.126 | – | +22.0% (1) |
 | 1 | Scotland League Two | ou35 | 10 | COLLECTING | -0.060 | – | -100.0% (2) |
 | 1 | Switzerland Challenge League | ou35 | 10 | COLLECTING | -0.061 | – | +60.0% (2) |
+| 1 | France Ligue 3 | btts | 10 | COLLECTING | -0.003 | – | -10.0% (2) |
 | 1 | Scotland League Two | btts | 10 | COLLECTING | +0.092 | – | -100.0% (2) |
 | 1 | Switzerland Challenge League | btts | 10 | COLLECTING | +0.018 | – | – |
-| 1 | France Ligue 3 | ou15 | 9 | COLLECTING | -0.003 | – | – |
-| 1 | France Ligue 3 | ou25 | 9 | COLLECTING | +0.088 | – | +72.5% (2) |
-| 1 | France Ligue 3 | ou35 | 9 | COLLECTING | -0.105 | – | +22.0% (1) |
-| 1 | France Ligue 3 | btts | 9 | COLLECTING | -0.003 | – | -10.0% (2) |
-| 2 | Israel Liga Alef | ou15 | 53 | COLLECTING | +0.030 | 0.76 | – |
-| 2 | Israel Liga Alef | ou25 | 53 | COLLECTING | +0.055 | 0.36 | +14.3% (18) |
-| 2 | Israel Liga Alef | ou35 | 53 | COLLECTING | -0.006 | 0.18 | – |
-| 2 | Israel Liga Alef | btts | 53 | COLLECTING | +0.036 | -0.49 | – |
+| 2 | Israel Liga Alef | ou15 | 54 | COLLECTING | +0.024 | 0.59 | – |
+| 2 | Israel Liga Alef | ou25 | 54 | COLLECTING | +0.050 | 0.26 | +14.3% (18) |
+| 2 | Israel Liga Alef | ou35 | 54 | COLLECTING | -0.009 | 0.13 | – |
+| 2 | Israel Liga Alef | btts | 54 | COLLECTING | +0.035 | -0.52 | – |
 | 2 | England Non League Premier - Southern Central | ou15 | 47 | COLLECTING | -0.021 | 0.55 | – |
 | 2 | England Non League Premier - Southern Central | ou25 | 47 | COLLECTING | +0.002 | -0.53 | -19.9% (16) |
 | 2 | England Non League Premier - Southern Central | ou35 | 47 | COLLECTING | +0.045 | -1.27 | – |
@@ -164,32 +164,32 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Algeria Ligue 2 | btts | 38 | COLLECTING | +0.043 | 0.63 | – |
 | 2 | England Non League Premier - Northern | ou15 | 35 | COLLECTING | -0.016 | -0.66 | – |
 | 2 | England Non League Premier - Northern | ou25 | 35 | COLLECTING | -0.006 | -1.6 | -7.6% (11) |
+| 2 | Colombia Primera B | ou25 | 35 | COLLECTING | -0.098 | -0.22 | +30.1% (14) |
 | 2 | England Non League Premier - Northern | ou35 | 35 | COLLECTING | +0.003 | -0.71 | – |
 | 2 | England Non League Premier - Northern | btts | 35 | COLLECTING | -0.012 | -0.62 | – |
+| 2 | Colombia Primera B | ou15 | 34 | COLLECTING | -0.059 | -0.22 | – |
+| 2 | Peru Primera División | ou15 | 34 | COLLECTING | -0.005 | -1.4 | -45.8% (6) |
+| 2 | Saudi-Arabia Pro League | ou15 | 34 | COLLECTING | -0.003 | -0.04 | -15.0% (4) |
+| 2 | Peru Primera División | ou25 | 34 | COLLECTING | +0.042 | -0.6 | -16.1% (11) |
+| 2 | Saudi-Arabia Pro League | ou25 | 34 | COLLECTING | +0.086 | 1.33 | +3.3% (6) |
+| 2 | Colombia Primera B | ou35 | 34 | COLLECTING | -0.079 | -0.26 | – |
+| 2 | Peru Primera División | ou35 | 34 | COLLECTING | +0.033 | 0.03 | +56.0% (6) |
+| 2 | Saudi-Arabia Pro League | ou35 | 34 | COLLECTING | +0.061 | 1.79 | +16.8% (4) |
+| 2 | Colombia Primera B | btts | 34 | COLLECTING | +0.001 | -0.35 | – |
+| 2 | Peru Primera División | btts | 34 | COLLECTING | +0.013 | -0.77 | -1.3% (7) |
+| 2 | Saudi-Arabia Pro League | btts | 34 | COLLECTING | +0.003 | 1.05 | +129.0% (2) |
 | 2 | Argentina Primera B Metropolitana | ou15 | 33 | COLLECTING | +0.082 | -0.19 | +20.5% (4) |
-| 2 | Saudi-Arabia Pro League | ou15 | 33 | COLLECTING | -0.007 | -0.25 | -15.0% (4) |
 | 2 | Argentina Primera B Metropolitana | ou25 | 33 | COLLECTING | +0.081 | 0.21 | -16.6% (10) |
-| 2 | Saudi-Arabia Pro League | ou25 | 33 | COLLECTING | +0.079 | 1.2 | +3.3% (6) |
 | 2 | Argentina Primera B Metropolitana | ou35 | 33 | COLLECTING | +0.112 | -0.02 | -41.5% (4) |
-| 2 | Saudi-Arabia Pro League | ou35 | 33 | COLLECTING | +0.052 | 1.59 | +16.8% (4) |
 | 2 | Argentina Primera B Metropolitana | btts | 33 | COLLECTING | +0.031 | 0.72 | +11.6% (5) |
-| 2 | Saudi-Arabia Pro League | btts | 33 | COLLECTING | +0.007 | 0.94 | +129.0% (2) |
-| 2 | Peru Primera División | ou15 | 32 | COLLECTING | +0.005 | -1.39 | -45.8% (6) |
 | 2 | Egypt Second League | ou15 | 32 | COLLECTING | +0.061 | – | – |
-| 2 | Colombia Primera B | ou25 | 32 | COLLECTING | -0.096 | -0.12 | +27.5% (13) |
-| 2 | Peru Primera División | ou25 | 32 | COLLECTING | +0.056 | -0.63 | -16.1% (11) |
 | 2 | Egypt Second League | ou25 | 32 | COLLECTING | +0.009 | – | +2.4% (11) |
-| 2 | Peru Primera División | ou35 | 32 | COLLECTING | +0.043 | -0.03 | +56.0% (6) |
 | 2 | Egypt Second League | ou35 | 32 | COLLECTING | +0.050 | – | – |
-| 2 | Peru Primera División | btts | 32 | COLLECTING | +0.022 | -0.94 | -1.3% (7) |
 | 2 | Egypt Second League | btts | 32 | COLLECTING | +0.010 | – | – |
 | 2 | Argentina Torneo Federal A | ou15 | 31 | COLLECTING | -0.015 | 0.72 | +46.4% (12) |
-| 2 | Colombia Primera B | ou15 | 31 | COLLECTING | -0.068 | – | – |
 | 2 | Argentina Torneo Federal A | ou25 | 31 | COLLECTING | +0.036 | -0.47 | +12.8% (12) |
 | 2 | Argentina Torneo Federal A | ou35 | 31 | COLLECTING | +0.046 | -0.37 | +2.2% (8) |
-| 2 | Colombia Primera B | ou35 | 31 | COLLECTING | -0.069 | – | – |
 | 2 | Argentina Torneo Federal A | btts | 31 | COLLECTING | -0.014 | -0.02 | -1.0% (11) |
-| 2 | Colombia Primera B | btts | 31 | COLLECTING | -0.000 | – | – |
 | 2 | Turkey 2. Lig | ou15 | 30 | COLLECTING | +0.091 | -1.59 | – |
 | 2 | Romania Liga II | ou15 | 30 | COLLECTING | -0.018 | – | – |
 | 2 | Guatemala Liga Nacional | ou15 | 30 | COLLECTING | +0.056 | -0.09 | – |
@@ -368,12 +368,12 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Poland III Liga - Group 3 | btts | 21 | COLLECTING | +0.008 | – | – |
 | 2 | Spain Segunda División RFEF - Group 5 | btts | 21 | COLLECTING | +0.094 | – | – |
 | 2 | Greece Super League 1 | ou15 | 20 | COLLECTING | +0.031 | – | -13.6% (7) |
-| 2 | Morocco Botola Pro | ou15 | 20 | COLLECTING | +0.029 | – | +50.0% (1) |
+| 2 | Morocco Botola Pro | ou15 | 20 | COLLECTING | +0.028 | – | +50.0% (1) |
 | 2 | Slovakia Super Liga | ou15 | 20 | COLLECTING | -0.010 | – | – |
 | 2 | Uzbekistan Super League | ou15 | 20 | COLLECTING | +0.049 | – | – |
 | 2 | Poland III Liga - Group 4 | ou15 | 20 | COLLECTING | +0.035 | – | – |
 | 2 | Greece Super League 1 | ou25 | 20 | COLLECTING | +0.120 | – | -16.4% (7) |
-| 2 | Morocco Botola Pro | ou25 | 20 | COLLECTING | +0.030 | – | -100.0% (1) |
+| 2 | Morocco Botola Pro | ou25 | 20 | COLLECTING | +0.029 | – | -100.0% (1) |
 | 2 | Slovakia Super Liga | ou25 | 20 | COLLECTING | -0.018 | – | – |
 | 2 | Uzbekistan Super League | ou25 | 20 | COLLECTING | +0.099 | – | +32.8% (8) |
 | 2 | Poland III Liga - Group 4 | ou25 | 20 | COLLECTING | +0.053 | – | +42.2% (9) |
@@ -383,14 +383,14 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Uganda Premier League | ou35 | 20 | COLLECTING | +0.094 | – | – |
 | 2 | Poland III Liga - Group 4 | ou35 | 20 | COLLECTING | +0.021 | – | – |
 | 2 | Greece Super League 1 | btts | 20 | COLLECTING | +0.034 | – | +8.3% (7) |
-| 2 | Morocco Botola Pro | btts | 20 | COLLECTING | -0.007 | – | +62.5% (4) |
+| 2 | Morocco Botola Pro | btts | 20 | COLLECTING | -0.006 | – | +62.5% (4) |
 | 2 | Slovakia Super Liga | btts | 20 | COLLECTING | -0.021 | – | – |
 | 2 | Uzbekistan Super League | btts | 20 | COLLECTING | +0.085 | – | – |
 | 2 | Poland III Liga - Group 4 | btts | 20 | COLLECTING | +0.063 | – | – |
 | 2 | Portugal Primeira Liga | ou15 | 19 | COLLECTING | +0.053 | – | +250.0% (1) |
 | 2 | Wales FAW Championship | ou15 | 19 | COLLECTING | +0.051 | – | – |
 | 2 | Indonesia Liga 2 | ou15 | 19 | COLLECTING | +0.104 | – | – |
-| 2 | Nicaragua Primera Division | ou15 | 19 | COLLECTING | +0.038 | – | – |
+| 2 | Nicaragua Primera Division | ou15 | 19 | COLLECTING | +0.037 | – | – |
 | 2 | Northern-Ireland Premiership | ou15 | 19 | COLLECTING | -0.015 | – | -100.0% (1) |
 | 2 | Iraq Iraqi League | ou15 | 19 | COLLECTING | +0.035 | – | – |
 | 2 | Portugal Primeira Liga | ou25 | 19 | COLLECTING | +0.010 | – | -38.3% (3) |
@@ -402,14 +402,14 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Iraq Iraqi League | ou25 | 19 | COLLECTING | +0.031 | – | +30.9% (7) |
 | 2 | Portugal Primeira Liga | ou35 | 19 | COLLECTING | -0.085 | – | +50.0% (2) |
 | 2 | Wales FAW Championship | ou35 | 19 | COLLECTING | -0.024 | – | – |
-| 2 | Morocco Botola Pro | ou35 | 19 | COLLECTING | +0.071 | – | +30.0% (1) |
-| 2 | Nicaragua Primera Division | ou35 | 19 | COLLECTING | +0.113 | – | – |
+| 2 | Morocco Botola Pro | ou35 | 19 | COLLECTING | +0.070 | – | +30.0% (1) |
+| 2 | Nicaragua Primera Division | ou35 | 19 | COLLECTING | +0.112 | – | – |
 | 2 | Nigeria NPFL | ou35 | 19 | COLLECTING | +0.044 | – | – |
 | 2 | Northern-Ireland Premiership | ou35 | 19 | COLLECTING | -0.034 | – | -28.0% (2) |
 | 2 | Iraq Iraqi League | ou35 | 19 | COLLECTING | -0.045 | – | – |
 | 2 | Portugal Primeira Liga | btts | 19 | COLLECTING | -0.008 | – | -33.3% (3) |
 | 2 | Wales FAW Championship | btts | 19 | COLLECTING | +0.032 | – | – |
-| 2 | Nicaragua Primera Division | btts | 19 | COLLECTING | +0.019 | – | – |
+| 2 | Nicaragua Primera Division | btts | 19 | COLLECTING | +0.018 | – | – |
 | 2 | Northern-Ireland Premiership | btts | 19 | COLLECTING | +0.115 | – | -100.0% (2) |
 | 2 | Iraq Iraqi League | btts | 19 | COLLECTING | -0.012 | – | – |
 | 2 | Denmark 2. Division | ou15 | 18 | COLLECTING | +0.051 | – | – |
