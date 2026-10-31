@@ -1,12 +1,12 @@
 # Standard repair forward shadow - STD-V9R-SHADOW-2026Q4
 
-Generated 2026-10-30T14:19:11.235136+00:00. Phase **POST_REPAIR_FORWARD**. Status **COLLECTING**.
+Generated 2026-10-31T13:44:20.454468+00:00. Phase **POST_REPAIR_FORWARD**. Status **COLLECTING**.
 
 RESEARCH / SHADOW ONLY - no effect on v9 selection, tips, stakes, thresholds, models or Telegram.
 
 ## Coverage
 
-First-sight rows 250 (90 fixtures); settled 9, pending 241, void 0; certified closes 9; model versions STDSHADOW-20261028-62e7bbb8.
+First-sight rows 261 (95 fixtures); settled 9, pending 252, void 0; certified closes 52; model versions STDSHADOW-20261028-62e7bbb8.
 
 ## Pre-registered hypotheses (OU25, pooled 7 leagues)
 
