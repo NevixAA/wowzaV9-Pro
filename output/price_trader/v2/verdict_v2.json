@@ -4,37 +4,37 @@
  "EXECUTABLE_EDGE": "NOT_TESTABLE (no lay ladder / size)",
  "ARBITRAGE_PROVEN": "NOT_TESTABLE (no simultaneous sized quotes)",
  "historical_primary": {
-  "n": 859,
+  "n": 863,
   "mean_pnl_per_unit": -0.0921,
-  "full_green_rate": 0.0615,
+  "full_green_rate": 0.0628,
   "status": "EXPLORATORY (pre-registration history)"
  },
  "forward_gates": {
-  "N_completed_forward": 115,
+  "N_completed_forward": 119,
   "N_required": 150,
-  "match_days": 14,
+  "match_days": 15,
   "days_required": 30,
-  "mean_pnl": -0.09521,
+  "mean_pnl": -0.09511,
   "ci90": [
-   -0.10193,
-   -0.08509
+   -0.10069,
+   -0.08772
   ],
   "median_clv": 0.0,
   "beats_all_controls_historical": false,
   "max_league_profit_share": null
  },
  "states_primary": {
-  "CLOSED_STOP": 782,
-  "CLOSED_GREEN": 77
+  "CLOSED_STOP": 784,
+  "CLOSED_GREEN": 79
  },
  "labels_primary": {
-  "EXECUTABLE_BACK_TO_LAY": 859,
-  "PREDICTED_PRICE_EDGE": 394
+  "EXECUTABLE_BACK_TO_LAY": 863,
+  "PREDICTED_PRICE_EDGE": 395
  },
  "data_status": {
   "BOOKMAKER_QUOTES_REAL": "YES",
   "EXCHANGE_BACK_PRICES_RECORDED": "YES",
-  "exchange_opposite_coverage_of_path_rows": 0.5494,
+  "exchange_opposite_coverage_of_path_rows": 0.5498,
   "EXCHANGE_LAY_LADDER_AVAILABLE": "NO",
   "EXECUTABLE_EXCHANGE_DATA_AVAILABLE": "NO",
   "EXECUTABLE_EXCHANGE_NOTE": "exchange BACK prices on the opposite side exist (== a lay price) but with no matched/available size, so executability is unverified",
@@ -58,19 +58,19 @@
  "PRODUCTION_STAKING_CHANGED": "NO",
  "REAL_BETTING_ENABLED": "NO",
  "lineage": {
-  "generated_at": "2026-10-30 14:34 UTC",
+  "generated_at": "2026-10-31 13:57 UTC",
   "source_git_sha": {
-   "pro": "5fbc2d33662a",
-   "v9": "05792919de28"
+   "pro": "8c013c463637",
+   "v9": "1727b57bb6a0"
   },
   "calculation_version": "price_trader-2.0.0",
   "data_start": "2026-08-19 09:23:27",
-  "data_end": "2026-10-30 11:39:20",
-  "number_of_rows": 730600,
+  "data_end": "2026-10-30 19:56:24",
+  "number_of_rows": 733700,
   "registration_version": "price_trader_registration_v1",
   "input_hashes": {
-   "trades.parquet": "1904f7e10ef39128",
-   "price_paths.parquet": "8e7ab69ae26041e2"
+   "trades.parquet": "22136bd25ff5b526",
+   "price_paths.parquet": "b22f7860d90240a5"
   }
  }
 }
