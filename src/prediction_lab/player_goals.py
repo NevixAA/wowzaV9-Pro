@@ -226,12 +226,12 @@ def main() -> int:
                   f"brier={r['brier']:.5f} auc={r['auc']:.4f} base={r['base_rate']:.4f}")
 
     tab = pd.DataFrame(rows)
-    tab.to_csv(out / "player_goalscorer_performance.csv", index=False)
+    D.stamp(tab).to_csv(out / "player_goalscorer_performance.csv", index=False)
 
     # v9's shipped prior columns -- do they look prior-only?
     pg = [c for c in d.columns if c.endswith("_pg")][:30]
     lk = leakage_check_v9_columns(d, pg)
-    lk.to_csv(out / "player_v9_column_check.csv", index=False)
+    D.stamp(lk).to_csv(out / "player_v9_column_check.csv", index=False)
     print("\n[player] v9 precomputed *_pg columns, single-column AUC against the same row's "
           "own outcome (a prior-only rate should sit near 0.55-0.65, not near 1.0):")
     print(lk.head(8).to_string(index=False))
@@ -309,7 +309,7 @@ def main() -> int:
 
     inter = pd.DataFrame(fwd + rev)
     if not inter.empty:
-        inter.to_csv(out / "player_match_interactions.csv", index=False)
+        D.stamp(inter).to_csv(out / "player_match_interactions.csv", index=False)
         print(f"\n[player] wrote player_match_interactions.csv")
     return 0
 

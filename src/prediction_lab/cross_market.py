@@ -452,21 +452,21 @@ def main() -> int:
     print(f"[cross] {len(w):,} fixtures with OOS probabilities for all markets  "
           f"{w.date.min().date()}..{w.date.max().date()}")
 
-    cm = cross_matrix(w); cm.to_csv(out / "cross_market_matrix.csv", index=False)
+    cm = cross_matrix(w); D.stamp(cm).to_csv(out / "cross_market_matrix.csv", index=False)
     print("\nSIGNAL MODEL -> ACTUAL OUTCOME (AUC). Diagonal is the model on its own market.")
     piv = cm.pivot(index="signal_model", columns="actual_outcome", values="auc")
     print(piv.to_string())
 
-    pc = prediction_correlation(w); pc.to_csv(out / "prediction_correlation.csv", index=False)
+    pc = prediction_correlation(w); D.stamp(pc).to_csv(out / "prediction_correlation.csv", index=False)
     print("\nHOW ALIKE ARE THE MODELS' OPINIONS (Pearson on probabilities):")
     print(pc.to_string(index=False))
 
-    ec = error_correlation(w); ec.to_csv(out / "error_correlation.csv", index=False)
+    ec = error_correlation(w); D.stamp(ec).to_csv(out / "error_correlation.csv", index=False)
     print("\nWHEN ONE IS WRONG, IS THE OTHER? (excess over independence, in points)")
     print(ec[["model_a", "model_b", "both_wrong", "both_wrong_if_independent",
               "excess_pp", "phi"]].to_string(index=False))
 
-    co = conditional_outcomes(w); co.to_csv(out / "conditional_outcomes.csv", index=False)
+    co = conditional_outcomes(w); D.stamp(co).to_csv(out / "conditional_outcomes.csv", index=False)
     print("\nCONDITIONAL OUTCOMES -- P(BTTS) bucket vs what actually happened:")
     print(co[co.signal_model == "btts"][
         ["bucket", "n", "mean_p", "actual_btts", "actual_over15", "actual_over25",
@@ -474,26 +474,26 @@ def main() -> int:
 
     strat = pd.concat([stratified_control(w, own=o, other=x)
                        for o in MARKETS for x in MARKETS if o != x], ignore_index=True)
-    strat.to_csv(out / "stratified_control.csv", index=False)
+    D.stamp(strat).to_csv(out / "stratified_control.csv", index=False)
     key = strat[(strat.own_model == "over25") & (strat.other_model == "btts")]
     print("\nTHE CONTROL -- within fixtures the OVER 2.5 model scored the same, does a high")
     print("BTTS probability change how often Over 2.5 actually happened?")
     print(key[["own_p_range", "n_low_other", "n_high_other", "actual_over25_low_other",
                "actual_over25_high_other", "diff_pp", "z", "p_value"]].to_string(index=False))
 
-    ag = agreement(w); ag.to_csv(out / "agreement_analysis.csv", index=False)
-    gd = goal_distribution(w); gd.to_csv(out / "disagreement_analysis.csv", index=False)
+    ag = agreement(w); D.stamp(ag).to_csv(out / "agreement_analysis.csv", index=False)
+    gd = goal_distribution(w); D.stamp(gd).to_csv(out / "disagreement_analysis.csv", index=False)
     print("\nGOAL DISTRIBUTION BY AGREEMENT STATE:")
     print(gd[["state", "n", "avg_goals", "goals_0", "goals_1", "goals_2", "goals_3",
               "goals_4", "goals_5plus", "top_scores"]].to_string(index=False))
 
-    lr = likelihood_ratio(w); lr.to_csv(out / "cross_market_lr_tests.csv", index=False)
-    dv = discover_and_validate(w); dv.to_csv(out / "cross_market_discoveries.csv", index=False)
+    lr = likelihood_ratio(w); D.stamp(lr).to_csv(out / "cross_market_lr_tests.csv", index=False)
+    dv = discover_and_validate(w); D.stamp(dv).to_csv(out / "cross_market_discoveries.csv", index=False)
     print(f"\nDISCOVERY -> VALIDATION over {len(dv):,} searched conditions:")
     print(dv["status"].value_counts().to_string())
 
     if not a.quick:
-        mm = meta_models(w); mm.to_csv(out / "meta_model_comparison.csv", index=False)
+        mm = meta_models(w); D.stamp(mm).to_csv(out / "meta_model_comparison.csv", index=False)
         print("\nMETA-MODEL -- does adding the other models improve FUTURE prediction?")
         for tgt in MARKETS:
             g = mm[(mm.target == tgt) & (mm.meta_model == "logreg")]
@@ -507,7 +507,7 @@ def main() -> int:
 
     (out / "cross_market_manifest.json").write_text(json.dumps(
         {"generated_at": pd.Timestamp.now(tz="UTC").isoformat(), "fixtures": int(len(w)),
-         "calc_version": CALC_VERSION}, indent=2), encoding="utf-8")
+         "calc_version": CALC_VERSION, **D.version_stamp()}, indent=2), encoding="utf-8")
     print(f"\n[cross] wrote artifacts to {out}")
     return 0
 

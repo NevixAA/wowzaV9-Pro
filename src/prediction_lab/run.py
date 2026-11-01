@@ -75,12 +75,12 @@ def phase_baselines(df, fl, out):
         _say(f"  {t:<12} rock={rows[-1]['rock_accuracy']:.4f}  "
              f"prior={rows[-3]['model_accuracy']:.4f}  football={rows[-1]['model_accuracy']:.4f} "
              f"(lift {rows[-1]['lift_pp']:+.2f}pp, auc {rows[-1]['auc']:.4f})")
-    pd.DataFrame(rows).to_csv(out / "target_performance.csv", index=False)
-    pd.concat(conf).to_csv(out / "confidence_calibration.csv", index=False)
-    pd.concat(topk).to_csv(out / "confidence_topk.csv", index=False)
+    D.stamp(pd.DataFrame(rows)).to_csv(out / "target_performance.csv", index=False)
+    D.stamp(pd.concat(conf)).to_csv(out / "confidence_calibration.csv", index=False)
+    D.stamp(pd.concat(topk)).to_csv(out / "confidence_topk.csv", index=False)
     # Per-fold stability for the football model on the four primary targets.
     pf = pd.concat([E.per_fold(oofs[t]).assign(target=t) for t in PRIMARY_TARGETS])
-    pf.to_csv(out / "chronological_folds.csv", index=False)
+    D.stamp(pf).to_csv(out / "chronological_folds.csv", index=False)
     # The OOS probability frame is the input to the cross-market track. Keep it.
     allp = pd.concat([oofs[t] for t in PRIMARY_TARGETS + SECONDARY_TARGETS], ignore_index=True)
     allp.to_parquet(out / "oof_probabilities.parquet", index=False)
@@ -108,7 +108,7 @@ def phase_tournament(df, fl, out, *, targets=PRIMARY_TARGETS):
             _say(f"  {t:<8}{name:<15}ll={r['log_loss']:.4f} brier={r['brier']:.4f} "
                  f"auc={r['auc']:.4f} lift={r['lift_pp']:+.2f}pp  [{r['fit_seconds']}s]")
     tab = pd.DataFrame(rows)
-    tab.to_csv(out / "model_comparison.csv", index=False)
+    D.stamp(tab).to_csv(out / "model_comparison.csv", index=False)
     return tab
 
 
@@ -153,7 +153,7 @@ def phase_ablation(df, fl, out, *, targets=PRIMARY_TARGETS, model="hgb"):
             _say(f"  {t:<8}{f:<12} add dLL={rows[-2]['d_log_loss']:+.5f}   "
                  f"drop dLL={rows[-1]['d_log_loss']:+.5f}")
     tab = pd.DataFrame(rows)
-    tab.to_csv(out / "feature_ablation.csv", index=False)
+    D.stamp(tab).to_csv(out / "feature_ablation.csv", index=False)
     return tab
 
 
@@ -181,7 +181,7 @@ def phase_windows(df, fl, out, *, targets=PRIMARY_TARGETS):
             _say(f"  {t:<8}{name:<18}ll={r['log_loss']:.4f} brier={r['brier']:.4f} "
                  f"lift={r['lift_pp']:+.2f}pp")
     tab = pd.DataFrame(rows)
-    tab.to_csv(out / "time_ablation.csv", index=False)
+    D.stamp(tab).to_csv(out / "time_ablation.csv", index=False)
     return tab
 
 
@@ -219,7 +219,7 @@ def phase_market(df, fl, out, *, targets=PRIMARY_TARGETS):
             _say(f"  {t:<8}{name:<22}n={r['n']:,} ll={r['log_loss']:.4f} "
                  f"brier={r['brier']:.4f} auc={r['auc']:.4f} lift={r['lift_pp']:+.2f}pp")
     tab = pd.DataFrame(rows)
-    tab.to_csv(out / "market_ablation.csv", index=False)
+    D.stamp(tab).to_csv(out / "market_ablation.csv", index=False)
     return tab
 
 
@@ -255,7 +255,7 @@ def phase_leagues(df, fl, out):
             _say(f"  {lg:<28}{t:<8}league-specific ll={r['log_loss']:.4f} "
                  f"lift={r['lift_pp']:+.2f}pp  (n={r['n']:,})")
     tab = pd.concat([glob, pd.DataFrame(per)], ignore_index=True) if per else glob
-    tab.to_csv(out / "league_performance.csv", index=False)
+    D.stamp(tab).to_csv(out / "league_performance.csv", index=False)
     return tab
 
 
@@ -270,7 +270,7 @@ def phase_curves(df, out, *, targets=PRIMARY_TARGETS):
             _say(f"  {t:<8}train={int(r.train_n):>6}  ll={r.log_loss:.4f}  "
                  f"brier={r.brier:.4f}  lift={r.lift_pp:+.2f}pp")
     tab = pd.concat(rows, ignore_index=True)
-    tab.to_csv(out / "learning_curves.csv", index=False)
+    D.stamp(tab).to_csv(out / "learning_curves.csv", index=False)
     return tab
 
 
@@ -298,7 +298,7 @@ def main() -> int:
         _say(f"      {f.describe()}")
 
     manifest = {"generated_at": pd.Timestamp.utcnow().isoformat(), "rows": int(len(df)),
-                "folds": [f.describe() for f in fl], "phases": []}
+                "folds": [f.describe() for f in fl], "phases": [], **D.version_stamp()}
     # ONE PHASE MUST NOT DESTROY THE OTHERS.
     #
     # On 2026-09-28 the CURVES phase raised inside sklearn's histogram binner and took the

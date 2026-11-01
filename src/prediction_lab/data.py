@@ -20,10 +20,23 @@ inside-box shots on 0-3%. The column exists; the data does not. So "does xG help
 answered from this warehouse -- only "xG is present too rarely to test", which is a different
 and much less interesting answer. Run --inventory to see it per league.
 
-THE SPINE IS fd_history. af_history is joined on (date, home, away) for the columns fd lacks.
-It covers new-format leagues only, so any card feature is null for every standard-format
-fixture -- handled as a feature FAMILY that is simply unavailable for that track, never as a
-zero, because a zero would claim "no cards were shown" when the truth is "we did not look".
+THE SPINE IS fd_history. af_history is joined for the columns fd lacks. Where af has no row the
+card feature is null -- handled as a feature FAMILY that is unavailable for that fixture, never as
+a zero, because a zero would claim "no cards were shown" when the truth is "we did not look".
+
+DATA VERSION 2.0 (R2, 2026-11-01). Version 1.0 grouped by RAW team strings, so a club stored under
+two source spellings was two teams (double-counted matches, rolling history split in half), the af
+join ignored the league, and `season_label` was an Aug-Jul bucket for every league. 2.0:
+  * canonical league-scoped club identity (src/data/canonical_identity, the frozen identity/1.0
+    alias map shared with v9's v9_repaired serving recipe); score conflicts quarantined;
+  * af joined on (league, date, canonical home, canonical away), many-to-one validated, row count
+    asserted unchanged;
+  * `league_season` / `season_type` / `season_status` from the league-aware season calendar
+    (src/data/season_calendar). `season_label` is KEPT as the Jul-Jun CHRONOLOGICAL BUCKET it
+    always was (folds and other callers use it as a time bucket, not as a season);
+  * outputs go to output/pure_prediction/data_v2/ -- version 1.0 outputs are never overwritten --
+    and every written table carries data_version + identity_version.
+`identity="raw"` reproduces 1.0 exactly, for the before/after reconciliation only.
 """
 from __future__ import annotations
 
@@ -37,6 +50,8 @@ import pandas as pd
 from config import pro_config as cfg
 
 CALC_VERSION = "1.0.0"
+DATA_VERSION = "lab-data/2.0"
+LEGACY_DATA_VERSION = "lab-data/1.0"
 
 # Targets derived purely from the final score. Nothing else in this lab may define one.
 TARGETS = ("btts", "over15", "over25", "over35",
@@ -102,7 +117,10 @@ def model_type_for_league(league) -> str:
 
 
 def _season_label(d: pd.Series) -> np.ndarray:
-    """Aug-Jul seasons. Calendar-year leagues (MLS, Brazil, Japan, Scandinavia) get labelled by
+    """A CHRONOLOGICAL BUCKET (Jul-Jun), not a season. Use `league_season` (season calendar) for
+    anything that means "this league's season". Kept for folds and existing callers.
+
+    Original note -- Aug-Jul seasons. Calendar-year leagues (MLS, Brazil, Japan, Scandinavia) get labelled by
     the same rule, which is wrong for them as a "season" but right as a CHRONOLOGICAL BUCKET --
     and a chronological bucket is the only thing it is ever used for."""
     y = d.dt.year
@@ -128,7 +146,36 @@ def _attach_targets(d: pd.DataFrame) -> pd.DataFrame:
     return d
 
 
-def load_fixtures(*, min_date: str | None = None) -> pd.DataFrame:
+def _load_fixtures_legacy(fd: pd.DataFrame, af: pd.DataFrame) -> pd.DataFrame:
+    """Data version 1.0, verbatim: raw strings, league-blind af join. Reconciliation only."""
+    if not af.empty:
+        fd = fd.merge(af, on=["date", "home_team", "away_team"], how="left")
+    return (fd.sort_values("date", kind="mergesort")
+              .drop_duplicates(["date", "league", "home_team", "away_team"], keep="last")
+              .reset_index(drop=True))
+
+
+def _join_af_canonical(fd: pd.DataFrame, af: pd.DataFrame, amap: dict) -> tuple[pd.DataFrame, dict]:
+    """League-scoped, identity-resolved, many-to-one join. Never expands rows."""
+    from src.data import canonical_identity as CI
+    stats = {"af_rows": int(len(af)), "af_duplicate_keys_dropped": 0, "af_matched": 0}
+    if af.empty or "league" not in af.columns:
+        return fd, stats
+    af, _ = CI.apply_aliases(af, amap)
+    key = ["league", "date", "home_team", "away_team"]
+    n0 = len(af)
+    af = af.drop_duplicates(key, keep="last")
+    stats["af_duplicate_keys_dropped"] = int(n0 - len(af))
+    n_left = len(fd)
+    out = fd.merge(af.assign(_af=1), on=key, how="left", validate="many_to_one")
+    if len(out) != n_left:
+        raise AssertionError(f"af enrichment changed row count {n_left} -> {len(out)}")
+    stats["af_matched"] = int(out["_af"].notna().sum())
+    return out.drop(columns=["_af"]), stats
+
+
+def load_fixtures(*, min_date: str | None = None, identity: str = "canonical",
+                  report: dict | None = None) -> pd.DataFrame:
     """Every fixture with a final score. One row per fixture. Targets attached, no features.
 
     Deduplicated on (date, league, home, away). Duplicates exist because fd_history is appended
@@ -156,28 +203,48 @@ def load_fixtures(*, min_date: str | None = None) -> pd.DataFrame:
         for c in ("HY", "AY", "HR", "AR", "HXG", "AXG", "HIB", "AIB"):
             if c in af.columns:
                 af[c] = pd.to_numeric(af[c], errors="coerce")
-        keep = ["date", "home_team", "away_team", "HY", "AY", "HR", "AR",
+        keep = ["league", "date", "home_team", "away_team", "HY", "AY", "HR", "AR",
                 "HXG", "AXG", "HIB", "AIB"]
         keep = [c for c in keep if c in af.columns]
-        af = (af.dropna(subset=["date", "home_team", "away_team"])
-                .drop_duplicates(["date", "home_team", "away_team"], keep="last")[keep]
+        af = (af.dropna(subset=["date", "home_team", "away_team"])[keep]
                 .rename(columns={"HY": "home_yellow", "AY": "away_yellow",
                                  "HR": "home_red", "AR": "away_red",
                                  "HXG": "home_xg", "AXG": "away_xg",
                                  "HIB": "home_inbox", "AIB": "away_inbox"}))
-        fd = fd.merge(af, on=["date", "home_team", "away_team"], how="left")
 
-    fd = (fd.sort_values("date", kind="mergesort")
-            .drop_duplicates(["date", "league", "home_team", "away_team"], keep="last")
-            .reset_index(drop=True))
+    if identity == "raw":
+        if not af.empty:
+            af = (af.drop(columns=["league"], errors="ignore")
+                    .drop_duplicates(["date", "home_team", "away_team"], keep="last"))
+        fd = _load_fixtures_legacy(fd, af)
+        ident_version, rep_d = "raw", {}
+    elif identity == "canonical":
+        from src.data import canonical_identity as CI
+        amap = CI.load_alias_map()
+        fd, rep_d = CI.canonicalise_fixtures(fd, amap)
+        fd, af_stats = _join_af_canonical(fd, af, amap)
+        rep_d["af_join"] = af_stats
+        ident_version = CI.IDENTITY_VERSION
+    else:
+        raise ValueError(f"identity must be 'canonical' or 'raw', not {identity!r}")
+    if report is not None:
+        report.update(rep_d)
     if min_date:
         fd = fd[fd["date"] >= pd.Timestamp(min_date)].reset_index(drop=True)
 
     fd["fixture_key"] = (fd["date"].dt.strftime("%Y-%m-%d") + "|" + fd["league"].astype(str)
                          + "|" + fd["home_team"] + "|" + fd["away_team"])
     fd["model_type"] = fd["league"].map(model_type_for_league)
-    fd["season_label"] = _season_label(fd["date"])
-    return _attach_targets(fd)
+    fd["season_label"] = _season_label(fd["date"])        # chronological bucket, NOT a season
+    if identity == "canonical":
+        from src.data import season_calendar as SC
+        fd = fd.join(SC.league_season_frame(fd["league"], fd["date"]))
+        if report is not None:
+            report["season_calendar"] = SC.health(fd["league"], fd["date"])
+    fd = _attach_targets(fd)
+    fd.attrs["identity_version"] = ident_version
+    fd.attrs["data_version"] = DATA_VERSION if identity == "canonical" else LEGACY_DATA_VERSION
+    return fd
 
 
 def team_match_long(d: pd.DataFrame) -> pd.DataFrame:
@@ -191,7 +258,12 @@ def team_match_long(d: pd.DataFrame) -> pd.DataFrame:
     def side(pfx: str, opp: str, is_home: int) -> pd.DataFrame:
         out = pd.DataFrame({
             "fixture_key": d["fixture_key"], "date": d["date"], "league": d["league"],
-            "season_label": d["season_label"], "team": d[f"{pfx}_team"],
+            "season_label": d["season_label"],
+            "league_season": (d["league_season"] if "league_season" in d.columns
+                              else pd.Series(np.nan, index=d.index, dtype=object)),
+            "season_status": (d["season_status"] if "season_status" in d.columns
+                              else pd.Series(np.nan, index=d.index, dtype=object)),
+            "team": d[f"{pfx}_team"],
             "opponent": d[f"{opp}_team"], "is_home": is_home,
             "gf": d[f"{pfx}_goals"], "ga": d[f"{opp}_goals"],
         })
@@ -239,16 +311,69 @@ def inventory(d: pd.DataFrame) -> pd.DataFrame:
 
 
 def out_dir() -> Path:
-    p = cfg.OUTPUT_DIR / "pure_prediction"
+    """Data-version 2.0 outputs. The 1.0 files in output/pure_prediction/ are left untouched."""
+    p = cfg.OUTPUT_DIR / "pure_prediction" / "data_v2"
     p.mkdir(parents=True, exist_ok=True)
     return p
+
+
+def version_stamp() -> dict:
+    from src.data import canonical_identity as CI
+    from src.data import season_calendar as SC
+    return {"data_version": DATA_VERSION, "identity_version": CI.IDENTITY_VERSION,
+            "season_calendar_version": SC.calendar_version()}
+
+
+def stamp(df: pd.DataFrame) -> pd.DataFrame:
+    """Every table this lab writes carries the versions that produced it."""
+    out = df.copy()
+    for k, v in version_stamp().items():
+        out[k] = v
+    return out
+
+
+def reconciliation() -> dict:
+    """Before (data 1.0, raw strings) vs after (data 2.0, canonical identity)."""
+    from src.data import canonical_identity as CI
+    raw = load_fixtures(identity="raw")
+    rep: dict = {}
+    can = load_fixtures(identity="canonical", report=rep)
+    amap = CI.load_alias_map()
+    out = CI.reconcile(raw, can, rep, amap)
+    out.update(version_stamp())
+    out["af_join_after"] = rep.get("af_join")
+    for nm, fr in (("before", raw), ("after", can)):
+        out[f"af_cards_coverage_{nm}"] = (round(float(fr["home_yellow"].notna().mean()), 4)
+                                          if "home_yellow" in fr.columns else 0.0)
+    out["season_calendar"] = rep.get("season_calendar")
+    differs = can["league_season"].astype(str) != pd.Series(can["season_label"]).astype(str)
+    out["league_season_differs_from_bucket_rows"] = int(differs.sum())
+    q = rep.get("quarantine")
+    out["quarantine_sample"] = ([] if q is None or q.empty else
+                                q[["date", "league", "home_team", "away_team", "home_goals",
+                                   "away_goals"]].astype(str).head(20).to_dict("records"))
+    return out
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--inventory", action="store_true")
     ap.add_argument("--write", action="store_true")
+    ap.add_argument("--reconcile", action="store_true",
+                    help="before/after identity reconciliation -> identity_reconciliation.json")
     a = ap.parse_args()
+    if a.reconcile:
+        import json
+        r = reconciliation()
+        summary = {k: v for k, v in r.items() if k not in ("per_league", "quarantine_sample")}
+        print(json.dumps(summary, indent=2, default=str))
+        if a.write:
+            (out_dir() / "identity_reconciliation.json").write_text(
+                json.dumps(r, indent=2, default=str), encoding="utf-8")
+            stamp(pd.DataFrame(r["per_league"])).to_csv(
+                out_dir() / "identity_reconciliation_by_league.csv", index=False)
+            print(f"[data] wrote identity_reconciliation.json to {out_dir()}")
+        return 0
     d = load_fixtures()
     print(f"[data] {len(d):,} fixtures  {d.date.min().date()}..{d.date.max().date()}  "
           f"{d.league.nunique()} leagues  {pd.Series(d.season_label).nunique()} season buckets")
@@ -260,7 +385,7 @@ def main() -> int:
         with pd.option_context("display.width", 260, "display.max_columns", 40):
             print(inv.to_string(index=False))
         if a.write:
-            inv.to_csv(out_dir() / "data_inventory.csv", index=False)
+            stamp(inv).to_csv(out_dir() / "data_inventory.csv", index=False)
             print(f"\n[data] wrote {out_dir() / 'data_inventory.csv'}")
     return 0
 

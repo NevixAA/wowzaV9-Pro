@@ -178,6 +178,15 @@ output/**
 !output/pure_prediction/verdicts.txt
 !output/pure_prediction/cross_market_verdicts.json
 !output/pure_prediction/cross_market_verdicts.txt
+# Data version 2.0 (R2 2026-11-01: canonical identity + league-aware seasons). Written BESIDE the 1.0
+# files above, never over them. Tables/JSON/text only -- the parquet caches stay ignored.
+!output/pure_prediction/data_v2/
+!output/pure_prediction/data_v2/*.csv
+!output/pure_prediction/data_v2/*.json
+!output/pure_prediction/data_v2/*.txt
+# Research run-status records (src/monitoring/run_status.py) -- RUN status, never a verdict.
+!output/run_status/
+!output/run_status/*.json
 
 # ---------------------------------------------------------------------------------------------
 # ARCHITECTURE AUDIT (src/architecture). Named file by file, same reason as the blocks above.
