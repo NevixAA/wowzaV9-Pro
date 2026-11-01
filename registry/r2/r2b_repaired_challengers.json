@@ -121,7 +121,17 @@
    "recipe": "nf_v9_repaired",
    "task": "nf_ou25",
    "hypothesis": "A New Format O/U 2.5 model on the repaired architecture (identity-canonical NF history, as-of league-scoped features with the Nov-1 NF parity semantics, no market feature, train-only imputer, four chronological blocks, derived recency) is at least as well calibrated as the legacy NF recipe on the untouched holdout, while removing batch dependence and the holdout-fitted meta.",
-   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:38:54Z",
+    "rows": [
+     {
+      "experiment": "NF-R2-OU25",
+      "task": "nf_ou25",
+      "status": "MISSING (infra or job failure)"
+     }
+    ]
+   }
   },
   {
    "id": "SIDE-R2-BTTS-STD",
@@ -130,7 +140,17 @@
    "recipe": "side_v9_repaired",
    "task": "side_btts",
    "hypothesis": "A Standard-only BTTS repaired challenger scores at least as well as the pooled legacy side model on Standard holdout rows (finding 19: pooling with New Format may be wrong).",
-   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:38:54Z",
+    "rows": [
+     {
+      "experiment": "SIDE-R2-BTTS-STD",
+      "task": "side_btts",
+      "status": "MISSING (infra or job failure)"
+     }
+    ]
+   }
   },
   {
    "id": "SIDE-R2-BTTS-NF",
@@ -139,7 +159,17 @@
    "recipe": "side_v9_repaired",
    "task": "side_btts",
    "hypothesis": "A New-Format-only BTTS repaired challenger scores at least as well as the pooled legacy side model on New Format holdout rows.",
-   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:38:54Z",
+    "rows": [
+     {
+      "experiment": "SIDE-R2-BTTS-NF",
+      "task": "side_btts",
+      "status": "MISSING (infra or job failure)"
+     }
+    ]
+   }
   },
   {
    "id": "SIDE-R2-O15-STD",
@@ -148,7 +178,17 @@
    "recipe": "side_v9_repaired",
    "task": "side_over15",
    "hypothesis": "Standard-only Over 1.5 repaired challenger vs pooled legacy, Standard holdout rows.",
-   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:38:54Z",
+    "rows": [
+     {
+      "experiment": "SIDE-R2-O15-STD",
+      "task": "side_over15",
+      "status": "MISSING (infra or job failure)"
+     }
+    ]
+   }
   },
   {
    "id": "SIDE-R2-O15-NF",
@@ -157,7 +197,17 @@
    "recipe": "side_v9_repaired",
    "task": "side_over15",
    "hypothesis": "New-Format-only Over 1.5 repaired challenger vs pooled legacy, New Format holdout rows.",
-   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:38:54Z",
+    "rows": [
+     {
+      "experiment": "SIDE-R2-O15-NF",
+      "task": "side_over15",
+      "status": "MISSING (infra or job failure)"
+     }
+    ]
+   }
   },
   {
    "id": "SIDE-R2-O35-STD",
@@ -166,7 +216,17 @@
    "recipe": "side_v9_repaired",
    "task": "side_over35",
    "hypothesis": "Standard-only Over 3.5 repaired challenger vs pooled legacy, Standard holdout rows (research only; O3.5 betting stays inactive).",
-   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:38:54Z",
+    "rows": [
+     {
+      "experiment": "SIDE-R2-O35-STD",
+      "task": "side_over35",
+      "status": "MISSING (infra or job failure)"
+     }
+    ]
+   }
   },
   {
    "id": "SIDE-R2-O35-NF",
@@ -175,7 +235,17 @@
    "recipe": "side_v9_repaired",
    "task": "side_over35",
    "hypothesis": "New-Format-only Over 3.5 repaired challenger vs pooled legacy, New Format holdout rows (research only).",
-   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:38:54Z",
+    "rows": [
+     {
+      "experiment": "SIDE-R2-O35-NF",
+      "task": "side_over35",
+      "status": "MISSING (infra or job failure)"
+     }
+    ]
+   }
   },
   {
    "id": "HT-R2-O05",
@@ -184,7 +254,17 @@
    "recipe": "ht_v9_repaired",
    "task": "ht_over05",
    "hypothesis": "An HT Over 0.5 challenger on the repaired architecture (repaired as-of features + src.ht_features run per league so team accumulators cannot cross competitions) is at least as well calibrated as the legacy HT recipe on the untouched holdout.",
-   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:38:54Z",
+    "rows": [
+     {
+      "experiment": "HT-R2-O05",
+      "task": "ht_over05",
+      "status": "MISSING (infra or job failure)"
+     }
+    ]
+   }
   },
   {
    "id": "HT-R2-O15",
@@ -193,7 +273,17 @@
    "recipe": "ht_v9_repaired",
    "task": "ht_over15",
    "hypothesis": "As HT-R2-O05 for HT Over 1.5.",
-   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:38:54Z",
+    "rows": [
+     {
+      "experiment": "HT-R2-O15",
+      "task": "ht_over15",
+      "status": "MISSING (infra or job failure)"
+     }
+    ]
+   }
   }
  ]
 }
