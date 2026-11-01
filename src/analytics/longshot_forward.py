@@ -30,6 +30,7 @@ import pandas as pd
 from config import pro_config as cfg
 from src.analytics import core as C
 from src.analytics import longshot_plan as LP
+from src.data import v9_config
 
 VERSION = "longshot-1.0.0"
 REG = cfg.BASE_DIR / "registry" / "longshot" / "registration_v1.json"
@@ -113,7 +114,7 @@ def run() -> dict:
     sha_ok = reg.get("gate_logic_sha256") == _src_sha()
     I = LP.D.load_inputs()
     s = LP.prepare(I["s"])
-    pool = C.universes(s, cfg.PAPER_LEAGUES, I["policy"])["NON_MLS"]
+    pool = C.universes(s, v9_config.paper_leagues(), I["policy"])["NON_MLS"]
     latest = pool["date"].max()
     months = sorted(m for m in pool["month"].unique() if m >= "2026-09")
     _, wf_bets = LP.walk_forward(pool, None, months)

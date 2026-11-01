@@ -76,7 +76,8 @@ def _read(table: str) -> pd.DataFrame:
     from src.data import season_store as store
     try:
         return store.read(table)
-    except Exception:                                          # noqa: BLE001
+    except Exception as e:                                     # noqa: BLE001
+        print(f"[builder] could not read warehouse table {table}: {type(e).__name__}: {e}")
         return pd.DataFrame()
 
 
@@ -93,21 +94,43 @@ def _latest_model_probs(snaps: pd.DataFrame) -> pd.DataFrame:
 
 
 def _dependency() -> dict:
-    """Measured player x goal-market dependence, or {} if it has not been built yet.
+    """Measured player/card x goal-market dependence, or {} if it is missing or unreadable.
 
-    An empty dict is NOT a failure: `_joint` falls back to a ratio of 1.0, which is plain
-    independence. It is worth knowing that happened, so the caller reports it.
+    {} means NO player or card leg can be combined: `_joint` refuses every pair without a
+    measured cell (it used to price them at a ratio of 1.0, i.e. assumed independence). The
+    caller says so out loud.
     """
     f = OUT / "player_combo_dependency.csv"
     if not f.exists():
+        print(f"[builder] {f.name} is missing")
         return {}
     try:
         return pdep.joint_lookup(pd.read_csv(f))
-    except Exception:                                          # noqa: BLE001
+    except Exception as e:                                     # noqa: BLE001
+        print(f"[builder] could not read {f.name}: {type(e).__name__}: {e}")
         return {}
 
 
-def _card_rates() -> pd.DataFrame:
+def _player_history() -> pd.DataFrame:
+    """v9's player_history.parquet (outcomes per player-match), or empty with a printed reason."""
+    import os
+    roots = [os.getenv("V9_LOCAL", ""), str(ROOT.parent / "v9"), str(ROOT.parent / "_v9")]
+    for r in roots:
+        if not r:
+            continue
+        p = Path(r) / "player_history.parquet"
+        if not p.exists():
+            continue
+        try:
+            return pd.read_parquet(p)
+        except Exception as e:                                 # noqa: BLE001
+            print(f"[builder] could not read {p}: {type(e).__name__}: {e}")
+    print("[builder] NO player_history.parquet found — team-card and score-or-assist legs will "
+          "NOT be built. Check out v9 alongside Pro, or set V9_LOCAL.")
+    return pd.DataFrame()
+
+
+def _card_rates(h: pd.DataFrame | None = None) -> pd.DataFrame:
     """Per team-match card totals, for the team-card legs.
 
     Cards were MISSING ENTIRELY from the first live tips — `build()` takes a `cards=` argument
@@ -118,25 +141,12 @@ def _card_rates() -> pd.DataFrame:
     borrowing pro_weekly_audit already does. Pro still writes nothing to v9.
     """
     from src.combo import team_markets as tm
-    import os
-    roots = [os.getenv("V9_LOCAL", ""), str(ROOT.parent / "v9"), str(ROOT.parent / "_v9")]
-    for r in roots:
-        if not r:
-            continue
-        p = Path(r) / "player_history.parquet"
-        if not p.exists():
-            continue
-        try:
-            h = pd.read_parquet(p)
-            rates = tm.team_card_rates(h)
-            print(f"[builder] card rates from {p.name}: {len(rates):,} team-matches")
-            return rates
-        except Exception as e:                                 # noqa: BLE001
-            print(f"[builder] could not read {p}: {type(e).__name__}: {e}")
-    # Said out loud. Silently producing zero card legs is what happened the first time.
-    print("[builder] NO player_history.parquet found — team-card legs will NOT be built. "
-          "Check out v9 alongside Pro, or set V9_LOCAL.")
-    return pd.DataFrame()
+    h = _player_history() if h is None else h
+    if h.empty:
+        return pd.DataFrame()
+    rates = tm.team_card_rates(h)
+    print(f"[builder] card rates from player_history: {len(rates):,} team-matches")
+    return rates
 
 
 def generate(days: int = DEFAULT_DAYS, *, now: dt.datetime | None = None) -> pd.DataFrame:
@@ -159,10 +169,16 @@ def generate(days: int = DEFAULT_DAYS, *, now: dt.datetime | None = None) -> pd.
 
     probs = _latest_model_probs(snaps)
     dep = _dependency()
-    cards = _card_rates()
+    hist = _player_history()
+    cards = _card_rates(hist)
+    from src.combo import team_markets as tm
+    # Score-or-assist overlap measured per league from player_history (was one pooled constant).
+    overlap = (tm.score_assist_overlap(hist, min_minutes=pdep.MIN_MINUTES, min_rows=pdep.MIN_CELL_N)
+               if not hist.empty else {})
     if not dep:
-        print("[builder] no measured player dependence available — player legs fall back to "
-              "independence (ratio 1.0), which is recorded per row as a flag")
+        print("[builder] no measured player/card dependence available — player and card legs "
+              "will NOT be combined (no independence is assumed)")
+    from src.data import v9_config
 
     stamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
     out, no_probs, bad_mono, no_fit = [], 0, 0, 0
@@ -201,10 +217,16 @@ def generate(days: int = DEFAULT_DAYS, *, now: dt.datetime | None = None) -> pd.
         # a week, forever. Nothing consumes that depth: notify sends at most 6, the dashboard
         # shows 200. Twelve of each leg count keeps the interesting tail of every length while
         # the file stays a few hundred KB.
-        cand = mp.build(fit["matrix"], props=fp if fp is not None and len(fp) else None,
-                        cards=cards if len(cards) else None,
+        lg = v9_config.canonical_league(f.get("league"))
+        if lg is None:
+            print(f"[builder] {f.get('league')!r} is not a registry league — card and "
+                  f"score-or-assist legs skipped for {f.get('home_team')} v {f.get('away_team')}")
+        cand = mp.build(fit["matrix"], targets_used=fit["targets_used"], league=lg,
+                        props=fp if fp is not None and len(fp) else None,
+                        cards=cards if len(cards) and lg is not None else None,
                         home=str(f.get("home_team", "")), away=str(f.get("away_team", "")),
-                        dep=dep, top_n=CANDIDATES_PER_LEG_COUNT)
+                        dep=dep, overlap_rate=overlap.get(lg) if lg is not None else None,
+                        top_n=CANDIDATES_PER_LEG_COUNT)
         if cand.empty:
             continue
         cand.insert(0, "generated_at", stamp)

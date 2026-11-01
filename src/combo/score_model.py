@@ -96,6 +96,27 @@ def _masks() -> dict[str, np.ndarray]:
 
 MASKS = _masks()
 
+# WHAT THE FIT CAN HONESTLY REPORT (Data Truth 2026-11-01). Every fit target - O1.5/O2.5/O3.5/
+# BTTS - is symmetric in lambda_home and lambda_away, so the fit cannot tell which side is the
+# stronger one. Any market that tells home from away (1X2, double chance, team goals) would be
+# decided by the optimiser's starting point, not by data, so it is never read off the matrix
+# until a side-specific input (1X2 model or price) is fitted too. Totals are pinned by the O/U
+# targets; BTTS/BTTS_NO/DRAW depend on the SPLIT of the total, which only a BTTS target pins.
+TOTAL_MARKETS = frozenset({"O15", "U15", "O25", "U25", "O35", "U35"})
+SPLIT_MARKETS = frozenset({"BTTS", "BTTS_NO", "DRAW"})
+
+
+def identified_markets(targets_used) -> frozenset:
+    """Matrix markets the fitted targets actually determine; side-specific markets never."""
+    used = set(targets_used or ())
+    totals = bool(used & {"O15", "O25", "O35"})
+    out = set(TOTAL_MARKETS) if totals else set()
+    if "BTTS" in used:
+        out |= {"BTTS", "BTTS_NO"}
+        if totals:                  # total AND split pinned -> the (unordered) pair is identified
+            out |= SPLIT_MARKETS
+    return frozenset(out)
+
 
 def prob(m: np.ndarray, market: str) -> float:
     return float(m[MASKS[market]].sum())
@@ -128,7 +149,9 @@ def fit(targets: dict[str, float], *, rho_grid=(-0.15, -0.10, -0.05, 0.0, 0.05, 
 
     best = None
     for rho in rho_grid:
-        lh, la = 1.35, 1.15                      # league-average-ish starting point
+        # Optimiser SEED only, not an estimate: the fitted totals/BTTS do not depend on it, and
+        # the side split it leaves behind is never read (see identified_markets).
+        lh, la = 1.35, 1.15
         step = 0.8
         for _ in range(max_iter):
             improved = False

@@ -28,6 +28,7 @@ import pandas as pd
 
 from config import pro_config as cfg
 from src.studies import common as C
+from src.data import v9_config
 
 CUTOFF = "2026-08-10"
 STAKED = ("SNIPER", "MARKSMAN")
@@ -49,7 +50,7 @@ def _bets() -> pd.DataFrame:
           & (pd.to_datetime(d["match_date"], errors="coerce") >= CUTOFF)].copy()
     d["u"] = np.where(d["result"] == "WIN", d["odds"] - 1, -1.0)
     d["week"] = pd.to_datetime(d["match_date"]).dt.strftime("%G-%V")
-    d["paper_league"] = d["league"].astype(str).str.strip().isin(cfg.PAPER_LEAGUES)
+    d["paper_league"] = d["league"].map(v9_config.is_paper)
     return d.sort_values("generated_at")
 
 

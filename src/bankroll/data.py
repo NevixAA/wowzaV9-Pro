@@ -72,15 +72,10 @@ def align_policy_keys(policy: dict, reader=None) -> dict:
 
 
 def _paper_leagues() -> set[str]:
-    try:
-        txt = (cfg.V9_LOCAL / "config.py").read_text(encoding="utf-8")
-        import re
-        m = re.search(r"PAPER_LEAGUES\s*=\s*(\{[^}]*\}|\[[^\]]*\]|frozenset\([^)]*\))", txt)
-        if m:
-            return set(re.findall(r"[\"']([^\"']+)[\"']", m.group(1)))
-    except Exception:
-        pass
-    return {"USA MLS"}
+    """Paper leagues from v9's league registry. No fallback list: if the registry cannot be read
+    the review must fail, not silently treat a hand-typed set as the paper list (Data Truth)."""
+    from src.data import v9_config
+    return set(v9_config.paper_leagues())
 
 
 def load_bets(from_date: str = PERFORMANCE_CUTOFF, include_unsettled: bool = False) -> pd.DataFrame:
@@ -102,8 +97,15 @@ def load_bets(from_date: str = PERFORMANCE_CUTOFF, include_unsettled: bool = Fal
         "odds": s["odds"], "result": s["result"], "pnl": s["pnl"], "clv_pct": s.get("clv_pct"),
         "edge_pct": s.get("edge_pct")}))
     d = pd.concat(parts, ignore_index=True)
-    d = d[d["source"].fillna("live").astype(str).eq("live")]
-    d = d[~d["league"].isin(_paper_leagues())]
+    # A blank source is UNKNOWN, not live: excluded and counted (it used to be assumed live).
+    no_src = d["source"].isna() | d["source"].astype(str).str.strip().eq("")
+    if no_src.any():
+        print(f"[bankroll] excluded {int(no_src.sum())} ledger rows with no source")
+    d = d[~no_src & d["source"].astype(str).eq("live")]
+    # Paper exclusion on the CANONICAL league, so an alias spelling of a paper league is caught too.
+    from src.data import v9_config
+    canon = d["league"].map(v9_config.canonical_league)
+    d = d[~canon.isin(_paper_leagues()) & ~d["league"].isin(_paper_leagues())]
     # VALUABLE INCLUDED (2026-10-22). This filter used to drop every VALUABLE tip, so the staking
     # research never saw the tier the live record says works best on OU25 - while Pro's own VALUABLE
     # study and edge reassessment said the opposite of the ladder. Whether a tier is STAKED is the
@@ -115,7 +117,16 @@ def load_bets(from_date: str = PERFORMANCE_CUTOFF, include_unsettled: bool = Fal
     d["unit"] = pd.to_numeric(d["pnl"], errors="coerce")
     d["clv"] = pd.to_numeric(d["clv_pct"], errors="coerce") / 100.0
     d["edge"] = pd.to_numeric(d["edge_pct"], errors="coerce")
-    d["model_type"] = d["model_type"].fillna("unknown").astype(str)
+    # A blank model_type is derived from the league via the registry (the real source); a league
+    # the registry cannot type is excluded and counted - no 'unknown|OU25' placeholder track.
+    blank = d["model_type"].isna() | d["model_type"].astype(str).str.strip().eq("")
+    d.loc[blank, "model_type"] = d.loc[blank, "league"].map(v9_config.model_type)
+    untyped = d["model_type"].isna()
+    if untyped.any():
+        print(f"[bankroll] excluded {int(untyped.sum())} bets whose league has no registry model type: "
+              f"{sorted(d.loc[untyped, 'league'].astype(str).unique())[:10]}")
+    d = d[~untyped]
+    d["model_type"] = d["model_type"].astype(str)
     d["result"] = d["result"].astype(str).str.upper()
     if not include_unsettled:
         d = d[d["unit"].notna()]
@@ -137,8 +148,9 @@ def v11_league_residual() -> pd.DataFrame:
         r = requests.get(url, timeout=30)
         if r.status_code == 200:
             return pd.read_csv(io.StringIO(r.text))
-    except Exception:
-        pass
+        print(f"[bankroll] v11 residual unavailable (HTTP {r.status_code}); no league can converge")
+    except Exception as e:                                                  # noqa: BLE001
+        print(f"[bankroll] v11 residual unavailable ({type(e).__name__}); no league can converge")
     return pd.DataFrame(columns=["scope", "n", "brier_market", "brier_market_wowza", "wowza_helps"])
 
 

@@ -126,7 +126,7 @@ def check_bets() -> dict:
         na = _r("NOT_APPLICABLE", "no v9 ledger")
         return {k: na for k in ("DUPLICATE_BETS", "FIRST_SIGHT_VIOLATION", "SIDE_FLIP_DOUBLE_COUNTED",
                                 "LEAGUE_CONCENTRATION", "MISSINGNESS_HIDDEN")}
-    live = led[led["source"].fillna("live").astype(str) == "live"]
+    live = led[led["source"].astype(str) == "live"]          # a blank source is not live
     key = ["match_date", "league", "home_team", "away_team", "side"]
     dups = int(live.duplicated(key).sum())
     out["DUPLICATE_BETS"] = _r("WARNING" if dups else "PASS",
@@ -148,7 +148,8 @@ def check_bets() -> dict:
                                           {k: stats.get(k) for k in ("RAW_ROWS", "UNIQUE_FIRST_SIGHT_ROWS",
                                                                      "DUPLICATES_REMOVED")})
         s = C.settle(first)
-        core = s[s["tier"].isin(C.CORE_TIERS) & (s["league"] != "USA MLS")]
+        from src.data import v9_config
+        core = v9_config.drop_paper_leagues(s[s["tier"].isin(C.CORE_TIERS)])   # registry paper leagues
         pos = core.groupby("league")["pnl"].sum()
         share = float(pos.max() / pos[pos > 0].sum()) if (pos > 0).any() else 0.0
         out["LEAGUE_CONCENTRATION"] = _r("WARNING" if share > 0.5 else "PASS",

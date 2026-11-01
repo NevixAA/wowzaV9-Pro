@@ -58,6 +58,7 @@ import numpy as np
 import pandas as pd
 
 from src.combo import dixon_coles as dc
+from src.data import v9_config
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "output"
@@ -372,7 +373,7 @@ def notify(d: pd.DataFrame, *, dry_run: bool = True) -> dict:
     live = live[live["notified_at"].isna()]
     # Paper leagues are recorded and settled but never sent (owner, 2026-10-07; mirrors v9).
     if "league" in live.columns:
-        live = live[~live["league"].astype(str).str.strip().isin(cfg.PAPER_LEAGUES)]
+        live = v9_config.drop_paper_leagues(live)   # registry PAPER_LEAGUES, canonical names
     out["considered"] = len(live)
     scored = []
     for i, r in live.iterrows():

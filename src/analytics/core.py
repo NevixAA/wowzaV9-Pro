@@ -20,6 +20,9 @@ import pandas as pd
 TIERS = ("SNIPER", "MARKSMAN", "VALUABLE")
 CORE_TIERS = ("SNIPER", "MARKSMAN")
 SIDE_MARKET = {"btts": "BTTS", "over15": "OVER15", "over35": "OVER35"}
+# The side each side-ledger market is bet on (v9 side ledger: BTTS YES, Over 1.5/3.5 OVER). Only
+# used when a row's own `side` is blank; an unknown market keeps a blank side.
+SIDE_OF_MARKET = {"btts": "YES", "over15": "OVER", "over35": "OVER"}
 RNG_SEED = 20261018
 N_BOOT = 1000
 
@@ -52,31 +55,46 @@ def load_raw(v9_dir) -> pd.DataFrame:
     p = out / "side_bets_ledger.csv"
     if p.exists():
         s = pd.read_csv(p, low_memory=False)
-        s = s.assign(ledger="side", market=s["market"].astype(str).str.lower().map(SIDE_MARKET).fillna(
-            s["market"].astype(str).str.upper()), side=s["side"].fillna("YES").astype(str).str.upper(),
-            tier=s["signal_tier"])
+        mk = s["market"].astype(str).str.lower()
+        # Side: the row's own side, else the side its market is bet on; never a blanket "YES"
+        # (that labelled every Over 1.5 / Over 3.5 row as YES).
+        side = s["side"].where(s["side"].notna(), mk.map(SIDE_OF_MARKET))
+        s = s.assign(ledger="side", market=mk.map(SIDE_MARKET).fillna(s["market"].astype(str).str.upper()),
+                     side=side.astype("string").str.upper(), tier=s["signal_tier"])
         parts.append(s)
     p = out / "ht_ledger.csv"
     if p.exists():
         h = pd.read_csv(p, low_memory=False)
+        # model_type from the league via v9's registry (was "standard" for the whole HT ledger).
+        from src.data import v9_config
         h = h.assign(ledger="ht", market="HT_" + h["market"].astype(str).str.upper(),
                      side=h["side"].astype(str).str.upper(), tier="HT", odds=h["entry_odds"],
-                     model_type="standard", edge_pct=np.nan)
+                     model_type=h["league"].map(v9_config.model_type), edge_pct=np.nan)
         parts.append(h)
     if not parts:
         return pd.DataFrame()
     d = pd.concat(parts, ignore_index=True)
-    d["source"] = d["source"].fillna("live").astype(str)
+    # A blank source stays blank (it used to become "live"); first_sight keeps live rows only.
+    no_src = d["source"].isna() | d["source"].astype(str).str.strip().eq("")
+    if no_src.any():
+        print(f"[analytics] {int(no_src.sum())} ledger rows have no source - not counted as live")
     d["day"] = d["match_date"].astype(str).str[:10]
     d["odds"] = pd.to_numeric(d["odds"], errors="coerce")
     d["closing_odds"] = pd.to_numeric(d.get("closing_odds"), errors="coerce")
     d["clv"] = pd.to_numeric(d.get("clv_pct"), errors="coerce")
-    d["clv"] = d["clv"] / 100.0 if d["clv"].abs().median() > 1.0 else d["clv"]
+    d["clv"] = d["clv"] / 100.0           # clv_pct is a percentage in every v9 ledger (no unit guess)
     d["edge"] = _edge_fraction(d["edge_pct"])
     d["kelly"] = pd.to_numeric(d.get("kelly_pct"), errors="coerce")
     mp = pd.to_numeric(d["model_prob"], errors="coerce")
     d["model_p"] = mp.where(mp.notna(), 1.0 / d["odds"] + d["edge"])
-    d["model"] = d["model_type"].fillna("unknown").astype(str).replace({"nan": "unknown", "": "unknown"})
+    # Blank model_type -> derived from the league via the registry; still unknown -> NaN (no
+    # 'unknown' placeholder track), counted.
+    from src.data import v9_config
+    mt = d["model_type"].astype("string").str.strip().replace({"": pd.NA, "nan": pd.NA})
+    mt = mt.fillna(d["league"].map(v9_config.model_type).astype("string"))
+    if mt.isna().any():
+        print(f"[analytics] {int(mt.isna().sum())} rows have no model type (league not in registry)")
+    d["model"] = mt
     d["result"] = d["result"].fillna("").astype(str).str.upper().str.strip()
     d["ledger_pnl"] = pd.to_numeric(d["pnl"], errors="coerce")
     d["generated_at"] = pd.to_datetime(d["generated_at"], errors="coerce", utc=True)

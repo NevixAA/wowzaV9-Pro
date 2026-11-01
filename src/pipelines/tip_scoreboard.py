@@ -31,6 +31,7 @@ import numpy as np
 import pandas as pd
 
 from config import pro_config as cfg
+from src.data import v9_config
 
 OUT_JSON = cfg.OUTPUT_DIR / "tip_scoreboard.json"
 OUT_MD = cfg.OUTPUT_DIR / "TIP_SCOREBOARD.md"
@@ -56,7 +57,7 @@ def one_x_two(d: pd.DataFrame | None = None) -> dict:
     if d.empty or "notified_at" not in d.columns:
         return {"sent": 0}
     s = d[d["notified_at"].notna()].copy()
-    s["paper_league"] = s["league"].astype(str).str.strip().isin(cfg.PAPER_LEAGUES)
+    s["paper_league"] = s["league"].map(v9_config.is_paper)
     s["res"] = pd.to_numeric(s["result"], errors="coerce")
     s["pick_i"] = s["notified_pick"].map(PICK_INDEX)
     s["odds"] = pd.to_numeric(s["notified_odds"], errors="coerce")
@@ -105,7 +106,7 @@ def bet_builder(settled: pd.DataFrame | None = None, notified: dict | None = Non
         return {"sent": 0}
     sent_ids = set(notified)
     s = settled[settled["combo_id"].astype(str).isin(sent_ids)].drop_duplicates("combo_id", keep="last").copy()
-    s["paper_league"] = s["league"].astype(str).str.strip().isin(cfg.PAPER_LEAGUES)
+    s["paper_league"] = s["league"].map(v9_config.is_paper)
     s["p"] = pd.to_numeric(s["joint_probability"], errors="coerce")
     dec = s[s["combo_result"].isin(["WON", "LOST"])].copy()
     dec["won"] = (dec["combo_result"] == "WON").astype(int)
