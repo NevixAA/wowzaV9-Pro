@@ -1,0 +1,818 @@
+{
+ "task": "side_over35",
+ "target": "over35",
+ "market_class": "ONE_SIDED_PROXY_6PCT_MARGIN",
+ "n_features": 42,
+ "training_rows": 75318,
+ "blocks": {
+  "base": [
+   48073,
+   "2019-02-22",
+   "2024-09-13"
+  ],
+  "calibration": [
+   6114,
+   "2024-09-14",
+   "2025-02-14"
+  ],
+  "meta": [
+   5988,
+   "2025-02-15",
+   "2025-08-16"
+  ],
+  "holdout": [
+   15143,
+   "2025-08-17",
+   "2026-10-30"
+  ]
+ },
+ "pooled_training": true,
+ "coefficients": {
+  "prob": {
+   "platt": {
+    "logistic": [
+     3.461,
+     -1.995
+    ],
+    "gradient_boost": [
+     2.744,
+     -1.78
+    ],
+    "lightgbm": [
+     2.597,
+     -1.735
+    ]
+   },
+   "meta": [
+    1.845,
+    2.213,
+    2.226
+   ]
+  },
+  "logit": {
+   "platt": {
+    "logistic": [
+     0.759,
+     -0.298
+    ],
+    "gradient_boost": [
+     0.584,
+     -0.447
+    ],
+    "lightgbm": [
+     0.544,
+     -0.481
+    ]
+   },
+   "meta": [
+    0.313,
+    0.578,
+    0.644
+   ]
+  }
+ },
+ "tracks": {
+  "standard": {
+   "holdout": {
+    "n": 8426,
+    "matchdays": 325,
+    "dates": [
+     "2025-08-17",
+     "2026-10-28"
+    ],
+    "base_rate": 0.2918,
+    "prob": {
+     "log_loss": 0.60258,
+     "brier": 0.20627,
+     "mean_p": 0.3065,
+     "sd_p": 0.0644,
+     "calibration": {
+      "slope": 0.594,
+      "intercept": -0.399
+     },
+     "residual_vs_market": {
+      "n": 0,
+      "status": "TOO_FEW"
+     }
+    },
+    "logit": {
+     "log_loss": 0.60431,
+     "brier": 0.20703,
+     "mean_p": 0.3109,
+     "sd_p": 0.0736,
+     "calibration": {
+      "slope": 0.513,
+      "intercept": -0.474
+     },
+     "residual_vs_market": {
+      "n": 0,
+      "status": "TOO_FEW"
+     }
+    },
+    "delta_log_loss_logit_minus_prob": 0.00173,
+    "delta_log_loss_ci95": [
+     0.00089,
+     0.00252
+    ],
+    "delta_brier_logit_minus_prob": 0.00076,
+    "delta_brier_ci95": [
+     0.00045,
+     0.00108
+    ],
+    "league_level": {
+     "leagues": 17,
+     "sd_actual": 0.0484,
+     "sd_prob": 0.0313,
+     "sd_logit": 0.0339,
+     "sd_market": null,
+     "league_slope_prob": 1.205,
+     "mean_abs_league_error_prob_pp": 2.35,
+     "league_slope_logit": 1.1,
+     "mean_abs_league_error_logit_pp": 2.65
+    },
+    "per_league": [
+     {
+      "league": "Belgian First Division A",
+      "n": 363,
+      "actual": 0.2893,
+      "prob": 0.3235,
+      "logit": 0.3305,
+      "market": null
+     },
+     {
+      "league": "Bundesliga 2",
+      "n": 637,
+      "actual": 0.3234,
+      "prob": 0.3505,
+      "logit": 0.3584,
+      "market": null
+     },
+     {
+      "league": "Championship",
+      "n": 887,
+      "actual": 0.274,
+      "prob": 0.2833,
+      "logit": 0.2841,
+      "market": null
+     },
+     {
+      "league": "Dutch Eredivisie",
+      "n": 383,
+      "actual": 0.4308,
+      "prob": 0.3999,
+      "logit": 0.4081,
+      "market": null
+     },
+     {
+      "league": "Greek Super League",
+      "n": 432,
+      "actual": 0.2685,
+      "prob": 0.2912,
+      "logit": 0.2935,
+      "market": null
+     },
+     {
+      "league": "La Liga 2",
+      "n": 781,
+      "actual": 0.2881,
+      "prob": 0.2774,
+      "logit": 0.2779,
+      "market": null
+     },
+     {
+      "league": "League One",
+      "n": 886,
+      "actual": 0.2788,
+      "prob": 0.2979,
+      "logit": 0.3021,
+      "market": null
+     },
+     {
+      "league": "League Two",
+      "n": 921,
+      "actual": 0.2628,
+      "prob": 0.2952,
+      "logit": 0.299,
+      "market": null
+     },
+     {
+      "league": "Ligue 2",
+      "n": 379,
+      "actual": 0.2639,
+      "prob": 0.2762,
+      "logit": 0.2764,
+      "market": null
+     },
+     {
+      "league": "National League",
+      "n": 706,
+      "actual": 0.3329,
+      "prob": 0.3296,
+      "logit": 0.3377,
+      "market": null
+     },
+     {
+      "league": "Portuguese Primeira Liga",
+      "n": 375,
+      "actual": 0.32,
+      "prob": 0.3057,
+      "logit": 0.3109,
+      "market": null
+     },
+     {
+      "league": "Scottish Championship",
+      "n": 229,
+      "actual": 0.2009,
+      "prob": 0.2894,
+      "logit": 0.2925,
+      "market": null
+     },
+     {
+      "league": "Scottish League One",
+      "n": 156,
+      "actual": 0.2821,
+      "prob": 0.31,
+      "logit": 0.3182,
+      "market": null
+     },
+     {
+      "league": "Scottish League Two",
+      "n": 155,
+      "actual": 0.329,
+      "prob": 0.3287,
+      "logit": 0.3404,
+      "market": null
+     },
+     {
+      "league": "Scottish Premiership",
+      "n": 282,
+      "actual": 0.3121,
+      "prob": 0.3144,
+      "logit": 0.3218,
+      "market": null
+     },
+     {
+      "league": "Serie B",
+      "n": 478,
+      "actual": 0.249,
+      "prob": 0.2805,
+      "logit": 0.2825,
+      "market": null
+     },
+     {
+      "league": "Turkish Super Lig",
+      "n": 376,
+      "actual": 0.2846,
+      "prob": 0.3166,
+      "logit": 0.3221,
+      "market": null
+     }
+    ]
+   },
+   "live_from_2026_09_01": {
+    "n": 1065,
+    "matchdays": 49,
+    "dates": [
+     "2026-09-01",
+     "2026-10-28"
+    ],
+    "base_rate": 0.3333,
+    "prob": {
+     "log_loss": 0.6391,
+     "brier": 0.22359,
+     "mean_p": 0.3229,
+     "sd_p": 0.0723,
+     "calibration": {
+      "slope": 0.403,
+      "intercept": -0.391
+     },
+     "residual_vs_market": {
+      "n": 0,
+      "status": "TOO_FEW"
+     }
+    },
+    "logit": {
+     "log_loss": 0.63953,
+     "brier": 0.22374,
+     "mean_p": 0.3288,
+     "sd_p": 0.0792,
+     "calibration": {
+      "slope": 0.396,
+      "intercept": -0.406
+     },
+     "residual_vs_market": {
+      "n": 0,
+      "status": "TOO_FEW"
+     }
+    },
+    "delta_log_loss_logit_minus_prob": 0.00043,
+    "delta_log_loss_ci95": [
+     -0.00143,
+     0.0023
+    ],
+    "delta_brier_logit_minus_prob": 0.00014,
+    "delta_brier_ci95": [
+     -0.00059,
+     0.00084
+    ],
+    "league_level": {
+     "leagues": 15,
+     "sd_actual": 0.0929,
+     "sd_prob": 0.0378,
+     "sd_logit": 0.038,
+     "sd_market": null,
+     "league_slope_prob": 1.399,
+     "mean_abs_league_error_prob_pp": 4.88,
+     "league_slope_logit": 1.363,
+     "mean_abs_league_error_logit_pp": 4.94
+    },
+    "per_league": [
+     {
+      "league": "Belgian First Division A",
+      "n": 47,
+      "actual": 0.3404,
+      "prob": 0.3449,
+      "logit": 0.3499,
+      "market": null
+     },
+     {
+      "league": "Bundesliga 2",
+      "n": 56,
+      "actual": 0.2857,
+      "prob": 0.3868,
+      "logit": 0.3921,
+      "market": null
+     },
+     {
+      "league": "Championship",
+      "n": 110,
+      "actual": 0.3636,
+      "prob": 0.3097,
+      "logit": 0.3159,
+      "market": null
+     },
+     {
+      "league": "Dutch Eredivisie",
+      "n": 57,
+      "actual": 0.5614,
+      "prob": 0.4125,
+      "logit": 0.4154,
+      "market": null
+     },
+     {
+      "league": "Greek Super League",
+      "n": 42,
+      "actual": 0.3333,
+      "prob": 0.3151,
+      "logit": 0.3237,
+      "market": null
+     },
+     {
+      "league": "La Liga 2",
+      "n": 88,
+      "actual": 0.3523,
+      "prob": 0.2802,
+      "logit": 0.2813,
+      "market": null
+     },
+     {
+      "league": "League One",
+      "n": 115,
+      "actual": 0.313,
+      "prob": 0.3269,
+      "logit": 0.3351,
+      "market": null
+     },
+     {
+      "league": "League Two",
+      "n": 120,
+      "actual": 0.3083,
+      "prob": 0.3044,
+      "logit": 0.3119,
+      "market": null
+     },
+     {
+      "league": "Ligue 2",
+      "n": 54,
+      "actual": 0.2778,
+      "prob": 0.2856,
+      "logit": 0.2893,
+      "market": null
+     },
+     {
+      "league": "National League",
+      "n": 118,
+      "actual": 0.3898,
+      "prob": 0.3501,
+      "logit": 0.3584,
+      "market": null
+     },
+     {
+      "league": "Portuguese Primeira Liga",
+      "n": 48,
+      "actual": 0.3542,
+      "prob": 0.3113,
+      "logit": 0.3167,
+      "market": null
+     },
+     {
+      "league": "Scottish Championship",
+      "n": 39,
+      "actual": 0.1026,
+      "prob": 0.2794,
+      "logit": 0.2821,
+      "market": null
+     },
+     {
+      "league": "Scottish Premiership",
+      "n": 47,
+      "actual": 0.2979,
+      "prob": 0.3149,
+      "logit": 0.3221,
+      "market": null
+     },
+     {
+      "league": "Serie B",
+      "n": 70,
+      "actual": 0.2714,
+      "prob": 0.2985,
+      "logit": 0.3049,
+      "market": null
+     },
+     {
+      "league": "Turkish Super Lig",
+      "n": 54,
+      "actual": 0.3333,
+      "prob": 0.3372,
+      "logit": 0.3411,
+      "market": null
+     }
+    ]
+   }
+  },
+  "new_format": {
+   "holdout": {
+    "n": 6717,
+    "matchdays": 381,
+    "dates": [
+     "2025-08-17",
+     "2026-10-30"
+    ],
+    "base_rate": 0.3083,
+    "prob": {
+     "log_loss": 0.60548,
+     "brier": 0.20803,
+     "mean_p": 0.3045,
+     "sd_p": 0.0669,
+     "calibration": {
+      "slope": 1.094,
+      "intercept": 0.094
+     },
+     "residual_vs_market": {
+      "n_fit": 355,
+      "n_score": 355,
+      "ll_market": 0.6818,
+      "ll_market_plus_model": 0.67534,
+      "gain": 0.00646,
+      "gain_ci95": [
+       -0.00011,
+       0.01318
+      ],
+      "weight_on_model": 0.414
+     }
+    },
+    "logit": {
+     "log_loss": 0.60533,
+     "brier": 0.20804,
+     "mean_p": 0.3069,
+     "sd_p": 0.0765,
+     "calibration": {
+      "slope": 0.951,
+      "intercept": -0.032
+     },
+     "residual_vs_market": {
+      "n_fit": 355,
+      "n_score": 355,
+      "ll_market": 0.6818,
+      "ll_market_plus_model": 0.6746,
+      "gain": 0.00721,
+      "gain_ci95": [
+       -0.00082,
+       0.01564
+      ],
+      "weight_on_model": 0.479
+     }
+    },
+    "delta_log_loss_logit_minus_prob": -0.00016,
+    "delta_log_loss_ci95": [
+     -0.001,
+     0.00074
+    ],
+    "delta_brier_logit_minus_prob": 1e-05,
+    "delta_brier_ci95": [
+     -0.00034,
+     0.00036
+    ],
+    "market": {
+     "n": 710,
+     "log_loss": 0.66032,
+     "brier": 0.23432
+    },
+    "league_level": {
+     "leagues": 15,
+     "sd_actual": 0.0682,
+     "sd_prob": 0.0338,
+     "sd_logit": 0.0386,
+     "sd_market": 0.0661,
+     "league_slope_prob": 2.032,
+     "mean_abs_league_error_prob_pp": 2.62,
+     "league_slope_logit": 1.787,
+     "mean_abs_league_error_logit_pp": 2.32
+    },
+    "per_league": [
+     {
+      "league": "Argentina Primera Division",
+      "n": 845,
+      "actual": 0.1467,
+      "prob": 0.2422,
+      "logit": 0.2305,
+      "market": 0.2027
+     },
+     {
+      "league": "Austrian Bundesliga",
+      "n": 261,
+      "actual": 0.3103,
+      "prob": 0.3042,
+      "logit": 0.3096,
+      "market": 0.3798
+     },
+     {
+      "league": "Brazil Serie A",
+      "n": 651,
+      "actual": 0.2565,
+      "prob": 0.2765,
+      "logit": 0.2775,
+      "market": 0.3164
+     },
+     {
+      "league": "China Super League",
+      "n": 492,
+      "actual": 0.3984,
+      "prob": 0.3367,
+      "logit": 0.3442,
+      "market": 0.4362
+     },
+     {
+      "league": "Denmark Superliga",
+      "n": 238,
+      "actual": 0.3403,
+      "prob": 0.3164,
+      "logit": 0.3242,
+      "market": 0.4132
+     },
+     {
+      "league": "Finland Veikkausliiga",
+      "n": 320,
+      "actual": 0.3031,
+      "prob": 0.3134,
+      "logit": 0.3188,
+      "market": 0.4112
+     },
+     {
+      "league": "Ireland Premier Division",
+      "n": 321,
+      "actual": 0.2773,
+      "prob": 0.2807,
+      "logit": 0.2825,
+      "market": 0.3878
+     },
+     {
+      "league": "Japan J-League",
+      "n": 386,
+      "actual": 0.2902,
+      "prob": 0.2866,
+      "logit": 0.289,
+      "market": 0.4019
+     },
+     {
+      "league": "K-League 1",
+      "n": 232,
+      "actual": 0.2586,
+      "prob": 0.2672,
+      "logit": 0.2644,
+      "market": null
+     },
+     {
+      "league": "Mexico Liga MX",
+      "n": 453,
+      "actual": 0.3289,
+      "prob": 0.3073,
+      "logit": 0.3145,
+      "market": 0.4161
+     },
+     {
+      "league": "Norway Eliteserien",
+      "n": 611,
+      "actual": 0.3846,
+      "prob": 0.3666,
+      "logit": 0.3739,
+      "market": 0.4347
+     },
+     {
+      "league": "Romanian Superliga",
+      "n": 331,
+      "actual": 0.2689,
+      "prob": 0.2664,
+      "logit": 0.2624,
+      "market": null
+     },
+     {
+      "league": "Saudi Pro League",
+      "n": 347,
+      "actual": 0.3689,
+      "prob": 0.3299,
+      "logit": 0.335,
+      "market": null
+     },
+     {
+      "league": "Sweden Allsvenskan",
+      "n": 473,
+      "actual": 0.3108,
+      "prob": 0.3178,
+      "logit": 0.3238,
+      "market": 0.4174
+     },
+     {
+      "league": "USA MLS",
+      "n": 756,
+      "actual": 0.418,
+      "prob": 0.3455,
+      "logit": 0.3521,
+      "market": 0.4197
+     }
+    ]
+   },
+   "live_from_2026_09_01": {
+    "n": 794,
+    "matchdays": 56,
+    "dates": [
+     "2026-09-01",
+     "2026-10-30"
+    ],
+    "base_rate": 0.3401,
+    "prob": {
+     "log_loss": 0.63205,
+     "brier": 0.22023,
+     "mean_p": 0.3096,
+     "sd_p": 0.0652,
+     "calibration": {
+      "slope": 1.05,
+      "intercept": 0.181
+     },
+     "residual_vs_market": {
+      "n": 105,
+      "status": "TOO_FEW"
+     }
+    },
+    "logit": {
+     "log_loss": 0.63319,
+     "brier": 0.22071,
+     "mean_p": 0.3134,
+     "sd_p": 0.0742,
+     "calibration": {
+      "slope": 0.855,
+      "intercept": 0.013
+     },
+     "residual_vs_market": {
+      "n": 105,
+      "status": "TOO_FEW"
+     }
+    },
+    "delta_log_loss_logit_minus_prob": 0.00113,
+    "delta_log_loss_ci95": [
+     -0.00159,
+     0.00398
+    ],
+    "delta_brier_logit_minus_prob": 0.00049,
+    "delta_brier_ci95": [
+     -0.00053,
+     0.00144
+    ],
+    "market": {
+     "n": 105,
+     "log_loss": 0.59789,
+     "brier": 0.20529
+    },
+    "league_level": {
+     "leagues": 12,
+     "sd_actual": 0.1015,
+     "sd_prob": 0.035,
+     "sd_logit": 0.0387,
+     "sd_market": 0.0811,
+     "league_slope_prob": 2.221,
+     "mean_abs_league_error_prob_pp": 7.49,
+     "league_slope_logit": 1.933,
+     "mean_abs_league_error_logit_pp": 7.17
+    },
+    "per_league": [
+     {
+      "league": "Argentina Primera Division",
+      "n": 111,
+      "actual": 0.1982,
+      "prob": 0.2423,
+      "logit": 0.2309,
+      "market": 0.2012
+     },
+     {
+      "league": "Austrian Bundesliga",
+      "n": 36,
+      "actual": 0.4444,
+      "prob": 0.3321,
+      "logit": 0.3382,
+      "market": 0.3654
+     },
+     {
+      "league": "Brazil Serie A",
+      "n": 84,
+      "actual": 0.2738,
+      "prob": 0.2825,
+      "logit": 0.2862,
+      "market": 0.2864
+     },
+     {
+      "league": "China Super League",
+      "n": 35,
+      "actual": 0.4571,
+      "prob": 0.3273,
+      "logit": 0.3318,
+      "market": null
+     },
+     {
+      "league": "Denmark Superliga",
+      "n": 38,
+      "actual": 0.4211,
+      "prob": 0.3149,
+      "logit": 0.3216,
+      "market": 0.4075
+     },
+     {
+      "league": "Finland Veikkausliiga",
+      "n": 40,
+      "actual": 0.2,
+      "prob": 0.2931,
+      "logit": 0.2984,
+      "market": 0.325
+     },
+     {
+      "league": "Ireland Premier Division",
+      "n": 32,
+      "actual": 0.3438,
+      "prob": 0.2829,
+      "logit": 0.2854,
+      "market": 0.3807
+     },
+     {
+      "league": "Japan J-League",
+      "n": 80,
+      "actual": 0.35,
+      "prob": 0.3044,
+      "logit": 0.3129,
+      "market": null
+     },
+     {
+      "league": "Mexico Liga MX",
+      "n": 71,
+      "actual": 0.338,
+      "prob": 0.3009,
+      "logit": 0.3067,
+      "market": 0.3862
+     },
+     {
+      "league": "Norway Eliteserien",
+      "n": 48,
+      "actual": 0.4375,
+      "prob": 0.3732,
+      "logit": 0.3773,
+      "market": 0.466
+     },
+     {
+      "league": "Sweden Allsvenskan",
+      "n": 59,
+      "actual": 0.2203,
+      "prob": 0.3138,
+      "logit": 0.3237,
+      "market": 0.4193
+     },
+     {
+      "league": "USA MLS",
+      "n": 152,
+      "actual": 0.4605,
+      "prob": 0.3571,
+      "logit": 0.365,
+      "market": 0.4608
+     }
+    ]
+   }
+  }
+ }
+}
