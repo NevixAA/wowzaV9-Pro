@@ -41,12 +41,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        id: checkout
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       # v9 read-only — cross_model reads the ledgers, which are v9's. Same pattern as
       # pro_weekly_audit and pro_collect: Pro reads the baseline, never writes to it.
       - name: Check out v9 baseline (read-only)
+        id: checkout_v9
         uses: actions/checkout@v4
         with:
           repository: NevixAA/wowza-betting
@@ -54,10 +56,18 @@ jobs:
           fetch-depth: 1
 
       - uses: actions/setup-python@v5
+        id: setup_python
         with:
           python-version: '3.11'
 
-      - run: pip install -r requirements.txt
+      # requirements.txt carries pytest explicitly (R2 finding 27).
+      - name: Install
+        id: install
+        run: pip install -r requirements.txt
+
+      - name: Contract tests (run status classifier)
+        id: tests
+        run: python -m pytest tests/test_run_status.py -q
 
       # EACH STUDY IS continue-on-error AND SEPARATE. They answer independent questions on
       # independent data; one failing must not silence the other two. That is the same per-track
@@ -114,6 +124,7 @@ jobs:
       # It is the study that asks whether the model beats a base-rate predictor at all, which
       # is the question behind every threshold verdict below it.
       - name: Accuracy vs edge (does a bigger claimed edge predict better?)
+        id: accedge
         env:
           V9_LOCAL: ${{ github.workspace }}/_v9
         run: python -m src.validation.accuracy_vs_edge --write | tee accedge.txt
@@ -213,6 +224,7 @@ jobs:
           PY
 
       - name: Commit the research record
+        id: commit
         if: always()
         run: |
           git config user.name "github-actions[bot]"
@@ -235,3 +247,30 @@ jobs:
           done
           echo "::error title=push failed::Studies ran but the record was not persisted."
           exit 1
+
+      # R2 finding 27. Study steps are continue-on-error, so their OUTCOME (not conclusion) is read.
+      - name: Classify run status
+        if: always()
+        run: |
+          python -m src.monitoring.run_status --workflow pro_research \
+            --step "infra:checkout=${{ steps.checkout.outcome }}" \
+            --step "infra:checkout_v9=${{ steps.checkout_v9.outcome }}" \
+            --step "infra:setup_python=${{ steps.setup_python.outcome }}" \
+            --step "infra:install=${{ steps.install.outcome }}" \
+            --step "test:tests=${{ steps.tests.outcome }}" \
+            --step "model:cross_model=${{ steps.crossmodel.outcome }}" \
+            --step "model:calibration=${{ steps.calib.outcome }}" \
+            --step "model:ml_learning_health=${{ steps.mlhealth.outcome }}" \
+            --step "model:mixed=${{ steps.mixed.outcome }}" \
+            --step "model:pick_accuracy=${{ steps.pickacc.outcome }}" \
+            --step "model:accuracy_vs_edge=${{ steps.accedge.outcome }}" \
+            --step "model:threshold_curves=${{ steps.thresh.outcome }}" \
+            --step "infra:commit=${{ steps.commit.outcome }}"
+
+      - name: Upload run status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-status-pro_research
+          path: output/run_status/pro_research.json
+          if-no-files-found: warn

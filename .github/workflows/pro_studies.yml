@@ -45,27 +45,36 @@ jobs:
       # and its rebase conflicted on all 5 retries. Starting from the latest main, a queued run builds
       # on the previous run's committed output and appends instead of colliding.
       - uses: actions/checkout@v4
+        id: checkout
         with:
           ref: main
       - name: Check out v9 (read-only)
+        id: checkout_v9
         uses: actions/checkout@v4
         with:
           repository: NevixAA/wowza-betting
           path: _v9
           fetch-depth: 1
       - uses: actions/setup-python@v5
+        id: setup_python
         with:
           python-version: '3.11'
-      - run: pip install -r requirements.txt
+      # requirements.txt carries pytest explicitly (R2 finding 27).
+      - name: Install
+        id: install
+        run: pip install -r requirements.txt
       - name: Restore results cache
+        id: cache
         uses: actions/cache@v4
         with:
           path: experiments/upgrade_studies_2026_10
           key: studies-results-${{ github.run_id }}
           restore-keys: studies-results-
       - name: Tests
-        run: python -m pytest tests/test_studies.py tests/test_props_segments.py tests/test_calibration_shadow.py tests/test_btts_league_regime.py -q
+        id: tests
+        run: python -m pytest tests/test_run_status.py tests/test_studies.py tests/test_props_segments.py tests/test_calibration_shadow.py tests/test_btts_league_regime.py -q
       - name: Run studies
+        id: studies
         env:
           APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
           V9_LOCAL: ${{ github.workspace }}/_v9
@@ -78,6 +87,7 @@ jobs:
           done
           cat studies_report.txt
       - name: Commit
+        id: commit
         if: always()
         run: |
           git config user.name  "github-actions[bot]"
@@ -110,3 +120,23 @@ jobs:
         if: always()
         run: |
           { echo '```'; cat studies_report.txt 2>/dev/null | head -80; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      # R2 finding 27: INFRA / TEST / DATA / MODEL failure or SUCCESS -- never a scientific verdict.
+      - name: Classify run status
+        if: always()
+        run: |
+          python -m src.monitoring.run_status --workflow pro_studies \
+            --step "infra:checkout=${{ steps.checkout.outcome }}" \
+            --step "infra:checkout_v9=${{ steps.checkout_v9.outcome }}" \
+            --step "infra:setup_python=${{ steps.setup_python.outcome }}" \
+            --step "infra:install=${{ steps.install.outcome }}" \
+            --step "infra:cache=${{ steps.cache.outcome }}" \
+            --step "test:tests=${{ steps.tests.outcome }}" \
+            --step "model:studies=${{ steps.studies.outcome }}" \
+            --step "infra:commit=${{ steps.commit.outcome }}"
+      - name: Upload run status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-status-pro_studies
+          path: output/run_status/pro_studies.json
+          if-no-files-found: warn
