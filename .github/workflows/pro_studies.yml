@@ -80,8 +80,8 @@ jobs:
           V9_LOCAL: ${{ github.workspace }}/_v9
         run: |
           set -o pipefail
-          # Argentina's season cache must refresh: it holds matches still being played.
-          rm -f experiments/upgrade_studies_2026_10/argentina_fixtures_2026.json
+          # Argentina's live season is refetched inside argentina_btts (LIVE_SEASON); the cached copy
+          # is kept so an API-Football refusal falls back to it (reported as stale) instead of crashing.
           for m in argentina_btts btts_league_regime ou_studies evidence ou_challenger props_segments calibration_shadow props_calibration tip_ranker top_picks_weekly league_results fantasy_benchmark report; do
             python -m src.studies.$m > "studies_$m.txt" 2>&1 || { echo "::error title=$m failed::"; tail -30 "studies_$m.txt"; exit 1; }
           done

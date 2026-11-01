@@ -27,6 +27,8 @@ from src.studies import common as C
 LEAGUE = "Argentina Primera Division"
 AF_ID = 128
 TIP_START = "2026-08-10"          # PERFORMANCE_CUTOFF_DATE — the tip record starts here
+LIVE_SEASON = 2026                # Argentina is calendar-year: the season still being played
+STALE: dict[str, str] = {}        # season -> why its cached fixtures were used (reported in output)
 
 
 def _results() -> pd.DataFrame:
@@ -35,14 +37,28 @@ def _results() -> pd.DataFrame:
     rows = []
     for season in (2025, 2026):
         f = C.CACHE / f"argentina_fixtures_{season}.json"
-        if f.exists():
+        body = None
+        # The live season is refetched every run (it holds matches still being played). An API
+        # refusal (quota, outage) used to be written to the cache AS the fixture list and crash the
+        # study on an empty tip period; now it is never cached, the last good file is used and the
+        # staleness is reported in the output.
+        if season == LIVE_SEASON or not f.exists():
+            try:
+                got = requests.get("https://v3.football.api-sports.io/fixtures",
+                                   headers={"x-apisports-key": C._af_key()},
+                                   params={"league": AF_ID, "season": season}, timeout=60).json()
+                if got.get("errors") or not got.get("response"):
+                    raise RuntimeError(f"API-Football refused/empty: {got.get('errors') or 'no fixtures'}")
+                C.CACHE.mkdir(parents=True, exist_ok=True)
+                f.write_text(json.dumps(got), encoding="utf-8")
+                body = got
+            except Exception as e:                                     # noqa: BLE001
+                if not f.exists():
+                    raise RuntimeError(f"Argentina {season} fixtures unavailable and no cached copy: {e}") from e
+                STALE[str(season)] = f"{e} - using cache from {pd.Timestamp(f.stat().st_mtime, unit='s', tz='UTC'):%Y-%m-%d %H:%M} UTC"
+                print(f"[argentina_btts] WARNING season {season}: {STALE[str(season)]}")
+        if body is None:
             body = json.loads(f.read_text(encoding="utf-8"))
-        else:
-            body = requests.get("https://v3.football.api-sports.io/fixtures",
-                                headers={"x-apisports-key": C._af_key()},
-                                params={"league": AF_ID, "season": season}, timeout=60).json()
-            C.CACHE.mkdir(parents=True, exist_ok=True)
-            f.write_text(json.dumps(body), encoding="utf-8")
         for x in body["response"]:
             if x["fixture"]["status"]["short"] not in ("FT", "AET", "PEN"):
                 continue
@@ -124,7 +140,8 @@ def run() -> dict:
     out = {"league": LEAGUE, "question": "is the Argentina BTTS profit the model, the league, a book, or luck?",
            "fixtures_with_bet365_btts_price": int(len(D)),
            "dropped_first_half_contaminated_prices": dropped,
-           "unmatched_price_rows": int(j.isna().sum())}
+           "unmatched_price_rows": int(j.isna().sum()),
+           "stale_results": dict(STALE)}
 
     # League regime: realised BTTS rate vs what the price implied, by period
     reg = {}
@@ -143,8 +160,9 @@ def run() -> dict:
 
     # A, B and A-B on the SAME tip-period fixtures
     T["u_open"] = _flat(T["y"], T["yes_open"])
-    a = T[T["selected"]]
-    nb = T[~T["selected"]]
+    sel = T["selected"].astype(bool)   # an empty list makes an object column -> T[...] picked COLUMNS
+    a = T[sel]
+    nb = T[~sel]
     out["tip_period"] = {
         "B_blind_yes_all": _roi(T["u_open"], T["match_date_r"]),
         "A_wowza_selected": _roi(a["u_open"], a["match_date_r"]),
