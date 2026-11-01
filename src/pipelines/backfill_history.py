@@ -66,26 +66,22 @@ def is_stale() -> bool:
     except Exception:
         return True                      # unreadable/absent version = treat as older
 
-# league -> (football-data format, code). Only the leagues that actually appear in the
-# snapshots need an entry; anything unmapped is reported rather than silently skipped.
-FD_CODES: dict[str, tuple[str, str]] = {
-    "Premier League": ("std", "E0"), "Championship": ("std", "E1"),
-    "League One": ("std", "E2"), "League Two": ("std", "E3"),
-    "Bundesliga": ("std", "D1"), "Bundesliga 2": ("std", "D2"),
-    "La Liga": ("std", "SP1"), "La Liga 2": ("std", "SP2"),
-    "Serie A": ("std", "I1"), "Serie B": ("std", "I2"),
-    "Ligue 1": ("std", "F1"), "Ligue 2": ("std", "F2"),
-    "Scottish Premiership": ("std", "SC0"), "Greek Super League": ("std", "G1"),
-    "Portugal Primeira Liga": ("std", "P1"), "Turkey Super Lig": ("std", "T1"),
-    "Belgium Pro League": ("std", "B1"), "Netherlands Eredivisie": ("std", "N1"),
-    "Argentina Primera Division": ("new", "ARG"), "Austrian Bundesliga": ("new", "AUT"),
-    "Brazil Serie A": ("new", "BRA"), "China Super League": ("new", "CHN"),
-    "Denmark Superliga": ("new", "DNK"), "Finland Veikkausliiga": ("new", "FIN"),
-    "Ireland Premier Division": ("new", "IRL"), "Japan J-League": ("new", "JPN"),
-    "Mexico Liga MX": ("new", "MEX"), "Sweden Allsvenskan": ("new", "SWE"),
-    "USA MLS": ("new", "USA"), "Norway Eliteserien": ("new", "NOR"),
-    "Switzerland Super League": ("std", "SWZ"), "Poland Ekstraklasa": ("new", "POL"),
-}
+def _fd_code(league) -> tuple[str, str] | None:
+    """(football-data URL format, code) for a league, from v9's registry (Data Truth 2026-11-01;
+    this was a typed 30-league dict). The league is matched by canonical name or registered alias;
+    the code is the registry's football_data_code; the URL format follows the league's track, as
+    in v9 (standard -> season files mmz4281/<season>/<code>.csv, new_format -> new/<code>.csv).
+    None when the registry has no code - the caller reports it, nothing is guessed."""
+    from src.data import v9_config
+    lg = v9_config.canonical_league(league)
+    if lg is None:
+        return None
+    code = v9_config.football_data_codes().get(lg)
+    mt = v9_config.model_type(lg)
+    if not code or mt is None:
+        return None
+    return ("new" if mt == "new_format" else "std"), str(code)
+
 
 STD_URL = "https://www.football-data.co.uk/mmz4281/{season}/{code}.csv"
 NEW_URL = "https://www.football-data.co.uk/new/{code}.csv"
@@ -232,16 +228,17 @@ def fetch_results(fixtures: pd.DataFrame) -> pd.DataFrame:
     seasons = sorted(_season_codes(fixtures["match_date"]))
     print(f"[backfill] results for {len(leagues)} league(s), season folder(s) {seasons}")
 
-    unmapped = [lg for lg in leagues if lg not in FD_CODES]
+    codes = {lg: _fd_code(lg) for lg in leagues}
+    unmapped = [lg for lg in leagues if codes[lg] is None]
     if unmapped:
         print(f"[backfill] NO football-data code for {len(unmapped)} league(s) — these keep no "
               f"result and are reported, not silently dropped: {unmapped[:8]}")
 
     rows = []
     for lg in leagues:
-        if lg not in FD_CODES:
+        if codes[lg] is None:
             continue
-        fmt, code = FD_CODES[lg]
+        fmt, code = codes[lg]
         urls = ([NEW_URL.format(code=code)] if fmt == "new"
                 else [STD_URL.format(season=s, code=code) for s in seasons])
         for u in urls:

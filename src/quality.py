@@ -107,6 +107,20 @@ FLAGS: dict[str, Flag] = {f.name: f for f in (
          "74.6% in 2025, and 0% for Bundesliga 2 / La Liga 2 / Japan / China / Ireland / Romania. "
          "Any evaluation pooling xG and goals rows measures a mixture, so this flag is what lets "
          "a reader condition on the estimator"),
+    # Data Truth 2026-11-01: blanks are recorded as missing, not as a stand-in value.
+    Flag("TIER_MISSING", False,
+         "v9 wrote no tier for the row; it is NOT an AVOID (it used to be recorded as one)"),
+    Flag("RESULT_MISSING", False,
+         "v9 wrote no result for the row; it is not assumed PENDING or settled"),
+    Flag("SETTLEMENT_UNCERTAIN", False,
+         "the ledger result is not one of WIN/LOSS/VOID/PENDING, so the outcome is unverified"),
+    Flag("SIDE_UNKNOWN", False,
+         "no side on the row and its market has no known side; never defaulted to OVER"),
+    Flag("LEAGUE_MISSING", False,
+         "the source carries no league for the row and none could be joined from a v9 source, "
+         "so no fixture_key is built (an empty league used to collapse every season into one)"),
+    Flag("DATE_MISSING", False,
+         "the source carries no match date for the row, so no fixture_key is built"),
     Flag("STALE_PRICE_UNASSESSED", False,
          "staleness could not be evaluated — no per-book quote timestamp exists. Deliberately "
          "NOT called stale: calling an unchanged price stale would misclassify a settled market"),

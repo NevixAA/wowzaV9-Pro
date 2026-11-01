@@ -21,6 +21,7 @@ import pandas as pd
 
 from config import pro_config as cfg
 from src.analytics import core as C
+from src.data import v9_config
 
 MAIN_START = "2026-08-26"
 RECENT_FROM = "2026-09-24"
@@ -88,7 +89,7 @@ def _v11_json(name: str) -> dict:
 # ── tables ───────────────────────────────────────────────────────────────────────────────────
 def build_tables(I: dict) -> dict[str, pd.DataFrame]:
     s, end, pol = I["s"], I["end"], I["policy"]
-    U = C.universes(s, cfg.PAPER_LEAGUES, pol)
+    U = C.universes(s, v9_config.paper_leagues(), pol)
     W = C.windows(end)
     main = W[f"since_{MAIN_START}"]
     core, nonmls = C.in_window(U["CORE"], main), C.in_window(U["NON_MLS"], main)
@@ -347,7 +348,7 @@ def evidence_matrix(I: dict) -> pd.DataFrame:
     economic edge. A cell can only become EXECUTABLE_EDGE with real economic validation — no row can
     reach it today, and the rules below make that structural rather than a matter of judgement."""
     s = I["s"]
-    pool = s[~s["league"].isin(cfg.PAPER_LEAGUES) & s["tier"].isin(C.TIERS)]
+    pool = s[~s["league"].map(v9_config.is_paper) & s["tier"].isin(C.TIERS)]
     end = I["end"]
     resid = (_json(cfg.OUTPUT_DIR / "studies" / "ou_studies.json") or {}).get("residual", {})
     mk = {"OU25": "OU25", "OVER15": "OU15", "OVER35": "OU35", "BTTS": "BTTS"}
@@ -559,9 +560,9 @@ def scout_table(I: dict) -> pd.DataFrame:
 def reconcile(I: dict) -> pd.DataFrame:
     """Recompute CORE a second, independent way (raw ledgers, groupby-first rather than first_sight())."""
     s, end, pol = I["s"], I["end"], I["policy"]
-    core = C.in_window(C.universes(s, cfg.PAPER_LEAGUES, pol)["CORE"], C.windows(end)[f"since_{MAIN_START}"])
+    core = C.in_window(C.universes(s, v9_config.paper_leagues(), pol)["CORE"], C.windows(end)[f"since_{MAIN_START}"])
     raw = I["raw"]
-    r = raw[raw["source"].eq("live") & raw["tier"].isin(C.CORE_TIERS) & ~raw["league"].isin(cfg.PAPER_LEAGUES)].copy()
+    r = raw[raw["source"].eq("live") & raw["tier"].isin(C.CORE_TIERS) & ~raw["league"].map(v9_config.is_paper)].copy()
     r = r.sort_values("generated_at", kind="mergesort")
     r = r.groupby(["day", "league", "home_team", "away_team", "market"], as_index=False).first()
     r = r[r["result"].isin(["WIN", "LOSS", "VOID", "PUSH"]) & (r["odds"] > 1) & (r["day"] >= MAIN_START) & (r["day"] <= str(end.date()))]

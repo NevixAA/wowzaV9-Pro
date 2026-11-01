@@ -204,7 +204,9 @@ def fixture_lambdas(stats: pd.DataFrame, window: int = WINDOW) -> pd.DataFrame:
         d["lam_away"] = (a_att / base) * (h_def / base) * base
     for c in ("lam_home", "lam_away"):
         v = pd.to_numeric(d[c], errors="coerce")
-        d[c] = v.where(np.isfinite(v)).clip(lower=0.05, upper=6.0)
+        # Non-finite -> NaN. No clip: a floor/ceiling would manufacture a lambda the data did
+        # not give (Data Truth 2026-11-01).
+        d[c] = v.where(np.isfinite(v))
 
     d["lam_min"] = d[["lam_home", "lam_away"]].min(axis=1)
     d["lam_sum"] = d["lam_home"] + d["lam_away"]

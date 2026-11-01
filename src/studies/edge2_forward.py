@@ -135,7 +135,11 @@ def settle(rows: pd.DataFrame, results: pd.DataFrame | None, resolve) -> pd.Seri
             continue
         hg, ag = float(m["home_goals"].iloc[0]), float(m["away_goals"].iloc[0])
         fam = str(r["market"])
-        y[i] = float(hg > 0 and ag > 0) if fam == "BTTS" else float(hg + ag > LINE.get(fam, 99))
+        if fam == "BTTS":
+            y[i] = float(hg > 0 and ag > 0)
+        elif fam in LINE:
+            y[i] = float(hg + ag > LINE[fam])
+        # an unknown market keeps y NaN (no sentinel line that settles it as lost)
     return y
 
 

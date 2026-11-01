@@ -221,7 +221,7 @@ def step_freeze(quotes: pd.DataFrame, fx: pd.DataFrame, dry: bool) -> int:
         return 0
     res = _results()
     now = int(time.time())
-    out, skipped = [], 0
+    out, skipped, unrated = [], 0, 0
     for lid, g in todo.groupby("league_id"):
         m = model.fit(res[res["league_id"] == lid], now) if not res.empty else None
         if m is None:
@@ -229,6 +229,9 @@ def step_freeze(quotes: pd.DataFrame, fx: pd.DataFrame, dry: bool) -> int:
             continue
         for r in g.itertuples():
             p = model.predict(m, r.home_id, r.away_id)
+            if p is None:
+                unrated += 1                 # a team the fit has never seen: no prediction
+                continue
             out.append({"fixture_id": int(r.fixture_id), "league_id": int(lid),
                         "kickoff_ts": int(r.kickoff_ts), "home_team": r.home_team,
                         "away_team": r.away_team, "home_id": r.home_id, "away_id": r.away_id,
@@ -239,7 +242,8 @@ def step_freeze(quotes: pd.DataFrame, fx: pd.DataFrame, dry: bool) -> int:
                                           if min(p["home_games"], p["away_games"]) < 5 else ""),
                         **p})
     n = _append("scout_model", out, "model", dry)
-    print(f"[scout] model: {n:,} fixture(s) frozen, {skipped:,} waiting for league history")
+    print(f"[scout] model: {n:,} fixture(s) frozen, {skipped:,} waiting for league history, "
+          f"{unrated:,} skipped (a team with no rating in the fit)")
     return n
 
 

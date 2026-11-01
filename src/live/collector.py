@@ -102,7 +102,11 @@ def fetch(get_fn, *, now: dt.datetime | None = None) -> pd.DataFrame:
     the normal state most of the day and is NOT an error.
     """
     now = now or dt.datetime.now(dt.timezone.utc)
-    payload = get_fn("/odds/live", {}, cache_hours=0) or {}
+    payload = get_fn("/odds/live", {}, cache_hours=0)
+    # A FAILED call (None) is not "nothing live": it is raised so the sweep is reported as failed
+    # and the data as stale. An empty response list is the genuine quiet state.
+    if payload is None:
+        raise RuntimeError("API-Football /odds/live returned no payload (request failed)")
     resp = payload.get("response") or []
     rows: list[dict] = []
 
@@ -137,7 +141,7 @@ def fetch(get_fn, *, now: dt.datetime | None = None) -> pd.DataFrame:
             "match_seconds": (st.get("seconds") or None),
             "odds_updated_at": upd,
             "odds_age_seconds": round(age, 1) if age is not None else None,
-            "odds_stale": bool(age is not None and age > STALE_ODDS_SECONDS),
+            "odds_stale": (age > STALE_ODDS_SECONDS) if age is not None else None,   # unknown age
             "calc_version": CALC_VERSION,
         }
 
@@ -160,7 +164,9 @@ def fetch(get_fn, *, now: dt.datetime | None = None) -> pd.DataFrame:
                     "odds": odd,
                     # A suspended price is visible but not takeable. Kept, because a suspension
                     # is itself a signal that the market is reacting to something.
-                    "suspended": bool(v.get("suspended", False)),
+                    # Absent flag -> None (unknown), not "not suspended".
+                    "suspended": (bool(v["suspended"]) if v.get("suspended") is not None
+                                  else None),
                     "handicap": v.get("handicap"),
                     # The book's own primary line. Several lines are quoted at once, and only
                     # this one is the headline market a price would normally be taken at.
@@ -181,7 +187,7 @@ def quality_flags(d: pd.DataFrame) -> pd.DataFrame:
             f.append("NO_ODDS_TIMESTAMP")
         elif r.odds_stale:
             f.append("STALE_LIVE_ODDS")
-        if r.suspended:
+        if r.suspended is True:
             f.append("SUSPENDED")
         if r.match_minute is None:
             f.append("NO_MATCH_MINUTE")
@@ -202,8 +208,10 @@ def summarise(d: pd.DataFrame) -> dict:
         "live_fixtures": int(d["fixture_id"].nunique()),
         "rows": int(len(d)),
         "markets": int(d["market_family"].nunique()),
-        "stale_pct": round(100.0 * float(d["odds_stale"].mean()), 2),
-        "suspended_pct": round(100.0 * float(d["suspended"].mean()), 2),
+        "stale_pct": (round(100.0 * float(d["odds_stale"].dropna().astype(bool).mean()), 2)
+                      if d["odds_stale"].notna().any() else None),
+        "suspended_pct": (round(100.0 * float(d["suspended"].dropna().astype(bool).mean()), 2)
+                          if d["suspended"].notna().any() else None),
         "median_odds_age_s": round(float(age.median()), 1) if age.notna().any() else None,
         "with_minute": int(d["match_minute"].notna().sum()),
     }

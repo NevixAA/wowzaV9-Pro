@@ -37,6 +37,16 @@ from src.data.v9_source import fetch_csv, num, v9_model_version
 _PENDING_MARKS: dict[str, str] = {}
 
 
+
+# The side each v9 side-ledger market is bet on; used only when the row has no side of its own.
+SIDE_MARKET_SIDE = {"BTTS": "YES", "OVER15": "OVER", "OVER35": "OVER"}
+
+
+def _blank_to_na(v) -> pd.Series:
+    """Strings with blanks as NaN - a blank tier/result/side is MISSING, never a stand-in value."""
+    v = v if isinstance(v, pd.Series) else pd.Series(v)
+    return v.astype(object).where(v.notna() & v.astype(str).str.strip().ne(""))
+
 def commit_watermarks() -> dict[str, str]:
     """Call once the rows are safely stored. Returns what was advanced."""
     done = dict(_PENDING_MARKS)
@@ -184,7 +194,9 @@ def from_predictions() -> list[tuple[str, pd.DataFrame]]:
     sg["market"] = "OU25"
     sg["side"] = d.get("best_side", "")
     sg["bet"] = d.get("bet", "")
-    sg["signal_tier"] = d.get("signal_tier", "").fillna("").replace("", "AVOID")
+    # A blank tier stays blank and is FLAGGED (it used to be recorded as AVOID, a decision v9
+    # never made). v9 writes AVOID itself when it declines a fixture.
+    sg["signal_tier"] = _blank_to_na(d.get("signal_tier", pd.Series(index=d.index, dtype=object)))
     sg["model_edge"] = num(d.get("best_edge", pd.Series(index=d.index, dtype=object)))
     sg["stake"] = num(d.get("bet_stake", pd.Series(index=d.index, dtype=object)))
     sg["drift_signal"] = d.get("drift_signal", "")
@@ -195,6 +207,7 @@ def from_predictions() -> list[tuple[str, pd.DataFrame]]:
     sg["residual_band"] = sg["model_edge"].map(lambda v: cfg.band_label(v, cfg.RESIDUAL_BANDS))
     sg["quality_flags"] = d["entity_unresolved"].map(
         lambda u: "ENTITY_UNRESOLVED" if u else "")
+    sg["quality_flags"] = q.add_flag(sg["quality_flags"], sg["signal_tier"].isna(), "TIER_MISSING")
     out.append(("signals", sg))
     return out
 
@@ -368,7 +381,7 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
             "closing_odds": num(d.get("closing_odds", pd.Series(dtype=object))),
             "clv_pct": num(d.get("clv_pct", pd.Series(dtype=object))),
             "signal_tier": d.get("signal_tier", ""),
-            "result": d.get("result", "").fillna("").replace("", "PENDING"),
+            "result": _blank_to_na(d.get("result", pd.Series(index=d.index, dtype=object))),
             "pnl": num(d.get("pnl", pd.Series(dtype=object))),
             "model_type": d.get("model_type", ""),
             "notes": d.get("notes", ""),
@@ -382,8 +395,13 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
                                      1.0 - _p_taken, _p_taken)
         # A result we cannot verify is flagged, not assumed correct (section 16).
         s["quality_flags"] = ""
-        s.loc[~s["result"].isin(["WIN", "LOSS", "VOID", "PENDING"]),
-              "quality_flags"] = "SETTLEMENT_UNCERTAIN"
+        # A blank result is RESULT_MISSING (it used to be written as PENDING); any other value
+        # that is not a known outcome is SETTLEMENT_UNCERTAIN.
+        s["quality_flags"] = q.add_flag(s["quality_flags"], s["result"].isna(), "RESULT_MISSING")
+        s["quality_flags"] = q.add_flag(
+            s["quality_flags"],
+            s["result"].notna() & ~s["result"].isin(["WIN", "LOSS", "VOID", "PENDING"]),
+            "SETTLEMENT_UNCERTAIN")
         out.append(("settlements", s))
 
     side = fetch_csv("output/side_bets_ledger.csv", required=False)
@@ -391,6 +409,14 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
         d = ent.add_fixture_key(side.assign(
             match_date=side["match_date"].astype(str).str[:10]))
         _mkt = d.get("market", "").astype(str).str.upper()
+        # The row's own side when v9 wrote one, else the side its market is bet on (BTTS YES,
+        # Over 1.5 / 3.5 OVER). An unknown market keeps a blank side and is flagged - it used to
+        # become "OVER" whatever the market was.
+        _own = _blank_to_na(d.get("side", pd.Series(index=d.index, dtype=object))).str.upper()
+        _side = _own.where(_own.notna(), _mkt.map(SIDE_MARKET_SIDE))
+        _res = _blank_to_na(d.get("result", pd.Series(index=d.index, dtype=object)))
+        _flags = q.add_flag(pd.Series("", index=d.index), _side.isna(), "SIDE_UNKNOWN")
+        _flags = q.add_flag(_flags, _res.isna(), "RESULT_MISSING")
         out.append(("settlements", pd.DataFrame({
             "fixture_key": d["fixture_key"],
             "league": d.get("league", ""),
@@ -400,7 +426,7 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
             # was being recorded as OVER, which is not a side that market has. v9's ledger
             # leaves the column blank for side markets because each path only ever produces one
             # side, so the value has to be reconstructed here rather than copied.
-            "side": _mkt.map({"BTTS": "YES"}).fillna("OVER"),
+            "side": _side,
             # THE COLUMN THAT WAS MISSING, AND WHAT IT COST.
             #
             # This frame omitted edge_pct entirely while the main-market frame above carries it.
@@ -425,11 +451,11 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
             "closing_odds": num(d.get("closing_odds", pd.Series(dtype=object))),
             "clv_pct": num(d.get("clv_pct", pd.Series(dtype=object))),
             "signal_tier": d.get("signal_tier", ""),
-            "result": d.get("result", "").fillna("").replace("", "PENDING"),
+            "result": _res,
             "pnl": num(d.get("pnl", pd.Series(dtype=object))),
             "model_type": d.get("model_type", ""),
             "notes": d.get("notes", ""),
-            "quality_flags": "",
+            "quality_flags": _flags,
         })))
     return out
 
@@ -451,8 +477,8 @@ def from_player_props() -> list[tuple[str, pd.DataFrame]]:
         "market": d.get("market", ""),
         "model_prob": num(d.get("model_prob", pd.Series(dtype=object))),
         "market_odds": num(d.get("market_odds", pd.Series(dtype=object))),
-        "signal_tier": d.get("tier", "").fillna("").replace("", "AVOID"),
-        "result": d.get("result", "").fillna("").replace("", "PENDING"),
+        "signal_tier": _blank_to_na(d.get("tier", pd.Series(index=d.index, dtype=object))),
+        "result": _blank_to_na(d.get("result", pd.Series(index=d.index, dtype=object))),
         "pnl": num(d.get("pnl", pd.Series(dtype=object))),
         "deployment_mode": "PAPER",   # invariant 2: props are paper-only, permanently
     })
@@ -460,6 +486,8 @@ def from_player_props() -> list[tuple[str, pd.DataFrame]]:
     # two under AVOID, which is why AVOID counts there are uninterpretable.
     p["never_priced"] = p["market_odds"].isna() | (p["market_odds"] <= 1.0)
     p["quality_flags"] = p["never_priced"].map(lambda x: "MISSING_OPPOSITE_SIDE" if x else "")
+    p["quality_flags"] = q.add_flag(p["quality_flags"], p["signal_tier"].isna(), "TIER_MISSING")
+    p["quality_flags"] = q.add_flag(p["quality_flags"], p["result"].isna(), "RESULT_MISSING")
     p["odds_band"] = p["market_odds"].map(lambda v: cfg.band_label(v, cfg.ODDS_BANDS))
     return [("player_props", p)]
 
@@ -467,15 +495,46 @@ def from_player_props() -> list[tuple[str, pd.DataFrame]]:
 # ── clv + live scanner ───────────────────────────────────────────────────────
 
 def from_clv() -> list[tuple[str, pd.DataFrame]]:
+    """v9's CLV records. clv_records.csv has no league or match_date column (Data Truth
+    2026-11-01: the key used to be built from an EMPTY league and date, so every meeting of two
+    clubs in any season hashed to one fixture). The match date is the one v9 recorded in bet_id
+    ('PLAYER|<match_date>|<player>|<market>'); the league comes from v9's player_ledger row for
+    the same date, match, player and market (one v9 source, same strings). Where either is not
+    found the row keeps NaN, no fixture_key, and a LEAGUE_MISSING / DATE_MISSING flag."""
     raw = fetch_csv("output/clv_records.csv", required=False)
     if raw.empty or "match" not in raw.columns:
         return []
     home, away = ent.split_match(raw["match"])
-    d = ent.add_fixture_key(pd.DataFrame({
-        "league": "", "match_date": "", "home_team": home, "away_team": away}))
+    bid = raw.get("bet_id", pd.Series(index=raw.index, dtype=object)).astype(str).str.split("|")
+    mdate = bid.str[1].where(bid.str[1].str.match(r"^\d{4}-\d{2}-\d{2}$", na=False))
+    league = pd.Series(pd.NA, index=raw.index, dtype=object)
+    led = fetch_csv("output/player_ledger.csv", required=False)
+    need = {"match_date", "league", "home_team", "away_team", "player_name", "market"}
+    if not led.empty and need <= set(led.columns):
+        k = ["match_date", "home_team", "away_team", "player_name", "market"]
+        lk = led.assign(match_date=led["match_date"].astype(str).str[:10])[k + ["league"]]
+        lk = lk.drop_duplicates(k + ["league"])
+        lk = lk[~lk.duplicated(k, keep=False)]                # ambiguous league -> no match
+        j = pd.DataFrame({"match_date": mdate, "home_team": home, "away_team": away,
+                          "player_name": raw.get("player", ""), "market": raw.get("market", "")},
+                         index=raw.index).reset_index().merge(lk, on=k, how="left").set_index("index")
+        league = j["league"].reindex(raw.index)
+    known = mdate.notna() & league.notna()
+    keys = pd.Series(pd.NA, index=raw.index, dtype=object)
+    if known.any():
+        kd = ent.add_fixture_key(pd.DataFrame({
+            "league": league[known], "match_date": mdate[known],
+            "home_team": home[known], "away_team": away[known]}))
+        keys[known] = kd["fixture_key"]
+    flags = q.add_flag(pd.Series("", index=raw.index), mdate.isna(), "DATE_MISSING")
+    flags = q.add_flag(flags, league.isna(), "LEAGUE_MISSING")
+    if (~known).any():
+        print(f"[import] clv: {int((~known).sum())} of {len(raw)} row(s) without a league or "
+              f"date - stored with no fixture_key")
     return [("clv", pd.DataFrame({
-        "fixture_key": d["fixture_key"],
-        "match_date": "",
+        "fixture_key": keys,
+        "league": league,
+        "match_date": mdate,
         "market": raw.get("market", ""),
         "player": raw.get("player", ""),
         "side": raw.get("side", ""),
@@ -486,7 +545,7 @@ def from_clv() -> list[tuple[str, pd.DataFrame]]:
         "clv_pct": num(raw.get("clv_pct", pd.Series(dtype=object))),
         "result": raw.get("result", ""),
         "ts_bet": raw.get("ts_bet", ""),
-        "quality_flags": "",
+        "quality_flags": flags,
     }))]
 
 
@@ -511,9 +570,11 @@ def from_live_signals() -> list[tuple[str, pd.DataFrame]]:
         "bet": raw.get("bet", ""),
         "live_p_over": num(raw.get("live_p_over", pd.Series(dtype=object))),
         "pre_p_over": num(raw.get("pre_p_over", pd.Series(dtype=object))),
-        "result": raw.get("result", "").fillna("").replace("", "PENDING"),
+        "result": _blank_to_na(raw.get("result", pd.Series(index=raw.index, dtype=object))),
         "deployment_mode": "RESEARCH",
-        "quality_flags": "",
+        "quality_flags": q.add_flag(pd.Series("", index=raw.index),
+                                    _blank_to_na(raw.get("result", pd.Series(index=raw.index, dtype=object))).isna(),
+                                    "RESULT_MISSING"),
     }))]
 
 

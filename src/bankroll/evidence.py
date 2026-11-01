@@ -37,11 +37,17 @@ def _block(units: np.ndarray, days: np.ndarray, seed: int = 0) -> tuple:
     return float(m.std()), float(np.quantile(m, 0.05)), float(np.quantile(m, 0.95))
 
 
-def shrink(roi: float | None, se: float | None) -> float:
+def shrink(roi: float | None, se: float | None) -> float | None:
+    # No measurable ROI/se (fewer than 2 bets or 3 matchdays) -> None: there is nothing to shrink,
+    # and returning the prior MU0 would present an assumption as the track's estimate.
     if roi is None or se is None or se <= 0:
-        return MU0
+        return None
     w_d, w_p = 1 / se ** 2, 1 / TAU ** 2
     return (MU0 * w_p + roi * w_d) / (w_p + w_d)
+
+
+def _r4(v: float | None) -> float | None:
+    return None if v is None else round(v, 4)
 
 
 def _roi(x: pd.DataFrame) -> dict:
@@ -83,7 +89,7 @@ def track_evidence(bets: pd.DataFrame, as_of) -> dict:
             "track": track, "n": int(len(x)), "matchdays": int(x["date"].nunique()),
             "roi": None if roi is None else round(roi, 4), "roi_se": None if se is None else round(se, 4),
             "roi_lo90": None if lo is None else round(lo, 4), "roi_hi90": None if hi is None else round(hi, 4),
-            "shrunk_roi": round(shrink(roi, se), 4), "horizons": horizons,
+            "shrunk_roi": _r4(shrink(roi, se)), "horizons": horizons,
             "half1_roi": round(float(h1["unit"].mean()), 4) if len(h1) else None,
             "half2_roi": round(float(h2["unit"].mean()), 4) if len(h2) else None,
             "months_positive": int((months > 0).sum()), "months": int(len(months)),
@@ -114,12 +120,13 @@ def convergence_leagues(bets: pd.DataFrame, as_of, v11: pd.DataFrame, min_n: int
         se, lo, _ = _block(u, x["date"].dt.strftime("%Y-%m-%d").to_numpy())
         roi = float(u.mean()) if len(u) else None
         clv = x["clv"].dropna()
-        A = shrink(roi, se) > 0
+        sh = shrink(roi, se)
+        A = sh is not None and sh > 0
         B = len(clv) >= 15 and float(clv.median()) >= 0
         C = bool(v.get(lg, False))
         D = len(x) >= min_n and x["date"].nunique() >= min_days
         rows.append({"league": lg, "n": int(len(x)), "matchdays": int(x["date"].nunique()),
-                     "roi": None if roi is None else round(roi, 4), "shrunk_roi": round(shrink(roi, se), 4),
+                     "roi": None if roi is None else round(roi, 4), "shrunk_roi": _r4(sh),
                      "clv_median": round(float(clv.median()), 4) if len(clv) else None,
                      "v11_wowza_helps": C, "A_shrunk_positive": bool(A), "B_clv_ok": bool(B),
                      "C_v11_supports": C, "D_enough_obs": bool(D), "qualifies": bool(A and B and C and D)})

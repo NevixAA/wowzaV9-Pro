@@ -18,7 +18,7 @@ capacity; prices themselves are real recorded quotes.
 PRE-REGISTERED (2026-10-14, before results): exit rules TIME_{24h,12h,6h,3h,1h,30m}, LAST (last quote
 before kickoff), TARGET_{0.5,1,2}% (first quote with locked ROI >= target, else LAST), STOP_1% (+target 1%),
 and POLICY_V1 = TARGET_1% else LAST. Controls: OPPOSITE, RANDOM (=mean of both sides), FIXED_ANCHOR
-(side from the league x market base rate known at entry), TREND_CONTINUATION / REVERSAL (24h before
+(side from the league x market base rate known at entry), [TREND_CONTINUATION / REVERSAL dropped 2026-11-01: never computed] (24h before
 entry). Chronological: entry-date thirds - train selects league x markets, validation selects the exit
 rule, holdout is scored once; plus a weekly walk-forward. Uncertainty by fixture-day block bootstrap.
 The football result is NEVER used for greened P/L (only for HOLD and the partial-hedge exposure).
@@ -155,21 +155,20 @@ def controls(TT: pd.DataFrame, T: pd.DataFrame, P: pd.DataFrame) -> pd.DataFrame
     for t in ok.itertuples(index=False):
         key = (t.league, t.market)
         hist = rates.get(key, [])
-        base = np.mean(hist) if len(hist) >= 10 else 0.5               # P(first side) historically
+        # Fewer than 10 earlier settled trades -> no base rate and NO anchor for this trade (it used
+        # to be a typed 0.5). Anchor stats below are computed on trades that have one.
+        base = float(np.mean(hist)) if len(hist) >= 10 else None
         p_side = t.market_consensus_probability
-        anchor = "WOWZA" if (p_side == p_side and base > p_side) else "OPPOSITE"
+        anchor = (None if base is None or p_side != p_side
+                  else "WOWZA" if base > p_side else "OPPOSITE")
         dirs.append({"trade_id": t.trade_id, "FIXED_ANCHOR": anchor})
         res = str(t.eventual_result).upper()
         if res in ("WIN", "LOSS"):
             rates.setdefault(key, []).append(1.0 if res == "WIN" else 0.0)
-    # trend over the 24h before entry, from the trade's own pre-entry quotes (book snapshots)
+    # TREND_CONTINUATION / TREND_REVERSAL were DROPPED (Data Truth 2026-11-01): every trade's trend
+    # was set to "WOWZA" unconditionally, so both "controls" were constants, not measurements. They
+    # return when the 24h pre-entry trend is actually computed from the book snapshots in P.
     d = pd.DataFrame(dirs).set_index("trade_id")
-    pre = P.copy()
-    trend = {}
-    for tid, g in pre.groupby("trade_id"):
-        trend[tid] = "WOWZA"                                           # default when no pre-entry history
-    d["TREND_CONTINUATION"] = pd.Series(trend)
-    d["TREND_REVERSAL"] = d["TREND_CONTINUATION"].map({"WOWZA": "OPPOSITE", "OPPOSITE": "WOWZA"})
     return d.reset_index()
 
 
@@ -189,24 +188,26 @@ def main() -> int:
     w = last[last["direction"] == "WOWZA"].set_index("trade_id")
     o = last[last["direction"] == "OPPOSITE"].set_index("trade_id")
     both = w.join(o[["locked_roi"]].rename(columns={"locked_roi": "opp_locked"}), how="inner").join(ctrl, how="left")
-    both["anchor_locked"] = np.where(both["FIXED_ANCHOR"] == "WOWZA", both["locked_roi"], both["opp_locked"])
+    both["anchor_locked"] = np.where(both["FIXED_ANCHOR"].isna(), np.nan,
+                                     np.where(both["FIXED_ANCHOR"] == "WOWZA", both["locked_roi"], both["opp_locked"]))
     both["random_locked"] = 0.5 * (both["locked_roi"] + both["opp_locked"])
     mv = []
     for (lg, mk), g in [(("ALL", "ALL"), both)] + list(both.groupby(["league", "market"])):
         g = g.dropna(subset=["locked_roi", "opp_locked"])
         if len(g) < 5:
             continue
-        days = g["entry_date"].to_numpy()
-        diff = (g["locked_roi"] - g["anchor_locked"]).to_numpy(float)
-        mv.append({"league": lg, "market": mk, "n": int(len(g)),
+        ga = g[g["anchor_locked"].notna()]                 # trades with a real anchor only
+        days = ga["entry_date"].to_numpy()
+        diff = (ga["locked_roi"] - ga["anchor_locked"]).to_numpy(float)
+        mv.append({"league": lg, "market": mk, "n": int(len(g)), "n_anchor": int(len(ga)),
                    "wowza_toward_rate": round(float((g["locked_roi"] > g["opp_locked"]).mean()), 4),
                    "wowza_green_rate": round(float((g["locked_roi"] > 0).mean()), 4),
-                   "anchor_green_rate": round(float((g["anchor_locked"] > 0).mean()), 4),
+                   "anchor_green_rate": round(float((ga["anchor_locked"] > 0).mean()), 4) if len(ga) else None,
                    "net_locked_wowza": round(float(g["locked_roi"].sum()), 3),
-                   "net_locked_anchor": round(float(g["anchor_locked"].sum()), 3),
+                   "net_locked_anchor": round(float(ga["anchor_locked"].sum()), 3) if len(ga) else None,
                    "net_locked_random": round(float(g["random_locked"].sum()), 3),
-                   "wowza_minus_anchor_per_trade": round(float(diff.mean()), 5),
-                   "ci90": _block_ci(diff, days, q=(0.05, 0.95)),
+                   "wowza_minus_anchor_per_trade": round(float(diff.mean()), 5) if len(diff) else None,
+                   "ci90": _block_ci(diff, days, q=(0.05, 0.95)) if len(diff) else None,
                    "avg_favourable": round(float(g.loc[g["locked_roi"] > 0, "locked_roi"].mean()), 4) if (g["locked_roi"] > 0).any() else None,
                    "avg_adverse": round(float(g.loc[g["locked_roi"] <= 0, "locked_roi"].mean()), 4) if (g["locked_roi"] <= 0).any() else None})
     MV = pd.DataFrame(mv)

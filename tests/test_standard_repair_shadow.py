@@ -17,6 +17,17 @@ from src.studies.standard_repair import shadow_market as MK
 from src.studies.standard_repair import shadow_models as SM
 from src.studies.standard_repair import shadow_registry as R
 
+
+# Data Truth 2026-11-01: league names, paper leagues, model types and the club resolver are read
+# from v9's league registry, so these tests need a v9 checkout (CI sets V9_LOCAL).
+def _v9_present() -> bool:
+    from config import pro_config as _cfg
+    return (_cfg.V9_LOCAL / "config.py").exists()
+
+
+needs_v9 = pytest.mark.skipif(not _v9_present(), reason="needs a v9 checkout (V9_LOCAL)")
+
+
 NOW = pd.Timestamp("2026-11-03T12:00:00Z")
 REG = R.load_registration()
 
@@ -77,6 +88,7 @@ def test_registration_is_frozen(tmp_path):
         R.load_registration(p, aliases=None)
 
 
+@needs_v9
 def test_mkt_resid_feature_manifest_matches_registration_and_benchmark():
     from src.studies.standard_repair.benchmark import GROUPS
     assert SM.GROUPS == GROUPS
@@ -233,6 +245,7 @@ def _synthetic_frame(n=2400, seed=3):
     return d
 
 
+@needs_v9
 def test_frozen_resid_arms_reproduce_benchmark_candidates():
     from src.studies.standard_repair import benchmark as B
     d = _synthetic_frame()

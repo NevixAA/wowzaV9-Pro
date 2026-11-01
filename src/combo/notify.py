@@ -46,6 +46,7 @@ import time
 from pathlib import Path
 
 import pandas as pd
+from src.data import v9_config
 
 CALC_VERSION = "1.0.0"
 
@@ -372,6 +373,17 @@ DAILY_FILE = Path(__file__).resolve().parents[2] / "output" / "bet_builder_daily
 MAX_PER_DAY = 6
 
 
+def _hold_ungated(d: pd.DataFrame) -> pd.DataFrame:
+    """Rows built while v9's tips could not be read (v9_direction.GATE_UNAVAILABLE) are held:
+    the contradiction gate never ran on them, so they are neither sent nor selected."""
+    if "v9_gate" not in d.columns:
+        return d
+    held = d["v9_gate"].astype(str).eq("GATE_UNAVAILABLE")
+    if held.any():
+        print(f"[notify] held {int(held.sum())} candidate(s): v9 direction gate unavailable")
+    return d[~held]
+
+
 def daily_selection(candidates: pd.DataFrame, max_per_day: int = MAX_PER_DAY) -> pd.DataFrame:
     """The combos for v9's morning album, per match date (owner 2026-10-18: Telegram was "spammy",
     Bet Builder moves into the one daily photo pack and Pro stops sending its own messages).
@@ -386,9 +398,9 @@ def daily_selection(candidates: pd.DataFrame, max_per_day: int = MAX_PER_DAY) ->
             "independence_edge", "combo_id"]
     if candidates is None or candidates.empty:
         return pd.DataFrame(columns=cols)
-    d = candidates.copy()
+    d = _hold_ungated(candidates.copy())
     if "league" in d.columns:
-        d = d[~d["league"].astype(str).str.strip().isin(cfg.PAPER_LEAGUES)]
+        d = v9_config.drop_paper_leagues(d)        # registry PAPER_LEAGUES, canonical names
     pcol = "joint_probability" if "joint_probability" in d.columns else "conservative_joint_probability"
     d = d[pd.to_numeric(d[pcol], errors="coerce").notna()]
     d["_edge"] = d.apply(independence_edge, axis=1)
@@ -437,10 +449,10 @@ def run(candidates: pd.DataFrame, *, dry_run: bool = True,
     if candidates is None or candidates.empty:
         return out
 
-    d = candidates.copy()
+    d = _hold_ungated(candidates.copy())
     # Paper leagues are generated and settled but never sent (owner, 2026-10-07; mirrors v9).
     if "league" in d.columns:
-        d = d[~d["league"].astype(str).str.strip().isin(cfg.PAPER_LEAGUES)]
+        d = v9_config.drop_paper_leagues(d)        # registry PAPER_LEAGUES, canonical names
     # ---- carry state across the combo_id fix (2026-08-30) ------------------------------
     # combo_id changed shape when it became selection-aware and order-independent, so every
     # entry recorded under the old key would otherwise miss and each already-notified combo

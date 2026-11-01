@@ -12,10 +12,22 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from config import pro_config as cfg  # noqa: E402
 from src.pipelines import tip_scoreboard as ts  # noqa: E402
+
+
+# Data Truth 2026-11-01: league names, paper leagues, model types and the club resolver are read
+# from v9's league registry, so these tests need a v9 checkout (CI sets V9_LOCAL).
+def _v9_present() -> bool:
+    from config import pro_config as _cfg
+    return (_cfg.V9_LOCAL / "config.py").exists()
+
+
+needs_v9 = pytest.mark.skipif(not _v9_present(), reason="needs a v9 checkout (V9_LOCAL)")
+
 
 
 def _1x2(rows):
@@ -24,6 +36,7 @@ def _1x2(rows):
     return pd.DataFrame([{**base, **r} for r in rows])
 
 
+@needs_v9
 def test_1x2_grades_only_sent_tips_at_the_sent_price():
     d = _1x2([
         {"match_date": "2026-09-01", "notified_at": "x", "notified_pick": "HOME", "notified_odds": 2.5, "result": 0},
@@ -36,6 +49,7 @@ def test_1x2_grades_only_sent_tips_at_the_sent_price():
     assert h["break_even"] == round((1 / 2.5 + 1 / 4.0) / 2, 4)
 
 
+@needs_v9
 def test_1x2_paper_league_is_excluded_from_the_headline():
     d = _1x2([{"match_date": "2026-09-01", "notified_at": "x", "notified_pick": "HOME",
                "notified_odds": 2.0, "result": 0, "league": "USA MLS"}])
@@ -43,6 +57,7 @@ def test_1x2_paper_league_is_excluded_from_the_headline():
     assert r["headline"]["settled"] == 0 and r["paper_leagues"]["settled"] == 1
 
 
+@needs_v9
 def test_bet_builder_voided_legs_never_enter_the_headline():
     settled = pd.DataFrame([
         {"combo_id": "a", "league": "Serie B", "joint_probability": 0.05, "combo_result": "WON",
@@ -71,6 +86,7 @@ def test_recap_sends_once_per_day_inside_the_window(tmp_path, monkeypatch):
     assert len(sent) == 1
 
 
+@needs_v9
 def test_no_sender_can_send_a_paper_league():
     from src.combo import notify
     from src.pipelines import paper_1x2
@@ -89,6 +105,7 @@ def test_paper_leagues_match_v9_when_a_checkout_is_present():
         assert set(cfg.PAPER_LEAGUES) == v9
 
 
+@needs_v9
 def test_paper_1x2_notify_skips_paper_leagues(monkeypatch):
     from src.pipelines import paper_1x2
     future = (pd.Timestamp.now(tz="UTC") + pd.Timedelta(hours=5)).isoformat()
@@ -99,6 +116,7 @@ def test_paper_1x2_notify_skips_paper_leagues(monkeypatch):
     assert out["considered"] == 0
 
 
+@needs_v9
 def test_combo_sender_drops_paper_leagues_before_anything_else():
     from src.combo import notify
     out = notify.run(pd.DataFrame([{"league": "USA MLS", "combo_id": "x|y", "joint_probability": 0.3}]),

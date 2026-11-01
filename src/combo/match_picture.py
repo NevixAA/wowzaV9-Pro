@@ -33,13 +33,13 @@ HOW THE JOINT IS COMPUTED ACROSS MANY LEGS
                            cards x anything ~= 1.00). Applied one leg at a time against the goal
                            block, then multiplied between player legs.
 
-THE HONEST LIMIT, STATED ON EVERY ROW
+THE HONEST LIMIT (Data Truth 2026-11-01)
 
-Two players' events are treated as conditionally independent given the match state. That is an
-approximation: two forwards on the same team compete for the same chances. It is NOT measured
-here, so any builder containing two player legs carries `MULTI_PLAYER_INDEPENDENCE_ASSUMED`, and
-its probability should be read as an upper estimate. Legs from a single player are never
-combined at all -- "Szoboszlai to score" and "Szoboszlai to score or assist" is one bet.
+Only joints that were MEASURED are priced. A player or card leg is combined with the goal block
+through its measured player_dependency cell; a pair with no cell, and any combo of two non-goal
+legs (two players, a player and a card line, two card lines), has no measured joint and is
+refused rather than multiplied as if independent. 1X2 / double chance / team-goal legs are not
+built at all: the score fit has no side-specific input (score_model.identified_markets).
 
 AND THE PRICE
 
@@ -65,8 +65,12 @@ MIN_COMBO_PROB = 0.03        # below this the price is a lottery ticket whatever
 MIN_FAIR_ODDS = 1.8          # under this it is not worth the extra ways to lose
 
 
-def goal_legs(matrix: np.ndarray) -> dict[str, tuple[float, np.ndarray, str]]:
-    """Every goal-derived leg as (probability, score-grid mask, label)."""
+def goal_legs(matrix: np.ndarray, targets_used=None) -> dict[str, tuple[float, np.ndarray, str]]:
+    """Every goal-derived leg the fit identifies, as (probability, score-grid mask, label).
+
+    `targets_used` is the fit's targets_used; only score_model.identified_markets() of it are legs. 1X2, double chance and team goals
+    are side-specific and the fit has no side-specific input, so they are never emitted (their
+    probabilities would come from the optimiser's starting split, not from data)."""
     n = matrix.shape[0]
     H, A = np.meshgrid(np.arange(n), np.arange(n), indexing="ij")
     T = H + A
@@ -83,11 +87,16 @@ def goal_legs(matrix: np.ndarray) -> dict[str, tuple[float, np.ndarray, str]]:
         "HOME_O15": (H >= 2, "Home over 1.5 goals"),
         "AWAY_O15": (A >= 2, "Away over 1.5 goals"),
     }
-    return {k: (float(matrix[m].sum()), m, lbl) for k, (m, lbl) in masks.items()}
+    ok = sm.identified_markets(targets_used)
+    return {k: (float(matrix[m].sum()), m, lbl) for k, (m, lbl) in masks.items() if k in ok}
 
 
-def player_legs(props: pd.DataFrame, *, min_p: float = MIN_LEG_PROB) -> list[dict]:
-    """One row per (player, market), plus a derived score-or-assist leg where possible."""
+def player_legs(props: pd.DataFrame, *, min_p: float = MIN_LEG_PROB,
+                overlap_rate: float | None = None) -> list[dict]:
+    """One row per (player, market), plus a derived score-or-assist leg where possible.
+
+    `overlap_rate` is this fixture's league's measured goal-and-assist overlap
+    (team_markets.score_assist_overlap); None -> no score-or-assist leg."""
     if props is None or props.empty:
         return []
     p = props.copy()
@@ -108,12 +117,12 @@ def player_legs(props: pd.DataFrame, *, min_p: float = MIN_LEG_PROB) -> list[dic
     # Score-or-assist, built from the two marginals with the overlap removed.
     by_player = p.pivot_table(index="player_name", columns="market", values="model_prob",
                               aggfunc="last")
-    if {"goals", "assists"}.issubset(by_player.columns):
+    if overlap_rate is not None and {"goals", "assists"}.issubset(by_player.columns):
         for name, row in by_player.iterrows():
             g, a = row.get("goals"), row.get("assists")
             if pd.isna(g) or pd.isna(a):
                 continue
-            u = tm.score_or_assist(float(g), float(a))
+            u = tm.score_or_assist(float(g), float(a), overlap_rate)
             if min_p <= u <= 0.98:
                 legs.append({"kind": "player", "player": name, "market": "score_or_assist",
                              "p": u, "odds": None, "tier": None,
@@ -127,14 +136,18 @@ def _market_label(m: str) -> str:
             "sot4": "4+ shots on target", "cards": "to be carded"}.get(m, m)
 
 
-def team_card_legs(cards: pd.DataFrame, home: str, away: str) -> list[dict]:
-    """Team card lines for both sides, shrunk toward the league baseline."""
+def team_card_legs(cards: pd.DataFrame, home: str, away: str, *, league: str) -> list[dict]:
+    """Team card lines for both sides, shrunk toward THEIR league's baseline. A team the
+    league-scoped resolver cannot place, or a league with no card history, gets no card leg."""
     out: list[dict] = []
     if cards is None or cards.empty:
         return out
     for team, side in ((home, "Home"), (away, "Away")):
         for line in (0.5, 1.5, 2.5, 3.5):
-            pr, n, status = tm.team_card_probability(cards, team, line)
+            pr, n, status = tm.team_card_probability(cards, team, line, league=league)
+            if pr is None:
+                print(f"[builder] no card leg for {team!r} ({league}): {status}")
+                break
             if MIN_LEG_PROB <= pr <= 0.98:
                 out.append({"kind": "team_card", "team": team, "market": f"cards_o{line}",
                             "p": pr, "odds": None, "n_history": n, "status": status,
@@ -142,14 +155,19 @@ def team_card_legs(cards: pd.DataFrame, home: str, away: str) -> list[dict]:
     return out
 
 
-def build(matrix: np.ndarray, *, props: pd.DataFrame | None = None,
+def build(matrix: np.ndarray, *, targets_used, league: str,
+          props: pd.DataFrame | None = None,
           cards: pd.DataFrame | None = None, home: str = "", away: str = "",
-          dep: dict | None = None, max_legs: int = 4, top_n: int = 40) -> pd.DataFrame:
-    """All builder combinations for one fixture, from every available leg."""
-    g = goal_legs(matrix)
+          dep: dict | None = None, overlap_rate: float | None = None,
+          max_legs: int = 4, top_n: int = 40) -> pd.DataFrame:
+    """All builder combinations for one fixture, from every available leg.
+
+    `targets_used` is the score fit's targets_used (decides which goal legs are identified);
+    `league` scopes the card legs; `overlap_rate` is the league's score-or-assist overlap."""
+    g = goal_legs(matrix, targets_used)
     goal_pool = {k: v for k, v in g.items() if MIN_LEG_PROB <= v[0] <= 0.97}
-    p_pool = player_legs(props) if props is not None else []
-    c_pool = team_card_legs(cards, home, away) if cards is not None else []
+    p_pool = player_legs(props, overlap_rate=overlap_rate) if props is not None else []
+    c_pool = team_card_legs(cards, home, away, league=league) if cards is not None else []
 
     pool: list[dict] = []
     for k, (pr, mask, lbl) in goal_pool.items():
@@ -157,6 +175,7 @@ def build(matrix: np.ndarray, *, props: pd.DataFrame | None = None,
     pool += p_pool + c_pool
 
     rows: list[dict] = []
+    unmeasured = 0
     for n_legs in range(2, max_legs + 1):
         for combo in itertools.combinations(range(len(pool)), n_legs):
             legs = [pool[i] for i in combo]
@@ -164,6 +183,9 @@ def build(matrix: np.ndarray, *, props: pd.DataFrame | None = None,
             if bad:
                 continue
             pj, src, flags = _joint(legs, matrix, dep or {})
+            if src == "UNMEASURED_DEPENDENCE":
+                unmeasured += 1
+                continue
             if pj is None or pj < MIN_COMBO_PROB:
                 continue
             fair = 1.0 / pj
@@ -191,8 +213,13 @@ def build(matrix: np.ndarray, *, props: pd.DataFrame | None = None,
                                          else f'player_{l["market"]}' if l["kind"] == "player"
                                          else f'teamcard_{l["market"]}')
                 row[f"leg{i}_label"] = l["label"]
+                # The player as a machine column, so settlement never parses it out of the label.
+                row[f"leg{i}_player"] = l.get("player") if l["kind"] == "player" else None
                 row[f"leg{i}_p"] = round(float(l["p"]), 4)
             rows.append(row)
+    if unmeasured:
+        print(f"[builder] {home} v {away}: {unmeasured:,} combo(s) refused - a leg pair has no "
+              f"measured dependence (no independence is assumed)")
     out = pd.DataFrame(rows)
     if out.empty:
         return out
@@ -296,35 +323,35 @@ def _reject(legs: list[dict]) -> str | None:
 
 
 def _joint(legs: list[dict], matrix: np.ndarray, dep: dict) -> tuple[float | None, str, list[str]]:
-    """Combined probability. Goal legs exactly and together; others conditionally."""
+    """Combined probability. Goal legs exactly and together; others through MEASURED ratios.
+
+    Data Truth 2026-11-01: every non-goal leg needs a measured dependency ratio against the goal
+    block (player_dependency cells, keyed (market, goal key)); a pair that was never measured
+    is REFUSED ('UNMEASURED_DEPENDENCE'), never priced at a ratio of 1.0. Two player legs, two
+    card legs, or a player and a card leg have no measured joint at all, so those are refused
+    too, as is a non-goal leg with no goal leg to condition on next to another non-goal leg.
+    """
     flags: list[str] = []
     goal = [l for l in legs if l["kind"] == "goal"]
     other = [l for l in legs if l["kind"] != "goal"]
 
-    if goal:
-        mask = goal[0]["mask"].copy()
-        for l in goal[1:]:
-            mask &= l["mask"]
-        p_goal = float(matrix[mask].sum())
-        if p_goal <= 0:
-            return None, "IMPOSSIBLE", ["MUTUALLY_EXCLUSIVE_GOAL_LEGS"]
-    else:
-        p_goal = 1.0
+    if len(other) >= 2 or not goal:
+        return None, "UNMEASURED_DEPENDENCE", ["NON_GOAL_LEGS_JOINT_UNMEASURED"]
 
-    p = p_goal
+    mask = goal[0]["mask"].copy()
+    for l in goal[1:]:
+        mask &= l["mask"]
+    p = float(matrix[mask].sum())
+    if p <= 0:
+        return None, "IMPOSSIBLE", ["MUTUALLY_EXCLUSIVE_GOAL_LEGS"]
+
     src = "SCORE_MATRIX_EXACT" if not other else "SCORE_MATRIX_PLUS_MEASURED_DEPENDENCE"
-    n_players = 0
     for l in other:
-        ratio = 1.0
-        if l["kind"] == "player" and goal:
-            # Measured against the FIRST goal leg; conditioning on the whole goal block is not
-            # something the pairwise table can express, so this is deliberately conservative.
-            ratio = dep.get((l["market"], goal[0]["key"]), 1.0)
-        elif l["kind"] == "team_card":
-            flags.append("CARD_DEPENDENCE_EMPIRICAL_ONLY")
-        if l["kind"] == "player":
-            n_players += 1
+        # Measured against the FIRST goal leg; conditioning on the whole goal block is not
+        # something the pairwise table can express, so this is deliberately conservative.
+        key = (l["market"] if l["kind"] == "player" else f'teamcard_{l["market"]}', goal[0]["key"])
+        ratio = dep.get(key)
+        if ratio is None or not np.isfinite(float(ratio)):
+            return None, "UNMEASURED_DEPENDENCE", [f"NO_DEPENDENCE_CELL_{key[0]}_{key[1]}"]
         p *= float(l["p"]) * float(ratio)
-    if n_players >= 2:
-        flags.append("MULTI_PLAYER_INDEPENDENCE_ASSUMED")
     return float(min(max(p, 0.0), 1.0)), src, sorted(set(flags))

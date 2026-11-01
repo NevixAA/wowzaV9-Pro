@@ -153,3 +153,49 @@ def test_validate_catches_forbidden(pol):
     p["paper_leagues"] = []
     v = A.validate(p)
     assert any("player props" in x for x in v) and any("daily cap" in x for x in v) and any("MLS" in x for x in v)
+
+
+# ── Data Truth 2026-11-01: missing evidence is missing, never a stand-in number ─────────────────
+
+def test_shrink_without_evidence_is_none_not_the_prior():
+    from src.bankroll.evidence import shrink
+    assert shrink(None, None) is None and shrink(0.05, None) is None
+    assert shrink(0.05, 0.1) is not None
+
+
+def test_missing_30d_roi_fails_the_increase_gate(pol):
+    """No bets in the last 30 days: 'last 30d not below -5%' used to read the gap as 0% and pass."""
+    from src.bankroll import allocator as A
+    from src.bankroll.evidence import track_evidence
+    b = _bets(120, roi_bias=0.15)
+    ev = track_evidence(b, "2026-12-15")[_nf_ou25_over()]
+    ev["horizons"]["LAST_30D"] = {"n": 0, "roi": None, "units": 0.0}
+    _, rec = A.decide_track(_nf_ou25_over(), pol["tracks"][_nf_ou25_over()], ev, "2026-12-08", False)
+    assert rec["decision"] != "INCREASE_ONE_STEP"
+    assert any("last 30d" in r for r in rec["reasons"])
+
+
+def test_missing_recent_clv_sends_a_heavy_loss_to_review_not_keep(pol):
+    from src.bankroll import allocator as A
+    b = _bets(90, roi_bias=-0.25)
+    b["clv"] = np.nan                                    # no CLV recorded at all
+    p, dec, _ = A.propose(pol, b, "2026-11-10")
+    d = {x["track"]: x for x in dec}[_nf_ou25_over()]
+    assert d["decision"] in ("REDUCE", "STOP", "REVIEW")
+    if d["decision"] == "REVIEW":
+        assert any("input missing" in r for r in d["reasons"])
+
+
+def test_convergence_multiplier_is_carried_never_invented(pol):
+    from src.bankroll import allocator as A
+    prev = copy.deepcopy(pol)
+    prev.pop("convergence", None)
+    p, _, _ = A.propose(prev, _bets(30), "2026-09-15")
+    assert p["convergence"]["multiplier"] is None
+    assert "convergence multiplier missing" in A.validate(p)
+
+
+def test_paper_leagues_come_from_the_registry():
+    from src.bankroll.data import _paper_leagues
+    from src.data import v9_config
+    assert _paper_leagues() == set(v9_config.paper_leagues()) and _paper_leagues()

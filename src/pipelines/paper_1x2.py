@@ -58,6 +58,7 @@ import numpy as np
 import pandas as pd
 
 from src.combo import dixon_coles as dc
+from src.data import v9_config
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "output"
@@ -107,7 +108,8 @@ def _market_snapshots() -> pd.DataFrame:
     for f in sorted(glob.glob(str(v9 / "output" / "sharp_history" / "*.json"))):
         try:
             d = json.loads(Path(f).read_text(encoding="utf-8"))
-        except Exception:                                        # noqa: BLE001
+        except Exception as e:                                   # noqa: BLE001
+            print(f"[paper1x2] skipped unreadable {Path(f).name}: {type(e).__name__}")
             continue
         for v in (d.values() if isinstance(d, dict) else d):
             for s in (v if isinstance(v, list) else [v]):
@@ -135,12 +137,51 @@ def _market_snapshots() -> pd.DataFrame:
     return m
 
 
+def _one_fixture(frame: pd.DataFrame, league, day: str, home, away, *, date_col: str,
+                 result_names: bool = False) -> pd.Series | None:
+    """The single row of `frame` for this fixture, or None.
+
+    Same CANONICAL league (v9 registry), same UTC kickoff date, and both clubs placed by v9's
+    league-scoped resolver on the SAME row (resolve_result for result sources). Replaces raw
+    home==/away== joins with no league and no date, which let any earlier meeting of the same
+    pair supply the price, the close or the score (Data Truth 2026-11-01). Ambiguous -> None.
+    """
+    lg = v9_config.canonical_league(league)
+    if lg is None or frame is None or frame.empty or not day:
+        return None
+    f = frame[(frame["_lg"] == lg) & (frame[date_col] == day)]
+    if f.empty:
+        return None
+    tn = v9_config.team_names()
+    fn = tn.resolve_result if result_names else tn.resolve
+    h = fn(str(home), sorted(f["home_team"].astype(str).unique()))
+    a = fn(str(away), sorted(f["away_team"].astype(str).unique()))
+    if h is None or a is None:
+        return None
+    hit = f[(f["home_team"].astype(str) == h) & (f["away_team"].astype(str) == a)]
+    return hit.iloc[-1] if len(hit) else None
+
+
+def _utc_day(v) -> str:
+    t = pd.to_datetime(v, errors="coerce", utc=True)
+    return "" if pd.isna(t) else t.strftime("%Y-%m-%d")
+
+
 def _models() -> dict:
     if not MODEL_FILE.exists():
         print(f"[paper1x2] {MODEL_FILE.name} not found — run train_1x2 first")
         return {}
     try:
-        return (json.loads(MODEL_FILE.read_text(encoding="utf-8")) or {}).get("leagues", {}) or {}
+        raw = (json.loads(MODEL_FILE.read_text(encoding="utf-8")) or {}).get("leagues", {}) or {}
+        # Keyed by CANONICAL league name, so a provider alias on either side finds its model.
+        out = {}
+        for k, v in raw.items():
+            c = v9_config.canonical_league(k)
+            if c is None:
+                print(f"[paper1x2] model league {k!r} is not in the registry — skipped")
+                continue
+            out[c] = v
+        return out
     except Exception as e:                                       # noqa: BLE001
         print(f"[paper1x2] could not read the model: {type(e).__name__}: {e}")
         return {}
@@ -170,12 +211,15 @@ def log_picks(now: dt.datetime | None = None) -> pd.DataFrame:
     latest = pd.DataFrame()
     if not mkt.empty:
         mk = mkt.dropna(subset=["snapshot_at"]).sort_values("snapshot_at")
-        latest = mk.drop_duplicates(subset=["league", "home_team", "away_team"], keep="last")
+        mk = mk.assign(_lg=mk["league"].map(v9_config.canonical_league),
+                       _day=mk["kickoff"].map(_utc_day))
+        # Newest snapshot per FIXTURE (league + kickoff date + clubs), not per club pair.
+        latest = mk.drop_duplicates(subset=["_lg", "_day", "home_team", "away_team"], keep="last")
 
     stamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
     rows, no_model, no_rating = [], 0, 0
     for _, f in fx.iterrows():
-        m = models.get(f.get("league"))
+        m = models.get(v9_config.canonical_league(f.get("league")))
         if not m:
             no_model += 1
             continue
@@ -199,10 +243,9 @@ def log_picks(now: dt.datetime | None = None) -> pd.DataFrame:
         # leagues — and that is recorded as missing rather than guessed, because a row with no
         # price can still measure calibration, just not ROI.
         if len(latest):
-            hit = latest[(latest["home_team"] == f.get("home_team"))
-                         & (latest["away_team"] == f.get("away_team"))]
-            if len(hit):
-                h = hit.iloc[-1]
+            h = _one_fixture(latest, f.get("league"), f["_ko"].strftime("%Y-%m-%d"),
+                             f.get("home_team"), f.get("away_team"), date_col="_day")
+            if h is not None:
                 r.update({"o_home": h["o_home"], "o_draw": h["o_draw"], "o_away": h["o_away"],
                           "m_home": round(float(h["m_home"]), 4),
                           "m_draw": round(float(h["m_draw"]), 4),
@@ -256,21 +299,24 @@ def settle(d: pd.DataFrame | None = None, now: dt.datetime | None = None) -> pd.
         print("[paper1x2] no scoreline source — cannot settle")
         return d
     r = pd.concat(res, ignore_index=True)
-    r["_k"] = (pd.to_datetime(r["match_date"], errors="coerce").dt.strftime("%Y-%m-%d")
-               + "|" + r["home_team"].astype(str) + "|" + r["away_team"].astype(str))
+    r["_d"] = pd.to_datetime(r["match_date"], errors="coerce").dt.strftime("%Y-%m-%d")
+    r["_lg"] = (r["league"].map(v9_config.canonical_league) if "league" in r.columns
+                else pd.Series(None, index=r.index, dtype="object"))
     by_key = {}
     if "fixture_key" in r.columns:
         by_key = {str(k): v for k, v in
                   r.dropna(subset=["fixture_key"]).drop_duplicates("fixture_key")
                    .set_index("fixture_key")[["home_goals", "away_goals"]].iterrows()}
-    by_name = r.drop_duplicates("_k").set_index("_k")[["home_goals", "away_goals"]]
 
     mkt = _market_snapshots()
     closing = pd.DataFrame()
     if not mkt.empty:
         mk = mkt.dropna(subset=["snapshot_at", "kickoff"])
         mk = mk[mk["snapshot_at"] <= mk["kickoff"]].sort_values("snapshot_at")
-        closing = mk.drop_duplicates(subset=["home_team", "away_team"], keep="last")
+        mk = mk.assign(_lg=mk["league"].map(v9_config.canonical_league),
+                       _day=mk["kickoff"].map(_utc_day))
+        # Last pre-kickoff snapshot per FIXTURE (was per club pair across all dates and leagues).
+        closing = mk.drop_duplicates(subset=["_lg", "_day", "home_team", "away_team"], keep="last")
 
     out = d.copy()
     for c in ("result", "settled_at", "c_home", "c_draw", "c_away"):
@@ -294,9 +340,9 @@ def settle(d: pd.DataFrame | None = None, now: dt.datetime | None = None) -> pd.
         fk = str(row.get("fixture_key") or "")
         rec = by_key.get(fk)
         if rec is None:
-            k = f'{str(row.get("match_date"))[:10]}|{row.get("home_team")}|{row.get("away_team")}'
-            if k in by_name.index:
-                rec = by_name.loc[k]
+            rec = _one_fixture(r, row.get("league"), str(row.get("match_date"))[:10],
+                               row.get("home_team"), row.get("away_team"), date_col="_d",
+                               result_names=True)
         if rec is None:
             continue
         hg, ag = rec["home_goals"], rec["away_goals"]
@@ -305,12 +351,12 @@ def settle(d: pd.DataFrame | None = None, now: dt.datetime | None = None) -> pd.
         out.at[i, "result"] = 0 if hg > ag else (1 if hg == ag else 2)
         out.at[i, "settled_at"] = now.strftime("%Y-%m-%dT%H:%M:%SZ")
         if len(closing):
-            h = closing[(closing["home_team"] == row["home_team"])
-                        & (closing["away_team"] == row["away_team"])]
-            if len(h):
-                out.at[i, "c_home"] = float(h.iloc[-1]["o_home"])
-                out.at[i, "c_draw"] = float(h.iloc[-1]["o_draw"])
-                out.at[i, "c_away"] = float(h.iloc[-1]["o_away"])
+            h = _one_fixture(closing, row.get("league"), _utc_day(row.get("kickoff_utc")),
+                             row.get("home_team"), row.get("away_team"), date_col="_day")
+            if h is not None:                  # not uniquely matched -> the close stays NaN
+                out.at[i, "c_home"] = float(h["o_home"])
+                out.at[i, "c_draw"] = float(h["o_draw"])
+                out.at[i, "c_away"] = float(h["o_away"])
         graded += 1
     print(f"[paper1x2] graded {graded} newly-finished pick(s)")
     return out
@@ -372,7 +418,7 @@ def notify(d: pd.DataFrame, *, dry_run: bool = True) -> dict:
     live = live[live["notified_at"].isna()]
     # Paper leagues are recorded and settled but never sent (owner, 2026-10-07; mirrors v9).
     if "league" in live.columns:
-        live = live[~live["league"].astype(str).str.strip().isin(cfg.PAPER_LEAGUES)]
+        live = v9_config.drop_paper_leagues(live)   # registry PAPER_LEAGUES, canonical names
     out["considered"] = len(live)
     scored = []
     for i, r in live.iterrows():

@@ -58,8 +58,21 @@ FIRST_LOGGED_FROM = "2026-10-26"           # v9 00d5b936 / dfcdf289: first-logge
 CLV_FIX_FROM = "2026-10-23"                 # v9 output/clv_collection_health.json measure_from
 HISTORY_SINCE = "2026-08-20"               # ledger commits scanned for first-logged reconstruction
 
-STANDARD_LEAGUES = ["Championship", "League One", "League Two", "Bundesliga 2", "La Liga 2",
-                    "Ligue 2", "Serie B"]
+
+
+def _standard_leagues() -> list:
+    from src.data import v9_config
+    return list(v9_config.enabled_standard_leagues())
+
+
+def __getattr__(name):
+    # The enabled standard leagues come from v9's registry, never a typed list (Data Truth).
+    if name == "STANDARD_LEAGUES":
+        from src.data import v9_config
+        return list(v9_config.enabled_standard_leagues())
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
 TIER_GAP = {"SNIPER": "Big gap", "MARKSMAN": "Medium gap", "VALUABLE": "Small gap"}
 TIER_SENTENCE = "These are historical raw-gap labels, not confidence levels."
 #: v9 src/market_edge.py SYNTHETIC_DEFAULT_ODDS - a side row priced exactly at the fill constant
@@ -485,7 +498,7 @@ def section_betting(df: pd.DataFrame, oct_end: str) -> dict:
                     "delta_roi_ci90_lo": (c.get("delta_roi_ci90") or [None, None])[0],
                     "delta_roi_ci90_hi": (c.get("delta_roi_ci90") or [None, None])[1],
                     "category": category(c), "pattern": pattern(c),
-                    "pre_repair_standard": lg in STANDARD_LEAGUES})
+                    "pre_repair_standard": lg in _standard_leagues()})
         # track level (section 14 tracks)
         tracks = {
             "NF BTTS": (Sc[(Sc["market"] == "btts") & (Sc["track"] == "New Format")], Oc[(Oc["market"] == "btts") & (Oc["track"] == "New Format")]),
@@ -525,7 +538,7 @@ def section_std_reference(df: pd.DataFrame, oct_end: str) -> dict:
     """Owner reference, reproduced: League One wins vs bookmaker-expected (raw implied 1/odds)."""
     out = {}
     s = window(df[(df["market"] == "ou25") & (df["track"] == "Standard") & df["settled"]], SEP[0], oct_end)
-    for lg in STANDARD_LEAGUES:
+    for lg in _standard_leagues():
         x = s[s["league"] == lg]
         if x.empty:
             continue
@@ -570,7 +583,7 @@ def section_data_quality() -> dict:
     except Exception:
         pass
     per = {}
-    for lg in STANDARD_LEAGUES:
+    for lg in _standard_leagues():
         L = (dq.get("per_league") or {}).get(lg) or {}
         pc = L.get("price_coverage") or {}
         t30 = (L.get("certified_t30_close") or {}).get("OU25") or {}

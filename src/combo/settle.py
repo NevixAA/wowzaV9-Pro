@@ -25,8 +25,9 @@ is precisely the population a builder is most exposed to. So:
 
     LEG_WON        the event happened
     LEG_LOST       it did not
-    LEG_VOID       player did not appear (0 minutes, or absent from the fixture entirely)
-    LEG_UNKNOWN    we have no data to decide -- NOT a loss
+    LEG_VOID       player did not appear (a player row with 0 minutes)
+    LEG_UNKNOWN    we have no data to decide -- NOT a loss. A player with NO row is UNKNOWN: a
+                   join miss is not evidence that he did not play (Data Truth 2026-11-01).
 
 A combo with any UNKNOWN leg settles UNKNOWN, never LOST. Guessing in our own favour would be
 dishonest; guessing against ourselves would be a different kind of wrong, and both would corrupt
@@ -78,9 +79,12 @@ def settle_goal_leg(market: str, home_goals, away_goals) -> str:
 
 
 def settle_player_leg(market: str, row: pd.Series | None) -> str:
-    """A player leg. A player who did not appear VOIDS rather than losing."""
+    """A player leg. A player who did not appear (0 minutes on his row) VOIDS rather than losing.
+
+    No row at all is UNKNOWN: it may be a name/join miss, and only a minutes record can say he
+    did not play."""
     if row is None:
-        return LEG_VOID          # absent from the fixture entirely -> did not play
+        return LEG_UNKNOWN
     mins = pd.to_numeric(pd.Series([row.get("minutes")]), errors="coerce").iloc[0]
     if pd.isna(mins):
         return LEG_UNKNOWN
@@ -95,9 +99,10 @@ def settle_player_leg(market: str, row: pd.Series | None) -> str:
     if market == "cards":
         y = pd.to_numeric(pd.Series([row.get("yellow_cards")]), errors="coerce").iloc[0]
         r = pd.to_numeric(pd.Series([row.get("red_cards")]), errors="coerce").iloc[0]
-        if pd.isna(y) and pd.isna(r):
-            return LEG_UNKNOWN
-        return LEG_WON if ((y or 0) >= 1 or (r or 0) >= 1) else LEG_LOST
+        if (pd.notna(y) and y >= 1) or (pd.notna(r) and r >= 1):
+            return LEG_WON
+        # Not carded is only decidable when BOTH counts are known (a missing count is not 0).
+        return LEG_LOST if pd.notna(y) and pd.notna(r) else LEG_UNKNOWN
     rule = _PLAYER_RULES.get(market)
     if not rule:
         return LEG_UNKNOWN
@@ -134,17 +139,35 @@ def settle(candidates: pd.DataFrame, scorelines: pd.DataFrame,
     if candidates is None or candidates.empty:
         return pd.DataFrame()
 
+    # Fallback for rows without a usable fixture_key: same date, same CANONICAL league, and both
+    # clubs placed by v9's league-scoped result resolver (team_names.resolve_result). The old
+    # fallback joined raw "date|home|away" strings, which silently fails across sources.
+    from src.data import v9_config
     sc = scorelines.copy()
-    sc["_k"] = (pd.to_datetime(sc["match_date"], errors="coerce").dt.strftime("%Y-%m-%d")
-                + "|" + sc["home_team"].astype(str) + "|" + sc["away_team"].astype(str))
-    sc = sc.drop_duplicates("_k").set_index("_k")
+    sc["_d"] = pd.to_datetime(sc["match_date"], errors="coerce").dt.strftime("%Y-%m-%d")
+    sc["_lg"] = (sc["league"].map(v9_config.canonical_league) if "league" in sc.columns
+                 else pd.Series(None, index=sc.index, dtype="object"))
 
-    # PREFER THE FIXTURE KEY. The name key above is a last resort: it needs the date to agree to
-    # the day AND both club names to be spelled identically on two sides that come from different
-    # sources -- and club names demonstrably differ between sources (invariant 11: Kaiserslautern,
-    # QPR, Cadiz). On the first settlement pass that cost 1,956 of 2,532 combos, which were then
-    # reported as UNKNOWN. They were not unverifiable; they were unjoined. Both sides carry
-    # `fixture_key`, so when they do, use it and the question does not arise.
+    def _by_names(c) -> pd.Series | None:
+        lg = v9_config.canonical_league(c.get("league"))
+        parts = str(c.get("match", "")).split(" vs ", 1)
+        if lg is None or len(parts) != 2:
+            return None
+        day = sc[(sc["_d"] == str(c.get("match_date"))[:10]) & (sc["_lg"] == lg)]
+        if day.empty:
+            return None
+        tn = v9_config.team_names()
+        h = tn.resolve_result(parts[0].strip(), sorted(day["home_team"].astype(str).unique()))
+        a = tn.resolve_result(parts[1].strip(), sorted(day["away_team"].astype(str).unique()))
+        if h is None or a is None:
+            return None
+        hit = day[(day["home_team"].astype(str) == h) & (day["away_team"].astype(str) == a)]
+        return hit.iloc[0] if len(hit) == 1 else None
+
+    # PREFER THE FIXTURE KEY. The name join is a last resort: club names demonstrably differ
+    # between sources (invariant 11: Kaiserslautern, QPR, Cadiz). On the first settlement pass
+    # that cost 1,956 of 2,532 combos, which were then reported as UNKNOWN. They were not
+    # unverifiable; they were unjoined. Both sides carry `fixture_key`, so when they do, use it.
     by_key = {}
     if "fixture_key" in scorelines.columns:
         s2 = scorelines.dropna(subset=["fixture_key"]).drop_duplicates("fixture_key")
@@ -169,35 +192,26 @@ def settle(candidates: pd.DataFrame, scorelines: pd.DataFrame,
             graded[(str(r["fixture_key"]), str(r["player_name"]), str(r["market"]))] = \
                 _MAP.get(str(r.get("result")), LEG_UNKNOWN)
 
+    # Player rows are joined by fixture_key ONLY (no raw date|home|away string join).
     pl = players.copy()
-    if {"date", "home_team", "away_team"} <= set(pl.columns):
-        pl["_k"] = (pd.to_datetime(pl["date"], errors="coerce").dt.strftime("%Y-%m-%d")
-                    + "|" + pl["home_team"].astype(str) + "|" + pl["away_team"].astype(str))
-    else:
-        # No raw match log available. Not an error: (a) above covers it, and a missing (b) must
-        # not crash settlement of the goal legs, which need no player data at all.
-        pl["_k"] = ""
 
     out = []
     for _, c in candidates.iterrows():
-        key = (str(c.get("match_date"))[:10] + "|"
-               + str(c.get("match", "")).replace(" vs ", "|"))
-        fk = str(c.get("fixture_key") or "")
+        fk = c.get("fixture_key")
+        fk = "" if fk is None or (isinstance(fk, float) and pd.isna(fk)) else str(fk)
         s, how = None, ""
         if fk and fk in by_key:
             s, how = by_key[fk], "FIXTURE_KEY"
-        elif key in sc.index:
-            s, how = sc.loc[key], "NAME_KEY"
+        else:
+            s = _by_names(c)
+            how = "RESOLVER" if s is not None else ""
         if s is None:
             out.append({**c.to_dict(), "combo_result": COMBO_UNKNOWN,
                         "leg_results": "", "settle_note": "NO_SCORELINE"})
             continue
         hg, ag = s.get("home_goals"), s.get("away_goals")
-        # Same preference as the scoreline join: key first, names only as a fallback.
-        if fk and "fixture_key" in pl.columns:
-            fixture_players = pl[pl["fixture_key"].astype(str) == fk]
-        else:
-            fixture_players = pl[pl["_k"] == key]
+        fixture_players = (pl[pl["fixture_key"].astype(str) == fk]
+                           if fk and "fixture_key" in pl.columns else pl.iloc[0:0])
 
         legs, results = [], []
         for i in (1, 2, 3, 4, 5):
@@ -207,19 +221,25 @@ def settle(candidates: pd.DataFrame, scorelines: pd.DataFrame,
             mk = str(mk)
             if mk.startswith("player_"):
                 market = mk.replace("player_", "")
-                label = str(c.get(f"leg{i}_label", ""))
-                # The label is "<player> <market phrase>", and the player's name may itself
-                # contain spaces, so rsplit(" ", 1) recovers the wrong name for anyone but a
-                # one-word surname. Match the LONGEST known player name the label starts with.
-                names = ([str(x) for x in fixture_players["player_name"].dropna().unique()]
-                         if len(fixture_players) else [])
-                cands = [n for n in names if label.startswith(n)]
-                name = max(cands, key=len) if cands else (
-                    label.rsplit(" ", 1)[0] if " " in label else label)
-                r = graded.get((fk, name, market))
-                if r is None:
-                    row = fixture_players[fixture_players["player_name"] == name]
-                    r = settle_player_leg(market, row.iloc[0] if len(row) else None)
+                # The player is the machine column written at build time (leg{i}_player). Older
+                # rows only have the display label: the LONGEST known player name it starts with
+                # is used, and with no such name the leg is UNKNOWN - the label is never cut
+                # into a guessed name (that produced 'R. Karjalainen 1+ shot on' and a VOID).
+                name = c.get(f"leg{i}_player")
+                if name is None or (isinstance(name, float) and pd.isna(name)):
+                    label = str(c.get(f"leg{i}_label", ""))
+                    names = ([str(x) for x in fixture_players["player_name"].dropna().unique()]
+                             if len(fixture_players) else [])
+                    cands = [n for n in names if label.startswith(n)]
+                    name = max(cands, key=len) if cands else None
+                if name is None:
+                    r = LEG_UNKNOWN
+                else:
+                    name = str(name)
+                    r = graded.get((fk, name, market))
+                    if r is None:
+                        row = fixture_players[fixture_players["player_name"] == name]
+                        r = settle_player_leg(market, row.iloc[0] if len(row) else None)
             else:
                 r = settle_goal_leg(mk, hg, ag)
             legs.append(f"{mk}={r}")

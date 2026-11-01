@@ -28,14 +28,13 @@ CONSEQUENCES, both of which are accepted rather than hidden:
     it does not change the ranking that produced it.
 
 Pro never writes to v9. `bets.csv` is read over HTTP from v9's public tree, same as every other
-v9 read in this repo.
+v9 read in this repo. Fixtures are matched on the canonical league (v9 registry), the date and
+v9's league-scoped club resolver (src/team_names.resolve), not on a hand-folded name key.
 """
 
 from __future__ import annotations
 
 import os
-import re
-import unicodedata
 
 import pandas as pd
 
@@ -45,77 +44,89 @@ import pandas as pd
 OVER_LEGS = {"O25", "O35"}
 UNDER_LEGS = {"U25", "U15"}
 
-_STOPWORDS = re.compile(r"\b(fc|cf|sc|sv|spvgg|ac|as|ss|us|afc|club|de|the)\b")
+# Set on every candidate when v9's bets.csv cannot be read. The board is NOT shipped ungated:
+# notify and the daily selection hold rows carrying it (Data Truth 2026-11-01).
+GATE_UNAVAILABLE = "GATE_UNAVAILABLE"
 
 
-def _norm(s: object) -> str:
-    """Fold a club name to a comparison key.
-
-    Deliberately blunt: strip accents, drop the corporate-form words the two sources disagree
-    about ("SpVgg Greuther Fürth" vs "Greuther Fürth", "Cádiz CF" vs "Cadiz"), collapse the rest.
-    A false NON-match costs one ungated combo; a false match would gate the wrong fixture, so the
-    key keeps every distinguishing token — this is not `startswith(first_word)`.
-    """
-    t = unicodedata.normalize("NFKD", str(s)).encode("ascii", "ignore").decode().lower()
-    t = _STOPWORDS.sub(" ", t)
-    return re.sub(r"[^a-z0-9]+", " ", t).strip()
-
-
-def _key(date: object, home: object, away: object) -> str:
-    return f"{str(date)[:10]}|{_norm(home)}|{_norm(away)}"
-
-
-def directions() -> dict[str, str]:
-    """{fixture key: "OVER"|"UNDER"} from v9's live O/U tips, or {} if it cannot be read.
-
-    FAILS OPEN AND SAYS SO. If v9 is unreachable the builder must still produce a board — a gate
-    that silently empties the product on a network blip is worse than the contradiction it
-    prevents. The caller reports how many candidates were actually matched, so a resolver that
-    has quietly stopped matching shows up as "0 gated" rather than as success.
-    """
+def directions() -> pd.DataFrame | None:
+    """v9's live O/U tips as rows (league, date, home_team, away_team, bet), or None when
+    bets.csv cannot be read. An empty frame means v9 tips nothing today (the gate is ON with
+    nothing to contradict); None means the gate cannot run, which the caller must NOT treat as
+    'no contradictions'."""
     try:
         from src.data import v9_source as v9
-        b = v9.fetch_csv("output/bets.csv", required=False)
+        b = v9.fetch_csv("output/bets.csv", required=True)
     except Exception as e:                                       # noqa: BLE001
-        print(f"[v9gate] could not read v9 bets.csv ({type(e).__name__}) — gate is OFF")
-        return {}
-    if b is None or b.empty or not {"date", "home_team", "away_team", "bet"} <= set(b.columns):
-        print("[v9gate] v9 bets.csv unusable — gate is OFF")
-        return {}
-    out: dict[str, str] = {}
-    for _, r in b.iterrows():
-        d = str(r.get("bet") or "").strip().upper()
-        if d in ("OVER", "UNDER"):
-            out[_key(r.get("date"), r.get("home_team"), r.get("away_team"))] = d
-    return out
+        print(f"[v9gate] could not read v9 bets.csv ({type(e).__name__}) — {GATE_UNAVAILABLE}")
+        return None
+    need = {"league", "date", "home_team", "away_team", "bet"}
+    if b is None or not need <= set(b.columns):
+        print(f"[v9gate] v9 bets.csv lacks {sorted(need - set(getattr(b, 'columns', [])))} — "
+              f"{GATE_UNAVAILABLE}")
+        return None
+    b = b.assign(bet=b["bet"].astype(str).str.strip().str.upper())
+    return b[b["bet"].isin(["OVER", "UNDER"])][sorted(need)].reset_index(drop=True)
 
 
-def apply(cand: pd.DataFrame, dirs: dict[str, str] | None = None) -> pd.DataFrame:
-    """Drop candidates whose goal-total legs contradict v9's tip on the same fixture."""
+def _direction_of(dirs: pd.DataFrame, league, date, home, away, tn) -> str | None:
+    """v9's direction for one candidate fixture: same CANONICAL league and same date, then both
+    clubs placed by v9's league-scoped resolver on the SAME v9 row. Anything else -> None."""
+    from src.data import v9_config
+    lg = v9_config.canonical_league(league)
+    if lg is None:
+        return None
+    day = dirs[(dirs["_lg"] == lg) & (dirs["date"].astype(str).str[:10] == str(date)[:10])]
+    if day.empty:
+        return None
+    h = tn.resolve(str(home), sorted(day["home_team"].astype(str).unique()))
+    a = tn.resolve(str(away), sorted(day["away_team"].astype(str).unique()))
+    if h is None or a is None:
+        return None
+    hit = day[(day["home_team"].astype(str) == h) & (day["away_team"].astype(str) == a)]
+    return str(hit["bet"].iloc[0]) if len(hit) == 1 else None
+
+
+def apply(cand: pd.DataFrame, dirs: pd.DataFrame | None = None, *, fetch: bool = True) -> pd.DataFrame:
+    """Drop candidates whose goal-total legs contradict v9's tip on the same fixture.
+
+    When v9's tips cannot be read, every row is kept but flagged v9_gate=GATE_UNAVAILABLE and
+    the senders hold it, so an unreadable gate never silently becomes 'no contradictions'."""
     if cand is None or cand.empty:
         return cand
     if os.getenv("COMBO_V9_GATE", "1").strip() == "0":
         print("[v9gate] disabled by COMBO_V9_GATE=0")
         return cand
-    dirs = directions() if dirs is None else dirs
-    if not dirs:
-        return cand
+    if dirs is None and fetch:
+        dirs = directions()
+    if dirs is None:
+        return cand.assign(v9_gate=GATE_UNAVAILABLE)
 
-    need = {"match_date", "match"}
+    need = {"league", "match_date", "match"}
     if not need <= set(cand.columns):
-        print(f"[v9gate] candidates missing {sorted(need - set(cand.columns))} — gate is OFF")
-        return cand
+        print(f"[v9gate] candidates missing {sorted(need - set(cand.columns))} — {GATE_UNAVAILABLE}")
+        return cand.assign(v9_gate=GATE_UNAVAILABLE)
 
     legcols = [c for c in cand.columns if c.startswith("leg") and c.endswith("_market")]
     if not legcols:
-        return cand
+        return cand.assign(v9_gate="OK")
 
     split = cand["match"].astype(str).str.split(" vs ", n=1, expand=True)
     if split.shape[1] < 2:
-        print("[v9gate] could not split `match` into two clubs — gate is OFF")
-        return cand
-    keys = [_key(d, h, a) for d, h, a in zip(cand["match_date"], split[0], split[1])]
-    d_of = pd.Series([dirs.get(k) for k in keys], index=cand.index)
+        print(f"[v9gate] could not split `match` into two clubs — {GATE_UNAVAILABLE}")
+        return cand.assign(v9_gate=GATE_UNAVAILABLE)
+
+    from src.data import v9_config
+    tn = v9_config.team_names()
+    dirs = dirs.assign(_lg=dirs["league"].map(v9_config.canonical_league))
+    memo: dict[tuple, str | None] = {}
+    d_list = []
+    for lg, d, h, a in zip(cand["league"], cand["match_date"], split[0], split[1]):
+        k = (lg, str(d)[:10], h, a)
+        if k not in memo:
+            memo[k] = _direction_of(dirs, lg, d, h, a, tn)
+        d_list.append(memo[k])
+    d_of = pd.Series(d_list, index=cand.index, dtype="object")
 
     legs = cand[legcols].astype("object")
     has_over = legs.isin(OVER_LEGS).any(axis=1)
@@ -129,4 +140,4 @@ def apply(cand: pd.DataFrame, dirs: dict[str, str] | None = None) -> pd.DataFram
         # Not an error — v9 may simply agree everywhere today. Said out loud because a resolver
         # that has stopped matching looks exactly like agreement from the outside.
         print("[v9gate] nothing contradicted v9 on this board")
-    return cand[~blocked].copy()
+    return cand[~blocked].assign(v9_gate="OK")

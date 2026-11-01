@@ -67,12 +67,22 @@ jobs:
   backfill:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      V9_LOCAL: ${{ github.workspace }}/_v9
 
     steps:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      # v9 read-only: league registry (canonical names, paper leagues, model types) and the
+      # league-scoped club resolver. Pro has no league or alias list of its own (Data Truth).
+      - name: Check out v9 (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9
+          fetch-depth: 1
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'

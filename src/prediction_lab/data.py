@@ -57,20 +57,17 @@ LEGACY_DATA_VERSION = "lab-data/1.0"
 TARGETS = ("btts", "over15", "over25", "over35",
            "home_scores", "away_scores", "home_2plus", "away_2plus")
 
-# Invariant 1: standard and new-format never mix. Tags copied verbatim from v9's config so they
-# cannot drift -- the same reason v11 copies them.
-STANDARD_FORMAT_LEAGUES = {
-    "League One", "League Two", "Bundesliga 2", "La Liga 2", "Ligue 2", "Championship",
-    "Serie B", "Greek Super League", "National League", "Portuguese Primeira Liga",
-    "Scottish Championship", "Scottish League One", "Scottish League Two",
-    "Belgian First Division A", "Dutch Eredivisie", "Scottish Premiership", "Turkish Super Lig",
-}
-NEW_FORMAT_LEAGUES = {
-    "Denmark Superliga", "Austrian Bundesliga", "Sweden Allsvenskan", "Romanian Superliga",
-    "Norway Eliteserien", "Finland Veikkausliiga", "Ireland Premier Division",
-    "Argentina Primera Division", "Brazil Serie A", "Japan J-League", "Mexico Liga MX",
-    "China Super League", "USA MLS", "Saudi Pro League", "K-League 1",
-}
+# Invariant 1: standard and new-format never mix. The track lists are NOT typed here (Data Truth
+# 2026-11-01): they are v9's registry (config/leagues.json model_type) through src/data/v9_config,
+# so a league added to or moved in the registry is picked up without a second copy to edit.
+# `STANDARD_FORMAT_LEAGUES` / `NEW_FORMAT_LEAGUES` stay readable as module attributes.
+def __getattr__(name):
+    from src.data import v9_config
+    if name == "STANDARD_FORMAT_LEAGUES":
+        return set(v9_config.standard_leagues())
+    if name == "NEW_FORMAT_LEAGUES":
+        return set(v9_config.new_format_leagues())
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 def _v9_dirs():
@@ -107,13 +104,11 @@ def _norm_team(s: pd.Series) -> pd.Series:
     return s.astype(str).str.strip()
 
 
-def model_type_for_league(league) -> str:
-    lg = str(league).strip()
-    if lg in STANDARD_FORMAT_LEAGUES:
-        return "standard"
-    if lg in NEW_FORMAT_LEAGUES:
-        return "new_format"
-    return "unknown"
+def model_type_for_league(league) -> str | None:
+    """'standard' | 'new_format' from the registry (canonical name or alias); None for a league
+    the registry does not type - never the placeholder 'unknown'."""
+    from src.data import v9_config
+    return v9_config.model_type(league)
 
 
 def _season_label(d: pd.Series) -> np.ndarray:

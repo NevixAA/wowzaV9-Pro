@@ -42,11 +42,16 @@ LEGACY, CANON = REBUILD / "legacy", REBUILD / "canonical"
 ALIASES = OUT / "identity_aliases.json"
 DQ = OUT / "data_quality.json"
 HEALTH = OUT / "repair_health.json"
-BET_LEAGUES = ("Championship", "League One", "League Two", "Bundesliga 2", "La Liga 2", "Ligue 2", "Serie B")
 #: the rolling-form inputs without which a Standard row is a median-imputed guess (invariant 8)
 REQUIRED = ["home_scored_last5", "away_scored_last5", "home_conceded_last5", "away_conceded_last5",
             "home_over25_last5", "away_over25_last5", "home_attack_str", "away_attack_str",
             "home_defense_str", "away_defense_str", "league_avg_goals"]
+
+
+def _bet_leagues() -> tuple:
+    """The standard leagues v9 bets (enabled), from the registry - was a typed tuple."""
+    from src.data import v9_config
+    return v9_config.enabled_standard_leagues()
 
 
 class IntegrityError(RuntimeError):
@@ -239,7 +244,7 @@ def audit(strict: bool = True) -> dict:
                 x = x[x["timing"] == timing]
             return int(x[col].sum())
         per[lg] = {
-            "bet_league": lg in BET_LEAGUES,
+            "bet_league": lg in _bet_leagues(),
             "rows": int(len(g)),
             "date_range": [str(g["date"].min().date()), str(g["date"].max().date())],
             "rows_by_source": g["row_source"].value_counts().to_dict(),

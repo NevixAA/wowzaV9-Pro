@@ -133,3 +133,97 @@ def sport_keys() -> dict:
 
 def enabled_leagues() -> tuple:
     return tuple(load().ENABLED_LEAGUES)
+
+
+# ── v9 league registry + club resolver (Data Truth 2026-11-01) ──────────────────────────────────
+# Every league name, list, model type and paper flag Pro needs comes from v9's config/leagues.json
+# through v9's own src/league_registry, never from a list typed in Pro. Unknown -> None, not a guess.
+
+def league_registry():
+    """v9's src/league_registry module (the one v9's config imported)."""
+    return load()._league_registry
+
+
+def canonical_league(name) -> str | None:
+    """Canonical league name for a canonical name or registered alias; None when unknown."""
+    return league_registry().canonical_name(name)
+
+
+def paper_leagues() -> frozenset:
+    """Leagues the registry marks paper (predicted, never sent, never staked)."""
+    return frozenset(load().PAPER_LEAGUES)
+
+
+def is_paper(league) -> bool:
+    """True when the league - by canonical name or any registered alias - is a paper league."""
+    return canonical_league(league) in paper_leagues()
+
+
+def drop_paper_leagues(df, col: str = "league"):
+    """Rows of `df` whose league is NOT paper, matched on the canonical name so an alias
+    spelling of a paper league is dropped too (a raw isin() let it through)."""
+    if df is None or len(df) == 0 or col not in df.columns:
+        return df
+    paper = paper_leagues()
+    canon = df[col].map(canonical_league)
+    return df[~(canon.isin(paper) | df[col].astype(str).str.strip().isin(paper))]
+
+
+def model_type(league) -> str | None:
+    """'standard' | 'new_format' for a league the registry knows, else None (never 'unknown')."""
+    lg = canonical_league(league)
+    if lg is None:
+        return None
+    m = load()
+    if lg in m.STANDARD_FORMAT_LEAGUES:
+        return "standard"
+    if lg in m.NEW_FORMAT_LEAGUES:
+        return "new_format"
+    return None
+
+
+def leagues_of_type(competition_type: str) -> frozenset:
+    """Canonical names whose registry `competition_type` equals the given one ('club_league' |
+    'club_cup' | 'national_teams', registry LR-1.1). Raises when the checked-out registry has no
+    competition_type at all - an empty set would read as 'no cups' and silently change results."""
+    entries = league_registry().leagues()
+    if not any("competition_type" in e for e in entries):
+        raise RuntimeError("v9 config/leagues.json has no competition_type (needs registry LR-1.1)")
+    return frozenset(e["name"] for e in entries if e.get("competition_type") == competition_type)
+
+
+def enabled_standard_leagues() -> tuple:
+    """Standard-track leagues that are enabled (v9 bets them), in registry order."""
+    std, en = standard_leagues(), set(enabled_leagues())
+    return tuple(e["name"] for e in league_registry().leagues() if e["name"] in std and e["name"] in en)
+
+
+def standard_leagues() -> frozenset:
+    return frozenset(load().STANDARD_FORMAT_LEAGUES)
+
+
+def new_format_leagues() -> frozenset:
+    return frozenset(load().NEW_FORMAT_LEAGUES)
+
+
+def football_data_codes() -> dict:
+    """{league: football-data.co.uk code} for the leagues the registry maps to football-data."""
+    return dict(load().FOOTBALL_DATA_LEAGUES)
+
+
+_TEAM_NAMES = None
+
+
+def team_names():
+    """v9's src/team_names module (resolve / resolve_result), loaded by path so Pro's own `src`
+    is never shadowed. Raises FileNotFoundError when v9 is not checked out."""
+    global _TEAM_NAMES
+    if _TEAM_NAMES is None:
+        p = cfg.V9_LOCAL / "src" / "team_names.py"
+        if not p.exists():
+            raise FileNotFoundError(f"v9 team_names not found at {p}")
+        spec = importlib.util.spec_from_file_location("_v9_team_names_via_pro", p)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        _TEAM_NAMES = mod
+    return _TEAM_NAMES

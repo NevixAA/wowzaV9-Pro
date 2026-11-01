@@ -31,6 +31,7 @@ import pandas as pd
 
 from config import pro_config as cfg
 from src.player_v3 import CALC_VERSION
+from src.player_v3 import data as D
 from src.player_v3 import features as F
 from src.player_v3.market import TARGET, prop_items, settle
 from src.player_v3.sot_lab import OUT, _usable, load_features
@@ -69,11 +70,12 @@ def freeze(X: pd.DataFrame, rows: pd.DataFrame) -> dict:
            "fit_before": FIT_BEFORE, "calibration": [CAL_FROM, CAL_TO], "sklearn": sklearn.__version__,
            "calculation_version": CALC_VERSION, "markets": {}}
     for mk in MARKETS:
-        y = X[TARGET[mk]].fillna(0).astype(int).to_numpy()
-        use = _usable(X.loc[fit, cols])
-        m = HistGradientBoostingClassifier(**HGB).fit(X.loc[fit, use], y[fit])
-        raw = m.predict_proba(X.loc[cal, use])[:, 1]
-        platt = LogisticRegression(max_iter=1000).fit(_lg(raw).reshape(-1, 1), y[cal])
+        y, known = D.known_target(X, TARGET[mk])
+        fk, ck = fit & known, cal & known
+        use = _usable(X.loc[fk, cols])
+        m = HistGradientBoostingClassifier(**HGB).fit(X.loc[fk, use], y[fk])
+        raw = m.predict_proba(X.loc[ck, use])[:, 1]
+        platt = LogisticRegression(max_iter=1000).fit(_lg(raw).reshape(-1, 1), y[ck])
         with open(MODEL_DIR / f"{mk}.pkl", "wb") as fh:
             pickle.dump({"model": m, "platt": platt, "cols": use}, fh)
         r = rows[(rows["market"] == mk) & (rows["match_date"] <= REGISTERED_ON)].copy()

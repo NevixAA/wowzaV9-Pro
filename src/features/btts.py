@@ -165,20 +165,20 @@ def _num(d: pd.DataFrame, col: str, default=np.nan) -> pd.Series:
 def add_features(df: pd.DataFrame) -> pd.DataFrame:
     """Attach the BTTS asymmetry features. Missing inputs give NaN, never a substituted number."""
     d = df.copy()
-    lg = _num(d, "league_avg_goals").fillna(2.6)
+    # No league average -> NaN lambdas (it used to be a typed 2.6 goals). Data Truth 2026-11-01.
+    lg = _num(d, "league_avg_goals")
     # Attack x opponent defence, halved because league_avg_goals is the MATCH total, not the
     # per-side mean. Getting that wrong doubles every lambda and silently inflates every BTTS
     # probability toward 1.
-    half = (lg / 2.0).clip(lower=0.3, upper=3.0)
+    half = lg / 2.0
     h_att, a_att = _num(d, "home_attack_str"), _num(d, "away_attack_str")
     h_def, a_def = _num(d, "home_defense_str"), _num(d, "away_defense_str")
 
+    # A missing strength leaves the lambda NaN. The last-5 scoring rate used to be substituted,
+    # which is a different estimator presented under the same column, and the old clip bounds
+    # manufactured values at both ends.
     lam_h = (h_att * a_def * half)
     lam_a = (a_att * h_def * half)
-    # Fall back to the raw rolling rate only where a strength is missing — better a cruder
-    # lambda than none, and the fallback is visible in the column rather than hidden.
-    lam_h = lam_h.fillna(_num(d, "home_scored_last5")).clip(lower=0.05, upper=8.0)
-    lam_a = lam_a.fillna(_num(d, "away_scored_last5")).clip(lower=0.05, upper=8.0)
 
     d["lam_home"] = lam_h
     d["lam_away"] = lam_a

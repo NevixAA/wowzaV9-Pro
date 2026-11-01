@@ -37,11 +37,21 @@ from config import pro_config as cfg
 
 EXP = cfg.BASE_DIR / "experiments" / "standard_repair_2026_10"
 FD_RAW = cfg.BASE_DIR / "experiments" / "ou_info_inputs_2026_10" / "fd_raw"
-FD_CODES = {"Championship": "E1", "League One": "E2", "League Two": "E3", "National League": "EC",
-            "Bundesliga 2": "D2", "Ligue 2": "F2", "La Liga 2": "SP2", "Serie B": "I2",
-            "Greek Super League": "G1", "Portuguese Primeira Liga": "P1", "Scottish Championship": "SC1",
-            "Scottish Premiership": "SC0", "Belgian First Division A": "B1", "Dutch Eredivisie": "N1",
-            "Turkish Super Lig": "T1", "Scottish League One": "SC2", "Scottish League Two": "SC3"}
+
+
+def _fd_codes() -> dict:
+    """{standard league: football-data code} from v9's registry (was a typed dict)."""
+    from src.data import v9_config
+    std = v9_config.standard_leagues()
+    return {k: v for k, v in v9_config.football_data_codes().items() if k in std}
+
+
+def __getattr__(name):
+    if name == "FD_CODES":
+        return _fd_codes()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
 MARKETS = ("OU25", "BTTS", "OU15")
 TARGET = {"OU25": "over25", "BTTS": "btts", "OU15": "over15"}
 OU_BOOKS = {"AVG": ("Avg>2.5", "Avg<2.5"), "B365": ("B365>2.5", "B365<2.5"),
@@ -149,7 +159,7 @@ def poisson_market_probs(lh, la) -> dict:
 # ── football-data pre-match prices ────────────────────────────────────────────────────────────
 def fd_prices() -> pd.DataFrame:
     rows = []
-    for league, code in FD_CODES.items():
+    for league, code in _fd_codes().items():
         for f in sorted(FD_RAW.glob(f"{code}_*.csv")):
             d = pd.read_csv(f, encoding="utf-8-sig", low_memory=False)
             if not {"Date", "HomeTeam", "AwayTeam"} <= set(d.columns):

@@ -38,6 +38,7 @@ import numpy as np
 import pandas as pd
 
 from config import pro_config as cfg
+from src.data import v9_config
 
 TIERS = ("SNIPER", "MARKSMAN", "VALUABLE")
 TOP_K = 5
@@ -54,14 +55,15 @@ def _lg(p):
 
 
 def load() -> pd.DataFrame:
-    paper = set(getattr(cfg, "PAPER_LEAGUES", ()) or ())
+    paper = set(v9_config.paper_leagues())
     m = pd.read_csv(cfg.V9_LOCAL / "output" / "bets_ledger.csv", low_memory=False)
-    m = m[m["source"].fillna("live").astype(str).eq("live")]
+    m = m[m["source"].astype(str).eq("live")]                # a blank source is not live
     m["market"] = "OU25_" + m["side"].astype(str).str.upper()
     s = pd.read_csv(cfg.V9_LOCAL / "output" / "side_bets_ledger.csv", low_memory=False)
     s["market"] = s["market"].astype(str).str.lower()
     d = pd.concat([m, s], ignore_index=True)
-    d = d[d["signal_tier"].isin(TIERS) & d["result"].isin(["WIN", "LOSS"]) & ~d["league"].isin(paper)].copy()
+    d = d[d["signal_tier"].isin(TIERS) & d["result"].isin(["WIN", "LOSS"])
+          & ~d["league"].map(v9_config.canonical_league).isin(paper) & ~d["league"].isin(paper)].copy()
     d["odds"] = pd.to_numeric(d["odds"], errors="coerce")
     d = d[d["odds"] > 1.01]
     d["implied"] = 1.0 / d["odds"]
@@ -72,7 +74,14 @@ def load() -> pd.DataFrame:
     d["edge"] = d["model_p"] - d["implied"]
     d["win"] = (d["result"] == "WIN").astype(int)
     d["day"] = d["match_date"].astype(str).str[:10]
-    d["model_type"] = d["model_type"].fillna("unknown").astype(str)
+    # Blank model_type -> derived from the league via the registry; rows it cannot type are dropped
+    # and counted (no 'unknown' placeholder track in the ranker's design matrix).
+    blank = d["model_type"].isna() | d["model_type"].astype(str).str.strip().eq("")
+    d.loc[blank, "model_type"] = d.loc[blank, "league"].map(v9_config.model_type)
+    if d["model_type"].isna().any():
+        print(f"[tip_ranker] dropped {int(d['model_type'].isna().sum())} tips with no model type")
+    d = d[d["model_type"].notna()].copy()
+    d["model_type"] = d["model_type"].astype(str)
     d["tier_rank"] = d["signal_tier"].map({t: i for i, t in enumerate(TIERS)})
     # one tip per fixture x market (first tip stands, as the ledgers' flip guard does)
     d = d.sort_values("generated_at", kind="mergesort").drop_duplicates(
