@@ -75,10 +75,21 @@ def load(force: bool = False):
         sys.modules[name] = mod
         injected.append(name)
 
+    # Since the R2-A league registry (v9 246b2cc4, 2026-11-01) v9's config runs
+    # `from src import league_registry`. Pro also has a top-level `src`, already in sys.modules, so
+    # that import resolved to PRO's package and died with ImportError — Team Stats and Studies both
+    # failed on it. Hide Pro's `src` while v9's config executes so `src` means v9's, then put Pro's
+    # back. v9's src modules stay reachable through the loaded config's own references.
+    pro_src = {n: m for n, m in sys.modules.items() if n == "src" or n.startswith("src.")}
+    saved_path = list(sys.path)
+    for n in pro_src:
+        del sys.modules[n]
+    sys.path.insert(0, str(path.parent))
+
     try:
-        # A distinctive module name, and NOT added to sys.path: inserting v9's directory shadows
-        # Pro's own `config` PACKAGE for the rest of the process, which broke three test groups
-        # when pro_tests did it.
+        # A distinctive module name. sys.path is restored below: v9's config inserts its own
+        # directory and leaves it there, which shadows Pro's own `config` PACKAGE for the rest of
+        # the process — that broke three test groups when pro_tests did it.
         spec = importlib.util.spec_from_file_location("_v9_config_via_pro", path)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
@@ -87,6 +98,10 @@ def load(force: bool = False):
         # for anything else in the process.
         for name in injected:
             sys.modules.pop(name, None)
+        for n in [n for n in sys.modules if n == "src" or n.startswith("src.")]:
+            del sys.modules[n]
+        sys.modules.update(pro_src)
+        sys.path[:] = saved_path
 
     _CACHE = mod
     return mod
