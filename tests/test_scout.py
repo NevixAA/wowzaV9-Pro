@@ -123,10 +123,13 @@ def test_calibration_in_the_large_matches_history():
     assert abs(P - rate) < 0.05
 
 
-def test_unknown_team_falls_back_to_average_not_an_extreme():
+def test_unknown_team_gets_no_prediction_not_a_league_average():
+    """Data Truth 2026-11-01: an unrated team is skipped, never given attack = defence = 1.0."""
     d, _ = _league()
-    p = model.predict(model.fit(d, NOW), 999, 998)
-    assert p["home_games"] == 0 and 0.2 < p["p_ou25_over"] < 0.8
+    m = model.fit(d, NOW)
+    assert model.predict(m, 999, 998) is None
+    known = next(iter(m["teams"]))
+    assert model.predict(m, known, 998) is None and model.predict(m, 999, known) is None
 
 
 # ── report, end to end on a scratch store ─────────────────────────────────────────────────────

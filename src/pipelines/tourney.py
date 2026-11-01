@@ -43,7 +43,13 @@ OUT = ROOT / "output"
 CAL_FILE = OUT / "tourney_calibration.json"
 PRED_FILE = OUT / "tourney_predictions.csv"
 
-TOURNAMENTS = ("Champions League", "Europa League", "Conference League")
+
+
+def _tournaments() -> frozenset:
+    """The European club cups, from v9's registry (competition_type == 'club_cup'), never a
+    typed list."""
+    from src.data import v9_config
+    return v9_config.leagues_of_type("club_cup")
 
 
 def _history(extra: str = "") -> pd.DataFrame:
@@ -53,7 +59,8 @@ def _history(extra: str = "") -> pd.DataFrame:
     for t in ("team_match_stats", "settlements_backfill"):
         try:
             d = store.read(t)
-        except Exception:                                        # noqa: BLE001
+        except Exception as e:                                   # noqa: BLE001
+            print(f"[tourney] could not read {t}: {type(e).__name__}: {e}")
             continue
         if not d.empty and need.issubset(d.columns):
             parts.append(d[list(need)])
@@ -62,13 +69,21 @@ def _history(extra: str = "") -> pd.DataFrame:
         for f in glob.glob(extra, recursive=True):
             try:
                 e = pd.read_parquet(f)
-            except Exception:                                    # noqa: BLE001
+            except Exception as ex:                              # noqa: BLE001
+                print(f"[tourney] skipped unreadable {f}: {type(ex).__name__}")
                 continue
             if need.issubset(e.columns):
                 parts.append(e[list(need)])
     if not parts:
         return pd.DataFrame()
     d = pd.concat(parts, ignore_index=True)
+    # Leagues on their CANONICAL registry name, so an alias spelling joins its own league.
+    from src.data import v9_config
+    canon = d["league"].map(v9_config.canonical_league)
+    if canon.isna().any():
+        print(f"[tourney] {int(canon.isna().sum()):,} row(s) in leagues the registry does not know "
+              f"- left out: {sorted(d.loc[canon.isna(), 'league'].astype(str).unique())[:8]}")
+    d = d.assign(league=canon).dropna(subset=["league"])
     d["match_date"] = pd.to_datetime(d["match_date"], errors="coerce")
     # dixon_coles.fit_league reads `_d` for its time-decay weights, not `match_date`.
     d["_d"] = d["match_date"]
@@ -79,8 +94,8 @@ def _history(extra: str = "") -> pd.DataFrame:
 
 def _domestic_models(d: pd.DataFrame) -> tuple[dict, dict]:
     """Per-league Dixon-Coles fits, and each club's domestic league."""
-    dom = d[~d["league"].isin(TOURNAMENTS)]
-    models, home_of = {}, {}
+    dom = d[~d["league"].isin(_tournaments())]
+    models = {}
     for lg, g in dom.groupby("league"):
         if len(g) < dc.MIN_MATCHES_PER_LEAGUE:
             continue
@@ -88,16 +103,28 @@ def _domestic_models(d: pd.DataFrame) -> tuple[dict, dict]:
         if m is None:
             continue
         models[lg] = m
-        for t in m["teams"]:
-            # A club is rated by the league it plays MOST in — a guard against a club appearing
-            # once in a neighbouring competition and being mis-assigned.
-            home_of.setdefault(t, lg)
+    # A club is rated by the league it plays MOST in, among the leagues that have a model - a
+    # guard against a club appearing once in a neighbouring competition. (The old setdefault took
+    # whichever league came first alphabetically.) Names come from ONE provider on both the
+    # domestic and the cup rows (team_match_stats), so they are the provider's own identity.
+    side = pd.concat([dom[["league", "home_team"]].rename(columns={"home_team": "team"}),
+                      dom[["league", "away_team"]].rename(columns={"away_team": "team"})])
+    side = side[side["league"].isin(models)]
+    cnt = side.groupby(["team", "league"]).size().reset_index(name="n")
+    cnt = cnt.sort_values(["team", "n"], ascending=[True, False])
+    top = cnt.groupby("team").head(2)
+    tied = top.groupby("team")["n"].transform(lambda x: len(x) > 1 and x.iloc[0] == x.iloc[1])
+    if tied.any():
+        print(f"[tourney] {top.loc[tied, 'team'].nunique()} club(s) play equally in two leagues "
+              f"- no domestic league assigned")
+    first = cnt.groupby("team").head(1).set_index("team")["league"]
+    home_of = first.drop(index=top.loc[tied, "team"].unique(), errors="ignore").to_dict()
     return models, home_of
 
 
 def _ties(d: pd.DataFrame, home_of: dict) -> pd.DataFrame:
     """European fixtures, tagged with each side's domestic league."""
-    t = d[d["league"].isin(TOURNAMENTS)].copy()
+    t = d[d["league"].isin(_tournaments())].copy()
     if t.empty:
         return t
     t["home_league"] = t["home_team"].map(home_of)

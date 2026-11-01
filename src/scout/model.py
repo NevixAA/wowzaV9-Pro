@@ -101,13 +101,17 @@ def probs(lh, la) -> dict:
             "btts": (1 - np.exp(-lh)) * (1 - np.exp(-la))}
 
 
-def predict(m: dict, home_id: int, away_id: int) -> dict:
-    """Probabilities for every scout market, plus the inputs that produced them."""
+def predict(m: dict, home_id: int, away_id: int) -> dict | None:
+    """Probabilities for every scout market, plus the inputs that produced them.
+
+    None when either team is absent from the fit: an unrated team used to get league-average
+    attack and defence (1.0) and a full set of probabilities, i.e. a rating the data never gave
+    (Data Truth 2026-11-01). The caller skips and counts it."""
     ih, ia = m["teams"].get(int(home_id)), m["teams"].get(int(away_id))
-    Ah = m["A"][ih] if ih is not None else 1.0
-    Dh = m["D"][ih] if ih is not None else 1.0
-    Aa = m["A"][ia] if ia is not None else 1.0
-    Da = m["D"][ia] if ia is not None else 1.0
+    if ih is None or ia is None:
+        return None
+    Ah, Dh = m["A"][ih], m["D"][ih]
+    Aa, Da = m["A"][ia], m["D"][ia]
     lh, la = m["mu_h"] * Ah * Da, m["mu_a"] * Aa * Dh
     raw = probs(lh, la)
     cal = {k: float(_sigmoid(_logit(np.clip(raw[k][0], 1e-6, 1 - 1e-6)) + m["offset"][k]))
@@ -115,7 +119,7 @@ def predict(m: dict, home_id: int, away_id: int) -> dict:
     out = {"p_ou15_over": cal["ou15"], "p_ou25_over": cal["ou25"], "p_ou35_over": cal["ou35"],
            "p_btts_yes": cal["btts"], "p_ou25_over_raw": float(raw["ou25"][0])}
     out.update({"lambda_home": round(lh, 4), "lambda_away": round(la, 4),
-                "home_games": int(m["games"][ih]) if ih is not None else 0,
-                "away_games": int(m["games"][ia]) if ia is not None else 0,
+                "home_games": int(m["games"][ih]),
+                "away_games": int(m["games"][ia]),
                 "league_matches": m["n_matches"]})
     return out

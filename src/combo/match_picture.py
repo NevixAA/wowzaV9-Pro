@@ -213,6 +213,8 @@ def build(matrix: np.ndarray, *, targets_used, league: str,
                                          else f'player_{l["market"]}' if l["kind"] == "player"
                                          else f'teamcard_{l["market"]}')
                 row[f"leg{i}_label"] = l["label"]
+                # The player as a machine column, so settlement never parses it out of the label.
+                row[f"leg{i}_player"] = l.get("player") if l["kind"] == "player" else None
                 row[f"leg{i}_p"] = round(float(l["p"]), 4)
             rows.append(row)
     if unmeasured:

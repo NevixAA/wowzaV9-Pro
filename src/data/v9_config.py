@@ -182,6 +182,16 @@ def model_type(league) -> str | None:
     return None
 
 
+def leagues_of_type(competition_type: str) -> frozenset:
+    """Canonical names whose registry `competition_type` equals the given one ('club_league' |
+    'club_cup' | 'national_teams', registry LR-1.1). Raises when the checked-out registry has no
+    competition_type at all - an empty set would read as 'no cups' and silently change results."""
+    entries = league_registry().leagues()
+    if not any("competition_type" in e for e in entries):
+        raise RuntimeError("v9 config/leagues.json has no competition_type (needs registry LR-1.1)")
+    return frozenset(e["name"] for e in entries if e.get("competition_type") == competition_type)
+
+
 def standard_leagues() -> frozenset:
     return frozenset(load().STANDARD_FORMAT_LEAGUES)
 
