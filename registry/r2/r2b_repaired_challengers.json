@@ -1,0 +1,199 @@
+{
+ "version": "r2b-1.0",
+ "note": "R2-B repaired challengers. Definitions are FROZEN; only `retrospective_results` is written by src/studies/r2_repaired_challengers.py. RETROSPECTIVE evidence is never mixed with forward evidence and never promotes anything.",
+ "common": {
+  "frozen_on": "2026-11-01",
+  "frozen_by": "R2-B workstream (owner brief 2026-11-01)",
+  "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+  "lifecycle_path": [
+   "DISCOVERY",
+   "REPAIRED_IMPLEMENTATION",
+   "RETROSPECTIVE_REPLAY",
+   "SHADOW",
+   "FORWARD_ACCRUAL",
+   "ELIGIBLE_FOR_REVIEW",
+   "OWNER_REVIEW",
+   "OPTIONAL_PROMOTION"
+  ],
+  "promotion": "NONE - research only; retrospective results are never automatic justification for cutover",
+  "code": {
+   "repo": "NevixAA/wowza-betting",
+   "branch": "r2/repaired-challengers",
+   "trainer": "src/model.py::train_repaired",
+   "runner": "scripts/train_repaired_challengers.py",
+   "commit": "recorded per run in each result JSON (v9_commit)"
+  },
+  "versions": {
+   "model_recipe_version": "r2-repaired-1.0",
+   "feature_recipe_version": "v9r-features-1.0",
+   "identity_version": "v9r-identity-1.0",
+   "identity_alias_map": "config/standard_ou25_identity_aliases.json (v9)",
+   "identity_alias_map_sha256": "d4091b99059ca85ee3f90dd7f593bafada31e9629c1250320bd6d680aee3e6c8",
+   "imputer_version": "v9-train-only-imputer-1.1 (no-training-values features dropped, never zero-filled)",
+   "recency": "r2-recency-1.0, PRIMARY season_age {0:4,1:3,2:2,3:1.5,else 1}, frozen before evaluation"
+  },
+  "cutoff": "rows strictly before the CI run date (UTC); recorded per run",
+  "blocks": "holdout = rows on/after HOLDOUT_START (newest ~20% of the task rows, whole-date cut, identical for every arm); pre-holdout base 80% / calibration 10% / meta 10%, whole-date cuts, disjointness asserted",
+  "baseline": {
+   "arm": "CHAMPION_LEGACY_REPRO",
+   "definition": "legacy_v9 recipe exactly as pipeline.mode_train trains it (legacy build_features, the serving payload feature list, TRAINING_DECAY_WEIGHTS season-label weights, src.model.train) split at the same holdout boundary",
+   "caveat": "its meta-logistic is fitted ON the holdout (bug 6) so its holdout number is optimistic; CHAMPION_BASEMEAN (calibrated base models averaged, no meta) is the clean legacy reference"
+  },
+  "metrics": {
+   "primary": "holdout log loss of the SERVED probability (meta blend), challenger minus baseline, 95% matchday block-bootstrap CI",
+   "also_first": [
+    "brier",
+    "ece_10bin",
+    "calibration slope/intercept"
+   ],
+   "secondary": [
+    "auc"
+   ],
+   "market": "ONLY genuine two-sided pre-kickoff ENTRY prices, proportional de-vig, negative-margin pairs excluded; never synthetic side prices, never closing, never one-sided; NF summer-2026 window and NF O1.5/O3.5 before 2026-08-23 excluded (non-full-match lines)",
+   "no_threshold_tuning": true
+  },
+  "retrospective_verdict_rule": "delta LL CI95 entirely < 0 -> REPAIRED_BETTER_RETROSPECTIVE; entirely > 0 -> REPAIRED_WORSE_RETROSPECTIVE; else NO_DIFFERENCE_RETROSPECTIVE",
+  "promotion_criteria": {
+   "requires": [
+    "SHADOW serving path with identical train/serve features and the persisted imputer",
+    "FORWARD_ACCRUAL from first sight (never retrospective rows); live evidence only from 2026-09-01 and after shadow start",
+    "PG-1.0 prospective rule: n >= 1000 settled first-sight rows per track",
+    "served-probability log loss delta vs the serving champion with 95% CI entirely below 0 on prospective rows",
+    "ECE not worse than the champion by more than 0.01",
+    "no data-integrity, parity or identity health FAIL during accrual",
+    "explicit owner review and approval"
+   ],
+   "never": [
+    "automatic promotion",
+    "threshold or tier changes",
+    "staking changes",
+    "market metrics on synthetic or closing prices"
+   ]
+  }
+ },
+ "pooled_variants": "every SIDE experiment trains pooled, Standard-only and NF-only challengers on the same holdout boundary; pooled-vs-track is reported in the results (finding 19)",
+ "ablations": {
+  "source_regimes": {
+   "frozen": [
+    "FULL",
+    "MODERN_ONLY",
+    "MODERN_ARCHIVE",
+    "RECENT_2",
+    "RECENT_3",
+    "RECENCY_WEIGHTED (PRIMARY season_age)",
+    "RECENCY_EXP_HALF_LIFE",
+    "RECENCY_BOUNDED_LINEAR"
+   ],
+   "definitions": {
+    "FULL": "all pre-holdout rows, uniform weights",
+    "MODERN_ONLY": "rows present when WOWZA_USE_BACKTEST_ARCHIVE=0, uniform",
+    "MODERN_ARCHIVE": "all rows from the first archive date on, uniform",
+    "RECENT_2": "last two derived seasons before the holdout, uniform",
+    "RECENT_3": "last three derived seasons before the holdout, uniform",
+    "RECENCY_*": "all rows, frozen src.recency function"
+   },
+   "reference": "RECENCY_WEIGHTED",
+   "report": [
+    "source composition by season",
+    "missing rate by source",
+    "source predictable from missingness (5-fold AUC)",
+    "target rate by source",
+    "holdout LL/Brier/ECE/AUC/calibration",
+    "holdout metrics by season (era)"
+   ],
+   "tasks": "nf_ou25 (newformat) and every side market on standard and newformat"
+  },
+  "standard_cold_start_finding_16": {
+   "arms": {
+    "A": "current hand-typed priors (HA 0.55/0.45, away goals 1.10, SOT 0.35/0.33, HT 0)",
+    "B": "NaN + train-only global median imputation",
+    "C": "NaN + train-fitted league median prior",
+    "D": "NaN + global train median + missing indicators"
+   },
+   "status": "RESEARCH ONLY - Standard production is not modified until evaluated and owner-approved"
+  }
+ },
+ "experiments": [
+  {
+   "id": "NF-R2-OU25",
+   "market": "New Format O/U 2.5",
+   "track": "newformat",
+   "recipe": "nf_v9_repaired",
+   "task": "nf_ou25",
+   "hypothesis": "A New Format O/U 2.5 model on the repaired architecture (identity-canonical NF history, as-of league-scoped features with the Nov-1 NF parity semantics, no market feature, train-only imputer, four chronological blocks, derived recency) is at least as well calibrated as the legacy NF recipe on the untouched holdout, while removing batch dependence and the holdout-fitted meta.",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+  },
+  {
+   "id": "SIDE-R2-BTTS-STD",
+   "market": "BTTS",
+   "track": "standard",
+   "recipe": "side_v9_repaired",
+   "task": "side_btts",
+   "hypothesis": "A Standard-only BTTS repaired challenger scores at least as well as the pooled legacy side model on Standard holdout rows (finding 19: pooling with New Format may be wrong).",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+  },
+  {
+   "id": "SIDE-R2-BTTS-NF",
+   "market": "BTTS",
+   "track": "newformat",
+   "recipe": "side_v9_repaired",
+   "task": "side_btts",
+   "hypothesis": "A New-Format-only BTTS repaired challenger scores at least as well as the pooled legacy side model on New Format holdout rows.",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+  },
+  {
+   "id": "SIDE-R2-O15-STD",
+   "market": "Over 1.5",
+   "track": "standard",
+   "recipe": "side_v9_repaired",
+   "task": "side_over15",
+   "hypothesis": "Standard-only Over 1.5 repaired challenger vs pooled legacy, Standard holdout rows.",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+  },
+  {
+   "id": "SIDE-R2-O15-NF",
+   "market": "Over 1.5",
+   "track": "newformat",
+   "recipe": "side_v9_repaired",
+   "task": "side_over15",
+   "hypothesis": "New-Format-only Over 1.5 repaired challenger vs pooled legacy, New Format holdout rows.",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+  },
+  {
+   "id": "SIDE-R2-O35-STD",
+   "market": "Over 3.5",
+   "track": "standard",
+   "recipe": "side_v9_repaired",
+   "task": "side_over35",
+   "hypothesis": "Standard-only Over 3.5 repaired challenger vs pooled legacy, Standard holdout rows (research only; O3.5 betting stays inactive).",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+  },
+  {
+   "id": "SIDE-R2-O35-NF",
+   "market": "Over 3.5",
+   "track": "newformat",
+   "recipe": "side_v9_repaired",
+   "task": "side_over35",
+   "hypothesis": "New-Format-only Over 3.5 repaired challenger vs pooled legacy, New Format holdout rows (research only).",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+  },
+  {
+   "id": "HT-R2-O05",
+   "market": "HT Over 0.5",
+   "track": "pooled (reported per track)",
+   "recipe": "ht_v9_repaired",
+   "task": "ht_over05",
+   "hypothesis": "An HT Over 0.5 challenger on the repaired architecture (repaired as-of features + src.ht_features run per league so team accumulators cannot cross competitions) is at least as well calibrated as the legacy HT recipe on the untouched holdout.",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+  },
+  {
+   "id": "HT-R2-O15",
+   "market": "HT Over 1.5",
+   "track": "pooled (reported per track)",
+   "recipe": "ht_v9_repaired",
+   "task": "ht_over15",
+   "hypothesis": "As HT-R2-O05 for HT Over 1.5.",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY"
+  }
+ ]
+}
