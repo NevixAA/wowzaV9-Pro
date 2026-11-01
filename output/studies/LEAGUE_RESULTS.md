@@ -1,4 +1,4 @@
-# Best leagues — results by league (2026-W44, updated 2026-11-01 13:35 UTC)
+# Best leagues — results by league (2026-W44, updated 2026-11-01 15:48 UTC)
 
 All settled live tips, paper leagues out. Ranked by shrunk ROI (pulled toward the all-league average by 50 pseudo-tips). The 90% CI is shown for reading; PROVEN / LOSING need the interval clear of zero at a Bonferroni-corrected level (one-sided 5% / number of leagues), and PROVEN >= 100 tips.
 
@@ -8,7 +8,7 @@ All settled live tips, paper leagues out. Ranked by shrunk ROI (pulled toward th
 |---|---|---|---|---|---|---|---|---|---|---|
 | 1 | Brazil Serie A | 10/10 | 136 | 62% | 1.99 | +24% | [0.118, 0.352] | +17% | Over 2.5 (+54%) | PROVEN |
 | 2 | Argentina Primera Division | 8/10 | 337 | 56% | 2.14 | +12% | [-0.008, 0.251] | +10% | BTTS (+26%) | PROMISING |
-| 3 | Serie B | 7/10 | 101 | 55% | 1.99 | +9% | [-0.129, 0.301] | +5% | BTTS (+14%) | PROMISING |
+| 3 | Serie B | 7/10 | 101 | 55% | 1.99 | +9% | [-0.129, 0.301] | +6% | BTTS (+14%) | PROMISING |
 | 4 | Finland Veikkausliiga | 7/10 | 59 | 52% | 2.07 | +10% | [-0.127, 0.31] | +5% | Under 2.5 (+36%) | PROMISING |
 | 5 | Mexico Liga MX | 7/10 | 92 | 52% | 2.11 | +7% | [-0.114, 0.248] | +4% | Under 2.5 (+7%) | PROMISING |
 | 6 | Bundesliga 2 | 6/10 | 62 | 44% | 2.45 | +7% | [-0.175, 0.329] | +3% | Under 2.5 (+3%) | PROMISING |
@@ -18,10 +18,10 @@ All settled live tips, paper leagues out. Ranked by shrunk ROI (pulled toward th
 | 10 | Denmark Superliga | 5/10 | 53 | 42% | 2.31 | -4% | [-0.275, 0.179] | -3% | Under 2.5 (-10%) | NEUTRAL |
 | 11 | China Super League | 4/10 | 60 | 38% | 2.52 | -8% | [-0.392, 0.231] | -5% | Under 2.5 (+2%) | NEUTRAL |
 | 12 | Austrian Bundesliga | 4/10 | 52 | 42% | 2.17 | -14% | [-0.356, 0.1] | -7% | Under 2.5 (-19%) | NEUTRAL |
-| 13 | Norway Eliteserien | 4/10 | 65 | 38% | 2.54 | -12% | [-0.346, 0.072] | -8% | Under 2.5 (-22%) | NEUTRAL |
+| 13 | Norway Eliteserien | 4/10 | 65 | 38% | 2.54 | -12% | [-0.346, 0.072] | -7% | Under 2.5 (-22%) | NEUTRAL |
 | 14 | Championship | 3/10 | 95 | 44% | 2.04 | -13% | [-0.326, 0.077] | -9% | BTTS (+2%) | NEUTRAL |
-| 15 | La Liga 2 | 3/10 | 132 | 43% | 2.02 | -14% | [-0.294, 0.01] | -11% | BTTS (-11%) | NEUTRAL |
-| 16 | League Two | 3/10 | 84 | 42% | 1.98 | -19% | [-0.392, -0.019] | -13% | BTTS (-6%) | NEUTRAL |
+| 15 | La Liga 2 | 3/10 | 133 | 44% | 2.02 | -14% | [-0.289, 0.018] | -10% | BTTS (-9%) | NEUTRAL |
+| 16 | League Two | 3/10 | 84 | 42% | 1.98 | -19% | [-0.392, -0.019] | -12% | BTTS (-6%) | NEUTRAL |
 | 17 | Ireland Premier Division | 3/10 | 42 | 36% | 2.05 | -30% | [-0.476, -0.103] | -14% | Under 2.5 (-32%) | NEUTRAL |
 | 18 | League One | 1/10 | 95 | 33% | 2.07 | -34% | [-0.472, -0.204] | -22% | BTTS (-29%) | LOSING |
 
