@@ -43,7 +43,18 @@ from src.player_v3 import HOLDOUT_FROM, TRAIN_END, VALID_END
 from src.player_v3 import data as D
 from src.player_v3.sot_lab import CACHE, expected_minutes, fit_binary, load_features
 
-LEAGUE = "Premier League"
+
+
+def _fpl_league() -> str:
+    """The one league the registry marks `fpl` (LR-1.1), never a typed name."""
+    from src.data import v9_config
+    names = sorted(e["name"] for e in v9_config.league_registry().leagues() if e.get("fpl") is True)
+    if len(names) != 1:
+        raise RuntimeError(f"expected exactly one registry league with fpl=true, found {names} "
+                           f"(needs v9 registry LR-1.1)")
+    return names[0]
+
+
 GOAL_PTS = {"F": 4, "M": 5, "D": 6, "G": 6}
 OUT = cfg.OUTPUT_DIR / "studies"
 RNG = np.random.default_rng(20261014)
@@ -56,11 +67,17 @@ def _attack_probs(X: pd.DataFrame, fam: dict) -> pd.DataFrame:
     base = fam["BASE_V9"]
     v3 = base + [c for k in ("FORM_SHRUNK", "TEAM_ENV", "MINUTES_V3") for c in fam[k]]
     out = X[["player_id", "fixture_id", "date"]].copy()
-    for name, y in (("goal", (X["goals"].fillna(0) > 0).astype(int).to_numpy()),
-                    ("assist", (X["assists"].fillna(0) > 0).astype(int).to_numpy())):
-        out[f"p_{name}_v9"], _ = fit_binary(X[base], y, tr, va, calib="v9")
-        out[f"p_{name}_cal"], _ = fit_binary(X[base], y, tr, va, calib="logit")
-        out[f"p_{name}_v3"], _ = fit_binary(X[v3], y, tr, va, calib="logit")
+    for name, col in (("goal", "goals"), ("assist", "assists")):
+        # An unknown outcome is not a 0: those rows are left out of fit and calibration.
+        v = pd.to_numeric(X[col], errors="coerce")
+        known = v.notna().to_numpy()
+        if not known.all():
+            print(f"  {name}: {int((~known).sum())} row(s) with no recorded {col} - not fitted on")
+        y = (v > 0).astype(float).where(v.notna()).to_numpy()
+        trk, vak = tr & known, va & known
+        out[f"p_{name}_v9"], _ = fit_binary(X[base], y, trk, vak, calib="v9")
+        out[f"p_{name}_cal"], _ = fit_binary(X[base], y, trk, vak, calib="logit")
+        out[f"p_{name}_v3"], _ = fit_binary(X[v3], y, trk, vak, calib="logit")
         print(f"  fitted {name}")
     for c in ("starter_rate", "season_start_rate", "minutes_pg", "position"):
         out[c] = X[c].to_numpy()
@@ -70,7 +87,10 @@ def _attack_probs(X: pd.DataFrame, fam: dict) -> pd.DataFrame:
 def _panel_pl() -> pd.DataFrame:
     from src.player_v3 import minutes as M
     p = M.build_panel()
-    p = p[(p["league"] == LEAGUE) & (p["date"] >= pd.Timestamp(HOLDOUT_FROM))].copy()
+    from src.data import v9_config
+    lg = _fpl_league()
+    p = p[(p["league"].map(v9_config.canonical_league) == lg)
+          & (p["date"] >= pd.Timestamp(HOLDOUT_FROM))].copy()
     return p
 
 
@@ -90,20 +110,34 @@ def _carry_last(panel: pd.DataFrame, probs: pd.DataFrame) -> pd.DataFrame:
 
 
 def _actual(m: pd.DataFrame) -> np.ndarray:
-    gp = m["pos"].map(GOAL_PTS).fillna(5).to_numpy()
-    mins = m["minutes"].fillna(0).to_numpy()
+    """FPL points actually scored (appearance + goals + assists; official FPL scoring).
+
+    A panel fixture the player did not appear in is 0 points (FPL's rule, and the population's
+    definition); an APPEARANCE with no recorded goals/assists is NaN, not 0. Rows whose position
+    is unknown are removed before this is called (no midfielder default)."""
+    gp = m["pos"].map(GOAL_PTS).to_numpy()
+    mins = pd.to_numeric(m["minutes"], errors="coerce").to_numpy()
+    played = np.nan_to_num(mins, nan=-1) >= 1
     app = np.where(mins >= 60, 2.0, np.where(mins >= 1, 1.0, 0.0))
-    return app + m["act_goals"].fillna(0).to_numpy() * gp + m["act_assists"].fillna(0).to_numpy() * 3.0
+    g = np.where(played, pd.to_numeric(m["act_goals"], errors="coerce").to_numpy(), 0.0)
+    a = np.where(played, pd.to_numeric(m["act_assists"], errors="coerce").to_numpy(), 0.0)
+    out = app + g * gp + a * 3.0
+    return np.where(np.isnan(mins), np.nan, out)
 
 
 def project(m: pd.DataFrame) -> dict[str, np.ndarray]:
-    gp = m["pos"].map(GOAL_PTS).fillna(5).to_numpy()
+    """Projected points per variant. A player with no start-rate history, no minutes history or
+    no minutes-model output gets NaN for the variants that need it (was 0.6 / 60 / p_start*0.8);
+    build() scores only rows every variant can project and reports how many it left out."""
+    gp = m["pos"].map(GOAL_PTS).to_numpy()
     sr = pd.to_numeric(m["starter_rate"], errors="coerce")
     ssr = pd.to_numeric(m["season_start_rate"], errors="coerce")
-    p_start_v9 = (0.6 * sr.fillna(ssr) + 0.4 * ssr.fillna(sr)).clip(0, 1).fillna(0.6).to_numpy()
-    app_v9 = np.where(pd.to_numeric(m["minutes_pg"], errors="coerce").fillna(60).to_numpy() >= 60, 2.0, 1.0)
-    xs = m["xm_start"].fillna(pd.Series(p_start_v9)).clip(0, 1).to_numpy()
-    x60 = np.minimum(m["xm_m60"].fillna(pd.Series(p_start_v9 * 0.8)).clip(0, 1).to_numpy(), xs)
+    # v9's blend of the two start rates; one missing -> the other (both are the player's own).
+    p_start_v9 = (0.6 * sr.fillna(ssr) + 0.4 * ssr.fillna(sr)).clip(0, 1).to_numpy()
+    mpg = pd.to_numeric(m["minutes_pg"], errors="coerce").to_numpy()
+    app_v9 = np.where(np.isnan(mpg), np.nan, np.where(mpg >= 60, 2.0, 1.0))
+    xs = pd.to_numeric(m["xm_start"], errors="coerce").clip(0, 1).to_numpy()
+    x60 = np.minimum(pd.to_numeric(m["xm_m60"], errors="coerce").clip(0, 1).to_numpy(), xs)
     app_v3 = 2.0 * x60 + 1.0 * (xs - x60)
 
     def att(k):
@@ -182,12 +216,21 @@ def build() -> dict:
     panel = panel.merge(club[["team", "fixture_id", "prev_club_date"]], on=["team", "fixture_id"], how="left")
     m = _carry_last(panel, probs)
     m["pos"] = m["position"].astype(str).str[:1].str.upper()
+    # Rows every variant can score (known position, projections and actual points); the rest are
+    # counted, never filled.
+    ok = m["pos"].isin(list(GOAL_PTS)).to_numpy() & ~np.isnan(_actual(m))
+    pr = project(m)
+    for v in pr.values():
+        ok &= ~np.isnan(v)
+    print(f"[fantasy_v3] scoring {int(ok.sum()):,} of {len(m):,} player-fixtures "
+          f"({int((~ok).sum()):,} lack a position, history or minutes-model output)")
+    m = m[ok].reset_index(drop=True)
     y = _actual(m)
     r = evaluate(m, project(m), y)
     k = (m["last_app_date"] == m["prev_club_date"]).to_numpy()
     mf = m[k].reset_index(drop=True)
     r["fair_slice"] = {"rule": "player appeared in his club's previous match", **evaluate(mf, project(mf), _actual(mf))}
-    r.update({"population": f"{LEAGUE} squad panel from {HOLDOUT_FROM} (missed fixtures = 0 points)",
+    r.update({"population": f"{_fpl_league()} squad panel from {HOLDOUT_FROM} (missed fixtures = 0 points)",
               "scored": "appearance + goals + assists (CS, saves, cards, bonus, DC excluded both sides)",
               "generated_at": pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%d %H:%M UTC")})
     return r

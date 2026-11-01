@@ -106,12 +106,12 @@ def model_probs(X: pd.DataFrame, rows: pd.DataFrame, fam: dict) -> pd.DataFrame:
         t = TARGET[mk]
         if t not in X:
             continue
-        y = X[t].fillna(0).astype(int).to_numpy()
+        y, known = D.known_target(X, t)
         sel = out["market"] == mk
         idx = pos.reindex(pd.MultiIndex.from_frame(out.loc[sel, ["player_id", "fixture_id"]])).to_numpy()
         ok = ~np.isnan(idx)
         for name, cols in (("p_model_base", base), ("p_model_v3", base + v3)):
-            p, _ = fit_binary(X[cols], y, tr, va)
+            p, _ = fit_binary(X[cols], y, tr & known, va & known)
             vals = np.full(sel.sum(), np.nan)
             vals[ok] = p[idx[ok].astype(int)]
             out.loc[sel, name] = vals

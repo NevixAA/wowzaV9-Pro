@@ -137,6 +137,10 @@ class ImputeReport:
     degraded_rows: int = 0
     missing_required: dict[str, int] = field(default_factory=dict)
     unknown_features: list[str] = field(default_factory=list)
+    # Every row that received ANY substituted value (required or not) - the FEATURE_DEGRADED rows.
+    # Data Truth 2026-11-01: non-required features used to be filled with no row-level trace.
+    imputed_rows: int = 0
+    imputed_mask: pd.Series | None = None
 
 
 def apply_imputer(
@@ -149,7 +153,9 @@ def apply_imputer(
 
     Returns (filled_frame, degraded_mask, report). `degraded_mask` is True for any row missing
     a REQUIRED feature — those rows are still returned, because Prompt 2 forbids dropping
-    observations, but they carry the flag and must never become LIVE.
+    observations, but they carry the flag and must never become LIVE. `report.imputed_mask`
+    marks EVERY row that received a substituted value (required or not), so a caller can flag
+    FEATURE_DEGRADED on it; nothing is filled without that trace.
 
     Values are clipped to the training [min, max] by default. A serving value far outside the
     range the model was fitted on is an extrapolation, and extrapolating a tree ensemble
@@ -158,6 +164,7 @@ def apply_imputer(
     out = df.copy()
     rep = ImputeReport(rows=len(out))
     degraded = pd.Series(False, index=out.index)
+    imputed = pd.Series(False, index=out.index)
 
     for name, st in manifest.features.items():
         if name not in out.columns:
@@ -166,6 +173,7 @@ def apply_imputer(
             # but a REQUIRED one degrades every row.
             out[name] = st.median if st.median is not None else np.nan
             rep.imputed_counts[name] = len(out)
+            imputed |= st.median is not None
             if st.required:
                 degraded |= True
                 rep.missing_required[name] = len(out)
@@ -180,11 +188,13 @@ def apply_imputer(
         if n_miss and st.median is not None:
             s = s.fillna(st.median)          # TRAINING median, never the batch median
             rep.imputed_counts[name] = n_miss
+            imputed |= miss
         if clip_to_training_range and st.min is not None and st.max is not None:
             s = s.clip(lower=st.min, upper=st.max)
         out[name] = s
 
     rep.degraded_rows = int(degraded.sum())
+    rep.imputed_rows, rep.imputed_mask = int(imputed.sum()), imputed
     return out, degraded, rep
 
 

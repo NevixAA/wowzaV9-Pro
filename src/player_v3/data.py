@@ -94,6 +94,18 @@ def per90(num: pd.Series, minutes: pd.Series) -> pd.Series:
     return num / minutes.replace(0, np.nan) * 90.0
 
 
+def known_target(X: pd.DataFrame, col: str) -> tuple[np.ndarray, np.ndarray]:
+    """(y as float with NaN kept, mask of rows whose outcome is KNOWN). A missing outcome is not
+    'did not happen': callers AND the mask into their fit/calibration/evaluation masks
+    (Data Truth 2026-11-01; it used to be fillna(0))."""
+    v = pd.to_numeric(X[col], errors="coerce")
+    known = v.notna().to_numpy()
+    if not known.all():
+        print(f"[player_v3] {col}: {int((~known).sum()):,} row(s) with no recorded outcome - "
+              f"left out of fit, calibration and scoring")
+    return v.to_numpy(float), known
+
+
 def chrono_split(dates: pd.Series, train_end: str, valid_end: str, holdout_from: str):
     d = pd.to_datetime(dates)
     return (d < train_end), (d >= train_end) & (d <= valid_end), (d >= holdout_from)

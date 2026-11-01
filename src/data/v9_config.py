@@ -192,6 +192,12 @@ def leagues_of_type(competition_type: str) -> frozenset:
     return frozenset(e["name"] for e in entries if e.get("competition_type") == competition_type)
 
 
+def enabled_standard_leagues() -> tuple:
+    """Standard-track leagues that are enabled (v9 bets them), in registry order."""
+    std, en = standard_leagues(), set(enabled_leagues())
+    return tuple(e["name"] for e in league_registry().leagues() if e["name"] in std and e["name"] in en)
+
+
 def standard_leagues() -> frozenset:
     return frozenset(load().STANDARD_FORMAT_LEAGUES)
 
