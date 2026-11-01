@@ -1,0 +1,51 @@
+{
+  "generated_at": "2026-11-01T11:23:40.871759+00:00",
+  "rows": 51624,
+  "folds": [
+    "fold1: train 19,791 / val 3,498 / test 5,804  [2024-01-21 .. 2024-08-17]",
+    "fold2: train 24,723 / val 4,370 / test 5,763  [2024-08-18 .. 2025-02-24]",
+    "fold3: train 29,621 / val 5,235 / test 5,860  [2025-02-25 .. 2025-09-27]",
+    "fold4: train 34,596 / val 6,120 / test 5,751  [2025-09-28 .. 2026-04-08]"
+  ],
+  "phases": [
+    {
+      "phase": "baselines",
+      "seconds": 38.1,
+      "ok": true
+    },
+    {
+      "phase": "tournament",
+      "seconds": 365.5,
+      "ok": true
+    },
+    {
+      "phase": "ablation",
+      "seconds": 172.6,
+      "ok": true
+    },
+    {
+      "phase": "windows",
+      "seconds": 299.6,
+      "ok": true
+    },
+    {
+      "phase": "market",
+      "seconds": 10.7,
+      "ok": true
+    },
+    {
+      "phase": "leagues",
+      "seconds": 24.1,
+      "ok": true
+    },
+    {
+      "phase": "curves",
+      "seconds": 10.5,
+      "ok": true
+    }
+  ],
+  "data_version": "lab-data/2.0",
+  "identity_version": "pro-identity-1.0+identity/1.0",
+  "season_calendar_version": "season-calendar/1.0",
+  "failed_phases": []
+}
