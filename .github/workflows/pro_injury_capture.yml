@@ -34,7 +34,13 @@ jobs:
           repository: NevixAA/wowza-betting
           path: _v9
           fetch-depth: 1
-          sparse-checkout: config.py
+          # v9's config.py derives its league tables from config/leagues.json via src/ (registry,
+          # 2026-11-01) - config.py alone can no longer be executed.
+          sparse-checkout: |
+            /config.py
+            /config/
+            /src/
+          sparse-checkout-cone-mode: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
