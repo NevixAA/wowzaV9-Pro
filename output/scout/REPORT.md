@@ -1,4 +1,4 @@
-# League scout — 2026-11-01T11:22 UTC
+# League scout — 2026-11-01T16:14 UTC
 
 Results stored: 242,836 · fixtures priced: 4,606 · model frozen: 4,565
 
@@ -58,10 +58,10 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 1 | South-Korea K League 2 | ou25 | 32 | COLLECTING | +0.035 | 1.68 | +90.0% (1) |
 | 1 | Poland I Liga | ou35 | 32 | COLLECTING | -0.070 | -1.49 | -44.0% (5) |
 | 1 | China League One | ou35 | 32 | COLLECTING | +0.089 | -0.74 | -16.3% (6) |
-| 1 | South-Korea K League 2 | ou35 | 32 | COLLECTING | +0.064 | 0.84 | +33.0% (1) |
+| 1 | South-Korea K League 2 | ou35 | 32 | COLLECTING | +0.063 | 0.84 | +33.0% (1) |
 | 1 | Poland I Liga | btts | 32 | COLLECTING | +0.050 | -0.89 | +85.0% (2) |
 | 1 | China League One | btts | 32 | COLLECTING | -0.001 | 0.27 | -9.2% (4) |
-| 1 | South-Korea K League 2 | btts | 32 | COLLECTING | -0.004 | 0.26 | – |
+| 1 | South-Korea K League 2 | btts | 32 | COLLECTING | -0.005 | 0.28 | – |
 | 1 | Austria 2. Liga | ou15 | 31 | COLLECTING | +0.001 | -1.32 | -100.0% (4) |
 | 1 | Austria 2. Liga | ou25 | 31 | COLLECTING | +0.002 | -1.09 | -26.9% (7) |
 | 1 | Austria 2. Liga | ou35 | 31 | COLLECTING | +0.019 | -0.53 | -20.2% (6) |
