@@ -269,14 +269,15 @@ def _parse_stats(fx: dict, teams: list, league: str) -> dict | None:
 
 def _league_seasons(seasons, league: str, today: str) -> list[str]:
     """Seasons to collect for one league. 'current' = that league's OWN live API-Football season
-    (src/data/season_calendar); an explicit year is kept as given (backfills). The default used to
+    (v9's canonical resolver via src/data/v9_config - Pro's season_calendar only covers the model
+    leagues); an explicit year is kept as given (backfills). The default used to
     be the literal '2026' for every league, so J1 (live season 2027) was never collected
     (Data Truth audit findings 34, 50). No calendar entry -> nothing for 'current'."""
-    from src.data import season_calendar as SC
+    from src.data import v9_config
     out = []
     for s in seasons:
         if str(s).lower() == "current":
-            cur = SC.api_football_season(league, today)
+            cur = v9_config.api_season(league, today)
             if cur:
                 out.append(cur)
             else:

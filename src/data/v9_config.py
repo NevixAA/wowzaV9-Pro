@@ -112,6 +112,20 @@ def league_ids() -> dict:
     return dict(load().API_FOOTBALL_IDS)
 
 
+def api_season(league: str, when) -> str | None:
+    """API-Football season for `league` on date `when`, by v9's CANONICAL resolver
+    (config/leagues.json + auto_leagues.json season rules; the module v9's config imported).
+    None when v9 cannot resolve it. This covers every league v9 knows - top flights and European
+    cups included - where Pro's own season calendar only has the model leagues, so collectors
+    using it skipped the Premier League, La Liga, Champions League... (Data Truth audit, found
+    validating the finding-34 fix)."""
+    sr = getattr(load(), "_season_resolver", None)
+    if sr is None:
+        return None
+    s = sr.resolve_api_season(league, str(when)[:10])
+    return s if sr.is_known(s) else None
+
+
 def sport_keys() -> dict:
     """{league name: OddsAPI sport key}."""
     return dict(getattr(load(), "ODDS_API_SPORT_KEYS", {}) or {})

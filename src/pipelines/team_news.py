@@ -174,10 +174,10 @@ def collect(max_hours: float = DEFAULT_MAX_HOURS, dry_run: bool = False,
     # EACH league's own live API season (src/data/season_calendar), not the European July rule for
     # all: J1 (live season 2027) and every calendar-year league in Jan-Jun were asked for the wrong
     # season and got no injuries (Data Truth audit findings 51, 54). No calendar entry -> skipped.
-    from src.data import season_calendar as SC
+    from src.data import v9_config
     _today = now.tz_localize(None).strftime("%Y-%m-%d")
     for league, lid in league_ids.items():
-        season = SC.api_football_season(league, _today)
+        season = v9_config.api_season(league, _today)
         if not season:
             print(f"[team_news] {league}: no season calendar entry — injuries not fetched")
             continue
