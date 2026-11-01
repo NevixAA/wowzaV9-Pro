@@ -173,6 +173,6 @@ jobs:
           # table had never collected once, so no quota had been spent on it. A guess in an error
           # message is worse than no message, because it is trusted.
           echo "::error title=team_match_stats did not collect::The table is declared ACTIVE, so \
-          an empty one is a fault. Last collector output below; the run is chunked to 250 \
+          an empty one is a fault. Last collector output below; the run is chunked to 1000 \
           fixtures and resumes from what is already stored, so a timeout should not recur."
           tail -n 25 stats.txt 2>/dev/null || echo "(no collector output captured)"
