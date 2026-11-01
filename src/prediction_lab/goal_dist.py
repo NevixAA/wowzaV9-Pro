@@ -192,7 +192,7 @@ def main() -> int:
             r.update({"target": t, "approach": tag})
             rows.append(r)
     tab = pd.DataFrame(rows)
-    tab.to_csv(out / "goal_distribution_comparison.csv", index=False)
+    D.stamp(tab).to_csv(out / "goal_distribution_comparison.csv", index=False)
 
     print("\nSCORELINE MODEL vs FOUR SEPARATE CLASSIFIERS -- identical test fixtures")
     print(f"  {'target':<13}{'approach':<22}{'n':>8}{'logloss':>10}{'brier':>9}{'auc':>8}{'lift':>9}")
@@ -207,7 +207,7 @@ def main() -> int:
                   & sl.target.isin(("btts", "over15", "over25", "over35"))])
     cons = pd.DataFrame([{"approach": "binary_classifiers", **consistency_violations(wb)},
                          {"approach": "bipoisson_dc", **consistency_violations(wd)}])
-    cons.to_csv(out / "consistency_violations.csv", index=False)
+    D.stamp(cons).to_csv(out / "consistency_violations.csv", index=False)
     print("\nIMPOSSIBLE PROBABILITY ORDERINGS (share of fixtures):")
     print(cons.to_string(index=False))
     print("  A scoreline model cannot produce these; they are sums over nested sets of one matrix.")

@@ -73,6 +73,24 @@ FAMILIES = ("BASE", "FORM", "SHOTS", "SOT", "CORNERS", "DISCIPLINE", "STRENGTH",
 # not missing metadata about the old information. Opt in with FAMILIES if testing that further.
 FOOTBALL_FAMILIES = tuple(f for f in FAMILIES if f not in ("MARKET", "EARLY"))
 
+# R2 finding 26 (2026-11-01): EARLY was computed on an Jul-Jun bucket that is wrong for calendar-year
+# leagues. It is now computed on the league-aware `league_season`, but it stays OUT of every default
+# family set until the season-start study is re-run on data version 2.0 and the owner reviews it.
+# tests/test_season_calendar.py fails if EARLY enters FOOTBALL_FAMILIES.
+EARLY_STATUS = "INACTIVE_PENDING_REBUILD"
+
+
+def season_key(d: pd.DataFrame) -> pd.Series:
+    """The season a row belongs to. League-aware `league_season` where the calendar was consulted;
+    a row whose resolution was ATTEMPTED and failed (SEASON_UNKNOWN) gets None -- never a guessed
+    bucket. Rows that never went through the calendar (no `season_status`, e.g. scout candidate
+    leagues built outside load_fixtures) keep the legacy chronological bucket."""
+    if "league_season" not in d.columns:
+        return d["season_label"]
+    attempted = (d["season_status"].notna() if "season_status" in d.columns
+                 else d["league_season"].notna())
+    return d["league_season"].where(attempted, d["season_label"])
+
 
 def _prior_mean_by_date(d: pd.DataFrame, group: str, value: str) -> pd.Series:
     """Mean of `value` within `group` over STRICTLY EARLIER DATES. Never the same day.
@@ -193,6 +211,7 @@ def _early_season(long: pd.DataFrame) -> pd.DataFrame:
     but a per-league season calendar would sharpen them, and that is a collection change.
     """
     d = long.sort_values(["team", "date"], kind="mergesort").copy()
+    d["season_label"] = season_key(d)          # league-aware (R2); see season_key
     g = d.groupby("team", sort=False)
     prev_season = g["season_label"].shift(1)
     prev_league = g["league"].shift(1)
@@ -323,7 +342,7 @@ def build(fx: pd.DataFrame) -> pd.DataFrame:
     out["dow"] = out["date"].dt.dayofweek
     out["is_weekend"] = out["dow"].isin([5, 6]).astype(int)
     # Season stage: where in its own season bucket the fixture sits, 0..1.
-    grp = out.groupby(["league", "season_label"])["date"]
+    grp = out.assign(_season=season_key(out)).groupby(["league", "_season"])["date"]
     out["season_stage"] = ((out["date"] - grp.transform("min")).dt.days
                            / (grp.transform("max") - grp.transform("min")).dt.days.replace(0, np.nan))
 

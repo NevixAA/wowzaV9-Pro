@@ -803,13 +803,16 @@ def _cross_doc(cv: dict) -> str:
 def main() -> int:
     out = D.out_dir()
     v, cv = build_verdicts(), build_cross_verdicts()
+    v["versions"] = D.version_stamp()
+    cv["versions"] = D.version_stamp()
     (out / "verdicts.json").write_text(json.dumps(v, indent=2, default=str), encoding="utf-8")
     (out / "cross_market_verdicts.json").write_text(json.dumps(cv, indent=2, default=str),
                                                     encoding="utf-8")
     (out / "verdicts.txt").write_text(_verdict_block(v), encoding="utf-8")
     (out / "cross_market_verdicts.txt").write_text(_verdict_block(cv), encoding="utf-8")
 
-    docs = cfg.BASE_DIR / "docs"
+    # Data version 2.0 documents live beside, not over, the 1.0 ones (R2: never mutate old results).
+    docs = cfg.BASE_DIR / "docs" / "pure_prediction_data_v2"
     docs.mkdir(parents=True, exist_ok=True)
     (docs / "PURE_PREDICTION_DATA_INVENTORY.md").write_text(_inventory_doc(), encoding="utf-8")
     (docs / "PURE_PREDICTION_RESEARCH_REPORT.md").write_text(_main_doc(v), encoding="utf-8")

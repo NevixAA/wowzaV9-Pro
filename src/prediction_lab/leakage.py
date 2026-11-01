@@ -148,8 +148,8 @@ def main() -> int:
     df = F.build(fx)
     r = audit(fx, df, verbose=True)
     out = D.out_dir()
-    r["perturbation"].to_csv(out / "leakage_perturbation.csv", index=False)
-    r["tripwire"].to_csv(out / "leakage_single_feature_auc.csv", index=False)
+    D.stamp(r["perturbation"]).to_csv(out / "leakage_perturbation.csv", index=False)
+    D.stamp(r["tripwire"]).to_csv(out / "leakage_single_feature_auc.csv", index=False)
     print(f"\n[leakage] wrote leakage_perturbation.csv, leakage_single_feature_auc.csv")
     return 0 if r["safe"] else 1
 

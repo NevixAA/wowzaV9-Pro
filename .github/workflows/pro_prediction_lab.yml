@@ -19,7 +19,9 @@ on:
   # next Monday (the goal-distribution step failed two Mondays running before anyone saw it).
   push:
     branches: [main]
-    paths: ['src/prediction_lab/**', '.github/workflows/pro_prediction_lab.yml']
+    paths: ['src/prediction_lab/**', 'src/data/canonical_identity.py', 'src/data/season_calendar.py',
+            'registry/identity/**', 'registry/league_season_calendar.json',
+            '.github/workflows/pro_prediction_lab.yml']
   workflow_dispatch:
     inputs:
       phases:
@@ -40,12 +42,14 @@ jobs:
     timeout-minutes: 330
     steps:
       - uses: actions/checkout@v4
+        id: checkout
         with:
           fetch-depth: 0
 
       # v9's history lives in its repo. Read it from a checkout rather than raw HTTP: unauthenticated
       # raw.githubusercontent rate-limits, and Pro's first live run died on a 429.
       - name: Check out v9 (read-only source of history)
+        id: checkout_v9
         uses: actions/checkout@v4
         with:
           repository: NevixAA/wowza-betting
@@ -53,46 +57,64 @@ jobs:
           fetch-depth: 1
 
       - uses: actions/setup-python@v5
+        id: setup_python
         with:
           python-version: "3.11"
           cache: pip
 
+      # Explicit test dependencies (R2 finding 27): pytest comes from requirements.txt on purpose.
       - name: Install
+        id: install
         run: |
           python -m pip install -q --upgrade pip
-          pip install -q pandas numpy scipy scikit-learn pyarrow lightgbm requests
+          pip install -q -r requirements.txt lightgbm
 
-      - name: Build dataset and prove it cannot see the future
+      - name: Lab contract tests (identity, season calendar, run status, paths)
+        id: tests
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: python -m pytest tests/test_lab_identity.py tests/test_season_calendar.py tests/test_run_status.py tests/test_prediction_lab_paths.py -q
+
+      # Data version 2.0: canonical identity + league-aware seasons. Outputs land in
+      # output/pure_prediction/data_v2/ -- the data 1.0 files are never overwritten.
+      - name: Build dataset, reconcile identity, prove it cannot see the future
+        id: dataset
         env:
           V9_LOCAL: ${{ github.workspace }}/_v9
         run: |
+          python -m src.prediction_lab.data --reconcile --write
           python -m src.prediction_lab.data --inventory --write
           python -m src.prediction_lab.leakage
 
       # Every later phase depends on the dataset being clean, so the leakage step above is NOT
       # allowed to fail soft -- it exits non-zero and the job stops.
       - name: Match-level experiments
+        id: experiments
         env:
           V9_LOCAL: ${{ github.workspace }}/_v9
           PHASES: ${{ github.event.inputs.phases || 'all' }}
         run: python -m src.prediction_lab.run $PHASES
 
       - name: Goal-distribution comparison
+        id: goal_dist
         env:
           V9_LOCAL: ${{ github.workspace }}/_v9
         run: python -m src.prediction_lab.goal_dist
 
       - name: Player goalscorer research
+        id: player_goals
         env:
           V9_LOCAL: ${{ github.workspace }}/_v9
         run: python -m src.prediction_lab.player_goals || echo "::warning::player track skipped"
 
       - name: Cross-market signal research
+        id: cross_market
         env:
           V9_LOCAL: ${{ github.workspace }}/_v9
         run: python -m src.prediction_lab.cross_market
 
       - name: Reports and verdicts
+        id: report
         env:
           V9_LOCAL: ${{ github.workspace }}/_v9
         run: python -m src.prediction_lab.report
@@ -100,49 +122,80 @@ jobs:
       # Stage per file, never `git add -A`. A missing artifact must not abort the commit and take
       # every other result down with it -- and `git add -f a b missing` stages NOTHING at all.
       - name: Commit results
+        id: commit
         run: |
           git config user.name "wowza-bot"
           git config user.email "bot@users.noreply.github.com"
           for f in \
-            output/pure_prediction/data_inventory.csv \
-            output/pure_prediction/leakage_perturbation.csv \
-            output/pure_prediction/leakage_single_feature_auc.csv \
-            output/pure_prediction/target_performance.csv \
-            output/pure_prediction/model_comparison.csv \
-            output/pure_prediction/feature_ablation.csv \
-            output/pure_prediction/time_ablation.csv \
-            output/pure_prediction/market_ablation.csv \
-            output/pure_prediction/league_performance.csv \
-            output/pure_prediction/learning_curves.csv \
-            output/pure_prediction/chronological_folds.csv \
-            output/pure_prediction/confidence_calibration.csv \
-            output/pure_prediction/confidence_topk.csv \
-            output/pure_prediction/goal_distribution_comparison.csv \
-            output/pure_prediction/consistency_violations.csv \
-            output/pure_prediction/player_goalscorer_performance.csv \
-            output/pure_prediction/player_match_interactions.csv \
-            output/pure_prediction/player_v9_column_check.csv \
-            output/pure_prediction/cross_market_matrix.csv \
-            output/pure_prediction/conditional_outcomes.csv \
-            output/pure_prediction/stratified_control.csv \
-            output/pure_prediction/agreement_analysis.csv \
-            output/pure_prediction/disagreement_analysis.csv \
-            output/pure_prediction/prediction_correlation.csv \
-            output/pure_prediction/error_correlation.csv \
-            output/pure_prediction/meta_model_comparison.csv \
-            output/pure_prediction/cross_market_lr_tests.csv \
-            output/pure_prediction/cross_market_discoveries.csv \
-            output/pure_prediction/research_manifest.json \
-            output/pure_prediction/verdicts.json \
-            output/pure_prediction/verdicts.txt \
-            output/pure_prediction/cross_market_verdicts.json \
-            output/pure_prediction/cross_market_verdicts.txt \
-            docs/PURE_PREDICTION_RESEARCH_REPORT.md \
-            docs/PURE_PREDICTION_DATA_INVENTORY.md \
-            docs/CROSS_MARKET_SIGNAL_RESEARCH.md ; do
+            output/pure_prediction/data_v2/data_inventory.csv \
+            output/pure_prediction/data_v2/leakage_perturbation.csv \
+            output/pure_prediction/data_v2/leakage_single_feature_auc.csv \
+            output/pure_prediction/data_v2/target_performance.csv \
+            output/pure_prediction/data_v2/model_comparison.csv \
+            output/pure_prediction/data_v2/feature_ablation.csv \
+            output/pure_prediction/data_v2/time_ablation.csv \
+            output/pure_prediction/data_v2/market_ablation.csv \
+            output/pure_prediction/data_v2/league_performance.csv \
+            output/pure_prediction/data_v2/learning_curves.csv \
+            output/pure_prediction/data_v2/chronological_folds.csv \
+            output/pure_prediction/data_v2/confidence_calibration.csv \
+            output/pure_prediction/data_v2/confidence_topk.csv \
+            output/pure_prediction/data_v2/goal_distribution_comparison.csv \
+            output/pure_prediction/data_v2/consistency_violations.csv \
+            output/pure_prediction/data_v2/player_goalscorer_performance.csv \
+            output/pure_prediction/data_v2/player_match_interactions.csv \
+            output/pure_prediction/data_v2/player_v9_column_check.csv \
+            output/pure_prediction/data_v2/cross_market_matrix.csv \
+            output/pure_prediction/data_v2/conditional_outcomes.csv \
+            output/pure_prediction/data_v2/stratified_control.csv \
+            output/pure_prediction/data_v2/agreement_analysis.csv \
+            output/pure_prediction/data_v2/disagreement_analysis.csv \
+            output/pure_prediction/data_v2/prediction_correlation.csv \
+            output/pure_prediction/data_v2/error_correlation.csv \
+            output/pure_prediction/data_v2/meta_model_comparison.csv \
+            output/pure_prediction/data_v2/cross_market_lr_tests.csv \
+            output/pure_prediction/data_v2/cross_market_discoveries.csv \
+            output/pure_prediction/data_v2/research_manifest.json \
+            output/pure_prediction/data_v2/verdicts.json \
+            output/pure_prediction/data_v2/verdicts.txt \
+            output/pure_prediction/data_v2/cross_market_verdicts.json \
+            output/pure_prediction/data_v2/cross_market_verdicts.txt \
+            docs/pure_prediction_data_v2/PURE_PREDICTION_RESEARCH_REPORT.md \
+            docs/pure_prediction_data_v2/PURE_PREDICTION_DATA_INVENTORY.md \
+            docs/pure_prediction_data_v2/CROSS_MARKET_SIGNAL_RESEARCH.md \
+            output/pure_prediction/data_v2/identity_reconciliation.json \
+            output/pure_prediction/data_v2/identity_reconciliation_by_league.csv \
+            output/pure_prediction/data_v2/cross_market_manifest.json ; do
             [ -f "$f" ] && git add -f "$f" || echo "::warning::missing $f"
           done
           git diff --cached --quiet && echo "nothing changed" && exit 0
-          git commit -m "research(lab): weekly pure-prediction refresh"
+          git commit -m "research(lab): weekly pure-prediction refresh (data v2)"
           git pull --rebase --autostash origin main || true
           git push origin HEAD:main
+
+      # R2 finding 27: say WHY a run is red -- INFRA / TEST / DATA / MODEL failure, or SUCCESS. Never
+      # a scientific verdict (those are verdicts.json / cross_market_verdicts.json).
+      - name: Classify run status
+        if: always()
+        run: |
+          python -m src.monitoring.run_status --workflow pro_prediction_lab \
+            --step "infra:checkout=${{ steps.checkout.outcome }}" \
+            --step "infra:checkout_v9=${{ steps.checkout_v9.outcome }}" \
+            --step "infra:setup_python=${{ steps.setup_python.outcome }}" \
+            --step "infra:install=${{ steps.install.outcome }}" \
+            --step "test:tests=${{ steps.tests.outcome }}" \
+            --step "data:dataset=${{ steps.dataset.outcome }}" \
+            --step "model:experiments=${{ steps.experiments.outcome }}" \
+            --step "model:goal_dist=${{ steps.goal_dist.outcome }}" \
+            --step "model:player_goals=${{ steps.player_goals.outcome }}" \
+            --step "model:cross_market=${{ steps.cross_market.outcome }}" \
+            --step "model:report=${{ steps.report.outcome }}" \
+            --step "infra:commit=${{ steps.commit.outcome }}"
+
+      - name: Upload run status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-status-pro_prediction_lab
+          path: output/run_status/pro_prediction_lab.json
+          if-no-files-found: warn
