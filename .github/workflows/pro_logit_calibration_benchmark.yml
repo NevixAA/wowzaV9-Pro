@@ -1,0 +1,106 @@
+name: Pro Logit Calibration BENCHMARK (research, branch-only)
+
+# Owner 2026-11-01: log-odds calibration challenger for every v9 team model. RESEARCH ONLY.
+# Champion = calibration_space "prob" (what serves), challenger = "logit", trained by v9's own
+# trainer (branch research/logit-calibration-2026-11) on the SAME four chronological blocks and
+# scored on the untouched newest-20% holdout, per track. Heavy work runs here, never on the laptop.
+# Results are committed to THIS research branch only (the job refuses main). v9 is read-only.
+# Triggered by a push of this file on the research branch, or by dispatch.
+
+on:
+  push:
+    branches: ['research/logit-calibration-2026-11']
+    paths: ['.github/workflows/pro_logit_calibration_benchmark.yml']
+  workflow_dispatch:
+    inputs:
+      v9_ref:
+        description: 'v9 ref with the calibration_space option'
+        required: true
+        default: 'research/logit-calibration-2026-11'
+
+concurrency:
+  group: pro-logit-calibration-benchmark
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  PYTHONIOENCODING: utf-8
+  V9_REF: ${{ inputs.v9_ref || 'research/logit-calibration-2026-11' }}
+
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        task: [std_ou25, nf_ou25, side_btts, side_over15, side_over35]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: ${{ env.V9_REF }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          pip install -r requirements.txt
+          pip install lightgbm
+      - name: Tests (calibration option)
+        run: python -m pytest tests/test_logit_calibration.py -q
+      - name: Benchmark ${{ matrix.task }}
+        run: python scripts/logit_calibration_benchmark.py --task ${{ matrix.task }} --out _out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bench-${{ matrix.task }}
+          retention-days: 14
+          path: _out/
+
+  analyse:
+    needs: bench
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Refuse main
+        run: |
+          case "${{ github.ref_name }}" in main|master) echo "::error::research branch only"; exit 1;; esac
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          path: _in
+          pattern: bench-*
+          merge-multiple: true
+      - name: Collect verdict
+        run: |
+          ls -la _in
+          python -m src.studies.logit_calibration _in | tee -a "$GITHUB_STEP_SUMMARY"
+          mkdir -p output/studies/logit_calibration/raw
+          cp _in/*.json output/studies/logit_calibration/raw/
+          gzip -c _in/std_ou25_holdout.csv > output/studies/logit_calibration/raw/std_ou25_holdout.csv.gz || true
+          for t in nf_ou25 side_btts side_over15 side_over35; do
+            [ -f "_in/${t}_holdout.csv" ] && gzip -c "_in/${t}_holdout.csv" > "output/studies/logit_calibration/raw/${t}_holdout.csv.gz"
+          done
+          echo "v9 ref ${V9_REF}" > output/studies/logit_calibration/raw/SOURCE.txt
+      - name: Commit to the research branch
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for p in output/studies/logit_calibration/verdict.csv output/studies/logit_calibration/per_league.csv \
+                   output/studies/logit_calibration/summary.json output/studies/logit_calibration/raw; do
+            [ -e "$p" ] && git add "$p"
+          done
+          git diff --staged --quiet && exit 0
+          git commit -m "research(logit calibration): CI benchmark $(date -u '+%Y-%m-%d %H:%M') v9 ${V9_REF}"
+          for i in 1 2 3; do git pull --rebase origin "${{ github.ref_name }}" && git push origin "HEAD:${{ github.ref_name }}" && exit 0; sleep 5; done
+          exit 1
