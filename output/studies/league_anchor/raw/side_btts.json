@@ -1,0 +1,1068 @@
+{
+ "task": "side_btts",
+ "target": "btts",
+ "n_features_champion": 42,
+ "n_features_A": 53,
+ "league_features": [
+  "lg_goals_pg_100",
+  "lg_o25_rate_100",
+  "lg_o15_rate_100",
+  "lg_o35_rate_100",
+  "lg_btts_rate_100",
+  "lg_goals_pg_300",
+  "lg_o25_rate_300",
+  "lg_o15_rate_300",
+  "lg_o35_rate_300",
+  "lg_btts_rate_300",
+  "lg_goals_pg_season"
+ ],
+ "price_sources": {
+  "standard": "standard_sidemarket_odds_history.csv first pre-kickoff",
+  "new_format": "newformat_odds_history.csv first pre-kickoff (best-of-books)"
+ },
+ "thresholds": {
+  "VALUABLE": 0.03,
+  "MARKSMAN": 0.08,
+  "SNIPER": 0.12,
+  "MIN_OVER": 1.75,
+  "MIN_UNDER": 1.75,
+  "NF_MAX_OU": 3.0,
+  "SIDE_VALUABLE": 0.04,
+  "SIDE_MARKSMAN": 0.08,
+  "SIDE_SNIPER": 0.1,
+  "SIDE_OVERROUND": 1.08,
+  "source": {
+   "VALUABLE_THRESHOLD": "0.03",
+   "MARKSMAN_THRESHOLD": "0.08",
+   "LEAGUE_SNIPER_CAP": "0.12"
+  }
+ },
+ "blocks": {
+  "base": [
+   48073,
+   "2019-02-22",
+   "2024-09-13"
+  ],
+  "calibration": [
+   6114,
+   "2024-09-14",
+   "2025-02-14"
+  ],
+  "meta": [
+   5988,
+   "2025-02-15",
+   "2025-08-16"
+  ],
+  "holdout": [
+   15143,
+   "2025-08-17",
+   "2026-10-30"
+  ]
+ },
+ "pooled_training": true,
+ "tracks": {
+  "standard": {
+   "price_coverage": 0.4397,
+   "negative_margin_rows_excluded": 1,
+   "holdout": {
+    "n": 8426,
+    "n_priced": 3704,
+    "matchdays": 325,
+    "dates": [
+     "2025-08-17",
+     "2026-10-28"
+    ],
+    "base_rate": 0.5452,
+    "all_rows": {
+     "CHAMPION": {
+      "n": 8426,
+      "log_loss": 0.68943,
+      "brier": 0.24815,
+      "calibration": {
+       "slope": 0.418,
+       "intercept": 0.121
+      },
+      "mean_p": 0.5365
+     },
+     "A_LEAGUE": {
+      "n": 8426,
+      "log_loss": 0.68966,
+      "brier": 0.24826,
+      "calibration": {
+       "slope": 0.317,
+       "intercept": 0.137
+      },
+      "mean_p": 0.5348
+     }
+    },
+    "league_level_all_rows": {
+     "leagues": 17,
+     "sd_actual": 0.0513,
+     "sd_p_CHAMPION": 0.0081,
+     "mean_abs_league_error_p_CHAMPION_pp": 3.61,
+     "sd_p_A_LEAGUE": 0.0062,
+     "mean_abs_league_error_p_A_LEAGUE_pp": 3.47
+    },
+    "delta_A_minus_CHAMPION_all_rows": {
+     "n": 8426,
+     "delta_ll": 0.00023,
+     "ci95": [
+      -0.00026,
+      0.0007
+     ]
+    },
+    "priced_rows": {
+     "CHAMPION": {
+      "n": 3704,
+      "log_loss": 0.69035,
+      "brier": 0.24861,
+      "calibration": {
+       "slope": -0.156,
+       "intercept": 0.219
+      },
+      "mean_p": 0.5352
+     },
+     "A_LEAGUE": {
+      "n": 3704,
+      "log_loss": 0.69029,
+      "brier": 0.24858,
+      "calibration": {
+       "slope": -0.253,
+       "intercept": 0.232
+      },
+      "mean_p": 0.5344
+     },
+     "B_CHAMP": {
+      "n": 3704,
+      "log_loss": 0.6837,
+      "brier": 0.24531,
+      "calibration": {
+       "slope": 0.914,
+       "intercept": 0.044
+      },
+      "mean_p": 0.5418
+     },
+     "B_LEAGUE": {
+      "n": 3704,
+      "log_loss": 0.68369,
+      "brier": 0.24531,
+      "calibration": {
+       "slope": 0.902,
+       "intercept": 0.041
+      },
+      "mean_p": 0.5431
+     },
+     "mkt": {
+      "n": 3704,
+      "log_loss": 0.68469,
+      "brier": 0.24581,
+      "calibration": {
+       "slope": 0.935,
+       "intercept": 0.097
+      },
+      "mean_p": 0.527
+     }
+    },
+    "league_level_priced": {
+     "leagues": 13,
+     "sd_actual": 0.0763,
+     "sd_p_CHAMPION": 0.0122,
+     "mean_abs_league_error_p_CHAMPION_pp": 5.22,
+     "sd_p_A_LEAGUE": 0.0074,
+     "mean_abs_league_error_p_A_LEAGUE_pp": 5.35,
+     "sd_p_B_CHAMP": 0.0368,
+     "mean_abs_league_error_p_B_CHAMP_pp": 4.06,
+     "sd_p_B_LEAGUE": 0.0406,
+     "mean_abs_league_error_p_B_LEAGUE_pp": 3.98,
+     "sd_p_mkt": 0.041,
+     "mean_abs_league_error_p_mkt_pp": 4.6
+    },
+    "residual_vs_market": {
+     "CHAMPION": {
+      "n_fit": 1830,
+      "n_score": 1874,
+      "ll_market": 0.6798,
+      "ll_market_plus_model": 0.68232,
+      "gain": -0.00251,
+      "gain_ci95": [
+       -0.00563,
+       0.00072
+      ],
+      "weight_on_model": -1.473
+     },
+     "A_LEAGUE": {
+      "n_fit": 1830,
+      "n_score": 1874,
+      "ll_market": 0.6798,
+      "ll_market_plus_model": 0.68241,
+      "gain": -0.00261,
+      "gain_ci95": [
+       -0.00607,
+       0.00049
+      ],
+      "weight_on_model": -1.614
+     }
+    },
+    "delta_vs_market": {
+     "CHAMPION": {
+      "n": 3704,
+      "delta_ll": 0.00566,
+      "ci95": [
+       0.00256,
+       0.0087
+      ]
+     },
+     "A_LEAGUE": {
+      "n": 3704,
+      "delta_ll": 0.00561,
+      "ci95": [
+       0.00224,
+       0.00869
+      ]
+     },
+     "B_CHAMP": {
+      "n": 3704,
+      "delta_ll": -0.00098,
+      "ci95": [
+       -0.00231,
+       0.00038
+      ]
+     },
+     "B_LEAGUE": {
+      "n": 3704,
+      "delta_ll": -0.001,
+      "ci95": [
+       -0.00237,
+       0.00037
+      ]
+     }
+    },
+    "tips": {
+     "CHAMPION": {
+      "tips": 1360,
+      "split": {
+       "YES": 1360
+      },
+      "tiers": {
+       "VALUABLE": 912,
+       "MARKSMAN": 243,
+       "SNIPER": 205
+      },
+      "hit": 0.4971,
+      "breakeven": 0.5042,
+      "units": -16.06,
+      "roi": -0.0118,
+      "roi_ci95": [
+       -0.06297,
+       0.0368
+      ]
+     },
+     "A_LEAGUE": {
+      "tips": 1357,
+      "split": {
+       "YES": 1357
+      },
+      "tiers": {
+       "VALUABLE": 892,
+       "MARKSMAN": 267,
+       "SNIPER": 198
+      },
+      "hit": 0.4952,
+      "breakeven": 0.5031,
+      "units": -17.78,
+      "roi": -0.0131,
+      "roi_ci95": [
+       -0.06614,
+       0.04366
+      ]
+     },
+     "B_CHAMP": {
+      "tips": 784,
+      "split": {
+       "YES": 784
+      },
+      "tiers": {
+       "VALUABLE": 772,
+       "MARKSMAN": 12
+      },
+      "hit": 0.5842,
+      "breakeven": 0.5528,
+      "units": 47.33,
+      "roi": 0.0604,
+      "roi_ci95": [
+       0.00013,
+       0.1196
+      ]
+     },
+     "B_LEAGUE": {
+      "tips": 868,
+      "split": {
+       "YES": 868
+      },
+      "tiers": {
+       "VALUABLE": 848,
+       "MARKSMAN": 20
+      },
+      "hit": 0.5783,
+      "breakeven": 0.5566,
+      "units": 36.84,
+      "roi": 0.0424,
+      "roi_ci95": [
+       -0.01569,
+       0.09811
+      ]
+     }
+    }
+   },
+   "live_from_2026_09_01": {
+    "n": 1065,
+    "n_priced": 714,
+    "matchdays": 49,
+    "dates": [
+     "2026-09-01",
+     "2026-10-28"
+    ],
+    "base_rate": 0.5596,
+    "all_rows": {
+     "CHAMPION": {
+      "n": 1065,
+      "log_loss": 0.68468,
+      "brier": 0.2458,
+      "calibration": {
+       "slope": 1.178,
+       "intercept": 0.051
+      },
+      "mean_p": 0.5401
+     },
+     "A_LEAGUE": {
+      "n": 1065,
+      "log_loss": 0.68701,
+      "brier": 0.24695,
+      "calibration": {
+       "slope": 0.544,
+       "intercept": 0.16
+      },
+      "mean_p": 0.5363
+     }
+    },
+    "league_level_all_rows": {
+     "leagues": 15,
+     "sd_actual": 0.098,
+     "sd_p_CHAMPION": 0.0134,
+     "mean_abs_league_error_p_CHAMPION_pp": 7.33,
+     "sd_p_A_LEAGUE": 0.0099,
+     "mean_abs_league_error_p_A_LEAGUE_pp": 7.4
+    },
+    "delta_A_minus_CHAMPION_all_rows": {
+     "n": 1065,
+     "delta_ll": 0.00233,
+     "ci95": [
+      0.00078,
+      0.00402
+     ]
+    },
+    "priced_rows": {
+     "CHAMPION": {
+      "n": 714,
+      "log_loss": 0.68319,
+      "brier": 0.24506,
+      "calibration": {
+       "slope": 1.319,
+       "intercept": 0.054
+      },
+      "mean_p": 0.54
+     },
+     "A_LEAGUE": {
+      "n": 714,
+      "log_loss": 0.68525,
+      "brier": 0.24608,
+      "calibration": {
+       "slope": 0.93,
+       "intercept": 0.132
+      },
+      "mean_p": 0.5357
+     },
+     "B_CHAMP": {
+      "n": 714,
+      "log_loss": 0.68179,
+      "brier": 0.24438,
+      "calibration": {
+       "slope": 0.72,
+       "intercept": 0.084
+      },
+      "mean_p": 0.5623
+     },
+     "B_LEAGUE": {
+      "n": 714,
+      "log_loss": 0.68055,
+      "brier": 0.24379,
+      "calibration": {
+       "slope": 0.81,
+       "intercept": 0.052
+      },
+      "mean_p": 0.5652
+     },
+     "mkt": {
+      "n": 714,
+      "log_loss": 0.67988,
+      "brier": 0.24345,
+      "calibration": {
+       "slope": 0.98,
+       "intercept": 0.085
+      },
+      "mean_p": 0.5459
+     }
+    },
+    "league_level_priced": {
+     "leagues": 11,
+     "sd_actual": 0.0906,
+     "sd_p_CHAMPION": 0.0137,
+     "mean_abs_league_error_p_CHAMPION_pp": 6.84,
+     "sd_p_A_LEAGUE": 0.0082,
+     "mean_abs_league_error_p_A_LEAGUE_pp": 7.09,
+     "sd_p_B_CHAMP": 0.0328,
+     "mean_abs_league_error_p_B_CHAMP_pp": 5.72,
+     "sd_p_B_LEAGUE": 0.0373,
+     "mean_abs_league_error_p_B_LEAGUE_pp": 5.54,
+     "sd_p_mkt": 0.0378,
+     "mean_abs_league_error_p_mkt_pp": 5.93
+    },
+    "residual_vs_market": {
+     "CHAMPION": {
+      "n_fit": 351,
+      "n_score": 363,
+      "ll_market": 0.6757,
+      "ll_market_plus_model": 0.67495,
+      "gain": 0.00075,
+      "gain_ci95": [
+       -0.00307,
+       0.00585
+      ],
+      "weight_on_model": 0.824
+     },
+     "A_LEAGUE": {
+      "n_fit": 351,
+      "n_score": 363,
+      "ll_market": 0.6757,
+      "ll_market_plus_model": 0.67537,
+      "gain": 0.00033,
+      "gain_ci95": [
+       -0.0011,
+       0.00205
+      ],
+      "weight_on_model": 0.328
+     }
+    },
+    "delta_vs_market": {
+     "CHAMPION": {
+      "n": 714,
+      "delta_ll": 0.0033,
+      "ci95": [
+       -0.00471,
+       0.01096
+      ]
+     },
+     "A_LEAGUE": {
+      "n": 714,
+      "delta_ll": 0.00537,
+      "ci95": [
+       -0.003,
+       0.0127
+      ]
+     },
+     "B_CHAMP": {
+      "n": 714,
+      "delta_ll": 0.0019,
+      "ci95": [
+       -0.00129,
+       0.00497
+      ]
+     },
+     "B_LEAGUE": {
+      "n": 714,
+      "delta_ll": 0.00066,
+      "ci95": [
+       -0.00237,
+       0.00361
+      ]
+     }
+    },
+    "tips": {
+     "CHAMPION": {
+      "tips": 132,
+      "split": {
+       "YES": 132
+      },
+      "tiers": {
+       "VALUABLE": 93,
+       "MARKSMAN": 24,
+       "SNIPER": 15
+      },
+      "hit": 0.5,
+      "breakeven": 0.5159,
+      "units": -4.26,
+      "roi": -0.0323,
+      "roi_ci95": [
+       -0.20143,
+       0.179
+      ]
+     },
+     "A_LEAGUE": {
+      "tips": 118,
+      "split": {
+       "YES": 118
+      },
+      "tiers": {
+       "VALUABLE": 84,
+       "MARKSMAN": 22,
+       "SNIPER": 12
+      },
+      "hit": 0.5,
+      "breakeven": 0.5107,
+      "units": -3.0,
+      "roi": -0.0254,
+      "roi_ci95": [
+       -0.18854,
+       0.20675
+      ]
+     },
+     "B_CHAMP": {
+      "tips": 102,
+      "split": {
+       "YES": 102
+      },
+      "tiers": {
+       "VALUABLE": 101,
+       "MARKSMAN": 1
+      },
+      "hit": 0.5882,
+      "breakeven": 0.5762,
+      "units": 2.22,
+      "roi": 0.0218,
+      "roi_ci95": [
+       -0.11184,
+       0.18095
+      ]
+     },
+     "B_LEAGUE": {
+      "tips": 116,
+      "split": {
+       "YES": 116
+      },
+      "tiers": {
+       "VALUABLE": 116
+      },
+      "hit": 0.6379,
+      "breakeven": 0.5838,
+      "units": 11.79,
+      "roi": 0.1016,
+      "roi_ci95": [
+       -0.05962,
+       0.28462
+      ]
+     }
+    }
+   }
+  },
+  "new_format": {
+   "price_coverage": 0.4368,
+   "negative_margin_rows_excluded": 5,
+   "holdout": {
+    "n": 6717,
+    "n_priced": 2929,
+    "matchdays": 381,
+    "dates": [
+     "2025-08-17",
+     "2026-10-30"
+    ],
+    "base_rate": 0.5602,
+    "all_rows": {
+     "CHAMPION": {
+      "n": 6717,
+      "log_loss": 0.68561,
+      "brier": 0.24625,
+      "calibration": {
+       "slope": 0.989,
+       "intercept": 0.102
+      },
+      "mean_p": 0.5356
+     },
+     "A_LEAGUE": {
+      "n": 6717,
+      "log_loss": 0.68502,
+      "brier": 0.24595,
+      "calibration": {
+       "slope": 1.32,
+       "intercept": 0.056
+      },
+      "mean_p": 0.5352
+     }
+    },
+    "league_level_all_rows": {
+     "leagues": 15,
+     "sd_actual": 0.0597,
+     "sd_p_CHAMPION": 0.0104,
+     "mean_abs_league_error_p_CHAMPION_pp": 4.84,
+     "sd_p_A_LEAGUE": 0.0102,
+     "mean_abs_league_error_p_A_LEAGUE_pp": 4.76
+    },
+    "delta_A_minus_CHAMPION_all_rows": {
+     "n": 6717,
+     "delta_ll": -0.00059,
+     "ci95": [
+      -0.0011,
+      -8e-05
+     ]
+    },
+    "priced_rows": {
+     "CHAMPION": {
+      "n": 2929,
+      "log_loss": 0.68381,
+      "brier": 0.24535,
+      "calibration": {
+       "slope": 0.942,
+       "intercept": 0.174
+      },
+      "mean_p": 0.5343
+     },
+     "A_LEAGUE": {
+      "n": 2929,
+      "log_loss": 0.68325,
+      "brier": 0.24507,
+      "calibration": {
+       "slope": 1.157,
+       "intercept": 0.139
+      },
+      "mean_p": 0.5356
+     },
+     "B_CHAMP": {
+      "n": 2929,
+      "log_loss": 0.6765,
+      "brier": 0.24177,
+      "calibration": {
+       "slope": 0.717,
+       "intercept": 0.139
+      },
+      "mean_p": 0.5572
+     },
+     "B_LEAGUE": {
+      "n": 2929,
+      "log_loss": 0.67643,
+      "brier": 0.24174,
+      "calibration": {
+       "slope": 0.72,
+       "intercept": 0.138
+      },
+      "mean_p": 0.5571
+     },
+     "mkt": {
+      "n": 2929,
+      "log_loss": 0.67852,
+      "brier": 0.24277,
+      "calibration": {
+       "slope": 0.742,
+       "intercept": 0.197
+      },
+      "mean_p": 0.5364
+     }
+    },
+    "league_level_priced": {
+     "leagues": 12,
+     "sd_actual": 0.0571,
+     "sd_p_CHAMPION": 0.0119,
+     "mean_abs_league_error_p_CHAMPION_pp": 5.5,
+     "sd_p_A_LEAGUE": 0.0108,
+     "mean_abs_league_error_p_A_LEAGUE_pp": 5.37,
+     "sd_p_B_CHAMP": 0.056,
+     "mean_abs_league_error_p_B_CHAMP_pp": 3.02,
+     "sd_p_B_LEAGUE": 0.0561,
+     "mean_abs_league_error_p_B_LEAGUE_pp": 3.03,
+     "sd_p_mkt": 0.0551,
+     "mean_abs_league_error_p_mkt_pp": 4.12
+    },
+    "residual_vs_market": {
+     "CHAMPION": {
+      "n_fit": 1454,
+      "n_score": 1475,
+      "ll_market": 0.676,
+      "ll_market_plus_model": 0.67616,
+      "gain": -0.00016,
+      "gain_ci95": [
+       -0.00104,
+       0.00076
+      ],
+      "weight_on_model": 0.372
+     },
+     "A_LEAGUE": {
+      "n_fit": 1454,
+      "n_score": 1475,
+      "ll_market": 0.676,
+      "ll_market_plus_model": 0.6761,
+      "gain": -0.0001,
+      "gain_ci95": [
+       -0.0011,
+       0.00096
+      ],
+      "weight_on_model": 0.474
+     }
+    },
+    "delta_vs_market": {
+     "CHAMPION": {
+      "n": 2929,
+      "delta_ll": 0.00529,
+      "ci95": [
+       -0.0003,
+       0.01056
+      ]
+     },
+     "A_LEAGUE": {
+      "n": 2929,
+      "delta_ll": 0.00473,
+      "ci95": [
+       -0.00108,
+       0.0101
+      ]
+     },
+     "B_CHAMP": {
+      "n": 2929,
+      "delta_ll": -0.00202,
+      "ci95": [
+       -0.00409,
+       -0.0
+      ]
+     },
+     "B_LEAGUE": {
+      "n": 2929,
+      "delta_ll": -0.00209,
+      "ci95": [
+       -0.00413,
+       -9e-05
+      ]
+     }
+    },
+    "tips": {
+     "CHAMPION": {
+      "tips": 972,
+      "split": {
+       "YES": 972
+      },
+      "tiers": {
+       "VALUABLE": 458,
+       "SNIPER": 346,
+       "MARKSMAN": 168
+      },
+      "hit": 0.5062,
+      "breakeven": 0.4741,
+      "units": 72.23,
+      "roi": 0.0743,
+      "roi_ci95": [
+       0.00106,
+       0.14805
+      ]
+     },
+     "A_LEAGUE": {
+      "tips": 1003,
+      "split": {
+       "YES": 1003
+      },
+      "tiers": {
+       "VALUABLE": 488,
+       "SNIPER": 355,
+       "MARKSMAN": 160
+      },
+      "hit": 0.5184,
+      "breakeven": 0.475,
+      "units": 95.5,
+      "roi": 0.0952,
+      "roi_ci95": [
+       0.02258,
+       0.16636
+      ]
+     },
+     "B_CHAMP": {
+      "tips": 1050,
+      "split": {
+       "YES": 1050
+      },
+      "tiers": {
+       "VALUABLE": 1050
+      },
+      "hit": 0.5905,
+      "breakeven": 0.5708,
+      "units": 54.98,
+      "roi": 0.0524,
+      "roi_ci95": [
+       -0.00232,
+       0.11294
+      ]
+     },
+     "B_LEAGUE": {
+      "tips": 1058,
+      "split": {
+       "YES": 1058
+      },
+      "tiers": {
+       "VALUABLE": 1058
+      },
+      "hit": 0.5832,
+      "breakeven": 0.571,
+      "units": 39.25,
+      "roi": 0.0371,
+      "roi_ci95": [
+       -0.02007,
+       0.10072
+      ]
+     }
+    }
+   },
+   "live_from_2026_09_01": {
+    "n": 794,
+    "n_priced": 429,
+    "matchdays": 56,
+    "dates": [
+     "2026-09-01",
+     "2026-10-30"
+    ],
+    "base_rate": 0.5831,
+    "all_rows": {
+     "CHAMPION": {
+      "n": 794,
+      "log_loss": 0.68752,
+      "brier": 0.24719,
+      "calibration": {
+       "slope": -0.675,
+       "intercept": 0.435
+      },
+      "mean_p": 0.5364
+     },
+     "A_LEAGUE": {
+      "n": 794,
+      "log_loss": 0.6864,
+      "brier": 0.24664,
+      "calibration": {
+       "slope": -0.58,
+       "intercept": 0.423
+      },
+      "mean_p": 0.5372
+     }
+    },
+    "league_level_all_rows": {
+     "leagues": 12,
+     "sd_actual": 0.0778,
+     "sd_p_CHAMPION": 0.012,
+     "mean_abs_league_error_p_CHAMPION_pp": 8.0,
+     "sd_p_A_LEAGUE": 0.0116,
+     "mean_abs_league_error_p_A_LEAGUE_pp": 7.88
+    },
+    "delta_A_minus_CHAMPION_all_rows": {
+     "n": 794,
+     "delta_ll": -0.00112,
+     "ci95": [
+      -0.00247,
+      0.00021
+     ]
+    },
+    "priced_rows": {
+     "CHAMPION": {
+      "n": 429,
+      "log_loss": 0.68427,
+      "brier": 0.24557,
+      "calibration": {
+       "slope": -0.785,
+       "intercept": 0.544
+      },
+      "mean_p": 0.5388
+     },
+     "A_LEAGUE": {
+      "n": 429,
+      "log_loss": 0.68294,
+      "brier": 0.24491,
+      "calibration": {
+       "slope": -0.611,
+       "intercept": 0.518
+      },
+      "mean_p": 0.5392
+     },
+     "B_CHAMP": {
+      "n": 429,
+      "log_loss": 0.66833,
+      "brier": 0.23786,
+      "calibration": {
+       "slope": 0.723,
+       "intercept": 0.155
+      },
+      "mean_p": 0.5908
+     },
+     "B_LEAGUE": {
+      "n": 429,
+      "log_loss": 0.66833,
+      "brier": 0.23786,
+      "calibration": {
+       "slope": 0.723,
+       "intercept": 0.156
+      },
+      "mean_p": 0.5905
+     },
+     "mkt": {
+      "n": 429,
+      "log_loss": 0.67091,
+      "brier": 0.23916,
+      "calibration": {
+       "slope": 0.651,
+       "intercept": 0.252
+      },
+      "mean_p": 0.565
+     }
+    },
+    "league_level_priced": {
+     "leagues": 6,
+     "sd_actual": 0.0462,
+     "sd_p_CHAMPION": 0.0165,
+     "mean_abs_league_error_p_CHAMPION_pp": 9.6,
+     "sd_p_A_LEAGUE": 0.0155,
+     "mean_abs_league_error_p_A_LEAGUE_pp": 9.46,
+     "sd_p_B_CHAMP": 0.0611,
+     "mean_abs_league_error_p_B_CHAMP_pp": 5.27,
+     "sd_p_B_LEAGUE": 0.0613,
+     "mean_abs_league_error_p_B_LEAGUE_pp": 5.28,
+     "sd_p_mkt": 0.0766,
+     "mean_abs_league_error_p_mkt_pp": 8.14
+    },
+    "residual_vs_market": {
+     "CHAMPION": {
+      "n_fit": 213,
+      "n_score": 216,
+      "ll_market": 0.65781,
+      "ll_market_plus_model": 0.65416,
+      "gain": 0.00364,
+      "gain_ci95": [
+       0.00137,
+       0.00613
+      ],
+      "weight_on_model": -0.445
+     },
+     "A_LEAGUE": {
+      "n_fit": 213,
+      "n_score": 216,
+      "ll_market": 0.65781,
+      "ll_market_plus_model": 0.6545,
+      "gain": 0.00331,
+      "gain_ci95": [
+       0.00104,
+       0.00559
+      ],
+      "weight_on_model": -0.487
+     }
+    },
+    "delta_vs_market": {
+     "CHAMPION": {
+      "n": 429,
+      "delta_ll": 0.01336,
+      "ci95": [
+       0.00013,
+       0.02567
+      ]
+     },
+     "A_LEAGUE": {
+      "n": 429,
+      "delta_ll": 0.01202,
+      "ci95": [
+       -0.00183,
+       0.02514
+      ]
+     },
+     "B_CHAMP": {
+      "n": 429,
+      "delta_ll": -0.00258,
+      "ci95": [
+       -0.00911,
+       0.00469
+      ]
+     },
+     "B_LEAGUE": {
+      "n": 429,
+      "delta_ll": -0.00258,
+      "ci95": [
+       -0.00859,
+       0.00451
+      ]
+     }
+    },
+    "tips": {
+     "CHAMPION": {
+      "tips": 92,
+      "split": {
+       "YES": 92
+      },
+      "tiers": {
+       "VALUABLE": 45,
+       "SNIPER": 27,
+       "MARKSMAN": 20
+      },
+      "hit": 0.5,
+      "breakeven": 0.4853,
+      "units": 4.87,
+      "roi": 0.0529,
+      "roi_ci95": [
+       -0.16924,
+       0.29448
+      ]
+     },
+     "A_LEAGUE": {
+      "tips": 95,
+      "split": {
+       "YES": 95
+      },
+      "tiers": {
+       "VALUABLE": 52,
+       "SNIPER": 27,
+       "MARKSMAN": 16
+      },
+      "hit": 0.5158,
+      "breakeven": 0.4861,
+      "units": 7.32,
+      "roi": 0.0771,
+      "roi_ci95": [
+       -0.15184,
+       0.31683
+      ]
+     },
+     "B_CHAMP": {
+      "tips": 121,
+      "split": {
+       "YES": 121
+      },
+      "tiers": {
+       "VALUABLE": 121
+      },
+      "hit": 0.5372,
+      "breakeven": 0.5001,
+      "units": 11.38,
+      "roi": 0.094,
+      "roi_ci95": [
+       -0.10309,
+       0.30646
+      ]
+     },
+     "B_LEAGUE": {
+      "tips": 119,
+      "split": {
+       "YES": 119
+      },
+      "tiers": {
+       "VALUABLE": 119
+      },
+      "hit": 0.5546,
+      "breakeven": 0.5008,
+      "units": 14.13,
+      "roi": 0.1187,
+      "roi_ci95": [
+       -0.07245,
+       0.31616
+      ]
+     }
+    }
+   }
+  }
+ }
+}
