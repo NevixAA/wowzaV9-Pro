@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-31T11:12:09Z",
+  "generated_at": "2026-11-01T12:00:51Z",
   "calc_version": "1.0.0",
   "worst": "NO_NEW_DATA",
   "counts": {
@@ -7,14 +7,14 @@
     "PASS": 5
   },
   "settlements_fingerprint": {
-    "rows": 111936,
-    "latest_match": "2026-10-29",
+    "rows": 114299,
+    "latest_match": "2026-10-30",
     "earliest_match": "2025-08-02",
     "leagues": 24,
-    "fingerprint": "eb8af0c2ab1f7e82"
+    "fingerprint": "dab32f7e3422bdb9"
   },
   "last_genuine_learning_event": {
-    "date": "2026-10-25",
+    "date": "2026-11-01",
     "models_decided": [
       "btts",
       "ht_over05",
@@ -24,85 +24,64 @@
       "over35",
       "standard"
     ],
-    "evidence": "7 model(s) recorded a promote/reject decision on 2026-10-25"
+    "evidence": "7 model(s) recorded a promote/reject decision on 2026-11-01"
   },
   "checks": [
     {
       "model": "standard",
       "status": "PASS",
-      "why": "challenger trained and REJECTED \u2014 SHADOW_MORE: possibly better (delta -0.00088, CI [-0.00218, +0.00034]) but not proven: material_improvement, ci_excludes_zero. A rejection is a healthy learning outcome, not a failure.",
+      "why": "challenger trained and REJECTED \u2014 SHADOW_MORE: not qualified but a material gain is inside the CI \u2014 research shadow, never promotable: [standard] failed: material_improvement, ci_excludes_zero. A rejection is a healthy learning outcome, not a failure.",
       "model_artifact": "models/model_v9_standard.pkl",
-      "incumbent_changed_at": "2026-10-31T10:13:39Z",
+      "incumbent_changed_at": "2026-11-01T11:24:09Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-30",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": false,
-        "why": "SHADOW_MORE: possibly better (delta -0.00088, CI [-0.00218, +0.00034]) but not proven: material_improvement, ci_excludes_zero",
-        "rows": 21768,
+        "why": "SHADOW_MORE: not qualified but a material gain is inside the CI \u2014 research shadow, never promotable: [standard] failed: material_improvement, ci_excludes_zero",
+        "rows": 21940,
         "verdict": "SHADOW_MORE",
         "comparison_basis": "same_holdout",
-        "v91_gate": {
-          "available": true,
-          "status": "CHALLENGER",
-          "n": 4354,
-          "delta_log_loss": -0.000883,
-          "delta_brier": -0.000435,
-          "ci_log_loss": [
-            -0.002232,
-            0.000378
-          ],
-          "reasons": [
-            "ci_excludes_zero: 95% block-bootstrap CI [-0.002232, +0.000378] includes zero",
-            "material_improvement: delta -0.000883 vs required <= -0.001000",
-            "second_period: not run"
-          ],
-          "checks": {
-            "same_dataset": true,
-            "min_sample": true,
-            "log_loss_not_worse": true,
-            "brier_not_worse": true,
-            "ci_excludes_zero": false,
-            "material_improvement": false,
-            "calibration_held": true,
-            "prediction_canary": true,
-            "no_league_regression": true,
-            "second_period": false
-          },
-          "live_gate_promoted": false,
-          "live_gate_reason": "SHADOW_MORE: possibly better (delta -0.00088, CI [-0.00218, +0.00034]) but not proven: material_improvement, ci_excludes_zero",
-          "agrees_with_live_gate": true
-        },
-        "logloss_old": 0.68509,
-        "logloss_new": 0.684207,
-        "logloss_basis": "served_ensemble",
-        "legacy_mean_ll_old": 0.68802,
-        "legacy_mean_ll_new": 0.68698,
-        "legacy_rule_would_promote": true,
-        "legacy_rule_reason": "log loss 0.68802 -> 0.68698 (-0.00104), within the 0.03000 tolerance",
+        "gate_version": "PG-1.0",
+        "qualified": false,
+        "parked": true,
+        "evaluable_tracks": [
+          "standard"
+        ],
+        "logloss_old": 0.684744,
+        "logloss_new": 0.683827,
+        "logloss_basis": "served_ensemble_largest_track",
         "ll_ci": [
-          -0.002179,
-          0.000339
+          -0.00213,
+          0.00025
         ],
         "champion_version": "standard_20261018T080423Z_64313878",
-        "challenger_version": "standard_20261025T082022Z_3a405c51",
-        "retrain_batch_id": "rb_20261025T081424Z",
+        "challenger_version": "standard_20261101T111837Z_3562424e",
+        "retrain_batch_id": "rb_20261101T095533Z",
+        "prospective_review": {
+          "verdict": "SHADOW_MORE",
+          "candidate_version": "standard_20261025T082022Z_3a405c51",
+          "prospective_status": null,
+          "prospective_n": null,
+          "prospective_ll_delta": null,
+          "reason": "not promotable: qualified under gate none, not PG-1.0; kept as research shadow"
+        },
         "canary": {
           "available": true,
-          "n": 4354,
-          "std_old": 0.03558,
-          "std_new": 0.04247,
-          "spread_ratio": 1.194,
-          "mean_old": 0.53817,
-          "mean_new": 0.53836,
-          "frac_crossed_half": 0.1036,
-          "frac_moved_gt_10pp": 0.0002,
-          "max_abs_move": 0.1,
+          "n": 4388,
+          "std_old": 0.0357,
+          "std_new": 0.04109,
+          "spread_ratio": 1.151,
+          "mean_old": 0.5383,
+          "mean_new": 0.54122,
+          "frac_crossed_half": 0.0994,
+          "frac_moved_gt_10pp": 0.0,
+          "max_abs_move": 0.0995,
           "flags": []
         },
-        "at": "2026-10-25T08:20:23Z"
+        "at": "2026-11-01T11:18:37Z"
       }
     },
     {
@@ -110,326 +89,215 @@
       "status": "NO_NEW_DATA",
       "why": "only 0 new settled fixture(s) since the incumbent was built \u2014 too few to learn from. Healthy.",
       "model_artifact": "models/model_v9_newformat.pkl",
-      "incumbent_changed_at": "2026-10-31T10:13:39Z",
+      "incumbent_changed_at": "2026-11-01T11:24:09Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-30",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": null
     },
     {
       "model": "btts",
       "status": "PASS",
-      "why": "challenger trained and REJECTED \u2014 KEEP_CHAMPION: challenger not better: delta +0.000373 (0.68426 -> 0.68463); worse or tied keeps the champion. A rejection is a healthy learning outcome, not a failure.",
+      "why": "challenger trained and REJECTED \u2014 SHADOW_MORE: not qualified but a material gain is inside the CI \u2014 research shadow, never promotable: [new_format] failed: material_improvement, ci_excludes_zero; [standard] failed: material_improvement, ci_excludes_zero. A rejection is a healthy learning outcome, not a failure.",
       "model_artifact": "models/model_v9_btts.pkl",
-      "incumbent_changed_at": "2026-10-31T10:13:39Z",
+      "incumbent_changed_at": "2026-11-01T11:24:09Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-30",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": false,
-        "why": "KEEP_CHAMPION: challenger not better: delta +0.000373 (0.68426 -> 0.68463); worse or tied keeps the champion",
-        "rows": 60501,
-        "verdict": "KEEP_CHAMPION",
+        "why": "SHADOW_MORE: not qualified but a material gain is inside the CI \u2014 research shadow, never promotable: [new_format] failed: material_improvement, ci_excludes_zero; [standard] failed: material_improvement, ci_excludes_zero",
+        "rows": 60811,
+        "verdict": "SHADOW_MORE",
         "comparison_basis": "same_holdout",
-        "v91_gate": {
-          "available": true,
-          "status": "REJECTED",
-          "n": 12101,
-          "delta_log_loss": 0.000373,
-          "delta_brier": 0.000181,
-          "ci_log_loss": [
-            -0.000379,
-            0.001157
-          ],
-          "reasons": [
-            "log_loss_not_worse: delta +0.000373 (0.68426 -> 0.68463)",
-            "brier_not_worse: delta +0.000181",
-            "ci_excludes_zero: 95% block-bootstrap CI [-0.000379, +0.001157] includes zero",
-            "material_improvement: delta +0.000373 vs required <= -0.001000",
-            "second_period: not run"
-          ],
-          "checks": {
-            "same_dataset": true,
-            "min_sample": true,
-            "log_loss_not_worse": false,
-            "brier_not_worse": false,
-            "ci_excludes_zero": false,
-            "material_improvement": false,
-            "calibration_held": true,
-            "prediction_canary": true,
-            "no_league_regression": true,
-            "second_period": false
-          },
-          "live_gate_promoted": false,
-          "live_gate_reason": "KEEP_CHAMPION: challenger not better: delta +0.000373 (0.68426 -> 0.68463); worse or tied keeps the champion",
-          "agrees_with_live_gate": true
-        },
-        "logloss_old": 0.68426,
-        "logloss_new": 0.684633,
-        "logloss_basis": "served_ensemble",
-        "legacy_mean_ll_old": 0.68542,
-        "legacy_mean_ll_new": 0.68565,
-        "legacy_rule_would_promote": false,
-        "legacy_rule_reason": "log loss ROSE +0.00023 (0.68542 -> 0.68565) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion",
+        "gate_version": "PG-1.0",
+        "qualified": false,
+        "parked": true,
+        "evaluable_tracks": [
+          "new_format",
+          "standard"
+        ],
+        "logloss_old": 0.686573,
+        "logloss_new": 0.686257,
+        "logloss_basis": "served_ensemble_largest_track",
         "ll_ci": [
-          -0.000456,
-          0.001165
+          -0.001393,
+          0.000717
         ],
         "champion_version": "btts_20261005T101905Z_238e3419",
-        "challenger_version": "btts_20261025T082351Z_80ee2a42",
-        "retrain_batch_id": "rb_20261025T081424Z",
+        "challenger_version": "btts_20261101T112201Z_bf9b956c",
+        "retrain_batch_id": "rb_20261101T095533Z",
+        "prospective_review": null,
         "canary": {
           "available": true,
-          "n": 12101,
-          "std_old": 0.04059,
-          "std_new": 0.03831,
-          "spread_ratio": 0.944,
-          "mean_old": 0.54982,
-          "mean_new": 0.5483,
-          "frac_crossed_half": 0.0763,
-          "frac_moved_gt_10pp": 0.0,
-          "max_abs_move": 0.0918,
+          "n": 12163,
+          "std_old": 0.04039,
+          "std_new": 0.04113,
+          "spread_ratio": 1.018,
+          "mean_old": 0.55055,
+          "mean_new": 0.54929,
+          "frac_crossed_half": 0.0732,
+          "frac_moved_gt_10pp": 0.0002,
+          "max_abs_move": 0.1191,
           "flags": []
         },
-        "at": "2026-10-25T08:23:53Z"
+        "at": "2026-11-01T11:22:01Z"
       }
     },
     {
       "model": "over15",
       "status": "PASS",
-      "why": "challenger trained and REJECTED \u2014 KEEP_CHAMPION: statistically tied: delta -0.000024, CI [-0.00082, +0.00067] does not even admit a material (0.001) gain. A rejection is a healthy learning outcome, not a failure.",
+      "why": "challenger trained and REJECTED \u2014 SHADOW_MORE: not qualified but a material gain is inside the CI \u2014 research shadow, never promotable: [new_format] failed: ci_excludes_zero; [standard] failed: material_improvement, ci_excludes_zero, brier_non_inferior. A rejection is a healthy learning outcome, not a failure.",
       "model_artifact": "models/model_v9_over15.pkl",
-      "incumbent_changed_at": "2026-10-31T10:13:39Z",
+      "incumbent_changed_at": "2026-11-01T11:24:09Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-30",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": false,
-        "why": "KEEP_CHAMPION: statistically tied: delta -0.000024, CI [-0.00082, +0.00067] does not even admit a material (0.001) gain",
-        "rows": 60501,
-        "verdict": "KEEP_CHAMPION",
+        "why": "SHADOW_MORE: not qualified but a material gain is inside the CI \u2014 research shadow, never promotable: [new_format] failed: ci_excludes_zero; [standard] failed: material_improvement, ci_excludes_zero, brier_non_inferior",
+        "rows": 60811,
+        "verdict": "SHADOW_MORE",
         "comparison_basis": "same_holdout",
-        "v91_gate": {
-          "available": true,
-          "status": "CHALLENGER",
-          "n": 12101,
-          "delta_log_loss": -2.4e-05,
-          "delta_brier": -4e-06,
-          "ci_log_loss": [
-            -0.000817,
-            0.000727
-          ],
-          "reasons": [
-            "ci_excludes_zero: 95% block-bootstrap CI [-0.000817, +0.000727] includes zero",
-            "material_improvement: delta -0.000024 vs required <= -0.001000",
-            "second_period: not run"
-          ],
-          "checks": {
-            "same_dataset": true,
-            "min_sample": true,
-            "log_loss_not_worse": true,
-            "brier_not_worse": true,
-            "ci_excludes_zero": false,
-            "material_improvement": false,
-            "calibration_held": true,
-            "prediction_canary": true,
-            "no_league_regression": true,
-            "second_period": false
-          },
-          "live_gate_promoted": false,
-          "live_gate_reason": "KEEP_CHAMPION: statistically tied: delta -0.000024, CI [-0.00082, +0.00067] does not even admit a material (0.001) gain",
-          "agrees_with_live_gate": true
-        },
-        "logloss_old": 0.541535,
-        "logloss_new": 0.541511,
-        "logloss_basis": "served_ensemble",
-        "legacy_mean_ll_old": 0.5437,
-        "legacy_mean_ll_new": 0.54333,
-        "legacy_rule_would_promote": true,
-        "legacy_rule_reason": "log loss 0.54370 -> 0.54333 (-0.00037), within the 0.03000 tolerance",
+        "gate_version": "PG-1.0",
+        "qualified": false,
+        "parked": true,
+        "evaluable_tracks": [
+          "new_format",
+          "standard"
+        ],
+        "logloss_old": 0.545383,
+        "logloss_new": 0.545577,
+        "logloss_basis": "served_ensemble_largest_track",
         "ll_ci": [
-          -0.000817,
-          0.000672
+          -0.000925,
+          0.001214
         ],
         "champion_version": "over15_20261018T080423Z_da4743a2",
-        "challenger_version": "over15_20261025T082456Z_cbe7928c",
-        "retrain_batch_id": "rb_20261025T081424Z",
+        "challenger_version": "over15_20261101T112303Z_e3e5d0aa",
+        "retrain_batch_id": "rb_20261101T095533Z",
+        "prospective_review": null,
         "canary": {
           "available": true,
-          "n": 12101,
-          "std_old": 0.04337,
-          "std_new": 0.04477,
-          "spread_ratio": 1.032,
-          "mean_old": 0.7618,
-          "mean_new": 0.76228,
-          "frac_crossed_half": 0.0002,
+          "n": 12163,
+          "std_old": 0.04284,
+          "std_new": 0.04728,
+          "spread_ratio": 1.104,
+          "mean_old": 0.76285,
+          "mean_new": 0.76317,
+          "frac_crossed_half": 0.0,
           "frac_moved_gt_10pp": 0.0003,
-          "max_abs_move": 0.1168,
+          "max_abs_move": 0.1746,
           "flags": []
         },
-        "at": "2026-10-25T08:24:58Z"
+        "at": "2026-11-01T11:23:03Z"
       }
     },
     {
       "model": "over35",
       "status": "PASS",
-      "why": "challenger trained and REJECTED \u2014 KEEP_CHAMPION: statistically tied: delta -0.000066, CI [-0.00051, +0.00043] does not even admit a material (0.001) gain. A rejection is a healthy learning outcome, not a failure.",
+      "why": "challenger trained and REJECTED \u2014 KEEP_CHAMPION: [new_format] failed: material_improvement, ci_excludes_zero, brier_non_inferior; [standard] failed: material_improvement, ci_excludes_zero, brier_non_inferior. A rejection is a healthy learning outcome, not a failure.",
       "model_artifact": "models/model_v9_over35.pkl",
-      "incumbent_changed_at": "2026-10-31T10:13:39Z",
+      "incumbent_changed_at": "2026-11-01T11:24:09Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-30",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": false,
-        "why": "KEEP_CHAMPION: statistically tied: delta -0.000066, CI [-0.00051, +0.00043] does not even admit a material (0.001) gain",
-        "rows": 60501,
+        "why": "KEEP_CHAMPION: [new_format] failed: material_improvement, ci_excludes_zero, brier_non_inferior; [standard] failed: material_improvement, ci_excludes_zero, brier_non_inferior",
+        "rows": 60811,
         "verdict": "KEEP_CHAMPION",
         "comparison_basis": "same_holdout",
-        "v91_gate": {
-          "available": true,
-          "status": "CHALLENGER",
-          "n": 12101,
-          "delta_log_loss": -6.6e-05,
-          "delta_brier": -2.5e-05,
-          "ci_log_loss": [
-            -0.000499,
-            0.000469
-          ],
-          "reasons": [
-            "ci_excludes_zero: 95% block-bootstrap CI [-0.000499, +0.000469] includes zero",
-            "material_improvement: delta -0.000066 vs required <= -0.001000",
-            "second_period: not run"
-          ],
-          "checks": {
-            "same_dataset": true,
-            "min_sample": true,
-            "log_loss_not_worse": true,
-            "brier_not_worse": true,
-            "ci_excludes_zero": false,
-            "material_improvement": false,
-            "calibration_held": true,
-            "prediction_canary": true,
-            "no_league_regression": true,
-            "second_period": false
-          },
-          "live_gate_promoted": false,
-          "live_gate_reason": "KEEP_CHAMPION: statistically tied: delta -0.000066, CI [-0.00051, +0.00043] does not even admit a material (0.001) gain",
-          "agrees_with_live_gate": true
-        },
-        "logloss_old": 0.599843,
-        "logloss_new": 0.599777,
-        "logloss_basis": "served_ensemble",
-        "legacy_mean_ll_old": 0.60221,
-        "legacy_mean_ll_new": 0.60232,
-        "legacy_rule_would_promote": false,
-        "legacy_rule_reason": "log loss ROSE +0.00012 (0.60221 -> 0.60232) on the incumbent's own holdout \u2014 a worse candidate does not replace a serving champion",
+        "gate_version": "PG-1.0",
+        "qualified": false,
+        "parked": false,
+        "evaluable_tracks": [
+          "new_format",
+          "standard"
+        ],
+        "logloss_old": 0.600492,
+        "logloss_new": 0.601274,
+        "logloss_basis": "served_ensemble_largest_track",
         "ll_ci": [
-          -0.000514,
-          0.000432
+          -0.000299,
+          0.001887
         ],
         "champion_version": "over35_20261005T101905Z_f546ce72",
-        "challenger_version": "over35_20261025T082602Z_c72a0cef",
-        "retrain_batch_id": "rb_20261025T081424Z",
+        "challenger_version": "over35_20261101T112406Z_76ee12a5",
+        "retrain_batch_id": "rb_20261101T095533Z",
+        "prospective_review": null,
         "canary": {
           "available": true,
-          "n": 12101,
-          "std_old": 0.06286,
-          "std_new": 0.06064,
-          "spread_ratio": 0.965,
-          "mean_old": 0.29711,
-          "mean_new": 0.29848,
-          "frac_crossed_half": 0.0045,
-          "frac_moved_gt_10pp": 0.0001,
-          "max_abs_move": 0.1013,
+          "n": 12163,
+          "std_old": 0.06343,
+          "std_new": 0.05855,
+          "spread_ratio": 0.923,
+          "mean_old": 0.29782,
+          "mean_new": 0.29908,
+          "frac_crossed_half": 0.0065,
+          "frac_moved_gt_10pp": 0.0007,
+          "max_abs_move": 0.1416,
           "flags": []
         },
-        "at": "2026-10-25T08:26:04Z"
+        "at": "2026-11-01T11:24:06Z"
       }
     },
     {
       "model": "ht_over05",
       "status": "PASS",
-      "why": "challenger trained and REJECTED \u2014 KEEP_CHAMPION: statistically tied: delta -0.000001, CI [-0.00033, +0.00039] does not even admit a material (0.001) gain. A rejection is a healthy learning outcome, not a failure.",
+      "why": "challenger trained and REJECTED \u2014 KEEP_CHAMPION: [standard] failed: material_improvement, ci_excludes_zero. A rejection is a healthy learning outcome, not a failure.",
       "model_artifact": "models/model_ht_over05.pkl",
-      "incumbent_changed_at": "2026-10-31T10:13:39Z",
+      "incumbent_changed_at": "2026-11-01T11:24:09Z",
       "incumbent_age_days": 0.0,
       "training_input": "output/fd_history.parquet",
       "training_input_latest_match": "2026-10-30",
-      "training_input_age_days": 1,
+      "training_input_age_days": 2,
       "new_settled_since_incumbent": 0,
       "last_decision": {
         "promoted": false,
-        "why": "KEEP_CHAMPION: statistically tied: delta -0.000001, CI [-0.00033, +0.00039] does not even admit a material (0.001) gain",
-        "rows": 21378,
+        "why": "KEEP_CHAMPION: [standard] failed: material_improvement, ci_excludes_zero",
+        "rows": 21552,
         "verdict": "KEEP_CHAMPION",
         "comparison_basis": "same_holdout",
-        "v91_gate": {
-          "available": true,
-          "status": "CHALLENGER",
-          "n": 4276,
-          "delta_log_loss": -1e-06,
-          "delta_brier": 1e-06,
-          "ci_log_loss": [
-            -0.000363,
-            0.000391
-          ],
-          "reasons": [
-            "ci_excludes_zero: 95% block-bootstrap CI [-0.000363, +0.000391] includes zero",
-            "material_improvement: delta -0.000001 vs required <= -0.001000",
-            "second_period: not run"
-          ],
-          "checks": {
-            "same_dataset": true,
-            "min_sample": true,
-            "log_loss_not_worse": true,
-            "brier_not_worse": true,
-            "ci_excludes_zero": false,
-            "material_improvement": false,
-            "calibration_held": true,
-            "prediction_canary": true,
-            "no_league_regression": true,
-            "second_period": false
-          },
-          "live_gate_promoted": false,
-          "live_gate_reason": "KEEP_CHAMPION: statistically tied: delta -0.000001, CI [-0.00033, +0.00039] does not even admit a material (0.001) gain",
-          "agrees_with_live_gate": true
-        },
-        "logloss_old": 0.60119,
-        "logloss_new": 0.601189,
-        "logloss_basis": "served_ensemble",
-        "legacy_mean_ll_old": 0.60111,
-        "legacy_mean_ll_new": 0.60107,
-        "legacy_rule_would_promote": true,
-        "legacy_rule_reason": "log loss 0.60111 -> 0.60107 (-0.00004), within the 0.03000 tolerance",
+        "gate_version": "PG-1.0",
+        "qualified": false,
+        "parked": false,
+        "evaluable_tracks": [
+          "standard"
+        ],
+        "logloss_old": 0.595758,
+        "logloss_new": 0.595566,
+        "logloss_basis": "served_ensemble_largest_track",
         "ll_ci": [
-          -0.00033,
-          0.000391
+          -0.000851,
+          0.000478
         ],
         "champion_version": "ht_over05_20261018T080423Z_359b491a",
-        "challenger_version": "ht_over05_20261025T082153Z_192a5b6b",
-        "retrain_batch_id": "rb_20261025T081424Z",
+        "challenger_version": "ht_over05_20261101T112006Z_8a76181a",
+        "retrain_batch_id": "rb_20261101T095533Z",
+        "prospective_review": null,
         "canary": {
           "available": true,
-          "n": 4276,
-          "std_old": 0.00961,
-          "std_new": 0.0083,
-          "spread_ratio": 0.863,
-          "mean_old": 0.70649,
-          "mean_new": 0.7096,
+          "n": 4311,
+          "std_old": 0.00968,
+          "std_new": 0.00975,
+          "spread_ratio": 1.007,
+          "mean_old": 0.70648,
+          "mean_new": 0.71353,
           "frac_crossed_half": 0.0,
           "frac_moved_gt_10pp": 0.0,
-          "max_abs_move": 0.0302,
+          "max_abs_move": 0.0372,
           "flags": []
         },
-        "at": "2026-10-25T08:21:54Z"
+        "at": "2026-11-01T11:20:06Z"
       }
     },
     {
@@ -437,11 +305,11 @@
       "status": "NO_NEW_DATA",
       "why": "only 0 new settled fixture(s) since the incumbent was built \u2014 too few to learn from. Healthy.",
       "model_artifact": "models/model_player_goals.pkl",
-      "incumbent_changed_at": "2026-10-31T10:13:39Z",
+      "incumbent_changed_at": "2026-11-01T11:24:09Z",
       "incumbent_age_days": 0.0,
       "training_input": "player_history.parquet",
       "training_input_latest_match": "2026-10-31",
-      "training_input_age_days": 0,
+      "training_input_age_days": 1,
       "new_settled_since_incumbent": 0,
       "last_decision": null
     }
