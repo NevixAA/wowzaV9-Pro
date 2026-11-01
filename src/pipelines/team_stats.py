@@ -196,6 +196,43 @@ def _league_ids() -> dict:
     return v9_config.league_ids()
 
 
+def canonical_league_map() -> dict:
+    """{any known spelling: canonical name} from v9's config/leagues.json: the name itself, its
+    aliases AND its provider_names (API-Football's 'Eredivisie', 'Belgian Pro League',
+    'Primeira Liga'). Rows stored before 2026-09-06 carry those provider names, so every
+    per-league aggregate over this table was split in two (Data Truth audit finding 55)."""
+    import json
+    reg = json.loads((cfg.V9_LOCAL / "config" / "leagues.json").read_text(encoding="utf-8"))
+    out = {}
+    for e in reg["leagues"]:
+        for n in [e["name"], *(e.get("aliases") or []), *((e.get("provider_names") or {}).values())]:
+            if n:
+                out[str(n)] = e["name"]
+    return out
+
+
+def canonicalise_stored_leagues(dry_run: bool = False) -> dict:
+    """Rewrite stored team_match_stats partitions so every league value is canonical.
+    Returns {old name: (canonical, rows)}; names with no registry entry are left as they are."""
+    m = canonical_league_map()
+    root = cfg.DATA_DIR / cfg.season_label() / TABLE
+    changed: dict = {}
+    for f in sorted(root.glob("dt=*/run=*.parquet")):
+        d = pd.read_parquet(f)
+        if "league" not in d.columns:
+            continue
+        new = d["league"].astype(str).map(lambda x: m.get(x, x))
+        diff = new != d["league"].astype(str)
+        if diff.any():
+            for old, can in zip(d.loc[diff, "league"], new[diff]):
+                c, n = changed.get(old, (can, 0))
+                changed[old] = (can, n + 1)
+            if not dry_run:
+                d["league"] = new
+                d.to_parquet(f, index=False)
+    return changed
+
+
 def _already_collected() -> set:
     try:
         prev = store.read(TABLE)
