@@ -230,9 +230,28 @@ def _parse_stats(fx: dict, teams: list, league: str) -> dict | None:
     }
 
 
-def collect(seasons=("2026",), limit: int | None = None, dry_run: bool = False,
+def _league_seasons(seasons, league: str, today: str) -> list[str]:
+    """Seasons to collect for one league. 'current' = that league's OWN live API-Football season
+    (src/data/season_calendar); an explicit year is kept as given (backfills). The default used to
+    be the literal '2026' for every league, so J1 (live season 2027) was never collected
+    (Data Truth audit findings 34, 50). No calendar entry -> nothing for 'current'."""
+    from src.data import season_calendar as SC
+    out = []
+    for s in seasons:
+        if str(s).lower() == "current":
+            cur = SC.api_football_season(league, today)
+            if cur:
+                out.append(cur)
+            else:
+                print(f"[team_stats] {league}: no season calendar entry — current season skipped")
+        else:
+            out.append(str(s))
+    return list(dict.fromkeys(out))
+
+
+def collect(seasons=("current",), limit: int | None = None, dry_run: bool = False,
             sleep_s: float = 0.25) -> pd.DataFrame:
-    """Collect statistics for finished fixtures across `seasons`.
+    """Collect statistics for finished fixtures across `seasons` ('current' = each league's own).
 
     COMMITS PER (LEAGUE, SEASON) rather than accumulating everything and writing once. A full
     four-season backfill is ~24,500 calls and ~3.4 hours of wall clock; holding it all in memory
@@ -247,55 +266,55 @@ def collect(seasons=("2026",), limit: int | None = None, dry_run: bool = False,
     session = requests.Session()
     calls = cached = written = chunk_no = 0
     frames = []
-    for season in seasons:
-        for league, lid in sorted(league_ids.items()):
-            body, was_cached = _get("/fixtures",
-                                    {"league": lid, "season": season, "status": "FT"},
-                                    session, cache_hours=24)
-            calls += 0 if was_cached else 1
-            fixtures = (body or {}).get("response") or []
-            todo = [f for f in fixtures if str(f["fixture"]["id"]) not in already]
-            if not todo:
-                continue
-            rows = []
-            for fx in todo:
-                if limit is not None and written + len(rows) >= limit:
-                    break
-                st, wc = _get("/fixtures/statistics", {"fixture": str(fx["fixture"]["id"])},
-                              session)
-                if wc:
-                    cached += 1
-                else:
-                    calls += 1
-                    time.sleep(sleep_s)
-                row = _parse_stats(fx, (st or {}).get("response") or [], league)
-                if row:
-                    rows.append(row)
-                    already.add(row["fixture_id"])
-            if not rows:
-                continue
-            chunk = ent.add_fixture_key(pd.DataFrame(rows))
-            frames.append(chunk)
-            written += len(chunk)
-            xg = pd.to_numeric(chunk.get("home_xg"), errors="coerce")
-            print(f"  {season} {league:28} +{len(chunk):>4} rows  "
-                  f"xG {xg.notna().mean():5.1%}  (calls {calls:,}, cache {cached:,})")
-            if not dry_run:
-                try:
-                    # Unique per chunk AND filesystem-safe. The first version used
-                    # f"...-{league[:12]}", which put a SPACE in the parquet filename and
-                    # could collide between two leagues sharing a 12-char prefix. The
-                    # counter makes a collision impossible even on a re-run within the
-                    # same process second.
-                    _slug = "".join(ch if ch.isalnum() else "_" for ch in league)[:20]
-                    chunk_no += 1
-                    store.append(TABLE, chunk, source="api_football:fixtures/statistics",
-                                 rid=f"{cfg.run_id()}-stats-{season}-{_slug}-{chunk_no}")
-                except store.LocalWriteRefused as e:
-                    print(f"    NOT written — {e}")
-                    dry_run = True
-            if limit is not None and written >= limit:
+    _today = pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%d")
+    pairs = [(s, lg, lid) for lg, lid in sorted(league_ids.items())
+             for s in _league_seasons(seasons, lg, _today)]
+    for season, league, lid in sorted(pairs, key=lambda x: (x[0], x[1])):
+        body, was_cached = _get("/fixtures",
+                                {"league": lid, "season": season, "status": "FT"},
+                                session, cache_hours=24)
+        calls += 0 if was_cached else 1
+        fixtures = (body or {}).get("response") or []
+        todo = [f for f in fixtures if str(f["fixture"]["id"]) not in already]
+        if not todo:
+            continue
+        rows = []
+        for fx in todo:
+            if limit is not None and written + len(rows) >= limit:
                 break
+            st, wc = _get("/fixtures/statistics", {"fixture": str(fx["fixture"]["id"])},
+                          session)
+            if wc:
+                cached += 1
+            else:
+                calls += 1
+                time.sleep(sleep_s)
+            row = _parse_stats(fx, (st or {}).get("response") or [], league)
+            if row:
+                rows.append(row)
+                already.add(row["fixture_id"])
+        if not rows:
+            continue
+        chunk = ent.add_fixture_key(pd.DataFrame(rows))
+        frames.append(chunk)
+        written += len(chunk)
+        xg = pd.to_numeric(chunk.get("home_xg"), errors="coerce")
+        print(f"  {season} {league:28} +{len(chunk):>4} rows  "
+              f"xG {xg.notna().mean():5.1%}  (calls {calls:,}, cache {cached:,})")
+        if not dry_run:
+            try:
+                # Unique per chunk AND filesystem-safe. The first version used
+                # f"...-{league[:12]}", which put a SPACE in the parquet filename and
+                # could collide between two leagues sharing a 12-char prefix. The
+                # counter makes a collision impossible even on a re-run within the
+                # same process second.
+                _slug = "".join(ch if ch.isalnum() else "_" for ch in league)[:20]
+                chunk_no += 1
+                store.append(TABLE, chunk, source="api_football:fixtures/statistics",
+                             rid=f"{cfg.run_id()}-stats-{season}-{_slug}-{chunk_no}")
+            except store.LocalWriteRefused as e:
+                print(f"    NOT written — {e}")
+                dry_run = True
         if limit is not None and written >= limit:
             break
 
@@ -314,8 +333,9 @@ def collect(seasons=("2026",), limit: int | None = None, dry_run: bool = False,
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="Collect per-fixture team match statistics")
-    ap.add_argument("--seasons", default="2026",
-                    help="comma-separated, e.g. 2023,2024,2025,2026")
+    ap.add_argument("--seasons", default="current",
+                    help="comma-separated: 'current' (each league's own live season) and/or "
+                         "explicit years for a backfill, e.g. current,2025")
     ap.add_argument("--limit", type=int, default=None,
                     help="stop after N new fixtures (for a costed trial run)")
     ap.add_argument("--dry-run", action="store_true")

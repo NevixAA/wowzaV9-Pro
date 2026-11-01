@@ -171,8 +171,16 @@ def collect(max_hours: float = DEFAULT_MAX_HOURS, dry_run: bool = False,
     # Injuries per league, fetched once and indexed by fixture. One call per league beats one per
     # fixture, and the payload is already fixture-keyed.
     inj_by_fixture: dict[str, int] = {}
-    season = str(now.year if now.month >= 7 else now.year - 1)
+    # EACH league's own live API season (src/data/season_calendar), not the European July rule for
+    # all: J1 (live season 2027) and every calendar-year league in Jan-Jun were asked for the wrong
+    # season and got no injuries (Data Truth audit findings 51, 54). No calendar entry -> skipped.
+    from src.data import season_calendar as SC
+    _today = now.tz_localize(None).strftime("%Y-%m-%d")
     for league, lid in league_ids.items():
+        season = SC.api_football_season(league, _today)
+        if not season:
+            print(f"[team_news] {league}: no season calendar entry — injuries not fetched")
+            continue
         body = _get("/injuries", {"league": lid, "season": season}, session)
         for row in ((body or {}).get("response") or []):
             fid = str(((row.get("fixture") or {}).get("id")) or "")
