@@ -78,35 +78,42 @@ def _literal(path: Path, name: str):
     raise KeyError(name)
 
 
-def test_api_season_matches_v9_config_today():
-    """v9's API_FOOTBALL_SEASONS is hand-rolled; the calendar must agree with it on the date v9's
-    values were last verified (2026-11-01). A disagreement means one of them is wrong."""
+def _v9_resolved(day: str):
+    """v9's OWN season resolution on `day` (src/season_resolver, R2-A 2026-11-01): since the league
+    registry landed, config.py DERIVES its tables, so they can no longer be read as literals. Run in a
+    v9 subprocess (cwd = the v9 checkout) because Pro and v9 both have a top-level `src` package."""
+    import json
+    import subprocess
+    import sys
     p = _v9_config()
     if p is None:
+        return None
+    code = ("import json, config; from src.season_resolver import resolve_api_season as r; "
+            "L = sorted(set(config.STANDARD_FORMAT_LEAGUES) | set(config.NEW_FORMAT_LEAGUES)); "
+            f"print(json.dumps({{'std': sorted(config.STANDARD_FORMAT_LEAGUES), "
+            f"'nf': sorted(config.NEW_FORMAT_LEAGUES), 'seasons': {{lg: r(lg, '{day}') for lg in L}}}}))")
+    out = subprocess.run([sys.executable, "-c", code], cwd=str(p.parent), capture_output=True,
+                         text=True, encoding="utf-8")
+    if out.returncode != 0:
+        pytest.skip(f"v9 checkout cannot resolve seasons here: {out.stderr.strip()[-300:]}")
+    return json.loads(out.stdout.strip().splitlines()[-1])
+
+
+def test_api_season_matches_v9_config_today():
+    """The Pro calendar must agree with v9's own season resolver for every model league on the date
+    both were last verified (2026-11-01). A disagreement means one of them is wrong."""
+    v9 = _v9_resolved("2026-11-01")
+    if v9 is None:
         pytest.skip("no v9 checkout")
-    v9 = _literal(p, "API_FOOTBALL_SEASONS")
-    v9_std = _literal(p, "STANDARD_FORMAT_LEAGUES")
-    v9_nf = _literal(p, "NEW_FORMAT_LEAGUES")
-    assert set(D.STANDARD_FORMAT_LEAGUES) == set(v9_std)
-    assert set(D.NEW_FORMAT_LEAGUES) == set(v9_nf)
+    assert set(D.STANDARD_FORMAT_LEAGUES) == set(v9["std"])
+    assert set(D.NEW_FORMAT_LEAGUES) == set(v9["nf"])
     checked = 0
-    for lg, season in v9.items():
+    for lg, season in v9["seasons"].items():
         r = SC.season_for(lg, "2026-11-01")
-        if r.status == SC.SEASON_UNKNOWN:
-            assert lg not in (v9_std | v9_nf), lg            # only non-model leagues may be absent
-            continue
+        assert r.status != SC.SEASON_UNKNOWN, lg
         assert r.api_football_season == season, (lg, r.api_football_season, season)
         checked += 1
-    # 28 model leagues (plus the Danish alias) agree. Five Standard TRAINING leagues have no
-    # API_FOOTBALL_SEASONS entry in v9 and fall back to API_SEASON="2025" there -- a v9 gap
-    # (R2 finding 6, owned by the registry workstream), not a calendar disagreement. The calendar
-    # resolves them to "2026".
-    missing = sorted((v9_std | v9_nf) - set(v9))
-    assert missing == ["Belgian First Division A", "Dutch Eredivisie", "Portuguese Primeira Liga",
-                       "Scottish Premiership", "Turkish Super Lig"] or not missing
-    for lg in missing:
-        assert SC.api_football_season(lg, "2026-11-01") == "2026"
-    assert checked + len(missing) >= 32
+    assert checked >= 32
 
 
 def test_league_season_frame_preserves_rows_and_flags_unknown():
