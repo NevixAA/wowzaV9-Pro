@@ -42,22 +42,14 @@ AF = "https://v3.football.api-sports.io"
 
 
 def _league_ids() -> dict[str, int]:
-    """Our standard + new-format leagues -> API-Football id, read from v9's config text (no import:
-    v9's `config` would shadow Pro's)."""
-    import ast
-    src = (Path(cfg.V9_LOCAL) / "config.py").read_text(encoding="utf-8")
-    tree = ast.parse(src)
-    vals = {}
-    for node in tree.body:
-        if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
-            name = node.targets[0].id
-            if name in ("API_FOOTBALL_IDS", "STANDARD_FORMAT_LEAGUES", "NEW_FORMAT_LEAGUES"):
-                try:
-                    vals[name] = ast.literal_eval(node.value)
-                except Exception:                                      # noqa: BLE001
-                    pass
-    ours = set(vals.get("STANDARD_FORMAT_LEAGUES", [])) | set(vals.get("NEW_FORMAT_LEAGUES", []))
-    return {k: v for k, v in vals["API_FOOTBALL_IDS"].items() if k in ours}
+    """Our standard + new-format leagues -> API-Football id, from v9's LIVE config via
+    src.data.v9_config (which executes it without shadowing Pro's `config`). It used to parse
+    config.py's text for literal dicts; since 2026-11-01 those tables are derived from
+    config/leagues.json, so there were no literals left and this raised KeyError."""
+    from src.data import v9_config
+    v9 = v9_config.load()
+    ours = set(v9.STANDARD_FORMAT_LEAGUES) | set(v9.NEW_FORMAT_LEAGUES)
+    return {k: v for k, v in v9_config.league_ids().items() if k in ours}
 
 
 def _get(endpoint: str, params: dict) -> dict:
