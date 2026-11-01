@@ -1,0 +1,125 @@
+name: Pro League-Level + Market-Anchor BENCHMARK (research, branch-only)
+
+# Owner 2026-11-01 ("do both"): challenger A = as-of league-level inputs, challenger B = market-anchored
+# (logit of the real ENTRY price + logit of the model, refitted monthly on earlier rows only), against the
+# serving champion, per track, on the untouched newest-20% holdout. RESEARCH ONLY. Heavy work runs here,
+# never on the laptop. Results are committed to THIS research branch only (the job refuses main).
+
+on:
+  push:
+    branches: ['research/league-level-and-anchor-2026-11']
+    paths: ['.github/workflows/pro_league_anchor_benchmark.yml']
+  workflow_dispatch:
+    inputs:
+      v9_ref:
+        description: 'v9 ref with scripts/league_anchor_benchmark.py'
+        required: true
+        default: 'research/league-level-and-anchor-2026-11'
+
+concurrency:
+  group: pro-league-anchor-benchmark
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  PYTHONIOENCODING: utf-8
+  V9_REF: ${{ inputs.v9_ref || 'research/league-level-and-anchor-2026-11' }}
+
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        task: [std_ou25, nf_ou25, side_btts, side_over15, side_over35]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: ${{ env.V9_REF }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          pip install -r requirements.txt
+          pip install lightgbm pytest
+      - name: Pro football-data raw files (entry O/U prices for std_ou25)
+        if: matrix.task == 'std_ou25'
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowzaV9-Pro
+          ref: ${{ github.ref_name }}
+          path: _pro
+          sparse-checkout: experiments/ou_info_inputs_2026_10/fd_raw
+      - name: football-data refresh (entry columns only are used)
+        if: matrix.task == 'std_ou25'
+        run: |
+          mkdir -p _fd
+          cp _pro/experiments/ou_info_inputs_2026_10/fd_raw/*.csv _fd/ || true
+          for code in E1 E2 E3 EC D2 F2 SP2 I2 G1 P1 SC0 SC1 SC2 SC3 B1 N1 T1; do
+            for s in 2122 2223 2324 2425 2526 2627; do
+              f="_fd/${code}_${s}.csv"
+              if curl -sfL --retry 3 --max-time 60 "https://www.football-data.co.uk/mmz4281/${s}/${code}.csv" -o "$f.tmp"                  && head -c 200 "$f.tmp" | grep -q "Date"; then mv "$f.tmp" "$f"; else rm -f "$f.tmp"; fi
+              sleep 0.2
+            done
+          done
+          ls _fd | wc -l
+      - name: Tests (league-level features are strictly as-of)
+        run: python -m pytest tests/test_league_level.py tests/test_logit_calibration.py -q
+      - name: Benchmark ${{ matrix.task }}
+        run: python scripts/league_anchor_benchmark.py --task ${{ matrix.task }} --out _out --fd-dir "$GITHUB_WORKSPACE/_fd"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bench-${{ matrix.task }}
+          retention-days: 14
+          path: _out/
+
+  analyse:
+    needs: bench
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Refuse main
+        run: |
+          case "${{ github.ref_name }}" in main|master) echo "::error::research branch only"; exit 1;; esac
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          path: _in
+          pattern: bench-*
+          merge-multiple: true
+      - name: Collect verdict
+        run: |
+          ls -la _in
+          python -m src.studies.league_anchor _in | tee -a "$GITHUB_STEP_SUMMARY"
+          mkdir -p output/studies/league_anchor/raw
+          cp _in/*.json output/studies/league_anchor/raw/
+          gzip -c _in/std_ou25_holdout.csv > output/studies/league_anchor/raw/std_ou25_holdout.csv.gz || true
+          for t in nf_ou25 side_btts side_over15 side_over35; do
+            [ -f "_in/${t}_holdout.csv" ] && gzip -c "_in/${t}_holdout.csv" > "output/studies/league_anchor/raw/${t}_holdout.csv.gz"
+          done
+          echo "v9 ref ${V9_REF}" > output/studies/league_anchor/raw/SOURCE.txt
+      - name: Commit to the research branch
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for p in output/studies/league_anchor/verdict.csv output/studies/league_anchor/tips.csv \
+                   output/studies/league_anchor/summary.json output/studies/league_anchor/raw; do
+            [ -e "$p" ] && git add "$p"
+          done
+          git diff --staged --quiet && exit 0
+          git commit -m "research(league-level + anchor): CI benchmark $(date -u '+%Y-%m-%d %H:%M') v9 ${V9_REF}"
+          for i in 1 2 3; do git pull --rebase origin "${{ github.ref_name }}" && git push origin "HEAD:${{ github.ref_name }}" && exit 0; sleep 5; done
+          exit 1
