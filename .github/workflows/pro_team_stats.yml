@@ -34,7 +34,7 @@ on:
   workflow_dispatch:
     inputs:
       seasons:
-        description: 'Comma-separated seasons (default 2026)'
+        description: "Comma-separated: 'current' (each league's live season) and/or years (default current)"
         required: false
       limit:
         description: 'Max fixtures (blank = all)'
@@ -92,7 +92,7 @@ jobs:
           # never reached the summary. The step failed in 1 second three times running and the
           # published output was still empty.
           set -o pipefail
-          SEASONS="${{ github.event.inputs.seasons }}"; [ -n "$SEASONS" ] || SEASONS=2026
+          SEASONS="${{ github.event.inputs.seasons }}"; [ -n "$SEASONS" ] || SEASONS=current
           LIMIT="${{ github.event.inputs.limit }}"
 
           # CHUNK THE SCHEDULED RUN. NOTE: this was NOT why the earlier runs failed — that was the
