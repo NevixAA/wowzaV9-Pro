@@ -24,58 +24,52 @@ import pandas as pd
 
 from config import pro_config as cfg
 from src.data import season_store as store
-from src.data.entities import norm_name
 from src.market.devig import power_devig
 
 CACHE = cfg.BASE_DIR / "experiments" / "upgrade_studies_2026_10"
 RNG = np.random.default_rng(20261008)
 
-_GENERIC = {"fc", "cf", "sc", "afc", "cd", "ac", "ss", "as", "us", "if", "fk", "sk", "bk", "club",
-            "cp", "sd", "de", "la", "el", "the", "ca", "cs", "ud", "rc", "fsv", "sv", "vfl", "vfb",
-            "tsg", "bsc", "ifk", "calcio", "1"}
-_ALIAS = {"utd": "united", "jrs": "juniors", "jr": "juniors", "dep": "deportivo",
-          "atl": "atletico", "ind": "independiente", "est": "estudiantes", "gimn": "gimnasia"}
-
-
-def _toks(name) -> set[str]:
-    out = set()
-    for t in norm_name(name).split():
-        t = _ALIAS.get(t, t)
-        if t and t not in _GENERIC and not t.isdigit():
-            out.add(t)
-    return out
-
-
 def same_club(a, b) -> bool:
-    """Every identity token of the shorter name maps to a token of the longer one (exact, or a
-    prefix of 3+ characters). 'Atl Tucuman' == 'Atletico Tucuman'; 'Real Madrid' != 'Real Sociedad'."""
-    ta, tb = _toks(a), _toks(b)
-    if not ta or not tb:
+    """True when v9's result resolver (src/team_names.resolve_result, the league-scoped matcher
+    every repo uses) places `a` on `b`. Data Truth 2026-11-01: replaces a hand alias dict and a
+    3-character prefix rule that lived only here."""
+    from src.data import v9_config
+    if a is None or b is None:
         return False
-    small, big = (ta, tb) if len(ta) <= len(tb) else (tb, ta)
-
-    def hit(t):
-        return any(t == o or (len(t) >= 3 and o.startswith(t)) or (len(o) >= 3 and t.startswith(o))
-                   for o in big)
-    return all(hit(t) for t in small)
+    return v9_config.team_names().resolve_result(str(a), [str(b)]) == str(b)
 
 
 def match_frames(left: pd.DataFrame, right: pd.DataFrame, *, l_cols=("league", "match_date", "home_team", "away_team"),
                  r_cols=("league", "match_date", "home_team", "away_team"), day_tol: int = 1) -> pd.Series:
-    """For each row of `left`, the index of its unique match in `right`, or NaN."""
+    """For each row of `left`, the index of its unique match in `right`, or NaN.
+
+    Same CANONICAL league (v9 registry; an unknown league never matches), kickoff date within
+    `day_tol` days (UTC vs local dates), and both clubs placed by v9's resolve_result against the
+    candidate names of that league-window. Ambiguous -> NaN, never a guess."""
+    from src.data import v9_config
+    tn = v9_config.team_names()
     rl, rd, rh, ra = r_cols
     R = right.assign(_d=pd.to_datetime(right[rd].astype(str).str[:10], errors="coerce"))
-    by_league = {k: g for k, g in R.groupby(rl)} if rl else {None: R}
+    if rl:
+        R = R.assign(_lg=R[rl].map(v9_config.canonical_league))
+        by_league = {k: g for k, g in R.groupby("_lg")}
+    else:
+        by_league = {None: R}
     out = []
     ll, ld, lh, la = l_cols
     for _, r in left.iterrows():
-        g = by_league.get(r[ll] if ll else None)
+        g = by_league.get(v9_config.canonical_league(r[ll]) if ll else None)
         if g is None:
             out.append(np.nan)
             continue
         d = pd.to_datetime(str(r[ld])[:10], errors="coerce")
         c = g[(g["_d"] - d).abs() <= pd.Timedelta(days=day_tol)]
-        c = c[[same_club(r[lh], h) and same_club(r[la], a) for h, a in zip(c[rh], c[ra])]]
+        if c.empty:
+            out.append(np.nan)
+            continue
+        h = tn.resolve_result(str(r[lh]), sorted(c[rh].astype(str).unique()))
+        a = tn.resolve_result(str(r[la]), sorted(c[ra].astype(str).unique()))
+        c = c[(c[rh].astype(str) == h) & (c[ra].astype(str) == a)] if h and a else c.iloc[0:0]
         out.append(c.index[0] if len(c) == 1 else np.nan)
     return pd.Series(out, index=left.index)
 
