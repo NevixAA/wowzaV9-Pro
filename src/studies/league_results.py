@@ -116,13 +116,36 @@ def write_ratings(cur: pd.DataFrame, now: pd.Timestamp) -> dict:
     return out
 
 
+def current_season_rows(d: pd.DataFrame, now: pd.Timestamp) -> pd.DataFrame:
+    """Tips in EACH league's own current season (src/data/season_calendar), never one fixed date for
+    all: SEASON_FROM='2026-08-01' cut calendar-year leagues' 2026 season in half and would pool two
+    seasons from 2027/28 on, and these ratings scale v9 stakes (Data Truth audit finding 13).
+    SEASON_FROM stays as the floor (the live programme start). A league the calendar does not know
+    is left out of the season window and logged, never guessed."""
+    from src.data import season_calendar as SC
+    if d.empty:
+        return d
+    today = now.tz_localize(None).strftime("%Y-%m-%d") if now.tzinfo else now.strftime("%Y-%m-%d")
+    cur = {lg: SC.season_for(lg, today) for lg in d["league"].astype(str).unique()}
+    unknown = sorted(lg for lg, r in cur.items() if r.status != SC.RESOLVED)
+    if unknown:
+        print(f"[league_results] no season calendar for {unknown} - left out of the season window")
+    lab = {}
+    for lg, day in set(zip(d["league"].astype(str), d["day"].astype(str))):
+        r = SC.season_for(lg, day)
+        lab[(lg, day)] = r.label if r.status == SC.RESOLVED else None
+    keep = [(cur[lg].status == SC.RESOLVED and lab[(lg, dy)] == cur[lg].label and dy >= SEASON_FROM)
+            for lg, dy in zip(d["league"].astype(str), d["day"].astype(str))]
+    return d[keep]
+
+
 def build(now: pd.Timestamp | None = None) -> pd.DataFrame:
     now = now or pd.Timestamp.now(tz="UTC")
     week = now.strftime("%G-W%V")
     d = TR.load()
     last30 = (now.tz_localize(None).normalize() - pd.Timedelta(days=30)).strftime("%Y-%m-%d")
     parts = []
-    for window, x in (("season", d[d["day"] >= SEASON_FROM]), ("last_30_days", d[d["day"] >= last30])):
+    for window, x in (("season", current_season_rows(d, now)), ("last_30_days", d[d["day"] >= last30])):
         t = table(x)
         if len(t):
             t["rating"] = [rating(s, lab) for s, lab in zip(t["shrunk_roi"], t["label"])]
