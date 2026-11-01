@@ -1,0 +1,1997 @@
+{
+ "task": "side_over35",
+ "group": "core",
+ "target": "over35",
+ "cutoff": "2026-11-01",
+ "generated_at": "2026-11-01T10:44:57Z",
+ "v9_commit": "1f25fe050dad0174cad011e3a73e40677b56a8d9",
+ "identity_report": {
+  "identity_version": "v9r-identity-1.0",
+  "n_aliases": 142,
+  "team_cells_renamed": 15020,
+  "duplicate_rows_removed": 9683,
+  "quarantined_fixtures": 4
+ },
+ "lifecycle": "RETROSPECTIVE_REPLAY",
+ "promotion": "NONE (research only)",
+ "holdout_start": "2025-08-10",
+ "source_report": {
+  "pooled": {
+   "rows_by_source": {
+    "MODERN": 38758,
+    "ARCHIVE": 13739
+   },
+   "rows_by_season_source": {
+    "2019": {
+     "ARCHIVE": 0,
+     "MODERN": 2932
+    },
+    "2020": {
+     "ARCHIVE": 0,
+     "MODERN": 3135
+    },
+    "2021": {
+     "ARCHIVE": 153,
+     "MODERN": 4505
+    },
+    "2021/22": {
+     "ARCHIVE": 5820,
+     "MODERN": 0
+    },
+    "2022": {
+     "ARCHIVE": 270,
+     "MODERN": 4618
+    },
+    "2022/23": {
+     "ARCHIVE": 5936,
+     "MODERN": 0
+    },
+    "2023": {
+     "ARCHIVE": 323,
+     "MODERN": 4753
+    },
+    "2023/24": {
+     "ARCHIVE": 355,
+     "MODERN": 5693
+    },
+    "2024": {
+     "ARCHIVE": 314,
+     "MODERN": 4736
+    },
+    "2024/25": {
+     "ARCHIVE": 390,
+     "MODERN": 5543
+    },
+    "2025": {
+     "ARCHIVE": 159,
+     "MODERN": 2713
+    },
+    "2025/26": {
+     "ARCHIVE": 19,
+     "MODERN": 130
+    }
+   },
+   "target_rate_by_source": {
+    "ARCHIVE": 0.2784,
+    "MODERN": 0.2807
+   },
+   "missing_rate_by_source": {
+    "ARCHIVE": {
+     "home_scored_last5": 0.0,
+     "away_scored_last5": 0.0058,
+     "home_conceded_last5": 0.0,
+     "away_conceded_last5": 0.0058,
+     "home_over25_last5": 0.0,
+     "away_over25_last5": 0.0058,
+     "home_attack_str": 0.0,
+     "away_attack_str": 0.0058,
+     "home_defense_str": 0.0,
+     "away_defense_str": 0.0058,
+     "home_advantage": 0.0,
+     "away_home_adv_factor": 0.0,
+     "home_rest_days": 0.0,
+     "away_rest_days": 0.0058,
+     "home_corners_pg_roll": 0.076,
+     "away_corners_pg_roll": 0.0813,
+     "home_fouls_pg_roll": 0.076,
+     "away_fouls_pg_roll": 0.0813,
+     "combined_sot_ratio": 0.0,
+     "home_xg_last5": 0.9959,
+     "away_xg_last5": 0.9958,
+     "home_insidebox_last5": 0.9959,
+     "away_insidebox_last5": 0.9958,
+     "home_season_goals_h": 0.0423,
+     "away_season_goals_a": 0.0428,
+     "home_season_conceded_h": 0.0423,
+     "away_season_conceded_a": 0.0428,
+     "home_cs_rate_h": 0.0423,
+     "away_cs_rate_a": 0.0428,
+     "home_ht_scored_last5": 0.9976,
+     "away_ht_scored_last5": 0.9976,
+     "home_ht_conceded_last5": 0.9976,
+     "away_ht_conceded_last5": 0.9976,
+     "home_ht_attack_str": 0.9976,
+     "away_ht_attack_str": 0.9976,
+     "combined_ht_goals_avg": 0.0,
+     "home_ht_over05_rate": 0.9976,
+     "away_ht_over05_rate": 0.9976,
+     "home_ht_over15_rate": 0.9976,
+     "away_ht_over15_rate": 0.9976,
+     "p_over25_poisson_dc": 0.0058
+    },
+    "MODERN": {
+     "home_scored_last5": 0.0,
+     "away_scored_last5": 0.0027,
+     "home_conceded_last5": 0.0,
+     "away_conceded_last5": 0.0027,
+     "home_over25_last5": 0.0,
+     "away_over25_last5": 0.0027,
+     "home_attack_str": 0.0,
+     "away_attack_str": 0.0027,
+     "home_defense_str": 0.0,
+     "away_defense_str": 0.0027,
+     "home_advantage": 0.0,
+     "away_home_adv_factor": 0.0,
+     "home_rest_days": 0.0,
+     "away_rest_days": 0.0027,
+     "home_corners_pg_roll": 0.053,
+     "away_corners_pg_roll": 0.0555,
+     "home_fouls_pg_roll": 0.053,
+     "away_fouls_pg_roll": 0.0555,
+     "combined_sot_ratio": 0.0,
+     "home_xg_last5": 0.9671,
+     "away_xg_last5": 0.9671,
+     "home_insidebox_last5": 0.9636,
+     "away_insidebox_last5": 0.9635,
+     "home_season_goals_h": 0.059,
+     "away_season_goals_a": 0.0599,
+     "home_season_conceded_h": 0.059,
+     "away_season_conceded_a": 0.0599,
+     "home_cs_rate_h": 0.059,
+     "away_cs_rate_a": 0.0599,
+     "home_ht_scored_last5": 0.3891,
+     "away_ht_scored_last5": 0.3899,
+     "home_ht_conceded_last5": 0.3891,
+     "away_ht_conceded_last5": 0.3899,
+     "home_ht_attack_str": 0.3891,
+     "away_ht_attack_str": 0.3899,
+     "combined_ht_goals_avg": 0.0,
+     "home_ht_over05_rate": 0.3891,
+     "away_ht_over05_rate": 0.3899,
+     "home_ht_over15_rate": 0.3891,
+     "away_ht_over15_rate": 0.3899,
+     "p_over25_poisson_dc": 0.0027
+    }
+   },
+   "source_predictable_from_missingness_auc": 0.824
+  },
+  "standard": {
+   "rows_by_source": {
+    "ARCHIVE": 12520,
+    "MODERN": 11366
+   },
+   "rows_by_season_source": {
+    "2021/22": {
+     "ARCHIVE": 5820,
+     "MODERN": 0
+    },
+    "2022/23": {
+     "ARCHIVE": 5936,
+     "MODERN": 0
+    },
+    "2023/24": {
+     "ARCHIVE": 355,
+     "MODERN": 5693
+    },
+    "2024/25": {
+     "ARCHIVE": 390,
+     "MODERN": 5543
+    },
+    "2025/26": {
+     "ARCHIVE": 19,
+     "MODERN": 130
+    }
+   },
+   "target_rate_by_source": {
+    "ARCHIVE": 0.2692,
+    "MODERN": 0.2871
+   },
+   "missing_rate_by_source": {
+    "ARCHIVE": {
+     "home_scored_last5": 0.0,
+     "away_scored_last5": 0.0061,
+     "home_conceded_last5": 0.0,
+     "away_conceded_last5": 0.0061,
+     "home_over25_last5": 0.0,
+     "away_over25_last5": 0.0061,
+     "home_attack_str": 0.0,
+     "away_attack_str": 0.0061,
+     "home_defense_str": 0.0,
+     "away_defense_str": 0.0061,
+     "home_advantage": 0.0,
+     "away_home_adv_factor": 0.0,
+     "home_rest_days": 0.0,
+     "away_rest_days": 0.0061,
+     "home_corners_pg_roll": 0.0834,
+     "away_corners_pg_roll": 0.0889,
+     "home_fouls_pg_roll": 0.0834,
+     "away_fouls_pg_roll": 0.0889,
+     "combined_sot_ratio": 0.0,
+     "home_xg_last5": 0.9986,
+     "away_xg_last5": 0.9984,
+     "home_insidebox_last5": 0.9986,
+     "away_insidebox_last5": 0.9984,
+     "home_season_goals_h": 0.0393,
+     "away_season_goals_a": 0.0396,
+     "home_season_conceded_h": 0.0393,
+     "away_season_conceded_a": 0.0396,
+     "home_cs_rate_h": 0.0393,
+     "away_cs_rate_a": 0.0396,
+     "home_ht_scored_last5": 0.9974,
+     "away_ht_scored_last5": 0.9974,
+     "home_ht_conceded_last5": 0.9974,
+     "away_ht_conceded_last5": 0.9974,
+     "home_ht_attack_str": 0.9974,
+     "away_ht_attack_str": 0.9974,
+     "combined_ht_goals_avg": 0.0,
+     "home_ht_over05_rate": 0.9974,
+     "away_ht_over05_rate": 0.9974,
+     "home_ht_over15_rate": 0.9974,
+     "away_ht_over15_rate": 0.9974,
+     "p_over25_poisson_dc": 0.0061
+    },
+    "MODERN": {
+     "home_scored_last5": 0.0,
+     "away_scored_last5": 0.004,
+     "home_conceded_last5": 0.0,
+     "away_conceded_last5": 0.004,
+     "home_over25_last5": 0.0,
+     "away_over25_last5": 0.004,
+     "home_attack_str": 0.0,
+     "away_attack_str": 0.004,
+     "home_defense_str": 0.0,
+     "away_defense_str": 0.004,
+     "home_advantage": 0.0,
+     "away_home_adv_factor": 0.0,
+     "home_rest_days": 0.0,
+     "away_rest_days": 0.004,
+     "home_corners_pg_roll": 0.0977,
+     "away_corners_pg_roll": 0.1011,
+     "home_fouls_pg_roll": 0.0977,
+     "away_fouls_pg_roll": 0.1011,
+     "combined_sot_ratio": 0.0,
+     "home_xg_last5": 0.9623,
+     "away_xg_last5": 0.9622,
+     "home_insidebox_last5": 0.9559,
+     "away_insidebox_last5": 0.9558,
+     "home_season_goals_h": 0.0567,
+     "away_season_goals_a": 0.0568,
+     "home_season_conceded_h": 0.0567,
+     "away_season_conceded_a": 0.0568,
+     "home_cs_rate_h": 0.0567,
+     "away_cs_rate_a": 0.0568,
+     "home_ht_scored_last5": 0.0121,
+     "away_ht_scored_last5": 0.0139,
+     "home_ht_conceded_last5": 0.0121,
+     "away_ht_conceded_last5": 0.0139,
+     "home_ht_attack_str": 0.0121,
+     "away_ht_attack_str": 0.0139,
+     "combined_ht_goals_avg": 0.0,
+     "home_ht_over05_rate": 0.0121,
+     "away_ht_over05_rate": 0.0139,
+     "home_ht_over15_rate": 0.0121,
+     "away_ht_over15_rate": 0.0139,
+     "p_over25_poisson_dc": 0.004
+    }
+   },
+   "source_predictable_from_missingness_auc": 0.9986
+  },
+  "newformat": {
+   "rows_by_source": {
+    "MODERN": 27392,
+    "ARCHIVE": 1219
+   },
+   "rows_by_season_source": {
+    "2019": {
+     "ARCHIVE": 0,
+     "MODERN": 2932
+    },
+    "2020": {
+     "ARCHIVE": 0,
+     "MODERN": 3135
+    },
+    "2021": {
+     "ARCHIVE": 153,
+     "MODERN": 4505
+    },
+    "2022": {
+     "ARCHIVE": 270,
+     "MODERN": 4618
+    },
+    "2023": {
+     "ARCHIVE": 323,
+     "MODERN": 4753
+    },
+    "2024": {
+     "ARCHIVE": 314,
+     "MODERN": 4736
+    },
+    "2025": {
+     "ARCHIVE": 159,
+     "MODERN": 2713
+    }
+   },
+   "target_rate_by_source": {
+    "ARCHIVE": 0.3724,
+    "MODERN": 0.2781
+   },
+   "missing_rate_by_source": {
+    "ARCHIVE": {
+     "home_scored_last5": 0.0,
+     "away_scored_last5": 0.0033,
+     "home_conceded_last5": 0.0,
+     "away_conceded_last5": 0.0033,
+     "home_over25_last5": 0.0,
+     "away_over25_last5": 0.0033,
+     "home_attack_str": 0.0,
+     "away_attack_str": 0.0033,
+     "home_defense_str": 0.0,
+     "away_defense_str": 0.0033,
+     "home_advantage": 0.0,
+     "away_home_adv_factor": 0.0,
+     "home_rest_days": 0.0,
+     "away_rest_days": 0.0033,
+     "home_corners_pg_roll": 0.0,
+     "away_corners_pg_roll": 0.0033,
+     "home_fouls_pg_roll": 0.0,
+     "away_fouls_pg_roll": 0.0033,
+     "combined_sot_ratio": 0.0,
+     "home_season_goals_h": 0.073,
+     "away_season_goals_a": 0.0755,
+     "home_season_conceded_h": 0.073,
+     "away_season_conceded_a": 0.0755,
+     "home_cs_rate_h": 0.073,
+     "away_cs_rate_a": 0.0755,
+     "p_over25_poisson_dc": 0.0033
+    },
+    "MODERN": {
+     "home_scored_last5": 0.0,
+     "away_scored_last5": 0.0022,
+     "home_conceded_last5": 0.0,
+     "away_conceded_last5": 0.0022,
+     "home_over25_last5": 0.0,
+     "away_over25_last5": 0.0022,
+     "home_attack_str": 0.0,
+     "away_attack_str": 0.0022,
+     "home_defense_str": 0.0,
+     "away_defense_str": 0.0022,
+     "home_advantage": 0.0,
+     "away_home_adv_factor": 0.0,
+     "home_rest_days": 0.0,
+     "away_rest_days": 0.0022,
+     "home_corners_pg_roll": 0.0345,
+     "away_corners_pg_roll": 0.0367,
+     "home_fouls_pg_roll": 0.0345,
+     "away_fouls_pg_roll": 0.0367,
+     "combined_sot_ratio": 0.0,
+     "home_season_goals_h": 0.0599,
+     "away_season_goals_a": 0.0612,
+     "home_season_conceded_h": 0.0599,
+     "away_season_conceded_a": 0.0612,
+     "home_cs_rate_h": 0.0599,
+     "away_cs_rate_a": 0.0612,
+     "p_over25_poisson_dc": 0.0022
+    }
+   },
+   "source_predictable_from_missingness_auc": 0.5267
+  }
+ },
+ "tracks": {
+  "standard": {
+   "n": 7235,
+   "matchdays": 329,
+   "dates": [
+    "2025-08-10",
+    "2026-10-28"
+   ],
+   "arms": {
+    "CHAMPION_LEGACY_REPRO": {
+     "n": 7235,
+     "log_loss": 0.60375,
+     "brier": 0.20674,
+     "ece": 0.01902,
+     "mean_p": 0.2934,
+     "base_rate": 0.294,
+     "auc": 0.542,
+     "cal_slope": 0.649,
+     "cal_intercept": -0.303
+    },
+    "CHAMPION_BASEMEAN": {
+     "n": 7235,
+     "log_loss": 0.60554,
+     "brier": 0.2074,
+     "ece": 0.02368,
+     "mean_p": 0.2819,
+     "base_rate": 0.294,
+     "auc": 0.5411,
+     "cal_slope": 0.529,
+     "cal_intercept": -0.377,
+     "delta_ll_vs_CHAMPION_LEGACY_REPRO": 0.00179,
+     "delta_ll_vs_CHAMPION_LEGACY_REPRO_ci95": [
+      0.00028,
+      0.00337
+     ],
+     "delta_brier_vs_CHAMPION_LEGACY_REPRO": 0.00066,
+     "delta_brier_vs_CHAMPION_LEGACY_REPRO_ci95": [
+      4e-05,
+      0.00133
+     ]
+    },
+    "CHALLENGER_POOLED": {
+     "n": 7235,
+     "log_loss": 0.6017,
+     "brier": 0.20581,
+     "ece": 0.01907,
+     "mean_p": 0.2824,
+     "base_rate": 0.294,
+     "auc": 0.5552,
+     "cal_slope": 0.765,
+     "cal_intercept": -0.16,
+     "delta_ll_vs_CHAMPION_LEGACY_REPRO": -0.00206,
+     "delta_ll_vs_CHAMPION_LEGACY_REPRO_ci95": [
+      -0.00389,
+      -0.00011
+     ],
+     "delta_brier_vs_CHAMPION_LEGACY_REPRO": -0.00093,
+     "delta_brier_vs_CHAMPION_LEGACY_REPRO_ci95": [
+      -0.00169,
+      -0.00011
+     ]
+    },
+    "CHALLENGER_STANDARD": {
+     "n": 7235,
+     "log_loss": 0.60295,
+     "brier": 0.20639,
+     "ece": 0.01753,
+     "mean_p": 0.2765,
+     "base_rate": 0.294,
+     "auc": 0.5497,
+     "cal_slope": 1.154,
+     "cal_intercept": 0.233,
+     "delta_ll_vs_CHAMPION_LEGACY_REPRO": -0.0008,
+     "delta_ll_vs_CHAMPION_LEGACY_REPRO_ci95": [
+      -0.00279,
+      0.00116
+     ],
+     "delta_brier_vs_CHAMPION_LEGACY_REPRO": -0.00035,
+     "delta_brier_vs_CHAMPION_LEGACY_REPRO_ci95": [
+      -0.00122,
+      0.0005
+     ]
+    }
+   },
+   "track_vs_pooled": {
+    "n": 7235,
+    "log_loss": 0.60295,
+    "brier": 0.20639,
+    "ece": 0.01753,
+    "mean_p": 0.2765,
+    "base_rate": 0.294,
+    "auc": 0.5497,
+    "cal_slope": 1.154,
+    "cal_intercept": 0.233,
+    "delta_ll_vs_CHALLENGER_POOLED": 0.00126,
+    "delta_ll_vs_CHALLENGER_POOLED_ci95": [
+     -0.00087,
+     0.00331
+    ],
+    "delta_brier_vs_CHALLENGER_POOLED": 0.00057,
+    "delta_brier_vs_CHALLENGER_POOLED_ci95": [
+     -0.00034,
+     0.00146
+    ]
+   },
+   "live_from_2026_09_01": {
+    "n": 1049,
+    "matchdays": 49,
+    "dates": [
+     "2026-09-01",
+     "2026-10-28"
+    ],
+    "arms": {
+     "CHAMPION_LEGACY_REPRO": {
+      "n": 1049,
+      "log_loss": 0.63682,
+      "brier": 0.22245,
+      "ece": 0.03712,
+      "mean_p": 0.3076,
+      "base_rate": 0.3308,
+      "auc": 0.5499,
+      "cal_slope": 0.459,
+      "cal_intercept": -0.329
+     },
+     "CHAMPION_BASEMEAN": {
+      "n": 1049,
+      "log_loss": 0.64111,
+      "brier": 0.22419,
+      "ece": 0.05156,
+      "mean_p": 0.3008,
+      "base_rate": 0.3308,
+      "auc": 0.5381,
+      "cal_slope": 0.33,
+      "cal_intercept": -0.422,
+      "delta_ll_vs_CHAMPION_LEGACY_REPRO": 0.00429,
+      "delta_ll_vs_CHAMPION_LEGACY_REPRO_ci95": [
+       -0.00065,
+       0.00878
+      ],
+      "delta_brier_vs_CHAMPION_LEGACY_REPRO": 0.00173,
+      "delta_brier_vs_CHAMPION_LEGACY_REPRO_ci95": [
+       -0.00044,
+       0.0037
+      ]
+     },
+     "CHALLENGER_POOLED": {
+      "n": 1049,
+      "log_loss": 0.63277,
+      "brier": 0.22057,
+      "ece": 0.04593,
+      "mean_p": 0.2959,
+      "base_rate": 0.3308,
+      "auc": 0.5769,
+      "cal_slope": 0.689,
+      "cal_intercept": -0.101,
+      "delta_ll_vs_CHAMPION_LEGACY_REPRO": -0.00405,
+      "delta_ll_vs_CHAMPION_LEGACY_REPRO_ci95": [
+       -0.00846,
+       0.00096
+      ],
+      "delta_brier_vs_CHAMPION_LEGACY_REPRO": -0.00188,
+      "delta_brier_vs_CHAMPION_LEGACY_REPRO_ci95": [
+       -0.00378,
+       0.00021
+      ]
+     },
+     "CHALLENGER_STANDARD": {
+      "n": 1049,
+      "log_loss": 0.63599,
+      "brier": 0.22188,
+      "ece": 0.05223,
+      "mean_p": 0.2808,
+      "base_rate": 0.3308,
+      "auc": 0.5768,
+      "cal_slope": 1.145,
+      "cal_intercept": 0.373,
+      "delta_ll_vs_CHAMPION_LEGACY_REPRO": -0.00083,
+      "delta_ll_vs_CHAMPION_LEGACY_REPRO_ci95": [
+       -0.00687,
+       0.00398
+      ],
+      "delta_brier_vs_CHAMPION_LEGACY_REPRO": -0.00058,
+      "delta_brier_vs_CHAMPION_LEGACY_REPRO_ci95": [
+       -0.00326,
+       0.0015
+      ]
+     }
+    }
+   },
+   "by_season": {
+    "2025/26": {
+     "CHAMPION_LEGACY_REPRO": {
+      "n": 5739,
+      "log_loss": 0.59592,
+      "brier": 0.203,
+      "ece": 0.02328,
+      "mean_p": 0.2904,
+      "base_rate": 0.2838,
+      "auc": 0.5307,
+      "cal_slope": 0.566,
+      "cal_intercept": -0.418
+     },
+     "CHAMPION_BASEMEAN": {
+      "n": 5739,
+      "log_loss": 0.59698,
+      "brier": 0.20336,
+      "ece": 0.02562,
+      "mean_p": 0.2781,
+      "base_rate": 0.2838,
+      "auc": 0.5328,
+      "cal_slope": 0.475,
+      "cal_intercept": -0.469
+     },
+     "CHALLENGER_POOLED": {
+      "n": 5739,
+      "log_loss": 0.59385,
+      "brier": 0.2021,
+      "ece": 0.01906,
+      "mean_p": 0.2799,
+      "base_rate": 0.2838,
+      "auc": 0.5437,
+      "cal_slope": 0.699,
+      "cal_intercept": -0.263
+     },
+     "CHALLENGER_STANDARD": {
+      "n": 5739,
+      "log_loss": 0.59407,
+      "brier": 0.20223,
+      "ece": 0.00837,
+      "mean_p": 0.2755,
+      "base_rate": 0.2838,
+      "auc": 0.5397,
+      "cal_slope": 1.052,
+      "cal_intercept": 0.092
+     }
+    },
+    "2026/27": {
+     "CHAMPION_LEGACY_REPRO": {
+      "n": 1496,
+      "log_loss": 0.63379,
+      "brier": 0.22108,
+      "ece": 0.03715,
+      "mean_p": 0.3049,
+      "base_rate": 0.3329,
+      "auc": 0.5684,
+      "cal_slope": 0.727,
+      "cal_intercept": -0.092
+     },
+     "CHAMPION_BASEMEAN": {
+      "n": 1496,
+      "log_loss": 0.63841,
+      "brier": 0.22292,
+      "ece": 0.04639,
+      "mean_p": 0.2962,
+      "base_rate": 0.3329,
+      "auc": 0.5558,
+      "cal_slope": 0.542,
+      "cal_intercept": -0.22
+     },
+     "CHALLENGER_POOLED": {
+      "n": 1496,
+      "log_loss": 0.6318,
+      "brier": 0.22007,
+      "ece": 0.04616,
+      "mean_p": 0.292,
+      "base_rate": 0.3329,
+      "auc": 0.5863,
+      "cal_slope": 0.835,
+      "cal_intercept": 0.05
+     },
+     "CHALLENGER_STANDARD": {
+      "n": 1496,
+      "log_loss": 0.63703,
+      "brier": 0.22232,
+      "ece": 0.0537,
+      "mean_p": 0.2802,
+      "base_rate": 0.3329,
+      "auc": 0.5771,
+      "cal_slope": 1.278,
+      "cal_intercept": 0.511
+     }
+    }
+   },
+   "market": {
+    "status": "OK",
+    "price_source": "standard_sidemarket_odds_history.csv first pre-kickoff two-sided quote",
+    "price_class": "GENUINE_TWO_SIDED_ENTRY_DEVIG",
+    "n_priced": 991,
+    "n_negative_margin_excluded": 0,
+    "median_margin": 0.067,
+    "market": {
+     "n": 991,
+     "log_loss": 0.6249,
+     "brier": 0.21695,
+     "ece": 0.01516,
+     "mean_p": 0.3308,
+     "base_rate": 0.331,
+     "auc": 0.583,
+     "cal_slope": 0.895,
+     "cal_intercept": -0.071
+    },
+    "arms_on_priced_rows": {
+     "CHAMPION_LEGACY_REPRO": {
+      "model": {
+       "n": 991,
+       "log_loss": 0.6426,
+       "brier": 0.22485,
+       "ece": 0.04243,
+       "mean_p": 0.3089,
+       "base_rate": 0.331,
+       "auc": 0.5221,
+       "cal_slope": 0.165,
+       "cal_intercept": -0.569
+      },
+      "residual_vs_market": {
+       "gain": -0.0029,
+       "gain_ci95": [
+        -0.00504,
+        -0.0014
+       ],
+       "weight_on_model": 0.286,
+       "n_fit": 491,
+       "n_score": 500
+      }
+     },
+     "CHAMPION_BASEMEAN": {
+      "model": {
+       "n": 991,
+       "log_loss": 0.64723,
+       "brier": 0.22649,
+       "ece": 0.05759,
+       "mean_p": 0.3013,
+       "base_rate": 0.331,
+       "auc": 0.5115,
+       "cal_slope": 0.083,
+       "cal_intercept": -0.632
+      },
+      "residual_vs_market": {
+       "gain": -0.00337,
+       "gain_ci95": [
+        -0.00603,
+        -0.0007
+       ],
+       "weight_on_model": 0.27,
+       "n_fit": 491,
+       "n_score": 500
+      }
+     },
+     "CHALLENGER_POOLED": {
+      "model": {
+       "n": 991,
+       "log_loss": 0.65212,
+       "brier": 0.2288,
+       "ece": 0.06335,
+       "mean_p": 0.2966,
+       "base_rate": 0.331,
+       "auc": 0.5024,
+       "cal_slope": -0.061,
+       "cal_intercept": -0.758
+      },
+      "residual_vs_market": {
+       "gain": -0.00302,
+       "gain_ci95": [
+        -0.00707,
+        -0.00015
+       ],
+       "weight_on_model": 0.645,
+       "n_fit": 491,
+       "n_score": 500
+      }
+     },
+     "CHALLENGER_STANDARD": {
+      "model": {
+       "n": 991,
+       "log_loss": 0.64663,
+       "brier": 0.22619,
+       "ece": 0.05602,
+       "mean_p": 0.2814,
+       "base_rate": 0.331,
+       "auc": 0.4888,
+       "cal_slope": -0.317,
+       "cal_intercept": -1.003
+      },
+      "residual_vs_market": {
+       "gain": -0.00305,
+       "gain_ci95": [
+        -0.00708,
+        0.00137
+       ],
+       "weight_on_model": 1.27,
+       "n_fit": 491,
+       "n_score": 500
+      }
+     }
+    }
+   }
+  },
+  "newformat": {
+   "n": 5906,
+   "matchdays": 386,
+   "dates": [
+    "2025-08-10",
+    "2026-10-30"
+   ],
+   "arms": {
+    "CHAMPION_LEGACY_REPRO": {
+     "n": 5906,
+     "log_loss": 0.6088,
+     "brier": 0.20951,
+     "ece": 0.00869,
+     "mean_p": 0.3068,
+     "base_rate": 0.3122,
+     "auc": 0.5931,
+     "cal_slope": 1.212,
+     "cal_intercept": 0.196
+    },
+    "CHAMPION_BASEMEAN": {
+     "n": 5906,
+     "log_loss": 0.61133,
+     "brier": 0.21067,
+     "ece": 0.01443,
+     "mean_p": 0.3022,
+     "base_rate": 0.3122,
+     "auc": 0.583,
+     "cal_slope": 0.948,
+     "cal_intercept": 0.005,
+     "delta_ll_vs_CHAMPION_LEGACY_REPRO": 0.00253,
+     "delta_ll_vs_CHAMPION_LEGACY_REPRO_ci95": [
+      0.00096,
+      0.00407
+     ],
+     "delta_brier_vs_CHAMPION_LEGACY_REPRO": 0.00116,
+     "delta_brier_vs_CHAMPION_LEGACY_REPRO_ci95": [
+      0.00047,
+      0.00182
+     ]
+    },
+    "CHALLENGER_POOLED": {
+     "n": 5906,
+     "log_loss": 0.60513,
+     "brier": 0.20797,
+     "ece": 0.01814,
+     "mean_p": 0.2975,
+     "base_rate": 0.3122,
+     "auc": 0.6077,
+     "cal_slope": 1.145,
+     "cal_intercept": 0.194,
+     "delta_ll_vs_CHAMPION_LEGACY_REPRO": -0.00367,
+     "delta_ll_vs_CHAMPION_LEGACY_REPRO_ci95": [
+      -0.00645,
+      -0.00105
+     ],
+     "delta_brier_vs_CHAMPION_LEGACY_REPRO": -0.00154,
+     "delta_brier_vs_CHAMPION_LEGACY_REPRO_ci95": [
+      -0.00276,
+      -0.00034
+     ]
+    },
+    "CHALLENGER_NEWFORMAT": {
+     "n": 5906,
+     "log_loss": 0.60588,
+     "brier": 0.20827,
+     "ece": 0.01589,
+     "mean_p": 0.3006,
+     "base_rate": 0.3122,
+     "auc": 0.6038,
+     "cal_slope": 0.994,
+     "cal_intercept": 0.052,
+     "delta_ll_vs_CHAMPION_LEGACY_REPRO": -0.00292,
+     "delta_ll_vs_CHAMPION_LEGACY_REPRO_ci95": [
+      -0.00571,
+      -0.0004
+     ],
+     "delta_brier_vs_CHAMPION_LEGACY_REPRO": -0.00124,
+     "delta_brier_vs_CHAMPION_LEGACY_REPRO_ci95": [
+      -0.00248,
+      -0.00012
+     ]
+    }
+   },
+   "track_vs_pooled": {
+    "n": 5906,
+    "log_loss": 0.60588,
+    "brier": 0.20827,
+    "ece": 0.01589,
+    "mean_p": 0.3006,
+    "base_rate": 0.3122,
+    "auc": 0.6038,
+    "cal_slope": 0.994,
+    "cal_intercept": 0.052,
+    "delta_ll_vs_CHALLENGER_POOLED": 0.00075,
+    "delta_ll_vs_CHALLENGER_POOLED_ci95": [
+     -0.00084,
+     0.00233
+    ],
+    "delta_brier_vs_CHALLENGER_POOLED": 0.0003,
+    "delta_brier_vs_CHALLENGER_POOLED_ci95": [
+     -0.00042,
+     0.00099
+    ]
+   },
+   "live_from_2026_09_01": {
+    "n": 785,
+    "matchdays": 56,
+    "dates": [
+     "2026-09-01",
+     "2026-10-30"
+    ],
+    "arms": {
+     "CHAMPION_LEGACY_REPRO": {
+      "n": 785,
+      "log_loss": 0.62856,
+      "brier": 0.2188,
+      "ece": 0.028,
+      "mean_p": 0.3148,
+      "base_rate": 0.3414,
+      "auc": 0.5989,
+      "cal_slope": 1.41,
+      "cal_intercept": 0.437
+     },
+     "CHAMPION_BASEMEAN": {
+      "n": 785,
+      "log_loss": 0.6345,
+      "brier": 0.22153,
+      "ece": 0.03536,
+      "mean_p": 0.3137,
+      "base_rate": 0.3414,
+      "auc": 0.577,
+      "cal_slope": 0.958,
+      "cal_intercept": 0.096,
+      "delta_ll_vs_CHAMPION_LEGACY_REPRO": 0.00594,
+      "delta_ll_vs_CHAMPION_LEGACY_REPRO_ci95": [
+       0.00106,
+       0.01052
+      ],
+      "delta_brier_vs_CHAMPION_LEGACY_REPRO": 0.00273,
+      "delta_brier_vs_CHAMPION_LEGACY_REPRO_ci95": [
+       0.00053,
+       0.00469
+      ]
+     },
+     "CHALLENGER_POOLED": {
+      "n": 785,
+      "log_loss": 0.63011,
+      "brier": 0.21949,
+      "ece": 0.03799,
+      "mean_p": 0.3051,
+      "base_rate": 0.3414,
+      "auc": 0.6001,
+      "cal_slope": 1.11,
+      "cal_intercept": 0.26,
+      "delta_ll_vs_CHAMPION_LEGACY_REPRO": 0.00155,
+      "delta_ll_vs_CHAMPION_LEGACY_REPRO_ci95": [
+       -0.00644,
+       0.00967
+      ],
+      "delta_brier_vs_CHAMPION_LEGACY_REPRO": 0.00069,
+      "delta_brier_vs_CHAMPION_LEGACY_REPRO_ci95": [
+       -0.00278,
+       0.00426
+      ]
+     },
+     "CHALLENGER_NEWFORMAT": {
+      "n": 785,
+      "log_loss": 0.63011,
+      "brier": 0.2194,
+      "ece": 0.04233,
+      "mean_p": 0.3096,
+      "base_rate": 0.3414,
+      "auc": 0.5955,
+      "cal_slope": 0.993,
+      "cal_intercept": 0.144,
+      "delta_ll_vs_CHAMPION_LEGACY_REPRO": 0.00155,
+      "delta_ll_vs_CHAMPION_LEGACY_REPRO_ci95": [
+       -0.00586,
+       0.00923
+      ],
+      "delta_brier_vs_CHAMPION_LEGACY_REPRO": 0.0006,
+      "delta_brier_vs_CHAMPION_LEGACY_REPRO_ci95": [
+       -0.00264,
+       0.00398
+      ]
+     }
+    }
+   },
+   "by_season": {
+    "2025": {
+     "CHAMPION_LEGACY_REPRO": {
+      "n": 1908,
+      "log_loss": 0.61097,
+      "brier": 0.2107,
+      "ece": 0.01345,
+      "mean_p": 0.3059,
+      "base_rate": 0.3192,
+      "auc": 0.6134,
+      "cal_slope": 1.413,
+      "cal_intercept": 0.395
+     },
+     "CHAMPION_BASEMEAN": {
+      "n": 1908,
+      "log_loss": 0.6129,
+      "brier": 0.21158,
+      "ece": 0.02345,
+      "mean_p": 0.2965,
+      "base_rate": 0.3192,
+      "auc": 0.6071,
+      "cal_slope": 1.177,
+      "cal_intercept": 0.259
+     },
+     "CHALLENGER_POOLED": {
+      "n": 1908,
+      "log_loss": 0.60548,
+      "brier": 0.20827,
+      "ece": 0.02354,
+      "mean_p": 0.2985,
+      "base_rate": 0.3192,
+      "auc": 0.626,
+      "cal_slope": 1.353,
+      "cal_intercept": 0.395
+     },
+     "CHALLENGER_NEWFORMAT": {
+      "n": 1908,
+      "log_loss": 0.6048,
+      "brier": 0.20798,
+      "ece": 0.01785,
+      "mean_p": 0.305,
+      "base_rate": 0.3192,
+      "auc": 0.6281,
+      "cal_slope": 1.185,
+      "cal_intercept": 0.217
+     }
+    },
+    "2026": {
+     "CHAMPION_LEGACY_REPRO": {
+      "n": 3998,
+      "log_loss": 0.60777,
+      "brier": 0.20894,
+      "ece": 0.01712,
+      "mean_p": 0.3072,
+      "base_rate": 0.3089,
+      "auc": 0.5832,
+      "cal_slope": 1.117,
+      "cal_intercept": 0.101
+     },
+     "CHAMPION_BASEMEAN": {
+      "n": 3998,
+      "log_loss": 0.61059,
+      "brier": 0.21023,
+      "ece": 0.02362,
+      "mean_p": 0.305,
+      "base_rate": 0.3089,
+      "auc": 0.5721,
+      "cal_slope": 0.852,
+      "cal_intercept": -0.101
+     },
+     "CHALLENGER_POOLED": {
+      "n": 3998,
+      "log_loss": 0.60496,
+      "brier": 0.20783,
+      "ece": 0.01706,
+      "mean_p": 0.297,
+      "base_rate": 0.3089,
+      "auc": 0.5986,
+      "cal_slope": 1.043,
+      "cal_intercept": 0.095
+     },
+     "CHALLENGER_NEWFORMAT": {
+      "n": 3998,
+      "log_loss": 0.6064,
+      "brier": 0.2084,
+      "ece": 0.01924,
+      "mean_p": 0.2985,
+      "base_rate": 0.3089,
+      "auc": 0.5914,
+      "cal_slope": 0.897,
+      "cal_intercept": -0.035
+     }
+    }
+   },
+   "market": {
+    "status": "OK",
+    "price_source": "newformat_odds_history.csv first pre-kickoff two-sided quote (summer 2026 excluded)",
+    "price_class": "GENUINE_TWO_SIDED_ENTRY_DEVIG",
+    "n_priced": 794,
+    "n_negative_margin_excluded": 0,
+    "median_margin": 0.0718,
+    "market": {
+     "n": 794,
+     "log_loss": 0.61864,
+     "brier": 0.21455,
+     "ece": 0.0424,
+     "mean_p": 0.3448,
+     "base_rate": 0.3451,
+     "auc": 0.6334,
+     "cal_slope": 1.084,
+     "cal_intercept": 0.052
+    },
+    "arms_on_priced_rows": {
+     "CHAMPION_LEGACY_REPRO": {
+      "model": {
+       "n": 794,
+       "log_loss": 0.65591,
+       "brier": 0.23087,
+       "ece": 0.05162,
+       "mean_p": 0.3095,
+       "base_rate": 0.3451,
+       "auc": 0.5053,
+       "cal_slope": 0.012,
+       "cal_intercept": -0.631
+      },
+      "residual_vs_market": {
+       "gain": -0.00667,
+       "gain_ci95": [
+        -0.01047,
+        -0.00388
+       ],
+       "weight_on_model": -0.426,
+       "n_fit": 382,
+       "n_score": 412
+      }
+     },
+     "CHAMPION_BASEMEAN": {
+      "model": {
+       "n": 794,
+       "log_loss": 0.66259,
+       "brier": 0.23348,
+       "ece": 0.073,
+       "mean_p": 0.305,
+       "base_rate": 0.3451,
+       "auc": 0.49,
+       "cal_slope": -0.135,
+       "cal_intercept": -0.755
+      },
+      "residual_vs_market": {
+       "gain": -0.00627,
+       "gain_ci95": [
+        -0.01198,
+        -0.00223
+       ],
+       "weight_on_model": -0.512,
+       "n_fit": 382,
+       "n_score": 412
+      }
+     },
+     "CHALLENGER_POOLED": {
+      "model": {
+       "n": 794,
+       "log_loss": 0.66131,
+       "brier": 0.23282,
+       "ece": 0.06563,
+       "mean_p": 0.3034,
+       "base_rate": 0.3451,
+       "auc": 0.5019,
+       "cal_slope": 0.034,
+       "cal_intercept": -0.612
+      },
+      "residual_vs_market": {
+       "gain": -0.0008,
+       "gain_ci95": [
+        -0.00508,
+        0.00445
+       ],
+       "weight_on_model": 0.386,
+       "n_fit": 382,
+       "n_score": 412
+      }
+     },
+     "CHALLENGER_NEWFORMAT": {
+      "model": {
+       "n": 794,
+       "log_loss": 0.66364,
+       "brier": 0.23385,
+       "ece": 0.07422,
+       "mean_p": 0.3068,
+       "base_rate": 0.3451,
+       "auc": 0.4949,
+       "cal_slope": -0.007,
+       "cal_intercept": -0.647
+      },
+      "residual_vs_market": {
+       "gain": -0.00506,
+       "gain_ci95": [
+        -0.01242,
+        0.00129
+       ],
+       "weight_on_model": -0.519,
+       "n_fit": 382,
+       "n_score": 412
+      }
+     }
+    }
+   }
+  }
+ },
+ "arms_metadata": {
+  "CHAMPION_LEGACY_REPRO": {
+   "recipe": "legacy_v9",
+   "feature_cols": [
+    "home_scored_last5",
+    "away_scored_last5",
+    "home_conceded_last5",
+    "away_conceded_last5",
+    "home_over25_last5",
+    "away_over25_last5",
+    "home_attack_str",
+    "away_attack_str",
+    "home_defense_str",
+    "away_defense_str",
+    "home_advantage",
+    "away_home_adv_factor",
+    "home_rest_days",
+    "away_rest_days",
+    "home_corners_pg_roll",
+    "away_corners_pg_roll",
+    "home_fouls_pg_roll",
+    "away_fouls_pg_roll",
+    "combined_sot_ratio",
+    "home_xg_last5",
+    "away_xg_last5",
+    "home_insidebox_last5",
+    "away_insidebox_last5",
+    "home_season_goals_h",
+    "away_season_goals_a",
+    "home_season_conceded_h",
+    "away_season_conceded_a",
+    "home_cs_rate_h",
+    "away_cs_rate_a",
+    "home_ht_scored_last5",
+    "away_ht_scored_last5",
+    "home_ht_conceded_last5",
+    "away_ht_conceded_last5",
+    "home_ht_attack_str",
+    "away_ht_attack_str",
+    "combined_ht_goals_avg",
+    "home_ht_over05_rate",
+    "away_ht_over05_rate",
+    "home_ht_over15_rate",
+    "away_ht_over15_rate",
+    "bookmaker_overround",
+    "p_over25_poisson_dc"
+   ],
+   "metrics": {
+    "logistic": {
+     "accuracy": 0.701,
+     "auc": 0.5734,
+     "log_loss": 0.60379,
+     "n_train": 50927,
+     "n_cal": 8988,
+     "n_test": 15403
+    },
+    "gradient_boost": {
+     "accuracy": 0.6988,
+     "auc": 0.5596,
+     "log_loss": 0.6075,
+     "n_train": 50927,
+     "n_cal": 8988,
+     "n_test": 15403
+    },
+    "lightgbm": {
+     "accuracy": 0.6988,
+     "auc": 0.5511,
+     "log_loss": 0.60933,
+     "n_train": 50927,
+     "n_cal": 8988,
+     "n_test": 15403
+    },
+    "__meta__": {}
+   },
+   "note": "meta-logistic fitted ON the holdout (bug 6)"
+  },
+  "CHALLENGER_POOLED": {
+   "target": "over35",
+   "feature_cols": [
+    "home_scored_last5",
+    "away_scored_last5",
+    "home_conceded_last5",
+    "away_conceded_last5",
+    "home_over25_last5",
+    "away_over25_last5",
+    "home_attack_str",
+    "away_attack_str",
+    "home_defense_str",
+    "away_defense_str",
+    "home_advantage",
+    "away_home_adv_factor",
+    "home_rest_days",
+    "away_rest_days",
+    "home_corners_pg_roll",
+    "away_corners_pg_roll",
+    "home_fouls_pg_roll",
+    "away_fouls_pg_roll",
+    "combined_sot_ratio",
+    "home_season_goals_h",
+    "away_season_goals_a",
+    "home_season_conceded_h",
+    "away_season_conceded_a",
+    "home_cs_rate_h",
+    "away_cs_rate_a",
+    "home_ht_scored_last5",
+    "away_ht_scored_last5",
+    "home_ht_conceded_last5",
+    "away_ht_conceded_last5",
+    "home_ht_attack_str",
+    "away_ht_attack_str",
+    "combined_ht_goals_avg",
+    "home_ht_over05_rate",
+    "away_ht_over05_rate",
+    "home_ht_over15_rate",
+    "away_ht_over15_rate",
+    "p_over25_poisson_dc"
+   ],
+   "metrics": {
+    "logistic": {
+     "accuracy": 0.6975,
+     "auc": 0.5848,
+     "log_loss": 0.60464,
+     "brier": 0.20739,
+     "ece": 0.03281,
+     "n_train": 41995,
+     "n_cal": 5184,
+     "n_meta": 5318,
+     "n_test": 13141,
+     "evaluated_on": "holdout"
+    },
+    "gradient_boost": {
+     "accuracy": 0.6993,
+     "auc": 0.5689,
+     "log_loss": 0.60792,
+     "brier": 0.20872,
+     "ece": 0.03065,
+     "n_train": 41995,
+     "n_cal": 5184,
+     "n_meta": 5318,
+     "n_test": 13141,
+     "evaluated_on": "holdout"
+    },
+    "lightgbm": {
+     "accuracy": 0.6992,
+     "auc": 0.5681,
+     "log_loss": 0.60785,
+     "brier": 0.20869,
+     "ece": 0.03022,
+     "n_train": 41995,
+     "n_cal": 5184,
+     "n_meta": 5318,
+     "n_test": 13141,
+     "evaluated_on": "holdout"
+    },
+    "__meta__": {
+     "accuracy": 0.7004,
+     "auc": 0.582,
+     "log_loss": 0.60324,
+     "brier": 0.20678,
+     "ece": 0.0148,
+     "n_meta": 5318,
+     "n_test": 13141,
+     "evaluated_on": "holdout"
+    }
+   },
+   "recipe": "side_v9_repaired",
+   "model_recipe_version": "r2-repaired-1.0",
+   "imputer_version": "v9-train-only-imputer-1.1",
+   "blocks": {
+    "base": {
+     "rows": 41995,
+     "dates": [
+      "2019-02-22",
+      "2024-08-18"
+     ]
+    },
+    "calibration": {
+     "rows": 5184,
+     "dates": [
+      "2024-08-19",
+      "2025-01-31"
+     ]
+    },
+    "meta": {
+     "rows": 5318,
+     "dates": [
+      "2025-02-01",
+      "2025-08-09"
+     ]
+    },
+    "holdout": {
+     "rows": 13141,
+     "dates": [
+      "2025-08-10",
+      "2026-10-30"
+     ]
+    }
+   },
+   "served_holdout_metrics": {
+    "accuracy": 0.7004,
+    "auc": 0.582,
+    "log_loss": 0.60324,
+    "brier": 0.20678,
+    "ece": 0.0148
+   },
+   "n_features": 37,
+   "dropped_all_missing_features": [
+    "home_xg_last5",
+    "away_xg_last5",
+    "home_insidebox_last5",
+    "away_insidebox_last5"
+   ],
+   "block_definition": {
+    "holdout_start": "2025-08-10",
+    "pre_holdout_fractions": {
+     "base": [
+      0.0,
+      0.8
+     ],
+     "calibration": [
+      0.8,
+      0.9
+     ],
+     "meta": [
+      0.9,
+      1.0
+     ]
+    },
+    "whole_date_cuts": true,
+    "disjoint_asserted": true
+   },
+   "holdout_independence": {
+    "imputer_fit": "base",
+    "base_models_fit": "base",
+    "calibrators_fit": "calibration",
+    "meta_fit": "meta",
+    "holdout_labels_used_for_fitting": false
+   },
+   "weights": {
+    "column": "_sample_weight",
+    "travel_with_rows": true,
+    "alignment_verified": true,
+    "base_ess": 36735.3,
+    "recency": {
+     "version": "r2-recency-1.0",
+     "frozen_on": "2026-11-01",
+     "function": "season_age",
+     "params": {
+      "weights_by_age": {
+       "0": 4.0,
+       "1": 3.0,
+       "2": 2.0,
+       "3": 1.5
+      },
+      "older": 1.0,
+      "zero_seasons": [
+       "2019/20",
+       "2020/21"
+      ]
+     },
+     "as_of": "2025-08-09",
+     "rows": 52497,
+     "ess": 43049.7,
+     "ess_share": 0.82,
+     "per_season": {
+      "2019": {
+       "rows": 2932,
+       "mean_weight": 1.0,
+       "weight_share": 0.0293
+      },
+      "2020": {
+       "rows": 3135,
+       "mean_weight": 1.0,
+       "weight_share": 0.0313
+      },
+      "2021": {
+       "rows": 4658,
+       "mean_weight": 1.0,
+       "weight_share": 0.0466
+      },
+      "2021/22": {
+       "rows": 5820,
+       "mean_weight": 1.0,
+       "weight_share": 0.0582
+      },
+      "2022": {
+       "rows": 4888,
+       "mean_weight": 1.5,
+       "weight_share": 0.0733
+      },
+      "2022/23": {
+       "rows": 5936,
+       "mean_weight": 1.5,
+       "weight_share": 0.089
+      },
+      "2023": {
+       "rows": 5076,
+       "mean_weight": 2.0,
+       "weight_share": 0.1015
+      },
+      "2023/24": {
+       "rows": 6048,
+       "mean_weight": 2.0,
+       "weight_share": 0.1209
+      },
+      "2024": {
+       "rows": 5050,
+       "mean_weight": 3.0,
+       "weight_share": 0.1514
+      },
+      "2024/25": {
+       "rows": 5933,
+       "mean_weight": 3.0,
+       "weight_share": 0.1779
+      },
+      "2025": {
+       "rows": 2872,
+       "mean_weight": 4.0,
+       "weight_share": 0.1148
+      },
+      "2025/26": {
+       "rows": 149,
+       "mean_weight": 4.0,
+       "weight_share": 0.006
+      }
+     }
+    }
+   },
+   "training_start": "2019-02-22",
+   "training_end": "2025-08-09",
+   "training_cutoff": "2026-11-01",
+   "training_rows": 52497,
+   "frame_hash": "ff3c37713da3f059",
+   "code_sha": "1f25fe050dad0174cad011e3a73e40677b56a8d9",
+   "feature_recipe_version": "v9r-features-1.0",
+   "identity_version": "v9r-identity-1.0",
+   "provenance": {
+    "alias_map_file": "config/standard_ou25_identity_aliases.json",
+    "n_aliases": 142,
+    "task": "side_over35",
+    "group": "core",
+    "price_mode": "none",
+    "team_scope": "league",
+    "track": "pooled",
+    "arm": "CHALLENGER_POOLED"
+   }
+  },
+  "CHALLENGER_STANDARD": {
+   "target": "over35",
+   "feature_cols": [
+    "home_scored_last5",
+    "away_scored_last5",
+    "home_conceded_last5",
+    "away_conceded_last5",
+    "home_over25_last5",
+    "away_over25_last5",
+    "home_attack_str",
+    "away_attack_str",
+    "home_defense_str",
+    "away_defense_str",
+    "home_advantage",
+    "away_home_adv_factor",
+    "home_rest_days",
+    "away_rest_days",
+    "home_corners_pg_roll",
+    "away_corners_pg_roll",
+    "home_fouls_pg_roll",
+    "away_fouls_pg_roll",
+    "combined_sot_ratio",
+    "home_season_goals_h",
+    "away_season_goals_a",
+    "home_season_conceded_h",
+    "away_season_conceded_a",
+    "home_cs_rate_h",
+    "away_cs_rate_a",
+    "home_ht_scored_last5",
+    "away_ht_scored_last5",
+    "home_ht_conceded_last5",
+    "away_ht_conceded_last5",
+    "home_ht_attack_str",
+    "away_ht_attack_str",
+    "combined_ht_goals_avg",
+    "home_ht_over05_rate",
+    "away_ht_over05_rate",
+    "home_ht_over15_rate",
+    "away_ht_over15_rate",
+    "p_over25_poisson_dc"
+   ],
+   "metrics": {
+    "logistic": {
+     "accuracy": 0.7059,
+     "auc": 0.5576,
+     "log_loss": 0.60165,
+     "brier": 0.20581,
+     "ece": 0.01876,
+     "n_train": 19100,
+     "n_cal": 2343,
+     "n_meta": 2443,
+     "n_test": 7235,
+     "evaluated_on": "holdout"
+    },
+    "gradient_boost": {
+     "accuracy": 0.7056,
+     "auc": 0.5325,
+     "log_loss": 0.60527,
+     "brier": 0.20733,
+     "ece": 0.01788,
+     "n_train": 19100,
+     "n_cal": 2343,
+     "n_meta": 2443,
+     "n_test": 7235,
+     "evaluated_on": "holdout"
+    },
+    "lightgbm": {
+     "accuracy": 0.706,
+     "auc": 0.5386,
+     "log_loss": 0.60435,
+     "brier": 0.20696,
+     "ece": 0.01759,
+     "n_train": 19100,
+     "n_cal": 2343,
+     "n_meta": 2443,
+     "n_test": 7235,
+     "evaluated_on": "holdout"
+    },
+    "__meta__": {
+     "accuracy": 0.706,
+     "auc": 0.5497,
+     "log_loss": 0.60295,
+     "brier": 0.20639,
+     "ece": 0.01753,
+     "n_meta": 2443,
+     "n_test": 7235,
+     "evaluated_on": "holdout"
+    }
+   },
+   "recipe": "side_v9_repaired",
+   "model_recipe_version": "r2-repaired-1.0",
+   "imputer_version": "v9-train-only-imputer-1.1",
+   "blocks": {
+    "base": {
+     "rows": 19100,
+     "dates": [
+      "2021-07-30",
+      "2024-10-11"
+     ]
+    },
+    "calibration": {
+     "rows": 2343,
+     "dates": [
+      "2024-10-12",
+      "2025-02-07"
+     ]
+    },
+    "meta": {
+     "rows": 2443,
+     "dates": [
+      "2025-02-08",
+      "2025-08-09"
+     ]
+    },
+    "holdout": {
+     "rows": 7235,
+     "dates": [
+      "2025-08-10",
+      "2026-10-28"
+     ]
+    }
+   },
+   "served_holdout_metrics": {
+    "accuracy": 0.706,
+    "auc": 0.5497,
+    "log_loss": 0.60295,
+    "brier": 0.20639,
+    "ece": 0.01753
+   },
+   "n_features": 37,
+   "dropped_all_missing_features": [
+    "home_xg_last5",
+    "away_xg_last5",
+    "home_insidebox_last5",
+    "away_insidebox_last5"
+   ],
+   "block_definition": {
+    "holdout_start": "2025-08-10",
+    "pre_holdout_fractions": {
+     "base": [
+      0.0,
+      0.8
+     ],
+     "calibration": [
+      0.8,
+      0.9
+     ],
+     "meta": [
+      0.9,
+      1.0
+     ]
+    },
+    "whole_date_cuts": true,
+    "disjoint_asserted": true
+   },
+   "holdout_independence": {
+    "imputer_fit": "base",
+    "base_models_fit": "base",
+    "calibrators_fit": "calibration",
+    "meta_fit": "meta",
+    "holdout_labels_used_for_fitting": false
+   },
+   "weights": {
+    "column": "_sample_weight",
+    "travel_with_rows": true,
+    "alignment_verified": true,
+    "base_ess": 17135.1,
+    "recency": {
+     "version": "r2-recency-1.0",
+     "frozen_on": "2026-11-01",
+     "function": "season_age",
+     "params": {
+      "weights_by_age": {
+       "0": 4.0,
+       "1": 3.0,
+       "2": 2.0,
+       "3": 1.5
+      },
+      "older": 1.0,
+      "zero_seasons": [
+       "2019/20",
+       "2020/21"
+      ]
+     },
+     "as_of": "2025-08-09",
+     "rows": 23886,
+     "ess": 20619.4,
+     "ess_share": 0.8632,
+     "per_season": {
+      "2021/22": {
+       "rows": 5820,
+       "mean_weight": 1.0,
+       "weight_share": 0.1287
+      },
+      "2022/23": {
+       "rows": 5936,
+       "mean_weight": 1.5,
+       "weight_share": 0.1969
+      },
+      "2023/24": {
+       "rows": 6048,
+       "mean_weight": 2.0,
+       "weight_share": 0.2675
+      },
+      "2024/25": {
+       "rows": 5933,
+       "mean_weight": 3.0,
+       "weight_share": 0.3937
+      },
+      "2025/26": {
+       "rows": 149,
+       "mean_weight": 4.0,
+       "weight_share": 0.0132
+      }
+     }
+    }
+   },
+   "training_start": "2021-07-30",
+   "training_end": "2025-08-09",
+   "training_cutoff": "2026-11-01",
+   "training_rows": 23886,
+   "frame_hash": "1ec56d67f0b3fe83",
+   "code_sha": "1f25fe050dad0174cad011e3a73e40677b56a8d9",
+   "feature_recipe_version": "v9r-features-1.0",
+   "identity_version": "v9r-identity-1.0",
+   "provenance": {
+    "alias_map_file": "config/standard_ou25_identity_aliases.json",
+    "n_aliases": 142,
+    "task": "side_over35",
+    "group": "core",
+    "price_mode": "none",
+    "team_scope": "league",
+    "track": "standard",
+    "arm": "CHALLENGER_STANDARD"
+   }
+  },
+  "CHALLENGER_NEWFORMAT": {
+   "target": "over35",
+   "feature_cols": [
+    "home_scored_last5",
+    "away_scored_last5",
+    "home_conceded_last5",
+    "away_conceded_last5",
+    "home_over25_last5",
+    "away_over25_last5",
+    "home_attack_str",
+    "away_attack_str",
+    "home_defense_str",
+    "away_defense_str",
+    "home_advantage",
+    "away_home_adv_factor",
+    "home_rest_days",
+    "away_rest_days",
+    "home_corners_pg_roll",
+    "away_corners_pg_roll",
+    "home_fouls_pg_roll",
+    "away_fouls_pg_roll",
+    "combined_sot_ratio",
+    "home_season_goals_h",
+    "away_season_goals_a",
+    "home_season_conceded_h",
+    "away_season_conceded_a",
+    "home_cs_rate_h",
+    "away_cs_rate_a",
+    "p_over25_poisson_dc"
+   ],
+   "metrics": {
+    "logistic": {
+     "accuracy": 0.6923,
+     "auc": 0.6052,
+     "log_loss": 0.6066,
+     "brier": 0.20854,
+     "ece": 0.02702,
+     "n_train": 22884,
+     "n_cal": 2862,
+     "n_meta": 2865,
+     "n_test": 5906,
+     "evaluated_on": "holdout"
+    },
+    "gradient_boost": {
+     "accuracy": 0.6907,
+     "auc": 0.5888,
+     "log_loss": 0.6127,
+     "brier": 0.2111,
+     "ece": 0.03392,
+     "n_train": 22884,
+     "n_cal": 2862,
+     "n_meta": 2865,
+     "n_test": 5906,
+     "evaluated_on": "holdout"
+    },
+    "lightgbm": {
+     "accuracy": 0.689,
+     "auc": 0.5877,
+     "log_loss": 0.61324,
+     "brier": 0.21135,
+     "ece": 0.03536,
+     "n_train": 22884,
+     "n_cal": 2862,
+     "n_meta": 2865,
+     "n_test": 5906,
+     "evaluated_on": "holdout"
+    },
+    "__meta__": {
+     "accuracy": 0.6915,
+     "auc": 0.6038,
+     "log_loss": 0.60588,
+     "brier": 0.20827,
+     "ece": 0.01589,
+     "n_meta": 2865,
+     "n_test": 5906,
+     "evaluated_on": "holdout"
+    }
+   },
+   "recipe": "side_v9_repaired",
+   "model_recipe_version": "r2-repaired-1.0",
+   "imputer_version": "v9-train-only-imputer-1.1",
+   "blocks": {
+    "base": {
+     "rows": 22884,
+     "dates": [
+      "2019-02-22",
+      "2024-06-12"
+     ]
+    },
+    "calibration": {
+     "rows": 2862,
+     "dates": [
+      "2024-06-13",
+      "2025-01-10"
+     ]
+    },
+    "meta": {
+     "rows": 2865,
+     "dates": [
+      "2025-01-11",
+      "2025-08-09"
+     ]
+    },
+    "holdout": {
+     "rows": 5906,
+     "dates": [
+      "2025-08-10",
+      "2026-10-30"
+     ]
+    }
+   },
+   "served_holdout_metrics": {
+    "accuracy": 0.6915,
+    "auc": 0.6038,
+    "log_loss": 0.60588,
+    "brier": 0.20827,
+    "ece": 0.01589
+   },
+   "n_features": 26,
+   "dropped_all_missing_features": [],
+   "block_definition": {
+    "holdout_start": "2025-08-10",
+    "pre_holdout_fractions": {
+     "base": [
+      0.0,
+      0.8
+     ],
+     "calibration": [
+      0.8,
+      0.9
+     ],
+     "meta": [
+      0.9,
+      1.0
+     ]
+    },
+    "whole_date_cuts": true,
+    "disjoint_asserted": true
+   },
+   "holdout_independence": {
+    "imputer_fit": "base",
+    "base_models_fit": "base",
+    "calibrators_fit": "calibration",
+    "meta_fit": "meta",
+    "holdout_labels_used_for_fitting": false
+   },
+   "weights": {
+    "column": "_sample_weight",
+    "travel_with_rows": true,
+    "alignment_verified": true,
+    "base_ess": 19595.1,
+    "recency": {
+     "version": "r2-recency-1.0",
+     "frozen_on": "2026-11-01",
+     "function": "season_age",
+     "params": {
+      "weights_by_age": {
+       "0": 4.0,
+       "1": 3.0,
+       "2": 2.0,
+       "3": 1.5
+      },
+      "older": 1.0,
+      "zero_seasons": [
+       "2019/20",
+       "2020/21"
+      ]
+     },
+     "as_of": "2025-08-09",
+     "rows": 28611,
+     "ess": 22545.3,
+     "ess_share": 0.788,
+     "per_season": {
+      "2019": {
+       "rows": 2932,
+       "mean_weight": 1.0,
+       "weight_share": 0.0535
+      },
+      "2020": {
+       "rows": 3135,
+       "mean_weight": 1.0,
+       "weight_share": 0.0572
+      },
+      "2021": {
+       "rows": 4658,
+       "mean_weight": 1.0,
+       "weight_share": 0.0849
+      },
+      "2022": {
+       "rows": 4888,
+       "mean_weight": 1.5,
+       "weight_share": 0.1337
+      },
+      "2023": {
+       "rows": 5076,
+       "mean_weight": 2.0,
+       "weight_share": 0.1851
+      },
+      "2024": {
+       "rows": 5050,
+       "mean_weight": 3.0,
+       "weight_share": 0.2762
+      },
+      "2025": {
+       "rows": 2872,
+       "mean_weight": 4.0,
+       "weight_share": 0.2095
+      }
+     }
+    }
+   },
+   "training_start": "2019-02-22",
+   "training_end": "2025-08-09",
+   "training_cutoff": "2026-11-01",
+   "training_rows": 28611,
+   "frame_hash": "2c9180e7b938a8f9",
+   "code_sha": "1f25fe050dad0174cad011e3a73e40677b56a8d9",
+   "feature_recipe_version": "v9r-features-1.0",
+   "identity_version": "v9r-identity-1.0",
+   "provenance": {
+    "alias_map_file": "config/standard_ou25_identity_aliases.json",
+    "n_aliases": 142,
+    "task": "side_over35",
+    "group": "core",
+    "price_mode": "none",
+    "team_scope": "league",
+    "track": "newformat",
+    "arm": "CHALLENGER_NEWFORMAT"
+   }
+  }
+ }
+}

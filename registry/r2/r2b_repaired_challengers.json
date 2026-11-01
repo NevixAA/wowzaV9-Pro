@@ -1,0 +1,701 @@
+{
+ "version": "r2b-1.0",
+ "note": "R2-B repaired challengers. Definitions are FROZEN; only `retrospective_results` is written by src/studies/r2_repaired_challengers.py. RETROSPECTIVE evidence is never mixed with forward evidence and never promotes anything.",
+ "common": {
+  "frozen_on": "2026-11-01",
+  "frozen_by": "R2-B workstream (owner brief 2026-11-01)",
+  "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+  "lifecycle_path": [
+   "DISCOVERY",
+   "REPAIRED_IMPLEMENTATION",
+   "RETROSPECTIVE_REPLAY",
+   "SHADOW",
+   "FORWARD_ACCRUAL",
+   "ELIGIBLE_FOR_REVIEW",
+   "OWNER_REVIEW",
+   "OPTIONAL_PROMOTION"
+  ],
+  "promotion": "NONE - research only; retrospective results are never automatic justification for cutover",
+  "code": {
+   "repo": "NevixAA/wowza-betting",
+   "branch": "r2/repaired-challengers",
+   "trainer": "src/model.py::train_repaired",
+   "runner": "scripts/train_repaired_challengers.py",
+   "commit": "recorded per run in each result JSON (v9_commit)"
+  },
+  "versions": {
+   "model_recipe_version": "r2-repaired-1.0",
+   "feature_recipe_version": "v9r-features-1.0",
+   "identity_version": "v9r-identity-1.0",
+   "identity_alias_map": "config/standard_ou25_identity_aliases.json (v9)",
+   "identity_alias_map_sha256": "d4091b99059ca85ee3f90dd7f593bafada31e9629c1250320bd6d680aee3e6c8",
+   "imputer_version": "v9-train-only-imputer-1.1 (no-training-values features dropped, never zero-filled)",
+   "recency": "r2-recency-1.0, PRIMARY season_age {0:4,1:3,2:2,3:1.5,else 1}, frozen before evaluation"
+  },
+  "cutoff": "rows strictly before the CI run date (UTC); recorded per run",
+  "blocks": "holdout = rows on/after HOLDOUT_START (newest ~20% of the task rows, whole-date cut, identical for every arm); pre-holdout base 80% / calibration 10% / meta 10%, whole-date cuts, disjointness asserted",
+  "baseline": {
+   "arm": "CHAMPION_LEGACY_REPRO",
+   "definition": "legacy_v9 recipe exactly as pipeline.mode_train trains it (legacy build_features, the serving payload feature list, TRAINING_DECAY_WEIGHTS season-label weights, src.model.train) split at the same holdout boundary",
+   "caveat": "its meta-logistic is fitted ON the holdout (bug 6) so its holdout number is optimistic; CHAMPION_BASEMEAN (calibrated base models averaged, no meta) is the clean legacy reference"
+  },
+  "metrics": {
+   "primary": "holdout log loss of the SERVED probability (meta blend), challenger minus baseline, 95% matchday block-bootstrap CI",
+   "also_first": [
+    "brier",
+    "ece_10bin",
+    "calibration slope/intercept"
+   ],
+   "secondary": [
+    "auc"
+   ],
+   "market": "ONLY genuine two-sided pre-kickoff ENTRY prices, proportional de-vig, negative-margin pairs excluded; never synthetic side prices, never closing, never one-sided; NF summer-2026 window and NF O1.5/O3.5 before 2026-08-23 excluded (non-full-match lines)",
+   "no_threshold_tuning": true
+  },
+  "retrospective_verdict_rule": "delta LL CI95 entirely < 0 -> REPAIRED_BETTER_RETROSPECTIVE; entirely > 0 -> REPAIRED_WORSE_RETROSPECTIVE; else NO_DIFFERENCE_RETROSPECTIVE",
+  "promotion_criteria": {
+   "requires": [
+    "SHADOW serving path with identical train/serve features and the persisted imputer",
+    "FORWARD_ACCRUAL from first sight (never retrospective rows); live evidence only from 2026-09-01 and after shadow start",
+    "PG-1.0 prospective rule: n >= 1000 settled first-sight rows per track",
+    "served-probability log loss delta vs the serving champion with 95% CI entirely below 0 on prospective rows",
+    "ECE not worse than the champion by more than 0.01",
+    "no data-integrity, parity or identity health FAIL during accrual",
+    "explicit owner review and approval"
+   ],
+   "never": [
+    "automatic promotion",
+    "threshold or tier changes",
+    "staking changes",
+    "market metrics on synthetic or closing prices"
+   ]
+  }
+ },
+ "pooled_variants": "every SIDE experiment trains pooled, Standard-only and NF-only challengers on the same holdout boundary; pooled-vs-track is reported in the results (finding 19)",
+ "ablations": {
+  "source_regimes": {
+   "frozen": [
+    "FULL",
+    "MODERN_ONLY",
+    "MODERN_ARCHIVE",
+    "RECENT_2",
+    "RECENT_3",
+    "RECENCY_WEIGHTED (PRIMARY season_age)",
+    "RECENCY_EXP_HALF_LIFE",
+    "RECENCY_BOUNDED_LINEAR"
+   ],
+   "definitions": {
+    "FULL": "all pre-holdout rows, uniform weights",
+    "MODERN_ONLY": "rows present when WOWZA_USE_BACKTEST_ARCHIVE=0, uniform",
+    "MODERN_ARCHIVE": "all rows from the first archive date on, uniform",
+    "RECENT_2": "last two derived seasons before the holdout, uniform",
+    "RECENT_3": "last three derived seasons before the holdout, uniform",
+    "RECENCY_*": "all rows, frozen src.recency function"
+   },
+   "reference": "RECENCY_WEIGHTED",
+   "report": [
+    "source composition by season",
+    "missing rate by source",
+    "source predictable from missingness (5-fold AUC)",
+    "target rate by source",
+    "holdout LL/Brier/ECE/AUC/calibration",
+    "holdout metrics by season (era)"
+   ],
+   "tasks": "nf_ou25 (newformat) and every side market on standard and newformat"
+  },
+  "standard_cold_start_finding_16": {
+   "arms": {
+    "A": "current hand-typed priors (HA 0.55/0.45, away goals 1.10, SOT 0.35/0.33, HT 0)",
+    "B": "NaN + train-only global median imputation",
+    "C": "NaN + train-fitted league median prior",
+    "D": "NaN + global train median + missing indicators"
+   },
+   "status": "RESEARCH ONLY - Standard production is not modified until evaluated and owner-approved"
+  }
+ },
+ "experiments": [
+  {
+   "id": "NF-R2-OU25",
+   "market": "New Format O/U 2.5",
+   "track": "newformat",
+   "recipe": "nf_v9_repaired",
+   "task": "nf_ou25",
+   "hypothesis": "A New Format O/U 2.5 model on the repaired architecture (identity-canonical NF history, as-of league-scoped features with the Nov-1 NF parity semantics, no market feature, train-only imputer, four chronological blocks, derived recency) is at least as well calibrated as the legacy NF recipe on the untouched holdout, while removing batch dependence and the holdout-fitted meta.",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:53:46Z",
+    "rows": [
+     {
+      "experiment": "NF-R2-OU25",
+      "task": "nf_ou25",
+      "track": "newformat",
+      "status": "OK",
+      "n": 6915,
+      "holdout": "2025-05-16..2026-10-30",
+      "holdout_start": "2025-05-16",
+      "champion_ll": 0.67818,
+      "champion_basemean_ll": 0.68251,
+      "challenger_ll": 0.67832,
+      "delta_ll_vs_champion": 0.00014,
+      "delta_ll_ci95": [
+       -0.00201,
+       0.00239
+      ],
+      "verdict_vs_champion": "NO_DIFFERENCE_RETROSPECTIVE",
+      "champion_brier": 0.24264,
+      "challenger_brier": 0.24272,
+      "champion_ece": 0.01218,
+      "champion_basemean_ece": 0.03474,
+      "challenger_ece": 0.02687,
+      "champion_auc": 0.5894,
+      "challenger_auc": 0.5933,
+      "challenger_cal_slope": 0.982,
+      "champion_cal_slope": 0.936,
+      "base_rate": 0.532,
+      "challenger_mean_p": 0.5052,
+      "market_status": "OK",
+      "market_n": 3082,
+      "market_ll": 0.66519,
+      "residual_gain_vs_market": 0.0001,
+      "residual_gain_ci95": [
+       -0.00071,
+       0.00095
+      ],
+      "delta_ll_vs_basemean": -0.00419,
+      "delta_ll_track_minus_pooled": null,
+      "delta_ll_track_minus_pooled_ci95": null,
+      "pooled_vs_track_verdict": null
+     }
+    ]
+   }
+  },
+  {
+   "id": "SIDE-R2-BTTS-STD",
+   "market": "BTTS",
+   "track": "standard",
+   "recipe": "side_v9_repaired",
+   "task": "side_btts",
+   "hypothesis": "A Standard-only BTTS repaired challenger scores at least as well as the pooled legacy side model on Standard holdout rows (finding 19: pooling with New Format may be wrong).",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:53:46Z",
+    "rows": [
+     {
+      "experiment": "SIDE-R2-BTTS-STD",
+      "task": "side_btts",
+      "track": "standard",
+      "status": "OK",
+      "n": 7235,
+      "holdout": "2025-08-10..2026-10-28",
+      "holdout_start": "2025-08-10",
+      "champion_ll": 0.68886,
+      "champion_basemean_ll": 0.69073,
+      "challenger_ll": 0.68917,
+      "delta_ll_vs_champion": 0.00031,
+      "delta_ll_ci95": [
+       -0.00147,
+       0.00198
+      ],
+      "verdict_vs_champion": "NO_DIFFERENCE_RETROSPECTIVE",
+      "champion_brier": 0.24786,
+      "challenger_brier": 0.24801,
+      "champion_ece": 0.01506,
+      "champion_basemean_ece": 0.01949,
+      "challenger_ece": 0.01459,
+      "champion_auc": 0.5181,
+      "challenger_auc": 0.5172,
+      "challenger_cal_slope": 0.024,
+      "champion_cal_slope": 0.49,
+      "base_rate": 0.5468,
+      "challenger_mean_p": 0.5322,
+      "market_status": "OK",
+      "market_n": 3899,
+      "market_ll": 0.68545,
+      "residual_gain_vs_market": 0.0,
+      "residual_gain_ci95": [
+       -1e-05,
+       0.0
+      ],
+      "delta_ll_vs_basemean": -0.00156,
+      "delta_ll_track_minus_pooled": 0.00087,
+      "delta_ll_track_minus_pooled_ci95": [
+       -0.0002,
+       0.00193
+      ],
+      "pooled_vs_track_verdict": "NO_DIFFERENCE_RETROSPECTIVE"
+     }
+    ]
+   }
+  },
+  {
+   "id": "SIDE-R2-BTTS-NF",
+   "market": "BTTS",
+   "track": "newformat",
+   "recipe": "side_v9_repaired",
+   "task": "side_btts",
+   "hypothesis": "A New-Format-only BTTS repaired challenger scores at least as well as the pooled legacy side model on New Format holdout rows.",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:53:46Z",
+    "rows": [
+     {
+      "experiment": "SIDE-R2-BTTS-NF",
+      "task": "side_btts",
+      "track": "newformat",
+      "status": "OK",
+      "n": 5906,
+      "holdout": "2025-08-10..2026-10-30",
+      "holdout_start": "2025-08-10",
+      "champion_ll": 0.6816,
+      "champion_basemean_ll": 0.68309,
+      "challenger_ll": 0.68009,
+      "delta_ll_vs_champion": -0.00152,
+      "delta_ll_ci95": [
+       -0.00326,
+       0.00033
+      ],
+      "verdict_vs_champion": "NO_DIFFERENCE_RETROSPECTIVE",
+      "champion_brier": 0.24427,
+      "challenger_brier": 0.24352,
+      "champion_ece": 0.01465,
+      "champion_basemean_ece": 0.02937,
+      "challenger_ece": 0.02488,
+      "champion_auc": 0.5554,
+      "challenger_auc": 0.5711,
+      "challenger_cal_slope": 1.692,
+      "champion_cal_slope": 1.447,
+      "base_rate": 0.5613,
+      "challenger_mean_p": 0.5376,
+      "market_status": "OK",
+      "market_n": 3132,
+      "market_ll": 0.67802,
+      "residual_gain_vs_market": -0.00098,
+      "residual_gain_ci95": [
+       -0.00218,
+       0.00022
+      ],
+      "delta_ll_vs_basemean": -0.003,
+      "delta_ll_track_minus_pooled": -0.00138,
+      "delta_ll_track_minus_pooled_ci95": [
+       -0.00224,
+       -0.00044
+      ],
+      "pooled_vs_track_verdict": "TRACK_ONLY_BETTER_RETROSPECTIVE"
+     }
+    ]
+   }
+  },
+  {
+   "id": "SIDE-R2-O15-STD",
+   "market": "Over 1.5",
+   "track": "standard",
+   "recipe": "side_v9_repaired",
+   "task": "side_over15",
+   "hypothesis": "Standard-only Over 1.5 repaired challenger vs pooled legacy, Standard holdout rows.",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:53:46Z",
+    "rows": [
+     {
+      "experiment": "SIDE-R2-O15-STD",
+      "task": "side_over15",
+      "track": "standard",
+      "status": "OK",
+      "n": 7235,
+      "holdout": "2025-08-10..2026-10-28",
+      "holdout_start": "2025-08-10",
+      "champion_ll": 0.54787,
+      "champion_basemean_ll": 0.55324,
+      "challenger_ll": 0.54628,
+      "delta_ll_vs_champion": -0.00159,
+      "delta_ll_ci95": [
+       -0.00322,
+       1e-05
+      ],
+      "verdict_vs_champion": "NO_DIFFERENCE_RETROSPECTIVE",
+      "champion_brier": 0.18108,
+      "challenger_brier": 0.18044,
+      "champion_ece": 0.00848,
+      "champion_basemean_ece": 0.03423,
+      "challenger_ece": 0.01499,
+      "champion_auc": 0.5368,
+      "challenger_auc": 0.565,
+      "challenger_cal_slope": 2.282,
+      "champion_cal_slope": 0.685,
+      "base_rate": 0.762,
+      "challenger_mean_p": 0.747,
+      "market_status": "OK",
+      "market_n": 976,
+      "market_ll": 0.52087,
+      "residual_gain_vs_market": 0.00022,
+      "residual_gain_ci95": [
+       -0.0022,
+       0.00209
+      ],
+      "delta_ll_vs_basemean": -0.00696,
+      "delta_ll_track_minus_pooled": 0.00084,
+      "delta_ll_track_minus_pooled_ci95": [
+       -0.00064,
+       0.00236
+      ],
+      "pooled_vs_track_verdict": "NO_DIFFERENCE_RETROSPECTIVE"
+     }
+    ]
+   }
+  },
+  {
+   "id": "SIDE-R2-O15-NF",
+   "market": "Over 1.5",
+   "track": "newformat",
+   "recipe": "side_v9_repaired",
+   "task": "side_over15",
+   "hypothesis": "New-Format-only Over 1.5 repaired challenger vs pooled legacy, New Format holdout rows.",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:53:46Z",
+    "rows": [
+     {
+      "experiment": "SIDE-R2-O15-NF",
+      "task": "side_over15",
+      "track": "newformat",
+      "status": "OK",
+      "n": 5906,
+      "holdout": "2025-08-10..2026-10-30",
+      "holdout_start": "2025-08-10",
+      "champion_ll": 0.53462,
+      "champion_basemean_ll": 0.53928,
+      "challenger_ll": 0.53095,
+      "delta_ll_vs_champion": -0.00367,
+      "delta_ll_ci95": [
+       -0.00648,
+       -0.0009
+      ],
+      "verdict_vs_champion": "REPAIRED_BETTER_RETROSPECTIVE",
+      "champion_brier": 0.17539,
+      "challenger_brier": 0.17397,
+      "champion_ece": 0.00446,
+      "champion_basemean_ece": 0.03768,
+      "challenger_ece": 0.02854,
+      "champion_auc": 0.5665,
+      "challenger_auc": 0.6009,
+      "challenger_cal_slope": 1.514,
+      "champion_cal_slope": 1.297,
+      "base_rate": 0.7701,
+      "challenger_mean_p": 0.7434,
+      "market_status": "OK",
+      "market_n": 794,
+      "market_ll": 0.49272,
+      "residual_gain_vs_market": 0.00171,
+      "residual_gain_ci95": [
+       -0.0021,
+       0.00633
+      ],
+      "delta_ll_vs_basemean": -0.00833,
+      "delta_ll_track_minus_pooled": 0.00187,
+      "delta_ll_track_minus_pooled_ci95": [
+       0.00087,
+       0.00279
+      ],
+      "pooled_vs_track_verdict": "TRACK_ONLY_WORSE_RETROSPECTIVE"
+     }
+    ]
+   }
+  },
+  {
+   "id": "SIDE-R2-O35-STD",
+   "market": "Over 3.5",
+   "track": "standard",
+   "recipe": "side_v9_repaired",
+   "task": "side_over35",
+   "hypothesis": "Standard-only Over 3.5 repaired challenger vs pooled legacy, Standard holdout rows (research only; O3.5 betting stays inactive).",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:53:46Z",
+    "rows": [
+     {
+      "experiment": "SIDE-R2-O35-STD",
+      "task": "side_over35",
+      "track": "standard",
+      "status": "OK",
+      "n": 7235,
+      "holdout": "2025-08-10..2026-10-28",
+      "holdout_start": "2025-08-10",
+      "champion_ll": 0.60375,
+      "champion_basemean_ll": 0.60554,
+      "challenger_ll": 0.60295,
+      "delta_ll_vs_champion": -0.0008,
+      "delta_ll_ci95": [
+       -0.00279,
+       0.00116
+      ],
+      "verdict_vs_champion": "NO_DIFFERENCE_RETROSPECTIVE",
+      "champion_brier": 0.20674,
+      "challenger_brier": 0.20639,
+      "champion_ece": 0.01902,
+      "champion_basemean_ece": 0.02368,
+      "challenger_ece": 0.01753,
+      "champion_auc": 0.542,
+      "challenger_auc": 0.5497,
+      "challenger_cal_slope": 1.154,
+      "champion_cal_slope": 0.649,
+      "base_rate": 0.294,
+      "challenger_mean_p": 0.2765,
+      "market_status": "OK",
+      "market_n": 991,
+      "market_ll": 0.6249,
+      "residual_gain_vs_market": -0.00305,
+      "residual_gain_ci95": [
+       -0.00708,
+       0.00137
+      ],
+      "delta_ll_vs_basemean": -0.00259,
+      "delta_ll_track_minus_pooled": 0.00126,
+      "delta_ll_track_minus_pooled_ci95": [
+       -0.00087,
+       0.00331
+      ],
+      "pooled_vs_track_verdict": "NO_DIFFERENCE_RETROSPECTIVE"
+     }
+    ]
+   }
+  },
+  {
+   "id": "SIDE-R2-O35-NF",
+   "market": "Over 3.5",
+   "track": "newformat",
+   "recipe": "side_v9_repaired",
+   "task": "side_over35",
+   "hypothesis": "New-Format-only Over 3.5 repaired challenger vs pooled legacy, New Format holdout rows (research only).",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:53:46Z",
+    "rows": [
+     {
+      "experiment": "SIDE-R2-O35-NF",
+      "task": "side_over35",
+      "track": "newformat",
+      "status": "OK",
+      "n": 5906,
+      "holdout": "2025-08-10..2026-10-30",
+      "holdout_start": "2025-08-10",
+      "champion_ll": 0.6088,
+      "champion_basemean_ll": 0.61133,
+      "challenger_ll": 0.60588,
+      "delta_ll_vs_champion": -0.00292,
+      "delta_ll_ci95": [
+       -0.00571,
+       -0.0004
+      ],
+      "verdict_vs_champion": "REPAIRED_BETTER_RETROSPECTIVE",
+      "champion_brier": 0.20951,
+      "challenger_brier": 0.20827,
+      "champion_ece": 0.00869,
+      "champion_basemean_ece": 0.01443,
+      "challenger_ece": 0.01589,
+      "champion_auc": 0.5931,
+      "challenger_auc": 0.6038,
+      "challenger_cal_slope": 0.994,
+      "champion_cal_slope": 1.212,
+      "base_rate": 0.3122,
+      "challenger_mean_p": 0.3006,
+      "market_status": "OK",
+      "market_n": 794,
+      "market_ll": 0.61864,
+      "residual_gain_vs_market": -0.00506,
+      "residual_gain_ci95": [
+       -0.01242,
+       0.00129
+      ],
+      "delta_ll_vs_basemean": -0.00545,
+      "delta_ll_track_minus_pooled": 0.00075,
+      "delta_ll_track_minus_pooled_ci95": [
+       -0.00084,
+       0.00233
+      ],
+      "pooled_vs_track_verdict": "NO_DIFFERENCE_RETROSPECTIVE"
+     }
+    ]
+   }
+  },
+  {
+   "id": "HT-R2-O05",
+   "market": "HT Over 0.5",
+   "track": "pooled (reported per track)",
+   "recipe": "ht_v9_repaired",
+   "task": "ht_over05",
+   "hypothesis": "An HT Over 0.5 challenger on the repaired architecture (repaired as-of features + src.ht_features run per league so team accumulators cannot cross competitions) is at least as well calibrated as the legacy HT recipe on the untouched holdout.",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:53:46Z",
+    "rows": [
+     {
+      "experiment": "HT-R2-O05",
+      "task": "ht_over05",
+      "track": "standard",
+      "status": "OK",
+      "n": 4001,
+      "holdout": "2026-01-19..2026-10-28",
+      "holdout_start": "2026-01-19",
+      "champion_ll": 0.59697,
+      "champion_basemean_ll": 0.59664,
+      "challenger_ll": 0.59677,
+      "delta_ll_vs_champion": -0.0002,
+      "delta_ll_ci95": [
+       -0.00071,
+       0.00031
+      ],
+      "verdict_vs_champion": "NO_DIFFERENCE_RETROSPECTIVE",
+      "champion_brier": 0.20351,
+      "challenger_brier": 0.20343,
+      "champion_ece": 0.00191,
+      "champion_basemean_ece": 0.00758,
+      "challenger_ece": 0.00311,
+      "champion_auc": 0.5439,
+      "challenger_auc": 0.5401,
+      "challenger_cal_slope": 4.44,
+      "champion_cal_slope": 8.479,
+      "base_rate": 0.7151,
+      "challenger_mean_p": 0.7182,
+      "market_status": "NOT_EVALUABLE",
+      "market_n": 0,
+      "market_ll": null,
+      "residual_gain_vs_market": null,
+      "residual_gain_ci95": null,
+      "delta_ll_vs_basemean": 0.00013,
+      "delta_ll_track_minus_pooled": null,
+      "delta_ll_track_minus_pooled_ci95": null,
+      "pooled_vs_track_verdict": null
+     },
+     {
+      "experiment": "HT-R2-O05",
+      "task": "ht_over05",
+      "track": "newformat",
+      "status": "OK",
+      "n": 368,
+      "holdout": "2026-01-20..2026-06-23",
+      "holdout_start": "2026-01-19",
+      "champion_ll": 0.62039,
+      "champion_basemean_ll": 0.62056,
+      "challenger_ll": 0.62094,
+      "delta_ll_vs_champion": 0.00055,
+      "delta_ll_ci95": [
+       -0.0012,
+       0.00231
+      ],
+      "verdict_vs_champion": "NO_DIFFERENCE_RETROSPECTIVE",
+      "champion_brier": 0.21442,
+      "challenger_brier": 0.21465,
+      "champion_ece": 0.02409,
+      "champion_basemean_ece": 0.02509,
+      "challenger_ece": 0.02793,
+      "champion_auc": 0.4779,
+      "challenger_auc": 0.5011,
+      "challenger_cal_slope": 0.399,
+      "champion_cal_slope": -3.08,
+      "base_rate": 0.6902,
+      "challenger_mean_p": 0.7181,
+      "market_status": "NOT_EVALUABLE",
+      "market_n": 0,
+      "market_ll": null,
+      "residual_gain_vs_market": null,
+      "residual_gain_ci95": null,
+      "delta_ll_vs_basemean": 0.00038,
+      "delta_ll_track_minus_pooled": null,
+      "delta_ll_track_minus_pooled_ci95": null,
+      "pooled_vs_track_verdict": null
+     }
+    ]
+   }
+  },
+  {
+   "id": "HT-R2-O15",
+   "market": "HT Over 1.5",
+   "track": "pooled (reported per track)",
+   "recipe": "ht_v9_repaired",
+   "task": "ht_over15",
+   "hypothesis": "As HT-R2-O05 for HT Over 1.5.",
+   "lifecycle_stage": "RETROSPECTIVE_REPLAY",
+   "retrospective_results": {
+    "generated_at": "2026-11-01T10:53:46Z",
+    "rows": [
+     {
+      "experiment": "HT-R2-O15",
+      "task": "ht_over15",
+      "track": "standard",
+      "status": "OK",
+      "n": 4001,
+      "holdout": "2026-01-19..2026-10-28",
+      "holdout_start": "2026-01-19",
+      "champion_ll": 0.65058,
+      "champion_basemean_ll": 0.65155,
+      "challenger_ll": 0.65252,
+      "delta_ll_vs_champion": 0.00194,
+      "delta_ll_ci95": [
+       0.00092,
+       0.00297
+      ],
+      "verdict_vs_champion": "REPAIRED_WORSE_RETROSPECTIVE",
+      "champion_brier": 0.22908,
+      "challenger_brier": 0.22997,
+      "champion_ece": 0.00342,
+      "champion_basemean_ece": 0.01484,
+      "challenger_ece": 0.0087,
+      "champion_auc": 0.5496,
+      "challenger_auc": 0.5581,
+      "challenger_cal_slope": 22.62,
+      "champion_cal_slope": 2.841,
+      "base_rate": 0.3589,
+      "challenger_mean_p": 0.3502,
+      "market_status": "NOT_EVALUABLE",
+      "market_n": 0,
+      "market_ll": null,
+      "residual_gain_vs_market": null,
+      "residual_gain_ci95": null,
+      "delta_ll_vs_basemean": 0.00097,
+      "delta_ll_track_minus_pooled": null,
+      "delta_ll_track_minus_pooled_ci95": null,
+      "pooled_vs_track_verdict": null
+     },
+     {
+      "experiment": "HT-R2-O15",
+      "task": "ht_over15",
+      "track": "newformat",
+      "status": "OK",
+      "n": 368,
+      "holdout": "2026-01-20..2026-06-23",
+      "holdout_start": "2026-01-19",
+      "champion_ll": 0.62462,
+      "champion_basemean_ll": 0.62356,
+      "challenger_ll": 0.62707,
+      "delta_ll_vs_champion": 0.00245,
+      "delta_ll_ci95": [
+       -0.0009,
+       0.00586
+      ],
+      "verdict_vs_champion": "NO_DIFFERENCE_RETROSPECTIVE",
+      "champion_brier": 0.2165,
+      "challenger_brier": 0.21764,
+      "champion_ece": 0.04729,
+      "champion_basemean_ece": 0.02301,
+      "challenger_ece": 0.03252,
+      "champion_auc": 0.5669,
+      "challenger_auc": 0.5895,
+      "challenger_cal_slope": 37.227,
+      "champion_cal_slope": 4.081,
+      "base_rate": 0.3179,
+      "challenger_mean_p": 0.3505,
+      "market_status": "NOT_EVALUABLE",
+      "market_n": 0,
+      "market_ll": null,
+      "residual_gain_vs_market": null,
+      "residual_gain_ci95": null,
+      "delta_ll_vs_basemean": 0.00351,
+      "delta_ll_track_minus_pooled": null,
+      "delta_ll_track_minus_pooled_ci95": null,
+      "pooled_vs_track_verdict": null
+     }
+    ]
+   }
+  }
+ ]
+}

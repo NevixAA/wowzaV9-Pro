@@ -1,0 +1,219 @@
+name: Pro R2-B Repaired Challengers (research, branch-only)
+
+# Owner brief 2026-11-01, workstream R2-B. RESEARCH ONLY: trains the repaired NF / side / HT
+# challengers with v9's own trainer (branch r2/repaired-challengers, src.model.train_repaired) and
+# scores them against the legacy champion on the untouched chronological holdout. Heavy work runs
+# HERE, never on the laptop. Results are committed to THIS research branch only (refuses main).
+# v9 is checked out read-only; nothing here writes a v9 serving file, threshold or stake.
+#
+# Status classes (brief item 27), written to the step summary of every job:
+#   INFRA_FAILURE  checkout / install / data download failed - never reported as a model result
+#   TEST_FAILURE   the R2-B unit tests or the serving-parity replay failed
+#   DATA_FAILURE   identity health FAIL
+#   SUCCESS        the job produced its artifact (a challenger losing is SUCCESS, not a failure)
+
+on:
+  push:
+    branches: ['r2/repaired-challengers']
+    paths: ['.github/workflows/pro_r2_repaired_challengers.yml', 'src/studies/r2_repaired_challengers.py']
+  workflow_dispatch:
+    inputs:
+      v9_ref:
+        description: 'v9 ref holding the R2 repaired recipes'
+        required: true
+        default: 'r2/repaired-challengers'
+
+concurrency:
+  group: pro-r2-repaired-challengers
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  PYTHONIOENCODING: utf-8
+  V9_REF: ${{ inputs.v9_ref || 'r2/repaired-challengers' }}
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: ${{ env.V9_REF }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install (INFRA)
+        run: |
+          pip install -r requirements.txt || { echo "status: INFRA_FAILURE" >> "$GITHUB_STEP_SUMMARY"; exit 1; }
+          pip install lightgbm pytest || { echo "status: INFRA_FAILURE" >> "$GITHUB_STEP_SUMMARY"; exit 1; }
+      - name: R2-B tests + Standard repair regression (TEST)
+        run: |
+          python -m pytest tests/test_r2_repaired_challengers.py tests/test_standard_forensic_repair.py -q \
+            && echo "status: SUCCESS (tests)" >> "$GITHUB_STEP_SUMMARY" \
+            || { echo "status: TEST_FAILURE" >> "$GITHUB_STEP_SUMMARY"; exit 1; }
+
+  parity:
+    # Standard serving + every legacy serving payload scored on REAL data by main and by the
+    # branch, same runner, same data: the two files must be byte-identical.
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: ${{ env.V9_REF }}
+          path: _branch
+          fetch-depth: 1
+      - uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: main
+          path: _main
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install (INFRA)
+        run: |
+          pip install -r _branch/requirements.txt && pip install lightgbm \
+            || { echo "status: INFRA_FAILURE" >> "$GITHUB_STEP_SUMMARY"; exit 1; }
+      - name: Replay main and branch
+        run: |
+          set -euo pipefail
+          cp _branch/scripts/r2b_serving_parity.py _main/scripts/
+          # identical committed data for both runs: the branch's output/ and models/ are used by main too
+          rm -rf _main/models _main/output && cp -r _branch/models _main/models && cp -r _branch/output _main/output
+          (cd _main && python scripts/r2b_serving_parity.py --out ../parity_main.csv)
+          (cd _branch && python scripts/r2b_serving_parity.py --out ../parity_branch.csv)
+          echo "main $(sha256sum parity_main.csv)  branch $(sha256sum parity_branch.csv)"
+      - name: Compare (TEST)
+        run: |
+          if cmp -s parity_main.csv parity_branch.csv; then
+            echo "status: SUCCESS - serving parity byte-identical ($(wc -l < parity_main.csv) rows)" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "status: TEST_FAILURE - serving output differs" >> "$GITHUB_STEP_SUMMARY"
+            diff <(head -50 parity_main.csv) <(head -50 parity_branch.csv) || true
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bench-parity
+          retention-days: 14
+          path: parity_*.csv
+
+  bench:
+    needs: tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        include:
+          - {task: identity, group: core, track: ''}
+          - {task: nf_ou25, group: core, track: ''}
+          - {task: nf_ou25, group: regimes, track: newformat}
+          - {task: side_btts, group: core, track: ''}
+          - {task: side_over15, group: core, track: ''}
+          - {task: side_over35, group: core, track: ''}
+          - {task: side_btts, group: regimes, track: standard}
+          - {task: side_btts, group: regimes, track: newformat}
+          - {task: side_over15, group: regimes, track: standard}
+          - {task: side_over15, group: regimes, track: newformat}
+          - {task: side_over35, group: regimes, track: standard}
+          - {task: side_over35, group: regimes, track: newformat}
+          - {task: ht_over05, group: core, track: ''}
+          - {task: ht_over15, group: core, track: ''}
+          - {task: std_ou25, group: coldstart, track: ''}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: ${{ env.V9_REF }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install (INFRA)
+        run: |
+          pip install -r requirements.txt && pip install lightgbm pytest \
+            || { echo "status: INFRA_FAILURE" >> "$GITHUB_STEP_SUMMARY"; exit 1; }
+      - name: ${{ matrix.task }} / ${{ matrix.group }} ${{ matrix.track }}
+        run: |
+          T=""; [ -n "${{ matrix.track }}" ] && T="--track ${{ matrix.track }}"
+          set +e
+          python scripts/train_repaired_challengers.py --task ${{ matrix.task }} --group ${{ matrix.group }} $T --out _out
+          rc=$?
+          if [ $rc -eq 0 ]; then echo "status: SUCCESS" >> "$GITHUB_STEP_SUMMARY";
+          elif [ "${{ matrix.task }}" = "identity" ]; then echo "status: DATA_FAILURE (identity health FAIL)" >> "$GITHUB_STEP_SUMMARY";
+          else echo "status: INFRA_OR_CODE_FAILURE rc=$rc (not a model result)" >> "$GITHUB_STEP_SUMMARY"; fi
+          exit $rc
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bench-${{ matrix.task }}-${{ matrix.group }}-${{ matrix.track || 'all' }}
+          retention-days: 14
+          path: |
+            _out/*.json
+            _out/*.csv
+            _out/*.csv.gz
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: payloads-${{ matrix.task }}-${{ matrix.group }}-${{ matrix.track || 'all' }}
+          retention-days: 14
+          path: _out/payloads/
+          if-no-files-found: ignore
+
+  analyse:
+    needs: [bench, parity]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Refuse main
+        run: |
+          case "${{ github.ref_name }}" in main|master) echo "::error::research branch only"; exit 1;; esac
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          path: _in
+          pattern: bench-*
+          merge-multiple: true
+      - name: Collect verdict
+        run: |
+          ls -la _in
+          python -m src.studies.r2_repaired_challengers _in | tee -a "$GITHUB_STEP_SUMMARY"
+          mkdir -p output/studies/r2_repaired_challengers/raw
+          cp _in/*.json output/studies/r2_repaired_challengers/raw/ 2>/dev/null || true
+          cp _in/*_holdout.csv.gz output/studies/r2_repaired_challengers/raw/ 2>/dev/null || true
+          cp _in/identity_overlap_audit.csv output/studies/r2_repaired_challengers/ 2>/dev/null || true
+          echo "parity bench=${{ needs.parity.result }} bench=${{ needs.bench.result }}" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '{"v9_ref": "%s", "run_id": "%s", "parity": "%s", "bench": "%s"}\n' "${V9_REF}" "${{ github.run_id }}" \
+            "${{ needs.parity.result }}" "${{ needs.bench.result }}" > output/studies/r2_repaired_challengers/raw/SOURCE.json
+      - name: Commit to the research branch
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for p in output/studies/r2_repaired_challengers/verdict.csv output/studies/r2_repaired_challengers/regimes.csv \
+                   output/studies/r2_repaired_challengers/coldstart.csv output/studies/r2_repaired_challengers/summary.json \
+                   output/studies/r2_repaired_challengers/identity_overlap_audit.csv \
+                   output/studies/r2_repaired_challengers/raw registry/r2/r2b_repaired_challengers.json; do
+            [ -e "$p" ] && git add "$p"
+          done
+          git diff --staged --quiet && exit 0
+          git commit -m "research(r2-b): repaired challengers CI benchmark $(date -u '+%Y-%m-%d %H:%M') v9 ${V9_REF} run ${{ github.run_id }}"
+          for i in 1 2 3; do git pull --rebase origin "${{ github.ref_name }}" && git push origin "HEAD:${{ github.ref_name }}" && exit 0; sleep 5; done
+          exit 1
