@@ -54,8 +54,9 @@ def _read(kind: str) -> pd.DataFrame:
 def settle_team(d: pd.DataFrame) -> pd.DataFrame:
     if d.empty:
         return d
-    from src.scout.registry import literal_assignments
-    ids = literal_assignments(cfg.V9_LOCAL / "config.py", ("API_FOOTBALL_IDS",)).get("API_FOOTBALL_IDS", {})
+    # v9 derives API_FOOTBALL_IDS since R2-A; an ast read returned {} (Data Truth audit finding 49).
+    from src.data import v9_config
+    ids = v9_config.league_ids()
     end = (pd.Timestamp.now(tz="UTC") - pd.Timedelta(days=1)).strftime("%Y-%m-%d")
     d = d[d["date"] <= end]
     if d.empty:

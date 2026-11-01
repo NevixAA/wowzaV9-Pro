@@ -222,8 +222,9 @@ def consensus(w: pd.DataFrame) -> dict:
 
 
 def results_for(leagues, start: str, end: str) -> pd.DataFrame:
-    from src.scout.registry import literal_assignments
-    ids = literal_assignments(cfg.V9_LOCAL / "config.py", ("API_FOOTBALL_IDS",)).get("API_FOOTBALL_IDS", {})
+    # v9 derives API_FOOTBALL_IDS since R2-A; an ast read returned {} (Data Truth audit finding 49).
+    from src.data import v9_config
+    ids = v9_config.league_ids()
     ids = {l: ids[l] for l in leagues if l in ids}
     r = C.results(start, end, ids)
     r["y"] = C.outcome("BTTS", r["hg"], r["ag"])

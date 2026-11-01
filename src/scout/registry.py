@@ -45,8 +45,36 @@ def literal_assignments(path, names) -> dict:
     return out
 
 
+MIN_V9_LEAGUES = 40
+
+
+def _v9_tables() -> dict:
+    """v9's league tables as v9 itself computes them (src/data/v9_config.load executes config.py).
+
+    Since v9 R2-A (2026-11-01) config.py DERIVES these from config/leagues.json, so the old
+    `ast.literal_eval` read returned {} for every one: the committed registry fell from 49 leagues
+    to 29, all PLAYER_ONLY, live leagues included, and the drift check passed on nothing (Data
+    Truth audit finding 49). Fails LOUDLY when the read is implausibly small."""
+    from src.data import v9_config
+    mod = v9_config.load()
+    out = {n: getattr(mod, n) for n in V9_NAMES if hasattr(mod, n)}
+    for n in ("STANDARD_FORMAT_LEAGUES", "NEW_FORMAT_LEAGUES", "ENABLED_LEAGUES", "PAPER_LEAGUES",
+              "API_FOOTBALL_ONLY_LEAGUES"):
+        if n in out:
+            out[n] = list(out[n])
+    for n in ("FOOTBALL_DATA_LEAGUES", "API_FOOTBALL_IDS", "ODDS_API_SPORT_KEYS", "PROVIDER_UNSUPPORTED"):
+        if n in out:
+            out[n] = dict(out[n])
+    n_lg = len(set(out.get("STANDARD_FORMAT_LEAGUES", ())) | set(out.get("NEW_FORMAT_LEAGUES", ()))
+               | set(out.get("API_FOOTBALL_IDS", {})))
+    if n_lg < MIN_V9_LEAGUES:
+        raise RuntimeError(f"v9 league tables read only {n_lg} leagues (< {MIN_V9_LEAGUES}) — refusing "
+                           f"to publish a registry that would mark live leagues unsupported")
+    return out
+
+
 def build() -> dict:
-    v9 = literal_assignments(cfg.V9_LOCAL / "config.py", V9_NAMES)
+    v9 = _v9_tables()
     pm = literal_assignments(cfg.V9_LOCAL / "player_model" / "config.py", ("PROP_LEAGUES",))
     lc_f = cfg.REGISTRY_DIR / "league_lifecycle.json"
     lc = json.loads(lc_f.read_text(encoding="utf-8")) if lc_f.exists() else {}
@@ -94,7 +122,12 @@ def build() -> dict:
                 div.append(f"{lg}: live league with no OddsAPI sport key")
         if lg in paper and lg not in enabled:
             div.append(f"{lg}: PAPER but not ENABLED (would stop collection)")
-    return {"generated_from": "v9 config.py + player_model/config.py (ast, read-only) + scout lifecycle",
+    live_unsupported = [r["league_name"] for r in rows
+                        if r["league_name"] in enabled and r.get("deployment_state") == "PLAYER_ONLY"]
+    if live_unsupported:
+        raise RuntimeError(f"ENABLED v9 league(s) came out PLAYER_ONLY: {live_unsupported}")
+    return {"generated_from": "v9 config.py as v9 computes it (src/data/v9_config) + "
+                              "player_model/config.py (ast, read-only) + scout lifecycle",
             "n_leagues": len(rows), "leagues": rows, "divergences": div,
             "proposal": "Have v9 derive these lists from one committed registry file in a reviewed PR; "
                         "a test then asserts every derived list equals today's literal (behaviour-identical)."}
