@@ -57,6 +57,29 @@ _NUMERIC = ("minutes_to_kickoff", "p_model", "p_market_entry", "residual", "abs_
 
 _SRC = "output/v11_market_movement_detail.csv"
 
+#: What makes an archived observation the same observation: its identity plus every field v11
+#: completes after entry (close, CLV, result). Same values -> already archived -> not re-stored.
+ROW_IDENTITY = ("fixture_id", "snapshot_id", "bet_side", "calculation_version", "close_ts",
+                "close_odds", "clv_pct", "clv_quality", "result", "pnl_flat")
+
+
+def row_keys(df: pd.DataFrame) -> pd.Series:
+    """One string per row over ROW_IDENTITY; numbers in one canonical form so a value read back
+    from parquet and the same value parsed from v11's CSV compare equal."""
+    parts = []
+    for c in ROW_IDENTITY:
+        s = df[c] if c in df.columns else pd.Series(pd.NA, index=df.index)
+        if c in _NUMERIC:
+            v = pd.to_numeric(s, errors="coerce").round(8)
+            s = v.map(lambda x: "" if pd.isna(x) else repr(float(x)))
+        else:
+            s = s.astype("string").fillna("")
+        parts.append(s.astype(str))
+    out = parts[0]
+    for s in parts[1:]:
+        out = out + "\x1f" + s
+    return out
+
 
 def _v11_sha() -> str:
     """v11's HEAD sha from a local clone, else 'unknown'.
@@ -236,6 +259,23 @@ def from_v11_movement() -> list[tuple[str, pd.DataFrame]]:
     d["research_staleness"] = stale_reason
 
     missing = [c for c in DETAIL_COLS if c not in raw.columns]
+    # APPEND ONLY WHAT IS NEW (Data Truth round 3). Every run used to archive v11's whole detail file
+    # again: 72 partitions, 4,164,553 stored rows for 104,812 distinct (fixture, snapshot, side,
+    # version) observations - each one ~40 times. A row is new when its identity OR one of the fields
+    # v11 fills in later (close, CLV, result) differs from every stored row; a re-ingest after a v11
+    # fix (new calculation_version) still adds a new version and nothing is ever deleted.
+    n_file = len(d)
+    d = d.drop_duplicates(subset=list(ROW_IDENTITY))
+    try:
+        have = set(row_keys(store.read("movement_observations", columns=list(ROW_IDENTITY))))
+    except Exception as e:                                        # noqa: BLE001
+        print(f"[v11_research] could not read the archive to dedupe ({type(e).__name__}) - "
+              f"nothing archived this run rather than a full duplicate copy")
+        return []
+    d = d[~row_keys(d).isin(have)]
+    print(f"[v11_research] {n_file:,} rows in v11's file, {len(d):,} not yet archived")
+    if d.empty:
+        return []
     print(f"[v11_research] {len(d):,} observations over {d['fixture_id'].nunique()} fixtures | "
           f"v11 sha {d['calculation_sha'].iloc[0]} | calc v{d['calculation_version'].iloc[0]} | "
           f"eligible {int((d['clv_quality'] == 'OK').sum()):,}"

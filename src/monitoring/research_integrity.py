@@ -90,8 +90,16 @@ def check_registrations() -> dict:
     bad = [k for k, v in out.items() if v is not True]
     st = "FAIL" if bad else "PASS"
     blocks = ["price_trader" if "price" in k else "player_v3" for k in bad]
+    # Every pinned registration (registry/FROZEN_HASHES.json, src/registry_guard), not just two.
+    from src import registry_guard as rgd
+    drift = rgd.verify()
+    pinned = len(rgd.frozen())
     return {"REGISTRATION_MUTATED": _r(st, out, blocks),
-            "RULE_CHANGED_AFTER_FORWARD_START": _r(st, "rules live inside the frozen registrations above", blocks)}
+            "RULE_CHANGED_AFTER_FORWARD_START": _r(st, "rules live inside the frozen registrations above", blocks),
+            "FROZEN_REGISTRY_HASH_DRIFT": _r("FAIL" if drift or not pinned else "PASS",
+                                             drift or f"{pinned} pinned registrations intact"
+                                             if pinned else "registry/FROZEN_HASHES.json missing",
+                                             sorted({d["path"].split("/")[1] for d in drift}))}
 
 
 def check_odds_sources() -> dict:

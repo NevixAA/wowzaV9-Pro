@@ -243,13 +243,24 @@ def append(
     return written
 
 
-def read(table: str, season: str | None = None) -> pd.DataFrame:
-    """Read every partition of a table. Returns an empty frame when nothing is stored."""
+def read(table: str, season: str | None = None, columns=None) -> pd.DataFrame:
+    """Read every partition of a table. Returns an empty frame when nothing is stored.
+
+    `columns` projects the read (a column a partition lacks is simply absent from that part), so a
+    caller that needs a few fields of a 4M-row table does not load all forty."""
     root = cfg.DATA_DIR / (season or cfg.season_label()) / table
     files = sorted(root.glob("dt=*/run=*.parquet"))
     if not files:
-        return pd.DataFrame()
-    return pd.concat([pd.read_parquet(f) for f in files], ignore_index=True)
+        return pd.DataFrame(columns=list(columns) if columns else None)
+    if columns is None:
+        return pd.concat([pd.read_parquet(f) for f in files], ignore_index=True)
+    import pyarrow.parquet as pq
+    want = list(columns)
+    parts = []
+    for f in files:
+        have = set(pq.ParquetFile(f).schema.names)
+        parts.append(pd.read_parquet(f, columns=[c for c in want if c in have]))
+    return pd.concat(parts, ignore_index=True)
 
 
 def stats(season: str | None = None) -> dict[str, dict]:

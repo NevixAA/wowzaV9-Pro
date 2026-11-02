@@ -370,6 +370,10 @@ def settle_finished() -> pd.DataFrame:
               "Reporting that rather than grading everything UNKNOWN.")
         return pd.DataFrame()
     res = pd.concat(parts, ignore_index=True)
+    # KICKOFF GUARD (result_guard): a full-time score observed before its own kickoff is a provider
+    # error and never grades a combo (3 such rows in team_match_stats at origin/data-truth-100).
+    from src.data import result_guard as rg
+    res = rg.drop_unplayed(res, "bet_builder scorelines")
     if "fixture_key" in res.columns:
         # Rows without a key are never collapsed into one another on a null key.
         nk = res["fixture_key"].isna()
@@ -459,6 +463,10 @@ def settle_finished() -> pd.DataFrame:
         fresh = merged
         print(f"[builder] merged with {len(old):,} existing row(s) "
               f"-> {len(fresh):,} (graded {was} -> {now_})")
+    # Audit columns BESIDE the record (model_validity, frechet_violation, void_legs,
+    # scoreboard_result, audit_note): combo_result and every original column stay as written.
+    from src.combo import record_audit as ra
+    fresh = ra.annotate(fresh)
     perf = cs.performance(fresh)
     print(f"[builder] settled record: {perf}")
     return fresh

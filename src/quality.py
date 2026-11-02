@@ -63,6 +63,9 @@ FLAGS: dict[str, Flag] = {f.name: f for f in (
     Flag("MARKET_MAPPING_INVALID", True,
          "odds absent or the two-way overround is impossible; the row is not the market it "
          "claims to be"),
+    Flag("CLV_FIRST_HALF_CONTAMINATED", True,
+         "v9 lists this ledger row's close as a FIRST-HALF price recorded as the full-match close "
+         "(v9 output/corrections/clv_first_half_contaminated.csv); its clv_pct is not a CLV"),
     Flag("BTTS_FIRST_HALF_MISLABEL", True,
          "first-half Both-Teams-Score price captured as full-match. The capture parser matched "
          "the bet NAME by substring, so bet 34 'Both Teams Score - First Half' (Yes ~5.50) "

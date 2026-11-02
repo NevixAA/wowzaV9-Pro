@@ -30,6 +30,7 @@ from config import pro_config as cfg
 from src import quality as q
 from src.data import entities as ent
 from src.data import fixture_key_v2 as fk2
+from src.data import observation_time as ot
 from src.data import watermarks as wm
 from src.data.v9_source import fetch_csv, num, v9_model_version
 
@@ -182,6 +183,11 @@ def from_predictions() -> list[tuple[str, pd.DataFrame]]:
             # An Over with no Under cannot be honestly de-vigged (v11's rule).
             if ucol is None or ucol not in d.columns:
                 blk["quality_flags"] = "MISSING_OPPOSITE_SIDE"
+            # The price existed when v9 PRODUCED the board, not when Pro read it (observation_time).
+            _ot = ot.provider_observed_at(
+                d["generated_at"] if "generated_at" in d.columns else pd.Series(None, index=d.index),
+                "v9_generated_at")
+            blk["observed_at"], blk["observed_at_source"] = _ot["observed_at"], _ot["observed_at_source"]
             mk.append(blk[blk["odds"].notna()])
     if mk:
         out.append(("market_snapshots", pd.concat(mk, ignore_index=True)))
@@ -270,6 +276,9 @@ def from_odds_histories() -> list[tuple[str, pd.DataFrame]]:
             "captured_at": raw.get("snapshot_ts", ""),
         })
         blk = ent.add_fixture_key(blk)
+        # Provider time (v9's capture stamp), not ingest time; date-only stamps stay ingest-labelled.
+        _ot = ot.provider_observed_at(blk["captured_at"], "v9_snapshot_ts")
+        blk["observed_at"], blk["observed_at_source"] = _ot["observed_at"], _ot["observed_at_source"]
         blk["odds_band"] = blk["odds"].map(lambda v: cfg.band_label(v, cfg.ODDS_BANDS))
         # Flags ACCUMULATE via quality.add_flag. The two lines here were previously bare
         # assignments, so a row that was both entity-unresolved AND market-invalid reported only
@@ -354,6 +363,9 @@ def from_book_odds() -> list[tuple[str, pd.DataFrame]]:
     blk["minutes_to_kickoff"] = ((_ko - _ts).dt.total_seconds() / 60.0).round(1)
     # A post-kickoff quote is NOT a pre-match price and must never be used as a close.
     blk["is_post_kickoff"] = blk["minutes_to_kickoff"] < 0
+    # Provider time (v9's capture stamp), not the moment Pro ingested the file (observation_time).
+    _ot = ot.provider_observed_at(blk["snapshot_ts"], "v9_snapshot_ts")
+    blk["observed_at"], blk["observed_at_source"] = _ot["observed_at"], _ot["observed_at_source"]
 
     blk["quality_flags"] = ""
     blk["quality_flags"] = q.add_flag(blk["quality_flags"], blk["odds"].isna(),
@@ -417,6 +429,12 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
             s["quality_flags"],
             s["result"].notna() & ~s["result"].isin(["WIN", "LOSS", "VOID", "PENDING"]),
             "SETTLEMENT_UNCERTAIN")
+        # v9's first-half closes recorded as full-match closes (v9 corrections list, when the
+        # checkout carries it): flagged so no CLV consumer averages them; clv_pct stays as v9 wrote it.
+        from src.data import v9_corrections as v9c
+        s["quality_flags"] = q.add_flag(s["quality_flags"],
+                                        v9c.first_half_contaminated_mask(d).to_numpy(),
+                                        "CLV_FIRST_HALF_CONTAMINATED")
         out.append(("settlements", s))
 
     side = fetch_csv("output/side_bets_ledger.csv", required=False)

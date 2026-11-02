@@ -58,7 +58,7 @@ import pandas as pd
 from config import pro_config as cfg
 from src.data import season_store as store
 from src.data.entities import fixture_key
-from src.market.devig import power_devig
+from src.market.devig import fair_prob, power_devig  # noqa: F401  (power_devig kept for importers)
 from src.studies import common as C
 
 NAME = "btts_contradiction"
@@ -210,7 +210,7 @@ def consensus(w: pd.DataFrame) -> dict:
                 "worst_yes": np.nan, "p_fair": np.nan, "overround": np.nan, "n_pairs": 0}
     yes = w["YES"].dropna()
     pair = w.dropna(subset=["YES", "NO"])
-    fair = [power_devig(a, b) for a, b in zip(pair["YES"], pair["NO"])]
+    fair = [fair_prob(a, b) for a, b in zip(pair["YES"], pair["NO"])]     # gated (devig.fair_prob)
     fair = [x for x in fair if x is not None and x == x]
     ovr = (1 / pair["YES"] + 1 / pair["NO"])
     return {"n_books": int(len(yes)), "median_yes": float(yes.median()) if len(yes) else np.nan,

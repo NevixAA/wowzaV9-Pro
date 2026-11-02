@@ -210,6 +210,14 @@ def settle(candidates: pd.DataFrame, scorelines: pd.DataFrame,
                         "leg_results": "", "settle_note": "NO_SCORELINE"})
             continue
         hg, ag = s.get("home_goals"), s.get("away_goals")
+        # Owner rule 2026-11-02 (result_guard): a match played more than 48h from the kickoff the
+        # combo was built for voids the combo; within 48h it settles on the match played.
+        from src.data import result_guard as rg
+        verdict = rg.reschedule_verdict(c.get("kickoff_utc"), s.get("kickoff_utc"))
+        if verdict == rg.VOID_RESCHEDULED:
+            out.append({**c.to_dict(), "combo_result": COMBO_VOID, "leg_results": "",
+                        "settle_note": verdict, "settle_version": CALC_VERSION})
+            continue
         fixture_players = (pl[pl["fixture_key"].astype(str) == fk]
                            if fk and "fixture_key" in pl.columns else pl.iloc[0:0])
 
@@ -256,21 +264,33 @@ def settle(candidates: pd.DataFrame, scorelines: pd.DataFrame,
 
 
 def performance(settled: pd.DataFrame) -> dict:
-    """Headline record. VOID and UNKNOWN are excluded from the rate, and counted separately."""
+    """Headline record. VOID and UNKNOWN are excluded from the rate, and counted separately.
+
+    Data Truth round 3: the headline counts `record_audit.scoreboard_result` (the tip_scoreboard
+    rule), so a combo WON on its remaining legs after a leg voided, a combo with a side-specific leg
+    from the symmetric score fit, and a joint outside the Frechet bound are reported beside it and
+    never mixed in. `combo_result` itself is untouched."""
     if settled is None or settled.empty:
         return {"settled": 0}
-    r = settled["combo_result"]
+    from src.combo import record_audit as ra
+    a = ra.annotate(settled)
+    r = a["scoreboard_result"]
     won, lost = int((r == COMBO_WON).sum()), int((r == COMBO_LOST).sum())
     decided = won + lost
     # Flat 1u stakes at the FAIR price -- there is no builder market price to stake at, so this
     # is what the model says it is worth, not what anyone could have won.
-    odds = pd.to_numeric(settled.get("fair_combo_odds", settled.get("fair_odds")),
+    odds = pd.to_numeric(a.get("fair_combo_odds", a.get("fair_odds")),
                          errors="coerce")
     pnl = np.where(r == COMBO_WON, odds - 1.0, np.where(r == COMBO_LOST, -1.0, 0.0))
+    raw = a["combo_result"]
     return {
         "settled": decided, "won": won, "lost": lost,
         "void": int((r == COMBO_VOID).sum()),
         "unknown": int((r == COMBO_UNKNOWN).sum()),
+        "excluded_void_leg": int((r == ra.EXCLUDED_VOID_LEG).sum()),
+        "excluded_void_leg_won": int(((r == ra.EXCLUDED_VOID_LEG) & (raw == COMBO_WON)).sum()),
+        "excluded_invalid_model": int((r == ra.EXCLUDED_INVALID_MODEL).sum()),
+        "excluded_frechet": int((r == ra.EXCLUDED_FRECHET).sum()),
         "hit_rate": round(100.0 * won / decided, 2) if decided else None,
         "pnl_at_fair_odds": round(float(np.nansum(pnl)), 3),
         "mean_fair_odds": round(float(odds.mean()), 3) if odds.notna().any() else None,

@@ -82,6 +82,18 @@ def power_devig(over_odds, under_odds, tol: float = 1e-9) -> float | None:
     return ro ** ((lo + hi) / 2)
 
 
+def fair_prob(over_odds, under_odds) -> float | None:
+    """GATED fair probability of the first side: `devig(...).prob`, i.e. None for a one-sided pair,
+    an arbitrage (overround < MIN_OVERROUND) or a stale / placeholder pair (> MAX_OVERROUND).
+
+    Data Truth round 3: the study consensus builders (studies/common.book_panel, btts_contradiction,
+    monthly_learning) called the RAW power_devig, so exchange placeholders entered the median:
+    1.01/1.01 pairs (overround 1.98) and Matchbook O 1.56 / U 1.22 (1.46, a 46% margin). Every
+    consensus now goes through this one gate; the raw function stays for callers that check first."""
+    r = devig(over_odds, under_odds)
+    return r.prob if r.valid else None
+
+
 def devig(over_odds, under_odds) -> DevigResult:
     """The function callers should use. Never raises; never guesses.
 

@@ -57,12 +57,22 @@ def _resolver(v9: str):
 
 
 def _results() -> pd.DataFrame:
-    fs = sorted(glob.glob(str(cfg.BASE_DIR / "data" / "season_2026_27" / "team_match_stats" / "**" / "*.parquet"), recursive=True))
-    r = pd.concat([pd.read_parquet(f, columns=["league", "match_date", "home_team", "away_team", "home_goals", "away_goals"])
-                   for f in fs], ignore_index=True).dropna(subset=["home_goals", "away_goals"])
+    from src.data import result_guard as rg          # kickoff guard: no score stored before kickoff
+    r = rg.played_team_results(["league", "match_date", "home_team", "away_team", "home_goals", "away_goals"])
     r = r.drop_duplicates(["league", "match_date", "home_team", "away_team"], keep="last")
     r["md"] = pd.to_datetime(r["match_date"]).dt.normalize()
     return r
+
+
+def close_status(close_at, gen, gap_h, kick_earliest) -> np.ndarray:
+    """ONLY_ONE_OBSERVATION | CLOSE_NOT_PROVEN_PRE_KICKOFF (close at/after the earliest kickoff any
+    snapshot recorded) | VALID_PRE_KICKOFF_CLOSE (within CLOSE_MAX_GAP_H) | NO_CLOSE_NEAR_KICKOFF."""
+    close_at, gen = pd.Series(close_at), pd.Series(gen)
+    gap_h, kick_earliest = pd.Series(gap_h), pd.Series(kick_earliest)
+    return np.where(close_at <= gen, "ONLY_ONE_OBSERVATION",
+                    np.where(close_at >= kick_earliest, "CLOSE_NOT_PROVEN_PRE_KICKOFF",
+                             np.where(gap_h <= CLOSE_MAX_GAP_H, "VALID_PRE_KICKOFF_CLOSE",
+                                      "NO_CLOSE_NEAR_KICKOFF")))
 
 
 def all_fixture(v9: str) -> pd.DataFrame:
@@ -114,8 +124,15 @@ def all_fixture(v9: str) -> pd.DataFrame:
     last = last.rename(columns={"odds": "close_odds", "gen": "close_at"})
     first = c.sort_values("gen").drop_duplicates(["fx", "market", "side"], keep="first")
     f = first.merge(last, on=["fx", "market", "side"], how="left")
-    f["close_status"] = np.where(f.close_at <= f.gen, "ONLY_ONE_OBSERVATION",
-                                 np.where(f.gap_h <= CLOSE_MAX_GAP_H, "VALID_PRE_KICKOFF_CLOSE", "NO_CLOSE_NEAR_KICKOFF"))
+    # PRE-KICKOFF AGAINST EVERY KICKOFF EVER RECORDED (Data Truth round 3). Each snapshot carries
+    # its own kickoff_utc and v9 moved some of them later (delays, re-stamps), so the close row's
+    # gap_h was measured against ITS kickoff while the row kept the first snapshot's: 19 rows of
+    # all_fixture_settled.parquet were labelled VALID_PRE_KICKOFF_CLOSE with close_at after `kick`
+    # (Serie B 2026-08-22 15:00 kickoffs "closed" at 16:56-18:54). A close is valid only when it
+    # precedes the EARLIEST kickoff any snapshot gave the fixture; otherwise it is unproven.
+    kmin = c.groupby("fx")["kick"].min()
+    f["kick_earliest_known"] = f["fx"].map(kmin)
+    f["close_status"] = close_status(f.close_at, f.gen, f.gap_h, f.kick_earliest_known)
     ok = f.close_status == "VALID_PRE_KICKOFF_CLOSE"
     f["close_odds"] = f["close_odds"].where(ok)
     f["clv"] = (f["odds"] / f["close_odds"] - 1) * 100
@@ -240,8 +257,9 @@ def build_registry(v9: str) -> dict:
                        "new_format OU25 historical prices are best-of-books (11% of rows with two-way margin < 0) - historical ROI inflated",
                        "rows between discovery and forward_start are reported as POST_DISCOVERY and never count toward a pass"],
            "confirmed_assignable_here": False, "hypotheses": hyps}
-    REG.parent.mkdir(parents=True, exist_ok=True)
-    REG.write_text(json.dumps(reg, indent=1, default=str), encoding="utf-8")
+    # registry_guard refuses the write if this file is ever pinned (registry/FROZEN_HASHES.json).
+    from src import registry_guard as rgd
+    rgd.write_json(REG, json.loads(json.dumps(reg, default=str)), indent=1, default=str)
     return reg
 
 

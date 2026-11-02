@@ -69,10 +69,23 @@ def _append(table: str, rows: list[dict] | pd.DataFrame, tag: str, dry: bool) ->
 
 
 def _results() -> pd.DataFrame:
+    """Stored results that are evidence of a played match. A row observed before its own kickoff
+    (result_guard) is excluded, so the fixture is collected again once actually played."""
     d = store.read("scout_results")
     if d.empty:
         return d
+    from src.data import result_guard as rg
+    d = rg.drop_unplayed(d, "scout_results", kickoff_col="kickoff_ts", kickoff_unit="s")
     return d.sort_values("ingested_at").drop_duplicates("fixture_id", keep="last")
+
+
+def _played(fin: pd.DataFrame) -> pd.DataFrame:
+    """Finished rows whose kickoff is not in the future (a future 'FT' is a provider error)."""
+    if fin is None or fin.empty or "kickoff_ts" not in fin.columns:
+        return fin
+    from src.data import result_guard as rg
+    return rg.drop_unplayed(fin, "scout finished fixtures", kickoff_col="kickoff_ts",
+                            kickoff_unit="s", observed_col="__none__")
 
 
 # ── steps ─────────────────────────────────────────────────────────────────────────────────────
@@ -101,6 +114,8 @@ def step_history(c: af.Client, watch: list[dict], budget: int, dry: bool) -> int
             # otherwise a transient error would silently cost a league a season of history.
             if resp:
                 done[k] = len(fin)
+    if rows:
+        rows = _played(pd.DataFrame(rows)).to_dict("records")
     n = _append("scout_results", rows, "hist", dry)
     if not dry:
         OUT.mkdir(parents=True, exist_ok=True)
@@ -122,7 +137,7 @@ def step_dates(c: af.Client, ids: set[int]) -> pd.DataFrame:
 def step_results(fx: pd.DataFrame, dry: bool) -> int:
     if fx.empty:
         return 0
-    fin = fx[fx["status"].isin(parse.FINISHED)]
+    fin = _played(fx[fx["status"].isin(parse.FINISHED)])
     have = _results()
     if not have.empty:
         fin = fin[~fin["fixture_id"].isin(have["fixture_id"])]

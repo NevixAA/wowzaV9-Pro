@@ -234,13 +234,24 @@ def canonicalise_stored_leagues(dry_run: bool = False) -> dict:
 
 
 def _already_collected() -> set:
+    """Fixture ids with a VALID stored row. A row stored before its own kickoff (result_guard: the
+    provider marked a not-yet-played return fixture FT) does not count, so the real match is
+    collected after it is played - the bad row stays on record and never settles anything."""
     try:
         prev = store.read(TABLE)
         if prev is not None and not prev.empty and "fixture_id" in prev.columns:
-            return set(prev["fixture_id"].astype(str))
+            from src.data import result_guard as rg
+            bad = rg.unplayed_mask(prev)
+            return set(prev.loc[~bad, "fixture_id"].astype(str))
     except Exception:
         pass
     return set()
+
+
+def _not_yet_played(fx: dict, now: pd.Timestamp) -> bool:
+    """A /fixtures?status=FT entry whose kickoff is still in the future is a provider error."""
+    ko = pd.to_datetime((fx.get("fixture") or {}).get("date"), utc=True, errors="coerce")
+    return bool(pd.notna(ko) and ko > now)
 
 
 def _team_id(team: dict) -> str | None:
@@ -322,7 +333,13 @@ def collect(seasons=("current",), limit: int | None = None, dry_run: bool = Fals
                                 session, cache_hours=24)
         calls += 0 if was_cached else 1
         fixtures = (body or {}).get("response") or []
-        todo = [f for f in fixtures if str(f["fixture"]["id"]) not in already]
+        _now = pd.Timestamp.now(tz="UTC")
+        future = [f for f in fixtures if _not_yet_played(f, _now)]
+        if future:
+            print(f"  {season} {league}: {len(future)} 'FT' fixture(s) with a future kickoff skipped "
+                  f"(provider error; collected once actually played)")
+        todo = [f for f in fixtures if str(f["fixture"]["id"]) not in already
+                and not _not_yet_played(f, _now)]
         if not todo:
             continue
         rows = []

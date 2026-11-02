@@ -93,6 +93,10 @@ Q_NO_CLOSE = "NO_CLOSE"
 Q_CLOSE_EQUALS_ENTRY = "CLOSE_EQUALS_ENTRY"
 Q_IMPLAUSIBLE = "CLV_IMPLAUSIBLE"
 Q_UNPROVEN_PREKICKOFF = "CLOSE_NOT_PROVEN_PRE_KICKOFF"
+Q_FIRST_HALF = "FIRST_HALF_CLOSE_CONTAMINATED"
+
+#: The only verdict whose clean_clv_pct may be non-NULL. weekly_audit fails if any other has one.
+CLEAN_QUALITIES = frozenset({Q_OK})
 
 
 def _fair(odds) -> float:
@@ -241,12 +245,29 @@ def build(*, quiet: bool = False) -> pd.DataFrame:
                 & d["clv_quality"].eq(Q_OK))
     d.loc[unproven, "clv_quality"] = Q_UNPROVEN_PREKICKOFF
 
+    # v9's first-half-contaminated closes (v9 output/corrections/clv_first_half_contaminated.csv,
+    # when present): a first-half price recorded as the full-match close is not a close.
+    from src.data import v9_corrections as v9c
+    fh = v9c.first_half_contaminated_mask(pd.DataFrame({
+        "match_date": d["match_date"], "league": c.get("league", pd.Series(pd.NA, index=c.index)),
+        "home_team": c.get("home_team", pd.Series(pd.NA, index=c.index)),
+        "away_team": c.get("away_team", pd.Series(pd.NA, index=c.index)),
+        "side": d["side"], "market": d["market"]}, index=d.index))
+    d.loc[fh, "clv_quality"] = Q_FIRST_HALF
+    n_first_half = int(fh.sum())
+
     # ── clean_clv_pct: recomputed from the evidenced pair, never copied from raw ────
     #
     # Recomputed rather than copied so a recovered close actually produces a NEW number. Copying
     # clv_pct would carry v9's 0.0 for every CLOSE_EQUALS_ENTRY row straight through the filter.
+    #
+    # ONLY Q_OK IS CLEAN (Data Truth round 3). This used to admit CLOSE_EQUALS_ENTRY (54,246 rows
+    # forced to exactly 0.0) and CLOSE_NOT_PROVEN_PRE_KICKOFF (39,643 closes recovered by player +
+    # market name only) - both of which this module's own header says must be NULL - so the "clean"
+    # mean read +0.01% while the evidenced rows average -0.64%. Those rows keep clv_pct (raw) and
+    # their clv_quality reason; clean_clv_pct is NULL for them.
     d["clean_clv_pct"] = pd.NA
-    ok = d["clv_quality"].isin((Q_OK, Q_UNPROVEN_PREKICKOFF, Q_CLOSE_EQUALS_ENTRY)) \
+    ok = d["clv_quality"].eq(Q_OK) \
         & d["entry_odds"].notna() & d["close_odds"].notna() & d["close_odds"].gt(0)
     d.loc[ok, "clean_clv_pct"] = ((d.loc[ok, "entry_odds"] / d.loc[ok, "close_odds"] - 1.0)
                                   * 100.0).round(4)
@@ -257,9 +278,10 @@ def build(*, quiet: bool = False) -> pd.DataFrame:
         n = len(out)
         vc = out["clv_quality"].value_counts()
         clean = out["clean_clv_pct"].notna()
-        strict = clean & out["clv_quality"].eq(Q_OK)
+        strict = clean & out["clv_quality"].eq(Q_OK)          # == clean since round 3
         print(f"[clv_schema] {n:,} rows")
         print(f"  closes recovered from player_props : {n_recovered:,}")
+        print(f"  v9 first-half-contaminated closes  : {n_first_half:,}")
         for k, v in vc.items():
             print(f"    {k:32} {v:>6,} ({v / n:.1%})")
         print(f"  RAW      clv_pct present           : {out['clv_pct'].notna().sum():>6,}")

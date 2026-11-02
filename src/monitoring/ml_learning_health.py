@@ -66,13 +66,51 @@ def _git(repo: Path, *args: str) -> str:
         return ""
 
 
+def _is_shallow(repo: Path) -> bool:
+    return _git(repo, "rev-parse", "--is-shallow-repository") == "true"
+
+
+def _last_change_api(repo: Path, rel: str) -> str | None:
+    """Commit date of the newest commit touching `rel` at the checkout's HEAD, from the GitHub API.
+    None when the remote is not GitHub or the call fails - never a guess."""
+    import os
+    import re
+    import urllib.request
+    url = _git(repo, "remote", "get-url", "origin")
+    m = re.search(r"github\.com[:/]+([^/]+)/([^/]+?)(?:\.git)?/?$", url or "")
+    head = _git(repo, "rev-parse", "HEAD")
+    if not m or not head:
+        return None
+    api = (f"https://api.github.com/repos/{m.group(1)}/{m.group(2)}/commits"
+           f"?path={rel}&sha={head}&per_page=1")
+    req = urllib.request.Request(api, headers={"Accept": "application/vnd.github+json"})
+    tok = os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN")
+    if tok:
+        req.add_header("Authorization", f"Bearer {tok}")
+    try:
+        with urllib.request.urlopen(req, timeout=20) as r:
+            body = json.loads(r.read().decode("utf-8"))
+        return (body[0]["commit"]["committer"]["date"] if body else None) or None
+    except Exception:                                              # noqa: BLE001
+        return None
+
+
 def _last_change(repo: Path, rel: str) -> str | None:
     """ISO date a tracked file's CONTENT last changed. None when unknown.
 
     Deliberately git, not mtime: `git checkout` resets mtime on every CI run, which has produced
     four separate silent failures in this estate. Callers must treat None as "unknown", never as
     "fresh" — the FPL cache bug was exactly that substitution.
+
+    A SHALLOW CHECKOUT CANNOT ANSWER THIS (Data Truth round 3). pro_research.yml checks v9 out with
+    fetch-depth 1, where `git log -1 -- <file>` returns the single fetched commit for EVERY file: the
+    committed ml_learning_health.json of 2026-11-01 dated all seven models 2026-11-01T11:24:09Z
+    (age 0.0d, 0 new settled fixtures, PASS / NO_NEW_DATA) while model_v9_standard.pkl last changed
+    2026-10-18 and model_player_goals.pkl 2026-10-25. On a shallow clone the date comes from the
+    GitHub API for that path at HEAD, and is None (unknown) when that is unavailable.
     """
+    if _is_shallow(repo):
+        return _last_change_api(repo, rel)
     out = _git(repo, "log", "-1", "--format=%cI", "--", rel)
     return out or None
 
@@ -193,6 +231,10 @@ def assess(v9: Path) -> dict:
         # ── the verdict ────────────────────────────────────────────────────────────────
         if not exists:
             status, why = "BLOCKED", f"{rel} does not exist — nothing to compare a challenger to"
+        elif model_iso is None:
+            status, why = ("BLOCKED",
+                           f"when {rel} last changed is UNKNOWN (shallow v9 checkout and no GitHub "
+                           f"API answer) — an unknown age is never reported as fresh")
         elif input_age is not None and input_age > 14:
             status, why = ("STALE",
                            f"training INPUT stopped advancing: newest match in {inp_rel} is "
