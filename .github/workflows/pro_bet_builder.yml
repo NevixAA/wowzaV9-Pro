@@ -146,6 +146,7 @@ jobs:
           # store is run-partitioned, so two workflows can never target the same file.
           git add -A data 2>/dev/null || true
           for f in output/bet_builder_candidates.csv \
+                   output/bet_builder_candidates_meta.json \
                    output/bet_builder_settled.csv \
                    output/combo_import_health.json \
                    output/combo_notified.json \

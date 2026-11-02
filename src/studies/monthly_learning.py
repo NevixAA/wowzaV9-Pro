@@ -324,6 +324,15 @@ def load_ledgers(v9: Repo, refresh=True) -> tuple[pd.DataFrame, dict]:
     audit = {}
     ou = v9.csv(V9_LEDGER)
     ou = ou[ou["source"].astype(str).eq("live")].copy()
+    # v9's first-half-contaminated closes are not CLV (v9 output/corrections list; ledger unchanged).
+    from src.data import v9_corrections as v9c
+    # Read at the same ref as the ledger (this study never reads v9's working tree).
+    try:
+        fh = v9.csv(v9c.FIRST_HALF_FILE, dtype=str, keep_default_na=False)
+    except FileNotFoundError:
+        fh = pd.DataFrame()
+    ou = v9c.quarantine_first_half_clv(ou, listing=fh, label="monthly_learning")
+    audit["clv_first_half_excluded"] = int(ou[v9c.QUARANTINE_COL].eq(v9c.FLAG).sum())
     ou["match_date"] = ou["match_date"].astype(str).str[:10]
     ou["side"] = ou["side"].astype(str).str.strip()
     k_ou = ["match_date", "home_team", "away_team", "side", "source"]

@@ -33,10 +33,35 @@ def _iso(values: pd.Series) -> pd.Series:
     return s
 
 
-def provider_observed_at(values: pd.Series, source: str) -> pd.DataFrame:
+#: A provider stamp later than the import moment by more than this is not an observation time.
+FUTURE_TOLERANCE = pd.Timedelta(minutes=10)
+
+
+def provider_observed_at(values: pd.Series, source: str,
+                         now: pd.Timestamp | None = None) -> pd.DataFrame:
     """observed_at (provider stamp, ISO UTC; None where unusable -> the store fills ingest time) and
-    observed_at_source ('provider:<source>' or 'ingest_time') for each row."""
+    observed_at_source ('provider:<source>' or 'ingest_time') for each row.
+
+    NAIVE STAMPS ARE READ AS UTC (Data Truth round 5, verified, not assumed). v9 writes
+    standard_odds_history / newformat_odds_dense snapshot_ts with a naive `datetime.now()`
+    (src/drift.py snapshot), which is UTC only because GitHub's ubuntu runners run in UTC and no
+    v9 workflow sets TZ. Checked at v9 origin/data-truth-100: all 748 commits of each file are by
+    github-actions[bot]; on 30 sampled commits per file the newest naive stamp is 0.0h before the
+    commit's UTC time (Israel local time would put it 2-3h AFTER). The other v9 files carry 'Z'.
+    The guard below keeps that true: a stamp later than `now` (+10 min) cannot be when a price was
+    observed - it is what a local-time (UTC+2/+3) write would look like - so it is not used.
+    """
     iso = _iso(values)
+    now = pd.Timestamp.now(tz="UTC") if now is None else pd.Timestamp(now)
+    if now.tzinfo is None:
+        now = now.tz_localize("UTC")
+    t = pd.to_datetime(iso, utc=True, errors="coerce")
+    future = (t > now + FUTURE_TOLERANCE).fillna(False).to_numpy()
+    if future.any():
+        print(f"[observation_time] {int(future.sum())} {source} stamp(s) later than the import "
+              f"time - not used as observation time (ingest time recorded instead)")
+        iso = iso.copy()
+        iso[future] = None
     src = pd.Series(INGEST, index=values.index, dtype=object)
     src[iso.notna()] = PROVIDER_PREFIX + source
     return pd.DataFrame({"observed_at": iso, "observed_at_source": src}, index=values.index)

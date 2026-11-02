@@ -49,6 +49,9 @@ def load_raw(v9_dir) -> pd.DataFrame:
     p = out / "bets_ledger.csv"
     if p.exists():
         m = pd.read_csv(p, low_memory=False)
+        # v9's first-half-contaminated closes are not CLV (v9 output/corrections list; ledger unchanged).
+        from src.data import v9_corrections as v9c
+        m = v9c.quarantine_first_half_clv(m, root=Path(v9_dir), label="analytics")
         m = m.assign(ledger="ou25", market="OU25", side=m["side"].astype(str).str.upper(),
                      tier=m["signal_tier"], model_prob=np.nan)
         parts.append(m)

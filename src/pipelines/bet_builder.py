@@ -60,6 +60,7 @@ from src.combo import v9_direction as v9gate
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "output"
 CAND_FILE = OUT / "bet_builder_candidates.csv"
+CAND_META_FILE = OUT / "bet_builder_candidates_meta.json"
 SETTLED_FILE = OUT / "bet_builder_settled.csv"
 
 CALC_VERSION = "1.0.0"
@@ -472,6 +473,42 @@ def settle_finished() -> pd.DataFrame:
     return fresh
 
 
+# Header used when a run builds nothing and there is no earlier file to take the header from.
+_EMPTY_CANDIDATE_COLUMNS = ["generated_at", "fixture_key", "league", "match_date", "kickoff_utc",
+                            "match", "combo_id"]
+
+
+def write_candidates(d: pd.DataFrame | None, *, now: dt.datetime | None = None) -> int:
+    """Write this run's candidate file and its stamp. A run that builds NOTHING writes an EMPTY file.
+
+    Data Truth round 5 (owner decision): the candidate file used to be rewritten only when generate
+    built something, so a run that built nothing left the previous run's candidates on disk and
+    notify / the daily album could re-send them (2026-11-02's album listed five 2026-11-01 matches
+    from a file generated 2026-11-01T16:01Z). Now every generate run replaces the file: with the new
+    rows, or with a header-only file. A header-only CSV cannot carry a time, so the run's stamp is
+    written beside it in bet_builder_candidates_meta.json (generated_at, rows) on EVERY run.
+    """
+    now = now or dt.datetime.now(dt.timezone.utc)
+    stamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    OUT.mkdir(parents=True, exist_ok=True)
+    if d is None or d.empty:
+        cols = list(d.columns) if d is not None and len(d.columns) else []
+        if not cols and CAND_FILE.exists():
+            try:
+                cols = list(pd.read_csv(CAND_FILE, nrows=0).columns)
+            except Exception:                                      # noqa: BLE001
+                cols = []
+        d = pd.DataFrame(columns=cols or _EMPTY_CANDIDATE_COLUMNS)
+        print(f"[builder] built nothing - wrote an EMPTY {CAND_FILE.name} so no earlier "
+              f"candidate can be re-sent")
+    else:
+        print(f"[builder] wrote {CAND_FILE.name} ({len(d):,} rows)")
+    d.to_csv(CAND_FILE, index=False, encoding="utf-8")
+    CAND_META_FILE.write_text(json.dumps({"generated_at": stamp, "rows": int(len(d)),
+                                          "file": CAND_FILE.name}, indent=2), encoding="utf-8")
+    return int(len(d))
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", choices=("generate", "notify", "daily", "settle", "all"), default="all")
@@ -488,11 +525,7 @@ def main() -> int:
     canon: dict[str, int] = {}
 
     if args.mode in ("generate", "all"):
-        d = generate(args.days)
-        if not d.empty:
-            OUT.mkdir(exist_ok=True)
-            d.to_csv(CAND_FILE, index=False, encoding="utf-8")
-            print(f"[builder] wrote {CAND_FILE.name} ({len(d):,} rows)")
+        write_candidates(generate(args.days))
 
     if args.mode in ("notify", "all"):
         cand = pd.read_csv(CAND_FILE, low_memory=False) if CAND_FILE.exists() else pd.DataFrame()

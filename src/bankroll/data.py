@@ -82,6 +82,9 @@ def load_bets(from_date: str = PERFORMANCE_CUTOFF, include_unsettled: bool = Fal
     out = cfg.V9_LOCAL / "output"
     parts = []
     m = pd.read_csv(out / "bets_ledger.csv", low_memory=False)
+    # v9's first-half-contaminated closes are not CLV (v9 output/corrections list; ledger unchanged).
+    from src.data import v9_corrections as v9c
+    m = v9c.quarantine_first_half_clv(m, root=cfg.V9_LOCAL, label="bankroll")
     parts.append(pd.DataFrame({
         "source": m.get("source"), "generated_at": m.get("generated_at"), "date": m["match_date"],
         "league": m["league"], "home": m["home_team"], "away": m["away_team"],

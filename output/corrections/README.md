@@ -83,3 +83,30 @@ VALID closes go from 2,847 (mean CLV +0.1456%) to 2,823 (+0.1478%).
 `edge_reassessment.all_fixture` and `valuable.snapshots` now apply the earliest-kickoff rule.
 `snapshots` also drops snapshots with no kickoff and writes the tracked
 `prematch_snapshots_manifest.json`: the parquet's SHA-256, row count and every v9 commit read.
+
+## Round 5 (2026-11-02): read-time corrections, no stored row rewritten
+
+**v9 first-half-contaminated CLV list in every CLV reader.** v9's
+`output/corrections/clv_first_half_contaminated.csv` (170 rows, on v9 data-truth-100) is now applied
+through `v9_corrections.quarantine_first_half_clv` in every Pro reader of bets_ledger `clv_pct`
+(bankroll.data, analytics.core, pipelines.monthly_eval, studies.evidence, studies.monthly_learning,
+studies.valuable.deep_dive, and through it edge_reassessment) and in the settlements CLV readers
+(validation.threshold_curves, pipelines.shadow). Listed rows get `clv_pct` and `closing_odds` = NaN
+plus `clv_quarantine = CLV_FIRST_HALF_CONTAMINATED`; v9's ledger and Pro's stored settlements are
+unchanged. At v9 origin/data-truth-100: 170 of 1,833 bets_ledger rows match (all live; a plain merge
+gives the same 170). Raw ledger CLV: 1,475 rows, mean +5.6516% becomes 1,305 rows, mean +0.1149%
+(median 0.00% both). monthly_eval's |clv| <= 25 view does not move (1,294 rows, +0.0309%), because
+every listed row has |clv_pct| >= 50.85.
+
+**Bet Builder rescheduled matches.** When the fixture_key finds no scoreline, settle now searches
+the same canonical league and resolved clubs on the match date, then +-1..3 days. After that the
+48h rule applies to kickoff times. Offline re-settle of the 10,298 UNKNOWN rows in
+bet_builder_settled.csv against the local store found 3 moved fixtures (21-25h later): Columbus v New
+England, Valerenga v Molde, Viking v Aalesund. They hold 108 combos (49 WON, 59 LOST), which are now
+`OK:RESOLVER_DAY+1`. Vicenza v Catanzaro (12 combos) was found a day later, but its combos carry no
+kickoff, so they stay UNKNOWN as `RESCHEDULE_KICKOFF_UNKNOWN`. The record changes only on the next
+CI settle pass.
+
+**Empty Bet Builder build.** A generate run that builds nothing now writes a header-only
+`bet_builder_candidates.csv` and `bet_builder_candidates_meta.json` (generated_at, rows). The
+current file (917 rows, generated 2026-11-01T16:01:55Z) is replaced on the next generate run.
