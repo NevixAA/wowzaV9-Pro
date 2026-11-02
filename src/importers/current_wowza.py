@@ -494,16 +494,11 @@ def from_player_props() -> list[tuple[str, pd.DataFrame]]:
 
 # ── clv + live scanner ───────────────────────────────────────────────────────
 
-def from_clv() -> list[tuple[str, pd.DataFrame]]:
-    """v9's CLV records. clv_records.csv has no league or match_date column (Data Truth
-    2026-11-01: the key used to be built from an EMPTY league and date, so every meeting of two
-    clubs in any season hashed to one fixture). The match date is the one v9 recorded in bet_id
-    ('PLAYER|<match_date>|<player>|<market>'); the league comes from v9's player_ledger row for
-    the same date, match, player and market (one v9 source, same strings). Where either is not
-    found the row keeps NaN, no fixture_key, and a LEAGUE_MISSING / DATE_MISSING flag."""
-    raw = fetch_csv("output/clv_records.csv", required=False)
-    if raw.empty or "match" not in raw.columns:
-        return []
+def clv_identity(raw: pd.DataFrame) -> pd.DataFrame:
+    """(league, match_date, home_team, away_team) per clv_records row: the date v9 wrote into
+    bet_id ('PLAYER|<match_date>|...'), the clubs from `match`, the league from v9's player_ledger
+    row for the same date, match, player and market. NaN where not found (never guessed). Shared by
+    the importer and the fixture_key v2 migration, which recovers pre-2026-11-01 clv rows."""
     home, away = ent.split_match(raw["match"])
     bid = raw.get("bet_id", pd.Series(index=raw.index, dtype=object)).astype(str).str.split("|")
     mdate = bid.str[1].where(bid.str[1].str.match(r"^\d{4}-\d{2}-\d{2}$", na=False))
@@ -519,6 +514,23 @@ def from_clv() -> list[tuple[str, pd.DataFrame]]:
                           "player_name": raw.get("player", ""), "market": raw.get("market", "")},
                          index=raw.index).reset_index().merge(lk, on=k, how="left").set_index("index")
         league = j["league"].reindex(raw.index)
+    return pd.DataFrame({"league": league, "match_date": mdate, "home_team": home,
+                         "away_team": away}, index=raw.index)
+
+
+def from_clv() -> list[tuple[str, pd.DataFrame]]:
+    """v9's CLV records. clv_records.csv has no league or match_date column (Data Truth
+    2026-11-01: the key used to be built from an EMPTY league and date, so every meeting of two
+    clubs in any season hashed to one fixture). The match date is the one v9 recorded in bet_id
+    ('PLAYER|<match_date>|<player>|<market>'); the league comes from v9's player_ledger row for
+    the same date, match, player and market (one v9 source, same strings). Where either is not
+    found the row keeps NaN, no fixture_key, and a LEAGUE_MISSING / DATE_MISSING flag."""
+    raw = fetch_csv("output/clv_records.csv", required=False)
+    if raw.empty or "match" not in raw.columns:
+        return []
+    ident = clv_identity(raw)
+    home, away = ident["home_team"], ident["away_team"]
+    mdate, league = ident["match_date"], ident["league"]
     known = mdate.notna() & league.notna()
     keys = pd.Series(pd.NA, index=raw.index, dtype=object)
     if known.any():
