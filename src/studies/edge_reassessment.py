@@ -239,8 +239,9 @@ def build_registry(v9: str) -> dict:
                        "new_format OU25 historical prices are best-of-books (11% of rows with two-way margin < 0) - historical ROI inflated",
                        "rows between discovery and forward_start are reported as POST_DISCOVERY and never count toward a pass"],
            "confirmed_assignable_here": False, "hypotheses": hyps}
-    REG.parent.mkdir(parents=True, exist_ok=True)
-    REG.write_text(json.dumps(reg, indent=1, default=str), encoding="utf-8")
+    # registry_guard refuses the write if this file is ever pinned (registry/FROZEN_HASHES.json).
+    from src import registry_guard as rgd
+    rgd.write_json(REG, json.loads(json.dumps(reg, default=str)), indent=1, default=str)
     return reg
 
 

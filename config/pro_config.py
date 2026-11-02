@@ -37,7 +37,18 @@ V9_LOCAL = Path(os.getenv("V9_LOCAL") or (BASE_DIR.parent / "v9"))
 # unauthenticated raw endpoint rate-limits.
 V11_REPO = os.getenv("V11_REPO", "NevixAA/wowza_v11")
 V11_RAW_BASE = f"https://raw.githubusercontent.com/{V11_REPO}/main"
-V11_LOCAL = Path(os.getenv("V11_LOCAL") or (BASE_DIR.parent / "wowza-v11"))
+def _sibling_checkout(*names: str) -> Path:
+    """First existing sibling folder among `names`, else the first name (the repo's own spelling).
+    The v11 repository is `wowza_v11`; older laptops cloned it as `wowza-v11`. Hardcoding one
+    spelling made every reader of V11_LOCAL (and the contract validator) report v11 unreadable on
+    a clone named the other way (Data Truth round 3)."""
+    for n in names:
+        if (BASE_DIR.parent / n).exists():
+            return BASE_DIR.parent / n
+    return BASE_DIR.parent / names[0]
+
+
+V11_LOCAL = Path(os.getenv("V11_LOCAL") or _sibling_checkout("wowza_v11", "wowza-v11"))
 
 
 # ── season derivation ─────────────────────────────────────────────────────────

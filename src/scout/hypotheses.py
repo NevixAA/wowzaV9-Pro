@@ -251,8 +251,12 @@ def load_registry() -> dict:
 
 
 def save_registry(reg: dict) -> None:
-    REGISTRY_FILE.parent.mkdir(parents=True, exist_ok=True)
-    REGISTRY_FILE.write_text(json.dumps(reg, indent=1, sort_keys=False, default=str), encoding="utf-8")
+    """Append-only (src/registry_guard.SCOUT_HYPOTHESES): a registered hypothesis never disappears,
+    its id/league/market/registered_at never change, confirmation_start is write-once and its
+    history only grows. A write that breaks that raises instead of rewriting the registry."""
+    from src import registry_guard as rgd
+    rgd.write_json(REGISTRY_FILE, json.loads(json.dumps(reg, default=str)), spec=rgd.SCOUT_HYPOTHESES,
+                   indent=1, sort_keys=False, default=str)
 
 
 def ensure_registered(reg: dict, leagues: list[dict], now_iso: str) -> int:

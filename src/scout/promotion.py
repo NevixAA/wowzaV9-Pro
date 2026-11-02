@@ -86,8 +86,10 @@ def load_lifecycle() -> dict:
 
 
 def save_lifecycle(lc: dict) -> None:
-    LIFECYCLE_FILE.parent.mkdir(parents=True, exist_ok=True)
-    LIFECYCLE_FILE.write_text(json.dumps(lc, indent=1, sort_keys=True), encoding="utf-8")
+    """Append-only history per league (src/registry_guard.LEAGUE_LIFECYCLE): a league never
+    disappears and its history is only ever appended to."""
+    from src import registry_guard as rgd
+    rgd.write_json(LIFECYCLE_FILE, lc, spec=rgd.LEAGUE_LIFECYCLE, indent=1, sort_keys=True)
 
 
 def transition(lc: dict, lid, new: str, reason: str, week: str) -> str:

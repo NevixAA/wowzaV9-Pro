@@ -154,7 +154,10 @@ def update_registry(v: pd.DataFrame, generated: str) -> None:
         e["retrospective_results"] = {"generated_at": generated,
                                       "rows": json.loads(sub.to_json(orient="records"))}
         e["lifecycle_stage"] = "RETROSPECTIVE_REPLAY"     # never advanced by this collector
-    REGISTRY.write_text(json.dumps(reg, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    # Results may be recorded; the registered definitions (id/market/track/recipe/task/hypothesis
+    # and the common/variant blocks) may not change and no experiment may vanish (registry_guard).
+    from src import registry_guard as rgd
+    rgd.write_json(REGISTRY, reg, spec=rgd.R2_CHALLENGERS, indent=1, ensure_ascii=False)
 
 
 def main(argv=None) -> int:

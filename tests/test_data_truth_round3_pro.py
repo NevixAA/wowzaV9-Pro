@@ -295,3 +295,108 @@ def test_first_half_contaminated_rows_are_matched_from_v9_list():
                         "home_team": ["Botafogo", "Botafogo"], "away_team": ["Santos", "Santos"],
                         "side": ["Under", "OVER"]})
     assert list(v9c.first_half_contaminated_mask(led, lst)) == [True, False]
+
+
+# ── ML learning health: a shallow v9 clone cannot date a model ──────────────────────────────────
+def test_ml_health_does_not_date_models_from_a_shallow_clone(tmp_path):
+    import os
+    import shutil
+    import subprocess
+    if shutil.which("git") is None:
+        pytest.skip("git not on PATH")
+    from src.monitoring import ml_learning_health as mh
+    src = tmp_path / "src"
+    src.mkdir()
+    env = {**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t",
+           "GIT_COMMITTER_EMAIL": "t@t"}
+
+    def git(*a, cwd=src, date=None):
+        e = dict(env, **({"GIT_AUTHOR_DATE": date, "GIT_COMMITTER_DATE": date} if date else {}))
+        subprocess.run(["git", *a], cwd=cwd, env=e, check=True, capture_output=True)
+    git("init", "-q")
+    (src / "model.pkl").write_bytes(b"m1")
+    git("add", "-A")
+    git("commit", "-qm", "model", date="2026-10-18T08:00:00+00:00")
+    (src / "other.txt").write_text("x")
+    git("add", "-A")
+    git("commit", "-qm", "later", date="2026-11-01T11:24:09+00:00")
+    assert mh._last_change(src, "model.pkl").startswith("2026-10-18")          # full history: right
+    shallow = tmp_path / "shallow"
+    git("clone", "-q", "--depth", "1", src.as_uri(), str(shallow), cwd=tmp_path)
+    assert mh._is_shallow(shallow)
+    assert mh._last_change(shallow, "model.pkl") is None                        # unknown, never HEAD's date
+
+
+# ── v11 movement archive: append only what is new ───────────────────────────────────────────────
+def test_movement_import_archives_only_new_rows(monkeypatch):
+    from src.data import season_store as store
+    from src.importers import v11_research as v
+    raw = pd.DataFrame({"fixture_id": ["1", "2"], "snapshot_id": ["s1", "s2"], "bet_side": ["OVER", "UNDER"],
+                        "clv_pct": ["1.5", ""], "clv_quality": ["OK", "NO_CLOSE"], "result": ["WIN", ""]})
+    monkeypatch.setattr(v, "_fetch", lambda: raw)
+    monkeypatch.setattr(v, "_read_v11_json", lambda rel: {"overall": "PASS", "movement": {}})
+    monkeypatch.setattr(v, "_calc_version", lambda: "1.0.0")
+    monkeypatch.setattr(v, "_v11_sha", lambda: "abc")
+    stored = pd.DataFrame({"fixture_id": ["1"], "snapshot_id": ["s1"], "bet_side": ["OVER"],
+                           "calculation_version": ["1.0.0"], "clv_pct": [1.5], "clv_quality": ["OK"],
+                           "result": ["WIN"]})
+    monkeypatch.setattr(store, "read", lambda t, season=None, columns=None: stored)
+    out = v.from_v11_movement()
+    assert len(out) == 1 and list(out[0][1]["fixture_id"]) == ["2"]
+    monkeypatch.setattr(store, "read", lambda t, season=None, columns=None:
+                        pd.concat([stored, stored.assign(fixture_id="2", snapshot_id="s2", bet_side="UNDER",
+                                                         clv_pct=np.nan, clv_quality="NO_CLOSE",
+                                                         result=None)]))
+    assert v.from_v11_movement() == []                                          # nothing new -> nothing stored
+
+
+# ── contract validator: repo paths come from config, not a hardcoded 'wowza-v11' ────────────────
+def test_contract_validator_uses_configured_repo_paths(monkeypatch, tmp_path):
+    from config import pro_config as cfg
+    from src.validation import validate_system_contract as vc
+    paths = vc.repo_paths()
+    assert paths["v11"] == Path(cfg.V11_LOCAL) and paths["v9"] == Path(cfg.V9_LOCAL)
+    monkeypatch.setattr(cfg, "BASE_DIR", tmp_path / "pro")
+    (tmp_path / "wowza_v11").mkdir()
+    assert cfg._sibling_checkout("wowza_v11", "wowza-v11") == tmp_path / "wowza_v11"
+    (tmp_path / "wowza_v11").rmdir()
+    (tmp_path / "wowza-v11").mkdir()
+    assert cfg._sibling_checkout("wowza_v11", "wowza-v11") == tmp_path / "wowza-v11"
+
+
+# ── registries: frozen = hash-checked and unwritable; live = append-only ─────────────────────────
+def test_frozen_registrations_are_pinned_intact_and_unwritable():
+    from config import pro_config as cfg
+    from src import registry_guard as rgd
+    assert "registry/price_trader/registration_v1.json" in rgd.frozen()
+    assert rgd.verify() == []
+    with pytest.raises(rgd.RegistryViolation):
+        rgd.write_json(cfg.REGISTRY_DIR / "price_trader" / "registration_v1.json", {"edited": True})
+
+
+def test_scout_hypothesis_registry_is_append_only(monkeypatch, tmp_path):
+    import json
+    from src import registry_guard as rgd
+    from src.scout import hypotheses as H
+    f = tmp_path / "scout_hypotheses.json"
+    monkeypatch.setattr(H, "REGISTRY_FILE", f)
+    reg = {"registry": "scout_hypotheses", "version": 1, "criteria": {"a": 1}, "criteria_sha256": "x",
+           "created_at": "t", "hypotheses": [
+               {"id": "H1", "league_id": 1, "league": "L", "market": "ou15", "registered_at": "t0",
+                "state": "DISCOVERY", "confirmation_start": None, "history": [{"to": "DISCOVERY"}]}]}
+    H.save_registry(reg)
+    grown = json.loads(json.dumps(reg))
+    grown["hypotheses"][0]["history"].append({"to": "CONFIRMING"})
+    grown["hypotheses"][0]["confirmation_start"] = "2026-11-02"
+    grown["hypotheses"].append({**reg["hypotheses"][0], "id": "H2"})
+    H.save_registry(grown)                                                   # growth is allowed
+    for mutate in (lambda r: r["hypotheses"].pop(0),
+                   lambda r: r["hypotheses"][0].update(market="ou25"),
+                   lambda r: r["hypotheses"][0].update(confirmation_start="2026-12-01"),
+                   lambda r: r["hypotheses"][0].update(history=[{"to": "CONFIRMING"}]),
+                   lambda r: r.update(criteria={"a": 2})):
+        bad = json.loads(json.dumps(grown))
+        mutate(bad)
+        with pytest.raises(rgd.RegistryViolation):
+            H.save_registry(bad)
+    assert json.loads(f.read_text(encoding="utf-8")) == grown
