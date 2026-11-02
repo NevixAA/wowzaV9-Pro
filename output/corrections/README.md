@@ -48,3 +48,38 @@ v9's first-half-contaminated list (`output/corrections/clv_first_half_contaminat
 exists only on the v9 branch `fix4/sharp_clv`. It lists bets_ledger O/U rows, while Pro's `clv`
 table holds player props, so 0 Pro clv rows match it. Imported settlements rows that match it get
 the `CLV_FIRST_HALF_CONTAMINATED` quality flag.
+
+## Snapshot observation time (src/data/observation_time.py)
+
+`observed_at` was the time Pro ingested the row on every stored row: 401,270 market_snapshots and
+381,972 book_odds_snapshots. Stored rows are not rewritten. New imports carry the provider stamp
+(v9 `snapshot_ts`, or the board's `generated_at`) as `observed_at`, plus `observed_at_source`.
+Date-only stamps (T00:00:00) are never used as times. `scheduler._near_kickoff` now places rows by
+provider time only. It reads `snapshot_ts` / `captured_at` on old rows and reports the
+ingest-only rows apart.
+
+| kicked-off fixtures: 1,930 | T-6h | T-3h | T-1h | T-30m | T-10m |
+|---|---|---|---|---|---|
+| market_snapshots, before (ingest time) | 93.4% | 70.4% | 29.1% | 14.9% | 6.2% |
+| market_snapshots, after (provider time; 268,972 ingest-only rows excluded) | 86.2% | 72.0% | 38.4% | 23.3% | 10.0% |
+| book_odds_snapshots, before | 60.1% | 42.2% | 15.6% | 8.4% | 3.4% |
+| book_odds_snapshots, after | 90.0% | 78.4% | 36.3% | 23.7% | 11.0% |
+
+## Consensus de-vig gate (src/market/devig.fair_prob)
+
+The study consensus panels (`studies/common.book_panel`, btts_contradiction, monthly_learning)
+used the ungated power de-vig. Placeholder exchange pairs (1.01/1.01) and margins above 25% now
+return no probability. Of 44,143 last-pre-kickoff two-sided book pairs in book_odds_snapshots,
+12 are rejected (all Matchbook). Ten fixture-market consensus values move, by at most 1.59pp
+(BTTS). v11's momentum restatement belongs to v11.
+
+## valuable_all_fixture_close_audit_2026-11-02.csv
+
+`experiments/valuable_2026_10/all_fixture_settled.parquet` (committed) labels 19 rows
+VALID_PRE_KICKOFF_CLOSE whose close was taken after that row's kickoff. Five more fail when a
+close is compared with the earliest kickoff any snapshot recorded for the fixture. The sidecar
+lists all 24 with `corrected_close_status = CLOSE_NOT_PROVEN_PRE_KICKOFF`. The parquet is unchanged.
+VALID closes go from 2,847 (mean CLV +0.1456%) to 2,823 (+0.1478%).
+`edge_reassessment.all_fixture` and `valuable.snapshots` now apply the earliest-kickoff rule.
+`snapshots` also drops snapshots with no kickoff and writes the tracked
+`prematch_snapshots_manifest.json`: the parquet's SHA-256, row count and every v9 commit read.

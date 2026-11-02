@@ -64,6 +64,17 @@ def _results() -> pd.DataFrame:
     return r
 
 
+def close_status(close_at, gen, gap_h, kick_earliest) -> np.ndarray:
+    """ONLY_ONE_OBSERVATION | CLOSE_NOT_PROVEN_PRE_KICKOFF (close at/after the earliest kickoff any
+    snapshot recorded) | VALID_PRE_KICKOFF_CLOSE (within CLOSE_MAX_GAP_H) | NO_CLOSE_NEAR_KICKOFF."""
+    close_at, gen = pd.Series(close_at), pd.Series(gen)
+    gap_h, kick_earliest = pd.Series(gap_h), pd.Series(kick_earliest)
+    return np.where(close_at <= gen, "ONLY_ONE_OBSERVATION",
+                    np.where(close_at >= kick_earliest, "CLOSE_NOT_PROVEN_PRE_KICKOFF",
+                             np.where(gap_h <= CLOSE_MAX_GAP_H, "VALID_PRE_KICKOFF_CLOSE",
+                                      "NO_CLOSE_NEAR_KICKOFF")))
+
+
 def all_fixture(v9: str) -> pd.DataFrame:
     """One row per fixture x market x (chosen) side at first sight, settled, with a strict pre-kickoff close."""
     s = pd.read_parquet(EXP / "prematch_snapshots.parquet")
@@ -113,8 +124,15 @@ def all_fixture(v9: str) -> pd.DataFrame:
     last = last.rename(columns={"odds": "close_odds", "gen": "close_at"})
     first = c.sort_values("gen").drop_duplicates(["fx", "market", "side"], keep="first")
     f = first.merge(last, on=["fx", "market", "side"], how="left")
-    f["close_status"] = np.where(f.close_at <= f.gen, "ONLY_ONE_OBSERVATION",
-                                 np.where(f.gap_h <= CLOSE_MAX_GAP_H, "VALID_PRE_KICKOFF_CLOSE", "NO_CLOSE_NEAR_KICKOFF"))
+    # PRE-KICKOFF AGAINST EVERY KICKOFF EVER RECORDED (Data Truth round 3). Each snapshot carries
+    # its own kickoff_utc and v9 moved some of them later (delays, re-stamps), so the close row's
+    # gap_h was measured against ITS kickoff while the row kept the first snapshot's: 19 rows of
+    # all_fixture_settled.parquet were labelled VALID_PRE_KICKOFF_CLOSE with close_at after `kick`
+    # (Serie B 2026-08-22 15:00 kickoffs "closed" at 16:56-18:54). A close is valid only when it
+    # precedes the EARLIEST kickoff any snapshot gave the fixture; otherwise it is unproven.
+    kmin = c.groupby("fx")["kick"].min()
+    f["kick_earliest_known"] = f["fx"].map(kmin)
+    f["close_status"] = close_status(f.close_at, f.gen, f.gap_h, f.kick_earliest_known)
     ok = f.close_status == "VALID_PRE_KICKOFF_CLOSE"
     f["close_odds"] = f["close_odds"].where(ok)
     f["clv"] = (f["odds"] / f["close_odds"] - 1) * 100

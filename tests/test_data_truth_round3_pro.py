@@ -400,3 +400,46 @@ def test_scout_hypothesis_registry_is_append_only(monkeypatch, tmp_path):
         with pytest.raises(rgd.RegistryViolation):
             H.save_registry(bad)
     assert json.loads(f.read_text(encoding="utf-8")) == grown
+
+
+# ── snapshots: provider observation time, never ingest time ────────────────────────────────────
+def test_provider_observed_at_never_uses_a_date_only_stamp():
+    from src.data import observation_time as otm
+    r = otm.provider_observed_at(pd.Series(["2026-10-24T03:46:39Z", "2025-06-23T00:00:00Z", None,
+                                            "2026-08-09T10:55:35"]), "v9_snapshot_ts")
+    assert list(r["observed_at"]) == ["2026-10-24T03:46:39Z", None, None, "2026-08-09T10:55:35Z"]
+    assert list(r["observed_at_source"]) == ["provider:v9_snapshot_ts", "ingest_time", "ingest_time",
+                                             "provider:v9_snapshot_ts"]
+
+
+def test_near_kickoff_coverage_uses_provider_time_not_ingest_time():
+    from src.monitoring import scheduler as sch
+    fx = pd.DataFrame({"fixture_key": ["f1"], "kickoff_utc": ["2026-10-01T12:00:00Z"], "league": ["L"]})
+    # ingested 11:55 (inside T-10m) but the price was captured at 08:00 (T-4h)
+    snaps = pd.DataFrame({"fixture_key": ["f1"], "observed_at": ["2026-10-01T11:55:00Z"],
+                          "snapshot_ts": ["2026-10-01T08:00:00Z"]})
+    r = sch._near_kickoff(snaps, fx)
+    assert r["T-10m"]["fixtures_covered"] == 0 and r["T-6h"]["fixtures_covered"] == 1
+    only_ingest = pd.DataFrame({"fixture_key": ["f1"], "observed_at": ["2026-10-01T11:55:00Z"]})
+    r = sch._near_kickoff(only_ingest, fx)
+    assert r["status"] == "NO_JOINED_OBSERVATIONS" and r["rows_with_ingest_time_only"] == 1
+
+
+# ── consensus: exchange placeholders and 46% margins never enter it ─────────────────────────────
+def test_consensus_devig_is_gated():
+    from src.market import devig
+    from src.studies import common as C
+    assert devig.fair_prob(1.01, 1.01) is None                       # placeholder pair
+    assert devig.fair_prob(1.56, 1.22) is None                       # Matchbook, 46% margin
+    assert devig.fair_prob(1.95, 1.95) == pytest.approx(0.5, abs=1e-6)
+    assert C.power_devig(1.56, 1.22) is None                         # what the study panels call
+
+
+# ── VALUABLE history: a close after the earliest known kickoff is not a pre-kickoff close ──────
+def test_valuable_close_after_earliest_kickoff_is_not_valid():
+    from src.studies import edge_reassessment as er
+    gen = pd.to_datetime(["2026-08-15 15:31:48+00:00"] * 2)
+    close = pd.to_datetime(["2026-08-22 16:56:49+00:00", "2026-08-22 14:56:49+00:00"])
+    kick = pd.to_datetime(["2026-08-22 15:00:00+00:00"] * 2)
+    st = er.close_status(close, gen, [0.05, 0.05], kick)
+    assert list(st) == ["CLOSE_NOT_PROVEN_PRE_KICKOFF", "VALID_PRE_KICKOFF_CLOSE"]

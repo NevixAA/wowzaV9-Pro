@@ -714,7 +714,7 @@ def section_forecast_side() -> dict:
     v9 af_history results. Both months from the same Pro store."""
     from src.data import season_store as store
     from src.studies.common import match_frames, outcome
-    from src.market.devig import power_devig
+    from src.market.devig import fair_prob as power_devig      # gated: no placeholder/stale pairs
     fx = store.read("fixtures").drop_duplicates("fixture_key", keep="last")
     fx = fx[fx["match_date"].astype(str).between(SEP[0], "2026-10-31")]
     fx["kick"] = pd.to_datetime(fx["kickoff_utc"], utc=True, errors="coerce")

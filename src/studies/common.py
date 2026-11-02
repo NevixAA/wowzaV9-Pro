@@ -24,7 +24,12 @@ import pandas as pd
 
 from config import pro_config as cfg
 from src.data import season_store as store
-from src.market.devig import power_devig
+from src.market.devig import fair_prob
+
+# The studies' de-vig is the GATED one (Data Truth round 3): None for one-sided, arbitrage or
+# placeholder pairs (exchange 1.01/1.01, Matchbook O 1.56 / U 1.22). Kept under the old name so
+# every `C.power_devig` caller (argentina_btts, ou_challenger) is gated too.
+power_devig = fair_prob
 
 CACHE = cfg.BASE_DIR / "experiments" / "upgrade_studies_2026_10"
 RNG = np.random.default_rng(20261008)
