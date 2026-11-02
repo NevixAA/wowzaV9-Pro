@@ -53,16 +53,67 @@ def ini_sur(name) -> str | None:
     return f"{t[0][0]}|{t[-1]}" if len(t) >= 2 else None
 
 
+def _first_token(name) -> str | None:
+    """The normalised first name token, or None for an initial ('J.' / 'J')."""
+    s = unicodedata.normalize("NFKD", str(name or "").translate(_TR))
+    s = "".join(c for c in s if not unicodedata.combining(c)).lower()
+    raw = [x for x in re.split(r"\s+", re.sub(r"[^a-z\s.'-]", "", s)) if x]
+    if len(raw) < 2:
+        return None
+    t = raw[0].rstrip(".")
+    return t if len(t) > 1 and not raw[0].endswith(".") else None
+
+
+def ambiguous_name_groups(h: pd.DataFrame, by: list, name_col: str = "player") -> pd.Series:
+    """True for rows whose `by` group holds two priced names that cannot be one player: two FULL
+    first names that differ under the same initial + surname ('James Smith' / 'John Smith').
+    An initial is compatible with any full name ('J. Smith' / 'John Smith')."""
+    first = h[name_col].map(_first_token)
+    full = pd.DataFrame({**{c: h[c] for c in by}, "_f": first}).dropna(subset=["_f"])
+    n = full.groupby(by)["_f"].nunique()
+    bad = set(n[n > 1].index)
+    if not bad:
+        return pd.Series(False, index=h.index)
+    keys = list(zip(*[h[c] for c in by])) if len(by) > 1 else list(h[by[0]])
+    return pd.Series([k in bad for k in keys], index=h.index)
+
+
+def _canon_league(s: pd.Series) -> pd.Series:
+    from src.data import v9_config
+    memo = {}
+    return s.map(lambda x: memo.setdefault(x, v9_config.canonical_league(x)))
+
+
 def prop_items() -> pd.DataFrame:
-    """One row per (match date, player, market) with entry/close/consensus/dispersion."""
+    """One row per (match date, player, market) with entry/close/consensus/dispersion.
+
+    PLAYER IDENTITY (Data Truth round 2, 2026-11-02): where the price rows carry the provider's
+    `player_id`, the item is keyed on it (k = 'id:<player_id>'). Otherwise on initial + surname
+    within (match date, canonical league), and a group whose priced names cannot be one player
+    ('James Smith' / 'John Smith') is REFUSED - dropped and counted - instead of pooling two
+    players' odds into one item. Leagues go through v9's registry; an unknown league is dropped."""
     # v9's file is ROLLING since 2026-10-22: played matches live in player_prop_odds_history_archive/.
     from src.data.v9_source import read_v9_all
     h = read_v9_all("output/player_prop_odds_history.csv", low_memory=False)
     h = h[h["market"].isin(TARGET)]
     h["odds"] = pd.to_numeric(h["odds"], errors="coerce")
     h = h[h["odds"] > 1.0]
+    h["league"] = _canon_league(h["league"])
+    nolg = h["league"].isna()
+    if nolg.any():
+        print(f"[market] {int(nolg.sum()):,} price row(s) in a league outside the registry - dropped")
+    h = h[~nolg]
     h["k"] = h["player"].map(ini_sur)
-    h = h.dropna(subset=["k"]).sort_values("snapshot_ts")
+    if "player_id" in h.columns:
+        pid = h["player_id"].map(_pid)
+        h.loc[pid.notna(), "k"] = "id:" + pid[pid.notna()]
+    h = h.dropna(subset=["k"])
+    named = ~h["k"].astype(str).str.startswith("id:")
+    amb = ambiguous_name_groups(h[named], ["match_date", "league", "k"]).reindex(h.index, fill_value=False)
+    if amb.any():
+        print(f"[market] {int(amb.sum()):,} price row(s) refused: initial+surname shared by two "
+              f"different priced names the same day")
+    h = h[~amb].sort_values("snapshot_ts")
     g = h.groupby(["match_date", "league", "k", "market"])
     first_ts, last_ts = g["snapshot_ts"].transform("min"), g["snapshot_ts"].transform("max")
     entry = h[h["snapshot_ts"] == first_ts].groupby(["match_date", "league", "k", "market"])["odds"].agg(
@@ -77,16 +128,41 @@ def prop_items() -> pd.DataFrame:
     return it
 
 
+def _pid(v) -> str | None:
+    if v is None:
+        return None
+    try:
+        if pd.isna(v):
+            return None
+    except (TypeError, ValueError):
+        pass
+    s = str(v).strip()
+    if s.endswith(".0") and s[:-2].isdigit():
+        s = s[:-2]
+    return s or None
+
+
 def settle(items: pd.DataFrame, X: pd.DataFrame) -> pd.DataFrame:
-    """Join to appearances by date + league + initial-surname; refuse ambiguous matches.
-    A priced player who did not appear has no row -> the bet is void -> excluded (as books do)."""
+    """Join priced items to appearances. Items keyed 'id:<player_id>' join on the appearance's
+    player_id (same match date); the rest on date + canonical league + initial-surname, and an
+    initial-surname shared by two players that day is refused. A priced player who did not appear
+    has no row -> the bet is void -> excluded (as books do)."""
     a = X[["player_id", "fixture_id", "date", "league", "player_name", "position", *[c for c in TARGET.values() if c in X]]].copy()
     a["match_date"] = a["date"].dt.strftime("%Y-%m-%d")
+    a["league"] = _canon_league(a["league"])
+    by_id = items["k"].astype(str).str.startswith("id:")
+    m_id = pd.DataFrame()
+    if by_id.any():
+        ai = a.assign(k="id:" + a["player_id"].map(_pid).astype(object)).dropna(subset=["player_id"])
+        m_id = items[by_id].merge(ai.drop(columns=["league"]), on=["match_date", "k"], how="inner")
+    a = a.dropna(subset=["league"])
     a["k"] = a["player_name"].map(ini_sur)
     a = a.dropna(subset=["k"])
     dup = a.duplicated(["match_date", "league", "k"], keep=False)
     a = a[~dup]                                     # two same-initial-surname players that day: refuse
-    m = items.merge(a, on=["match_date", "league", "k"], how="inner")
+    m = items[~by_id].merge(a, on=["match_date", "league", "k"], how="inner")
+    if len(m_id):
+        m = pd.concat([m, m_id], ignore_index=True)
     m["y"] = [r[TARGET[r["market"]]] if TARGET[r["market"]] in m.columns else np.nan for _, r in m.iterrows()]
     return m.dropna(subset=["y"])
 

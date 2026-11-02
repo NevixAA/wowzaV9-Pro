@@ -243,6 +243,11 @@ def _already_collected() -> set:
     return set()
 
 
+def _team_id(team: dict) -> str | None:
+    v = (team or {}).get("id")
+    return None if v is None else str(v)
+
+
 def _parse_stats(fx: dict, teams: list, league: str) -> dict | None:
     """One fixture's row. response[0] is HOME for /fixtures/statistics."""
     if len(teams) < 2:
@@ -260,6 +265,10 @@ def _parse_stats(fx: dict, teams: list, league: str) -> dict | None:
         "kickoff_utc": fx["fixture"]["date"],
         "home_team": fx["teams"]["home"]["name"],
         "away_team": fx["teams"]["away"]["name"],
+        # API-Football's club ids (Data Truth round 2): team_form keys a club by its id where the
+        # row has it, instead of by the provider's name string. None when the response omits it.
+        "home_team_id": _team_id(fx["teams"]["home"]),
+        "away_team_id": _team_id(fx["teams"]["away"]),
         "home_goals": fx["goals"]["home"],
         "away_goals": fx["goals"]["away"],
         "stats_source": "api_football/fixtures/statistics",

@@ -158,7 +158,12 @@ def generate(days: int = DEFAULT_DAYS, *, now: dt.datetime | None = None) -> pd.
 
     fx = fixtures.copy()
     fx["_ko"] = pd.to_datetime(fx.get("kickoff_utc"), errors="coerce", utc=True)
-    fx = fx.dropna(subset=["_ko"]).drop_duplicates(subset=["fixture_key"], keep="last")
+    # fixture_key v2 is None for a league outside the registry or an unparseable date: no
+    # identity to build a combo id on, so skipped and counted (never keyed as the string 'None').
+    nokey = fx["fixture_key"].isna()
+    if nokey.any():
+        print(f"[builder] {int(nokey.sum())} fixture row(s) without a fixture_key - skipped")
+    fx = fx[~nokey].dropna(subset=["_ko"]).drop_duplicates(subset=["fixture_key"], keep="last")
     horizon = now + dt.timedelta(days=days)
     started = int((fx["_ko"] <= now).sum())
     fx = fx[(fx["_ko"] > now) & (fx["_ko"] <= horizon)]
@@ -366,7 +371,10 @@ def settle_finished() -> pd.DataFrame:
         return pd.DataFrame()
     res = pd.concat(parts, ignore_index=True)
     if "fixture_key" in res.columns:
-        res = res.drop_duplicates(subset=["fixture_key"], keep="last")
+        # Rows without a key are never collapsed into one another on a null key.
+        nk = res["fixture_key"].isna()
+        res = pd.concat([res[~nk].drop_duplicates(subset=["fixture_key"], keep="last"), res[nk]],
+                        ignore_index=True)
     players = _read("player_props")
 
     fresh = cs.settle(cand, res, players if not players.empty else pd.DataFrame())
