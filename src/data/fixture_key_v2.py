@@ -271,6 +271,19 @@ def unresolved_names(df: pd.DataFrame, *, league="league", home="home_team",
             .sort_values(["league", "name"]).reset_index(drop=True))
 
 
+def resolver_fingerprint() -> dict:
+    """What the v2 key depends on besides the frozen vocabulary: v9's resolver code and league
+    registry. Stored with every migration; if either changes, re-run the migration (it is
+    re-runnable from `old_fixture_key`) so stored and newly written keys agree."""
+    from src.data.v9_source import v9_head_sha
+    out = {"v9_commit": v9_head_sha()}
+    for rel in ("src/team_names.py", "config/leagues.json", "src/league_registry.py"):
+        p = cfg.V9_LOCAL / rel
+        out[rel] = (hashlib.sha256(p.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
+                    if p.exists() else None)
+    return out
+
+
 def clear_caches() -> None:
     _load_vocab.cache_clear()
     canonical_league.cache_clear()

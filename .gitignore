@@ -77,6 +77,13 @@ output/**
 !output/bet_builder_settled.csv
 !output/bet_builder_candidates.csv
 !output/bet_builder_daily.csv
+# fixture_key v2 migration evidence (src/pipelines/migrate_fixture_key_v2.py): what was re-keyed,
+# what could not be, and why. Small, written once per migration run.
+!output/fixture_key_v2/
+!output/fixture_key_v2/migration_report.json
+!output/fixture_key_v2/unresolved_clubs.csv
+!output/fixture_key_v2/unmapped_v1_keys.csv
+!output/fixture_key_v2/grain_conflicts.csv
 # The notify dedup state. It MUST persist between runs or every run re-sends the whole board as
 # NEW — the same failure shape as v9's duplicate-tip flood.
 !output/combo_notified.json

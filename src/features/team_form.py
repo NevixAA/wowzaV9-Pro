@@ -136,11 +136,13 @@ def team_keys(t: pd.DataFrame) -> pd.Series:
             memo[k] = f"c:{lg}|{club}" if club is not None else f"u:{lg or lg_raw}|{name}"
         return memo[k]
 
-    ids = t["team_id"].map(_clean_id) if "team_id" in t.columns else pd.Series(None, index=t.index, dtype=object)
-    names = pd.Series([canon(lg, n) for lg, n in zip(t["league"], t["team"])], index=t.index)
-    pairs = pd.DataFrame({"n": names, "i": ids}).dropna().drop_duplicates()
-    per = pairs.groupby("n")["i"].agg(lambda s: tuple(sorted(set(s))))
-    one = {n: v[0] for n, v in per.items() if len(v) == 1}
+    ids = [_clean_id(v) for v in t["team_id"]] if "team_id" in t.columns else [None] * len(t)
+    names = [canon(lg, n) for lg, n in zip(t["league"], t["team"])]
+    per: dict = {}
+    for n, i in zip(names, ids):
+        if i is not None:
+            per.setdefault(n, set()).add(i)
+    one = {n: next(iter(v)) for n, v in per.items() if len(v) == 1}
     key = pd.Series([f"id:{i}" if i is not None else (f"id:{one[n]}" if n in one else n)
                      for i, n in zip(ids, names)], index=t.index, dtype=object)
     unres = key.str.startswith("u:")

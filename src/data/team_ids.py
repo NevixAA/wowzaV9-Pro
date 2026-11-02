@@ -59,33 +59,35 @@ def id_lookup(frames: dict[str, pd.DataFrame]) -> tuple[dict, int]:
     return out, sum(1 for v in seen.values() if len(v) > 1)
 
 
+def source_frames() -> dict[str, pd.DataFrame]:
+    """The id columns of SOURCES, read once from the season store."""
+    from src.data import season_store as store
+    frames = {}
+    for table, fcol, hcol, acol in SOURCES:
+        try:
+            d = store.read(table)
+        except Exception as e:                          # a missing source is logged, not invented
+            log.warning("[team_ids] %s unreadable: %s", table, e)
+            continue
+        if not d.empty and {fcol, hcol, acol} <= set(d.columns):
+            frames[table] = d[[fcol, hcol, acol]].drop_duplicates()
+    return frames
+
+
 def attach_team_ids(stats: pd.DataFrame, frames: dict[str, pd.DataFrame] | None = None) -> pd.DataFrame:
     """A copy of `stats` with `home_team_id` / `away_team_id` filled by exact fixture_id where a
     source has them. `frames` defaults to reading SOURCES from the season store."""
     if stats is None or stats.empty or "fixture_id" not in stats.columns:
         return stats
     if frames is None:
-        from src.data import season_store as store
-        frames = {}
-        for table, fcol, hcol, acol in SOURCES:
-            try:
-                d = store.read(table)
-            except Exception as e:                      # a missing source is logged, not invented
-                log.warning("[team_ids] %s unreadable: %s", table, e)
-                continue
-            if not d.empty and {fcol, hcol, acol} <= set(d.columns):
-                frames[table] = d[[fcol, hcol, acol]].drop_duplicates()
+        frames = source_frames()
     lk, conflicts = id_lookup(frames)
     out = stats.copy()
-    for c in ("home_team_id", "away_team_id"):
-        if c not in out.columns:
-            out[c] = pd.Series([None] * len(out), index=out.index, dtype=object)
-        out[c] = out[c].map(_s).astype(object)
-    fid = out["fixture_id"].map(_s)
-    hit = fid.map(lambda f: lk.get(f) if f is not None else None)
+    hit = [lk.get(f) if f is not None else None for f in (_s(v) for v in out["fixture_id"])]
     for i, c in enumerate(("home_team_id", "away_team_id")):
-        fill = out[c].isna() & hit.notna()
-        out.loc[fill, c] = hit[fill].map(lambda t: t[i])
+        cur = [_s(v) for v in out[c]] if c in out.columns else [None] * len(out)
+        out[c] = pd.Series([v if v is not None else (h[i] if h is not None else None)
+                            for v, h in zip(cur, hit)], index=out.index, dtype=object)
     if conflicts:
         log.warning("[team_ids] %d fixture id(s) with conflicting club ids across sources - left "
                     "without ids", conflicts)

@@ -38,12 +38,26 @@ a value matching no format becomes None and is counted. clv `match_date` '' beco
 date or None.
 
 DEDUPE. Rows that are exact copies of another row of the SAME partition file (every column equal,
-run id included) carry no information and are dropped. Rows sharing the table's canonical grain
-but differing in any value are NOT touched - which copy is right is not ours to guess - and are
-counted in the report.
+run id included) are dropped. Then, table-wide, on the CANONICAL grain (GRAIN below, built on the
+v2 key): a row equal to an earlier-ingested row in the grain AND every value except ingestion
+bookkeeping (META) is the same observation stored twice and is dropped. Rows sharing the grain but
+differing in any value are NOT touched - which copy is right is not ours to guess - and are listed
+in grain_conflicts.csv. A partition file left with no rows is removed.
 
-OUTPUT. output/fixture_key_v2/migration_report.json, unresolved_clubs.csv, unmapped_v1_keys.csv.
-Re-runnable: the v1 key is read from `old_fixture_key` when present.
+The v1 -> v2 map also takes v9's named ledgers (bets / side bets / player ledger / live signals)
+and v9's history bank (fd_history + af_history): a stored v1 key equal to the v1 key recomputed
+from such a row identifies that fixture exactly (the full v1 hash, nothing weaker).
+
+team_match_stats additionally gets home_team_id / away_team_id from Pro's scout_results and
+live_odds_snapshots by exact API-Football fixture_id (src/data/team_ids.py).
+
+RECORDS. The combo, paper 1X2 and O/U challenger records in output/ are re-keyed the same way
+(RECORDS below). The frozen forward-shadow files keep v1. clv_enriched.csv is rebuilt from the
+migrated clv table by src/market/clv_schema --write.
+
+OUTPUT. output/fixture_key_v2/migration_report.json (with v9's resolver fingerprint),
+unresolved_clubs.csv, unmapped_v1_keys.csv, grain_conflicts.csv.
+Re-runnable: the v1 key is read from `old_fixture_key`, ids from `old_combo_id` / `old_row_id`.
 """
 from __future__ import annotations
 
@@ -172,6 +186,23 @@ def _v9_named_frames(log: dict):
             continue
         nm = pd.DataFrame({"league": raw["league"], "match_date": raw[dcol].astype(str).str[:10],
                            "home_team": h, "away_team": a}).drop_duplicates()
+        seen[rel] = int(len(nm))
+        yield rel, nm
+    # v9's history bank: settlement rows imported from OLDER versions of bets_ledger.csv (2020-2026,
+    # since trimmed from the live ledger) carry only their v1 key. The bank holds the same fixtures
+    # under v9's own strings; a bank row whose recomputed v1 equals a stored key IS that fixture
+    # (same league, date and club tokens), so its strings give the v2 key. No row is matched on
+    # anything weaker than the full v1 hash.
+    for rel in ("output/fd_history.parquet", "output/af_history.parquet"):
+        p = cfg.V9_LOCAL / rel
+        if not p.exists():
+            seen[rel] = "absent"
+            continue
+        raw = pd.read_parquet(p, columns=["league", "date", "home_team", "away_team"])
+        nm = pd.DataFrame({"league": raw["league"],
+                           "match_date": raw["date"].astype(str).str[:10],
+                           "home_team": raw["home_team"], "away_team": raw["away_team"]}
+                          ).drop_duplicates()
         seen[rel] = int(len(nm))
         yield rel, nm
     log["v9_named_sources"] = seen
@@ -443,7 +474,8 @@ def run(season: str | None = None, dry_run: bool = False, out_dir: Path | None =
         records: bool = True) -> dict:
     root = cfg.DATA_DIR / (season or cfg.season_label())
     log: dict = {"key_version": fk2.KEY_VERSION, "vocab_version": fk2.VOCAB_VERSION,
-                 "vocab_sha256": fk2.VOCAB_SHA256, "season": root.name, "dry_run": dry_run}
+                 "vocab_sha256": fk2.VOCAB_SHA256, "season": root.name, "dry_run": dry_run,
+                 "resolver": fk2.resolver_fingerprint()}
     m, unresolved = build_map(root, log)
     amb = {k: v for k, v in m.items() if len(v) > 1}
     log["v1_keys_in_map"] = len(m)
@@ -452,6 +484,7 @@ def run(season: str | None = None, dry_run: bool = False, out_dir: Path | None =
     tables: dict = {}
     unmapped = Counter()
     conflict_rows = []
+    tid_frames = None
     for t in NAMED + MATCH_NAMED + MAPPED + DEDUPE_ONLY:
         st = Counter()
         files = _files(root, t)
@@ -460,6 +493,14 @@ def run(season: str | None = None, dry_run: bool = False, out_dir: Path | None =
             d = pd.read_parquet(f)
             st["rows_before"] += len(d)
             new = d if t in DEDUPE_ONLY else migrate_frame(d, t, m, clv if t == "clv" else None, st)
+            if t == "team_match_stats":
+                # API-Football club ids by exact fixture_id from Pro's scout/live tables
+                # (src/data/team_ids.py); rows those tables do not cover keep None.
+                from src.data import team_ids as TI
+                if tid_frames is None:
+                    tid_frames = TI.source_frames()
+                new = TI.attach_team_ids(new, tid_frames)
+                st["team_ids_attached"] += int(new["home_team_id"].notna().sum())
             new, nd = dedupe_exact(new)
             st["exact_copies_dropped"] += nd
             frames.append(new.assign(_file=i, _changed=(t not in DEDUPE_ONLY) or nd > 0))
