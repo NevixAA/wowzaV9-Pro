@@ -1,16 +1,16 @@
-# Tip ranker — which 5 should a person take? (2026-11-01 18:23 UTC)
+# Tip ranker — which 5 should a person take? (2026-11-02 16:11 UTC)
 
-1,926 settled tips; 49 match days with >= 10 tips scored walk-forward (ranker fitted on earlier days only).
+1,977 settled tips; 51 match days with >= 10 tips scored walk-forward (ranker fitted on earlier days only).
 
-Honest P(win): Brier ranker 0.2427 · bookmaker price alone 0.2417 · raw model 0.2483 (lower is better). Mean P(win) 0.475 vs raw model 0.544; realised 0.481.
+Honest P(win): Brier ranker 0.2436 · bookmaker price alone 0.242 · raw model 0.2482 (lower is better). Mean P(win) 0.471 vs raw model 0.545; realised 0.483.
 
 | List | Hit rate | ROI | Hits/day of 5 | 0/5 days | 4+/5 days | Hit vs random (90% CI) | ROI vs random | Hit vs current | ROI vs current |
 |---|---|---|---|---|---|---|---|---|---|
-| BEST_BETS | 54.6% | +7.1% | 2.65 | 4% | 20% | [0.028, 0.116] | [0.001, 0.186] | [0.02, 0.145] | [-0.054, 0.212] |
-| SAFEST | 59.2% | +0.5% | 2.96 | 0% | 33% | [0.068, 0.165] | [-0.049, 0.114] | [0.057, 0.192] | [-0.13, 0.152] |
-| VALUE | 53.9% | +8.2% | 2.69 | 4% | 20% | [0.019, 0.106] | [0.013, 0.205] | [0.012, 0.135] | [-0.042, 0.225] |
-| CURRENT | 46.5% | -0.8% | 2.33 | 10% | 20% | [-0.058, 0.039] | [-0.088, 0.127] | [0.0, 0.0] | [0.0, 0.0] |
-| SHORTEST_ODDS | 62.4% | +5.3% | 3.12 | 0% | 41% | [0.103, 0.195] | [-0.003, 0.158] | [0.09, 0.229] | [-0.091, 0.206] |
-| RANDOM_5 | 47.5% | -2.6% | 2.38 | 4% | 16% | — | — | — | — |
+| BEST_BETS | 56.5% | +10.9% | 2.75 | 4% | 26% | [0.042, 0.132] | [0.03, 0.224] | [0.048, 0.174] | [0.004, 0.273] |
+| SAFEST | 57.6% | -2.6% | 2.88 | 0% | 33% | [0.052, 0.148] | [-0.087, 0.076] | [0.055, 0.184] | [-0.142, 0.141] |
+| VALUE | 54.5% | +11.1% | 2.73 | 4% | 20% | [0.026, 0.11] | [0.043, 0.221] | [0.031, 0.149] | [0.017, 0.272] |
+| CURRENT | 45.5% | -3.1% | 2.27 | 12% | 20% | [-0.075, 0.026] | [-0.119, 0.104] | [0.0, 0.0] | [0.0, 0.0] |
+| SHORTEST_ODDS | 61.6% | +3.5% | 3.08 | 0% | 41% | [0.093, 0.184] | [-0.027, 0.137] | [0.09, 0.231] | [-0.08, 0.207] |
+| RANDOM_5 | 47.7% | -2.1% | 2.39 | 4% | 16% | — | — | — | — |
 
 RANDOM_5 = the exact expectation of 5 random picks from the same day's list. A CI entirely above zero means the list beat that baseline across days, not just on average.
