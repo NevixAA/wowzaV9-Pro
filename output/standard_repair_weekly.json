@@ -1,14 +1,16 @@
 {
- "generated_at": "2026-10-26 12:40 UTC",
- "previous_run": null,
+ "generated_at": "2026-11-02 17:32 UTC",
+ "previous_run": "2026-10-26 12:40 UTC",
+ "repair_status": "PRE_REPAIR",
+ "forward_phase": "PRE_REPAIR_FORWARD",
  "production_change": "NONE - research only; nothing here is read by v9",
- "new_observations_first_sight": 2499,
+ "new_observations_first_sight": 222,
  "new_settlements": 0,
  "forward_error": null,
  "model_vs_market_forward": {
   "BTTS": {
-   "n_first_sight": 833,
-   "price_coverage": 0.902,
+   "n_first_sight": 907,
+   "price_coverage": 0.91,
    "n_settled_priced": 430,
    "gameweeks": 8,
    "served_v9_dLL_vs_market": {
@@ -24,23 +26,23 @@
     "p_one_sided": 0.62269
    },
    "clv_lean_side": {
-    "coverage": 0.902,
-    "mean": -0.003
+    "coverage": 0.91,
+    "mean": -0.0026
    }
   },
   "OU15": {
-   "n_first_sight": 833,
-   "price_coverage": 0.006,
+   "n_first_sight": 907,
+   "price_coverage": 0.007,
    "n_settled_priced": 2,
    "gameweeks": 2,
    "clv_lean_side": {
-    "coverage": 0.006,
-    "mean": -0.0117
+    "coverage": 0.007,
+    "mean": -0.0152
    }
   },
   "OU25": {
-   "n_first_sight": 833,
-   "price_coverage": 0.927,
+   "n_first_sight": 907,
+   "price_coverage": 0.933,
    "n_settled_priced": 443,
    "gameweeks": 9,
    "served_v9_dLL_vs_market": {
@@ -56,8 +58,8 @@
     "p_one_sided": 0.98851
    },
    "clv_lean_side": {
-    "coverage": 0.927,
-    "mean": 0.0004
+    "coverage": 0.933,
+    "mean": 0.0019
    }
   }
  },
@@ -80,34 +82,34 @@
  },
  "rank_panel": {
   "BTTS YES": {
-   "n_settled": 9,
-   "hit_rate": 0.444,
-   "flat_roi": -0.188,
-   "clv_coverage": 0.333
+   "n_settled": 44,
+   "hit_rate": 0.636,
+   "flat_roi": 0.063,
+   "clv_coverage": 0.682
   },
   "OU25 OVER": {
-   "n_settled": 8,
-   "hit_rate": 0.625,
-   "flat_roi": 0.009,
-   "clv_coverage": 0.5
+   "n_settled": 32,
+   "hit_rate": 0.594,
+   "flat_roi": -0.009,
+   "clv_coverage": 0.75
   },
   "OU25 UNDER": {
-   "n_settled": 1,
-   "hit_rate": 1.0,
-   "flat_roi": 0.48,
-   "clv_coverage": 0.0
+   "n_settled": 12,
+   "hit_rate": 0.333,
+   "flat_roi": -0.411,
+   "clv_coverage": 0.5
   },
   "OVER15 OVER": {
-   "n_settled": 9,
-   "hit_rate": 1.0,
-   "flat_roi": NaN,
-   "clv_coverage": 0.0
+   "n_settled": 45,
+   "hit_rate": 0.911,
+   "flat_roi": 0.39,
+   "clv_coverage": 0.022
   },
   "OVER35 OVER": {
-   "n_settled": 9,
-   "hit_rate": 0.222,
-   "flat_roi": -1.0,
-   "clv_coverage": 0.111
+   "n_settled": 45,
+   "hit_rate": 0.267,
+   "flat_roi": -0.434,
+   "clv_coverage": 0.422
   }
  },
  "state_changes": [],
