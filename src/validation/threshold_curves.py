@@ -57,6 +57,10 @@ def load() -> pd.DataFrame:
         return pd.DataFrame()
     d = pd.concat([pd.read_parquet(f) for f in fs], ignore_index=True)
     d = d[d["result"].isin(["WIN", "LOSS"])].copy()
+    # v9's first-half-contaminated closes are not CLV: flagged settlements, plus rows stored before
+    # the importer flagged them (matched on v9's list). The stored settlements are unchanged.
+    from src.data import v9_corrections as v9c
+    d = v9c.quarantine_first_half_clv(d, label="threshold_curves")
     for c in ("edge_pct", "pnl", "clv_pct"):
         d[c] = pd.to_numeric(d.get(c), errors="coerce")
     d["match_date"] = pd.to_datetime(d["match_date"], errors="coerce")

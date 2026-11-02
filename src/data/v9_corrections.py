@@ -21,7 +21,8 @@ _KEY = ("match_date", "league", "home_team", "away_team", "side")
 
 def first_half_contaminated(root=None) -> pd.DataFrame:
     """v9's list, or an empty frame when the v9 checkout does not carry it."""
-    p = (root or cfg.V9_LOCAL) / FIRST_HALF_FILE
+    from pathlib import Path
+    p = Path(root or cfg.V9_LOCAL) / FIRST_HALF_FILE
     if not p.exists():
         return pd.DataFrame(columns=list(_KEY))
     try:
@@ -59,3 +60,50 @@ def first_half_contaminated_mask(df: pd.DataFrame, listing: pd.DataFrame | None 
         return pd.Series(False, index=df.index, dtype=bool)
     bad = set(_keys(lst))
     return _keys(df).isin(bad).fillna(False).astype(bool)
+
+
+FLAG = "CLV_FIRST_HALF_CONTAMINATED"
+QUARANTINE_COL = "clv_quarantine"
+
+
+def quarantine_first_half_clv(df: pd.DataFrame, *, root=None, listing: pd.DataFrame | None = None,
+                              cols=("clv_pct", "closing_odds"), label: str = "") -> pd.DataFrame:
+    """A COPY of a bets_ledger-grain frame with v9's first-half-contaminated closes taken out of CLV.
+
+    Data Truth round 5 (owner rule: apply v9's list in EVERY Pro study that reads bets_ledger
+    clv_pct, not only the settlements importer). For each listed row `cols` (the recorded close and
+    the CLV derived from it) become NaN and `clv_quarantine` says why; every other column, and v9's
+    ledger itself, is unchanged. Rows already carrying the CLV_FIRST_HALF_CONTAMINATED quality flag
+    (Pro's settlements) are quarantined too. Apply it to the O/U 2.5 ledger frame BEFORE it is
+    concatenated with the side ledger: the list's key has no market column, so on a side-ledger
+    row (Over 1.5 / Over 3.5 on the same fixture) it would be a false match.
+    """
+    if df is None:
+        return df
+    if len(df) == 0:
+        out = df.copy()
+        out[QUARANTINE_COL] = pd.Series(dtype="string")
+        return out
+    lst = (first_half_contaminated(root) if listing is None else listing)
+    out = df.copy()
+    hit = (first_half_contaminated_mask(out, lst) if not lst.empty
+           else pd.Series(False, index=out.index, dtype=bool))
+    if "market" in out.columns:
+        # The list is O/U 2.5 only; on a mixed-market frame the key match is limited to O/U 2.5.
+        hit = hit & out["market"].astype("string").str.upper().isin(["OU25", "OVER25"]).fillna(False)
+    if "quality_flags" in out.columns:
+        hit = hit | out["quality_flags"].astype("string").str.contains(FLAG, regex=False).fillna(False)
+    hit = hit.astype(bool)
+    for c in cols:
+        if c in out.columns:
+            out[c] = pd.to_numeric(out[c], errors="coerce").mask(hit)
+    prev = (out[QUARANTINE_COL].astype("string").fillna("") if QUARANTINE_COL in out.columns
+            else pd.Series("", index=out.index, dtype="string"))
+    out[QUARANTINE_COL] = prev.mask(hit, FLAG)
+    tag = f"[v9_corrections{(' ' + label) if label else ''}]"
+    if lst.empty and "quality_flags" not in out.columns:
+        print(f"{tag} v9 list {FIRST_HALF_FILE} not found - no first-half closes excluded")
+    elif hit.any():
+        print(f"{tag} {int(hit.sum())} first-half-contaminated close(s) excluded from CLV "
+              f"(ledger values unchanged)")
+    return out

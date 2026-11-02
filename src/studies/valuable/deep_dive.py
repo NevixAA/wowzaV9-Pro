@@ -83,6 +83,9 @@ def _gates(v9: str, env: dict) -> dict:
 
 def load_live(v9: str) -> pd.DataFrame:
     o = pd.read_csv(Path(v9) / "output" / "bets_ledger.csv", low_memory=False)
+    # v9's first-half-contaminated closes are not CLV (v9 output/corrections list; ledger unchanged).
+    from src.data import v9_corrections as v9c
+    o = v9c.quarantine_first_half_clv(o, root=Path(v9), label="valuable")
     o = _first_sight(o[o["source"] == "live"], ["match_date", "home_team", "away_team"])
     o["market"] = "over25"
     s = pd.read_csv(Path(v9) / "output" / "side_bets_ledger.csv", low_memory=False)

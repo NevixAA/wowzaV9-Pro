@@ -148,6 +148,10 @@ def evaluate_clv() -> dict:
     if led.empty:
         out["note"] = "bets_ledger unreadable"
         return out
+    # v9's first-half-contaminated closes are not CLV (v9 output/corrections list; ledger unchanged).
+    from src.data import v9_corrections as v9c
+    led = v9c.quarantine_first_half_clv(led, label="monthly_eval")
+    out["clv_first_half_excluded"] = int(led[v9c.QUARANTINE_COL].eq(v9c.FLAG).sum())
     clv_col = next((c for c in led.columns if "clv" in c.lower()), None)
     if not clv_col:
         out["note"] = "no CLV column in the ledger"

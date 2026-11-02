@@ -50,6 +50,10 @@ from src.combo import events as ev
 
 CALC_VERSION = "1.0.0"
 
+#: Days searched around the combo's match date when its fixture_key finds no scoreline (paper_1x2's
+#: window). The 48h owner rule, not this window, decides whether the match found may settle it.
+RESCHEDULE_SEARCH_OFFSETS = (0, -1, 1, -2, 2, -3, 3)
+
 LEG_WON, LEG_LOST, LEG_VOID, LEG_UNKNOWN = "WON", "LOST", "VOID", "UNKNOWN"
 COMBO_WON, COMBO_LOST, COMBO_VOID, COMBO_UNKNOWN = "WON", "LOST", "VOID", "UNKNOWN"
 
@@ -148,21 +152,35 @@ def settle(candidates: pd.DataFrame, scorelines: pd.DataFrame,
     sc["_lg"] = (sc["league"].map(v9_config.canonical_league) if "league" in sc.columns
                  else pd.Series(None, index=sc.index, dtype="object"))
 
-    def _by_names(c) -> pd.Series | None:
-        lg = v9_config.canonical_league(c.get("league"))
-        parts = str(c.get("match", "")).split(" vs ", 1)
-        if lg is None or len(parts) != 2:
-            return None
-        day = sc[(sc["_d"] == str(c.get("match_date"))[:10]) & (sc["_lg"] == lg)]
+    def _on_day(lg, day_s: str, home: str, away: str) -> pd.Series | None:
+        day = sc[(sc["_d"] == day_s) & (sc["_lg"] == lg)]
         if day.empty:
             return None
         tn = v9_config.team_names()
-        h = tn.resolve_result(parts[0].strip(), sorted(day["home_team"].astype(str).unique()))
-        a = tn.resolve_result(parts[1].strip(), sorted(day["away_team"].astype(str).unique()))
+        h = tn.resolve_result(home, sorted(day["home_team"].astype(str).unique()))
+        a = tn.resolve_result(away, sorted(day["away_team"].astype(str).unique()))
         if h is None or a is None:
             return None
         hit = day[(day["home_team"].astype(str) == h) & (day["away_team"].astype(str) == a)]
         return hit.iloc[0] if len(hit) == 1 else None
+
+    def _by_names(c) -> tuple[pd.Series | None, int]:
+        """(scoreline, day offset). Same day first, then +-1..3 days (Data Truth round 5, the
+        paper_1x2 search): a rescheduled match is stored under its ACTUAL date and a NEW
+        fixture_key, so the key lookup and a same-day search both miss it. Which match may settle
+        the combo is decided afterwards by the owner's 48h rule on kickoff times, never by this
+        window. Same canonical league, both clubs resolved, exactly one fixture on that day."""
+        lg = v9_config.canonical_league(c.get("league"))
+        parts = str(c.get("match", "")).split(" vs ", 1)
+        day0 = pd.to_datetime(str(c.get("match_date"))[:10], errors="coerce")
+        if lg is None or len(parts) != 2 or pd.isna(day0):
+            return None, 0
+        for off in RESCHEDULE_SEARCH_OFFSETS:
+            s = _on_day(lg, (day0 + pd.Timedelta(days=off)).strftime("%Y-%m-%d"),
+                        parts[0].strip(), parts[1].strip())
+            if s is not None:
+                return s, off
+        return None, 0
 
     # PREFER THE FIXTURE KEY. The name join is a last resort: club names demonstrably differ
     # between sources (invariant 11: Kaiserslautern, QPR, Cadiz). On the first settlement pass
@@ -199,12 +217,12 @@ def settle(candidates: pd.DataFrame, scorelines: pd.DataFrame,
     for _, c in candidates.iterrows():
         fk = c.get("fixture_key")
         fk = "" if fk is None or (isinstance(fk, float) and pd.isna(fk)) else str(fk)
-        s, how = None, ""
+        s, how, off = None, "", 0
         if fk and fk in by_key:
             s, how = by_key[fk], "FIXTURE_KEY"
         else:
-            s = _by_names(c)
-            how = "RESOLVER" if s is not None else ""
+            s, off = _by_names(c)
+            how = ("RESOLVER" if off == 0 else f"RESOLVER_DAY{off:+d}") if s is not None else ""
         if s is None:
             out.append({**c.to_dict(), "combo_result": COMBO_UNKNOWN,
                         "leg_results": "", "settle_note": "NO_SCORELINE"})
@@ -218,8 +236,18 @@ def settle(candidates: pd.DataFrame, scorelines: pd.DataFrame,
             out.append({**c.to_dict(), "combo_result": COMBO_VOID, "leg_results": "",
                         "settle_note": verdict, "settle_version": CALC_VERSION})
             continue
-        fixture_players = (pl[pl["fixture_key"].astype(str) == fk]
-                           if fk and "fixture_key" in pl.columns else pl.iloc[0:0])
+        if off != 0 and verdict == rg.UNKNOWN:
+            # Found on another day but a kickoff is missing: the 48h rule cannot be applied, so the
+            # combo is neither settled on that match nor voided - it waits, labelled.
+            out.append({**c.to_dict(), "combo_result": COMBO_UNKNOWN, "leg_results": "",
+                        "settle_note": "RESCHEDULE_KICKOFF_UNKNOWN"})
+            continue
+        # Player legs follow the match actually played: a rescheduled fixture has a new key.
+        sk = s.get("fixture_key")
+        pfk = str(sk) if off != 0 and sk is not None and not (isinstance(sk, float) and pd.isna(sk)) \
+            else fk
+        fixture_players = (pl[pl["fixture_key"].astype(str) == pfk]
+                           if pfk and "fixture_key" in pl.columns else pl.iloc[0:0])
 
         legs, results = [], []
         for i in (1, 2, 3, 4, 5):
@@ -244,7 +272,7 @@ def settle(candidates: pd.DataFrame, scorelines: pd.DataFrame,
                     r = LEG_UNKNOWN
                 else:
                     name = str(name)
-                    r = graded.get((fk, name, market))
+                    r = graded.get((pfk, name, market))
                     if r is None:
                         row = fixture_players[fixture_players["player_name"] == name]
                         r = settle_player_leg(market, row.iloc[0] if len(row) else None)

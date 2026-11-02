@@ -41,6 +41,9 @@ MIN_TEST_N, MIN_TEST_DAYS = 10, 5
 
 def _bets() -> pd.DataFrame:
     m = pd.read_csv(cfg.V9_LOCAL / "output" / "bets_ledger.csv")
+    # v9's first-half-contaminated closes are not CLV (v9 output/corrections list; ledger unchanged).
+    from src.data import v9_corrections as v9c
+    m = v9c.quarantine_first_half_clv(m, root=cfg.V9_LOCAL, label="evidence")
     m["market"] = "ou25"
     s = pd.read_csv(cfg.V9_LOCAL / "output" / "side_bets_ledger.csv")
     cols = ["generated_at", "match_date", "league", "home_team", "away_team", "market", "odds",
