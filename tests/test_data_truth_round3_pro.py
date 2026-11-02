@@ -247,3 +247,51 @@ def test_registry_season_type_derived_from_v9_season_rule():
     assert R.season_type_from_rule(j1, "2026-11-02") == "split_season"
     assert R.season_type_from_rule(j1, "2026-03-01") == "calendar_year"
     assert R.season_type_from_rule(None) is None
+
+
+# ── CLV: clean means evidenced; the audit fails otherwise ───────────────────────────────────────
+def _clv_store_frame() -> pd.DataFrame:
+    return pd.DataFrame({"fixture_key": ["a", "b", "c"], "match_date": ["2026-10-01"] * 3,
+                         "market": ["sot"] * 3, "player": ["P1", "P2", "P3"], "side": ["OVER"] * 3,
+                         "ts_bet": ["2026-09-30T10:00:00Z"] * 3, "odds_bet": [2.0, 2.0, 2.0],
+                         "odds_close": [1.9, 2.0, None], "clv_pct": [0.0526, 0.0, None],
+                         "result": ["WIN"] * 3, "league": ["L"] * 3})
+
+
+def test_clean_clv_is_null_unless_the_close_is_evidenced(monkeypatch):
+    from src.data import season_store as store
+    from src.market import clv_schema as cs
+    props = pd.DataFrame({"fixture_key": ["z"], "player_name": ["P3"], "market": ["sot"],
+                          "market_odds": [1.8], "observed_at": ["2026-10-01T09:00:00Z"],
+                          "match_date": ["2026-10-01"]})
+    monkeypatch.setattr(store, "read", lambda t: _clv_store_frame() if t == "clv" else props)
+    d = cs.build(quiet=True)
+    q = dict(zip(d["player"], d["clv_quality"]))
+    assert q == {"P1": cs.Q_OK, "P2": cs.Q_CLOSE_EQUALS_ENTRY, "P3": cs.Q_UNPROVEN_PREKICKOFF}
+    c = dict(zip(d["player"], d["clean_clv_pct"]))
+    assert c["P1"] == pytest.approx(5.2632, abs=1e-3)
+    assert pd.isna(c["P2"]) and pd.isna(c["P3"])
+    assert d.loc[d["player"] == "P2", "clv_pct"].iloc[0] == 0.0               # raw kept
+
+
+def test_weekly_audit_fails_when_clean_clv_carries_unevidenced_rows(monkeypatch):
+    from src.market import clv_schema as cs
+    from src.monitoring import weekly_audit as wa
+    bad = pd.DataFrame({"clv_pct": [0.0, 0.05], "clv_pct_normalised": [0.0, 5.0],
+                        "clean_clv_pct": [0.0, 5.0], "entry_odds": [2.0, 2.1], "close_odds": [2.0, 2.0],
+                        "clv_quality": [cs.Q_CLOSE_EQUALS_ENTRY, cs.Q_OK]})
+    monkeypatch.setattr(cs, "build", lambda quiet=True: bad)
+    a = wa.Audit()
+    wa.audit_clv_schema(a, None, 7)
+    chk = [c for c in a.checks if c.name == "clean_clv_pct only on evidenced closes"]
+    assert chk and chk[0].status == wa.FAIL and chk[0].value == 1
+
+
+def test_first_half_contaminated_rows_are_matched_from_v9_list():
+    from src.data import v9_corrections as v9c
+    lst = pd.DataFrame({"match_date": ["2026-07-16"], "league": ["Brazil Serie A"], "home_team": ["Botafogo"],
+                        "away_team": ["Santos"], "side": ["UNDER"]})
+    led = pd.DataFrame({"match_date": ["2026-07-16", "2026-07-16"], "league": ["Brazil Serie A"] * 2,
+                        "home_team": ["Botafogo", "Botafogo"], "away_team": ["Santos", "Santos"],
+                        "side": ["Under", "OVER"]})
+    assert list(v9c.first_half_contaminated_mask(led, lst)) == [True, False]

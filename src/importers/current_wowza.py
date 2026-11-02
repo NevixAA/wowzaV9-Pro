@@ -417,6 +417,12 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
             s["quality_flags"],
             s["result"].notna() & ~s["result"].isin(["WIN", "LOSS", "VOID", "PENDING"]),
             "SETTLEMENT_UNCERTAIN")
+        # v9's first-half closes recorded as full-match closes (v9 corrections list, when the
+        # checkout carries it): flagged so no CLV consumer averages them; clv_pct stays as v9 wrote it.
+        from src.data import v9_corrections as v9c
+        s["quality_flags"] = q.add_flag(s["quality_flags"],
+                                        v9c.first_half_contaminated_mask(d).to_numpy(),
+                                        "CLV_FIRST_HALF_CONTAMINATED")
         out.append(("settlements", s))
 
     side = fetch_csv("output/side_bets_ledger.csv", required=False)

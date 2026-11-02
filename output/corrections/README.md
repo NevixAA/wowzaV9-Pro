@@ -28,3 +28,23 @@ Sent combos (`tip_scoreboard`): 12 of the 324 sent combos found in the record ar
 The headline moves from 125 settled / 6 won / z = -0.97 to 120 settled / 6 won / z = -0.73.
 The 5 removed decided combos all lost. After the fixture_key v2 re-key, `tip_scoreboard`
 matched 0 of 342 sent ids. It now also matches `old_combo_id`.
+
+## clean_clv_pct (src/market/clv_schema.py)
+
+`clean_clv_pct` is now non-NULL only where `clv_quality = OK`. Rows of the committed
+`output/clv_enriched.csv` (220,317) that lose their clean value: 54,246 CLOSE_EQUALS_ENTRY (all
+at 0.0) and 39,643 CLOSE_NOT_PROVEN_PRE_KICKOFF (closes recovered by player and market name only).
+`clv_pct` (raw) is unchanged on every row.
+
+| | rows with clean_clv_pct | mean |
+|---|---|---|
+| before | 184,416 | +0.0061% |
+| after | 90,527 | -0.6387% |
+
+The weekly audit now FAILS when any non-OK row carries a clean value. Its coverage line moves
+from 83.7% (PASS) to 41.1% (WARN).
+
+v9's first-half-contaminated list (`output/corrections/clv_first_half_contaminated.csv`) currently
+exists only on the v9 branch `fix4/sharp_clv`. It lists bets_ledger O/U rows, while Pro's `clv`
+table holds player props, so 0 Pro clv rows match it. Imported settlements rows that match it get
+the `CLV_FIRST_HALF_CONTAMINATED` quality flag.
