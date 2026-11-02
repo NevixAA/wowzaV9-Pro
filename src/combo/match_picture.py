@@ -346,6 +346,7 @@ def _joint(legs: list[dict], matrix: np.ndarray, dep: dict) -> tuple[float | Non
         return None, "IMPOSSIBLE", ["MUTUALLY_EXCLUSIVE_GOAL_LEGS"]
 
     src = "SCORE_MATRIX_EXACT" if not other else "SCORE_MATRIX_PLUS_MEASURED_DEPENDENCE"
+    p_goal = p
     for l in other:
         # Measured against the FIRST goal leg; conditioning on the whole goal block is not
         # something the pairwise table can express, so this is deliberately conservative.
@@ -354,4 +355,14 @@ def _joint(legs: list[dict], matrix: np.ndarray, dep: dict) -> tuple[float | Non
         if ratio is None or not np.isfinite(float(ratio)):
             return None, "UNMEASURED_DEPENDENCE", [f"NO_DEPENDENCE_CELL_{key[0]}_{key[1]}"]
         p *= float(l["p"]) * float(ratio)
+    # FRECHET BOUND (Data Truth round 3). P(A and B) can never exceed the smaller marginal nor fall
+    # below p_A + p_B - 1. A measured ratio applied to two marginals can push the product outside
+    # that band (measured: 92 recorded combos with a joint above their smaller leg) - such a joint is
+    # impossible, not merely inaccurate, so the combo is REFUSED, never clamped (events.frechet_bounds).
+    if other:
+        probs = [p_goal] + [float(l["p"]) for l in other]
+        hi = min(probs)
+        lo = max(0.0, sum(probs) - (len(probs) - 1))
+        if p > hi + 1e-12 or p < lo - 1e-12:
+            return None, "OUTSIDE_FRECHET_BOUND", ["JOINT_OUTSIDE_FRECHET_BOUND"]
     return float(min(max(p, 0.0), 1.0)), src, sorted(set(flags))

@@ -105,8 +105,14 @@ def bet_builder(settled: pd.DataFrame | None = None, notified: dict | None = Non
     if not notified:
         return {"sent": 0}
     sent_ids = set(notified)
-    s = settled[settled["combo_id"].astype(str).isin(sent_ids)].drop_duplicates("combo_id", keep="last").copy()
-    s["paper_league"] = s["league"].map(v9_config.is_paper)
+    # The notify state is keyed by the combo_id AT SEND TIME. The fixture_key v2 migration (69eac7d2)
+    # re-keyed combo_id in the settled record and kept the previous id in `old_combo_id`; matching
+    # on combo_id alone found 0 of 342 sent combos after it. Either id identifies the sent combo.
+    hit = settled["combo_id"].astype(str).isin(sent_ids)
+    if "old_combo_id" in settled.columns:
+        hit |= settled["old_combo_id"].astype(str).isin(sent_ids)
+    s = settled[hit].drop_duplicates("combo_id", keep="last").copy()
+    s["paper_league"] = s["league"].map(v9_config.is_paper).fillna(False).astype(bool)
     s["p"] = pd.to_numeric(s["joint_probability"], errors="coerce")
     dec = s[s["combo_result"].isin(["WON", "LOST"])].copy()
     dec["won"] = (dec["combo_result"] == "WON").astype(int)
@@ -116,7 +122,12 @@ def bet_builder(settled: pd.DataFrame | None = None, notified: dict | None = Non
     # expected (z -0.57) — calibrated, not a 29% hit rate. The headline uses fully graded combos
     # only; the void-leg ones are reported beside it and never mixed in.
     dec["n_void"] = dec["leg_results"].astype(str).str.count("=VOID")
-    full = dec[dec["n_void"] == 0]
+    # ONE RULE WITH THE SETTLED RECORD (src/combo/record_audit.scoreboard_result): besides voided
+    # legs, a combo with a side-specific leg from the symmetric score fit (INVALID_MODEL) or a joint
+    # outside the Frechet bound never enters the headline either.
+    from src.combo import record_audit as ra
+    dec = ra.annotate(dec)
+    full = dec[dec["scoreboard_result"].isin(["WON", "LOST"])]
 
     def block(x: pd.DataFrame) -> dict:
         if x.empty:
@@ -130,7 +141,9 @@ def bet_builder(settled: pd.DataFrame | None = None, notified: dict | None = Non
                 "z_actual_vs_claimed": round((x["won"].sum() - exp) / np.sqrt(var), 2) if var > 0 else None}
 
     head = full[~full["paper_league"]]
-    voided = dec[(dec["n_void"] > 0) & ~dec["paper_league"]]
+    voided = dec[(dec["scoreboard_result"] == ra.EXCLUDED_VOID_LEG) & ~dec["paper_league"]]
+    invalid = dec[dec["scoreboard_result"].isin([ra.EXCLUDED_INVALID_MODEL, ra.EXCLUDED_FRECHET])
+                  & ~dec["paper_league"]]
     bands = pd.cut(head["p"], [0, 0.1, 0.25, 0.4, 0.6, 1.0],
                    labels=["<10%", "10-25%", "25-40%", "40-60%", ">60%"])
     return {
@@ -143,6 +156,10 @@ def bet_builder(settled: pd.DataFrame | None = None, notified: dict | None = Non
         "with_voided_legs": {"settled": int(len(voided)), "won": int(voided["won"].sum()),
                              "note": "settled on the remaining legs after a leg was voided; not "
                                      "comparable with the claimed probability, which covers every leg"},
+        "invalid_model_or_frechet": {"settled": int(len(invalid)), "won": int(invalid["won"].sum()),
+                                     "note": "side-specific leg read off the home/away-symmetric score "
+                                             "fit, or a joint outside the Frechet bound; kept on the "
+                                             "record, never in the headline"},
         "paper_leagues": block(dec[dec["paper_league"]]),
         "by_claimed_probability": {str(k): block(head[bands == k]) for k in bands.cat.categories},
         "by_legs": {str(k): block(head[head["n_legs"] == k]) for k in sorted(head["n_legs"].dropna().unique())},

@@ -554,3 +554,11 @@ experiments/standard_repair_2026_10/rebuild/
 !output/studies/r2_repaired_challengers/*.json
 !output/studies/r2_repaired_challengers/raw/
 !output/studies/r2_repaired_challengers/raw/*
+
+# Data Truth round 3 (2026-11-02): corrections written BESIDE committed records (never over them),
+# and the reproducibility manifest of the untracked VALUABLE prematch snapshot parquet.
+!output/corrections/
+!output/corrections/*.csv
+!output/corrections/*.md
+!output/corrections/*.json
+!experiments/valuable_2026_10/prematch_snapshots_manifest.json
