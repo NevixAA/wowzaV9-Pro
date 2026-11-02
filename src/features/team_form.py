@@ -98,6 +98,58 @@ MIN_PRIOR = 3        # below this a team's form is NaN rather than a noisy one- 
 METRICS = ("xg", "goals", "shots", "sot", "insidebox", "possession")
 
 
+def _clean_id(v) -> str | None:
+    if v is None:
+        return None
+    try:
+        if pd.isna(v):
+            return None
+    except (TypeError, ValueError):
+        pass
+    s = str(v).strip()
+    if s.endswith(".0") and s[:-2].isdigit():
+        s = s[:-2]
+    return s or None
+
+
+def team_keys(t: pd.DataFrame) -> pd.Series:
+    """The club identity a team's form is rolled over (Data Truth round 2, 2026-11-02).
+
+      1. `id:<API-Football team_id>` where the row carries the provider's club id;
+      2. else, when the club's canonical (league, club) carries exactly ONE id on other rows, that
+         id (the same club, so its history is not split between an id key and a name key);
+      3. else `c:<canonical league>|<canonical club>`: v9's league registry and v9's
+         team_names.resolve against the frozen fixture_key v2 vocabulary - within the league;
+      4. else `u:<league>|<name as written>`: the resolver could not place the club. Kept on its
+         own spelling (the pre-round-2 behaviour), never mapped onto another club, and counted.
+
+    It used to be the raw provider name across all leagues, so two spellings of one club were two
+    teams and two clubs sharing a name in different leagues were one."""
+    from src.data import fixture_key_v2 as fk2
+    memo: dict = {}
+
+    def canon(lg_raw, name):
+        k = (lg_raw, name)
+        if k not in memo:
+            lg = fk2.canonical_league(None if lg_raw is None else str(lg_raw).strip())
+            club = fk2.canonical_club(lg, str(name).strip()) if lg is not None else None
+            memo[k] = f"c:{lg}|{club}" if club is not None else f"u:{lg or lg_raw}|{name}"
+        return memo[k]
+
+    ids = t["team_id"].map(_clean_id) if "team_id" in t.columns else pd.Series(None, index=t.index, dtype=object)
+    names = pd.Series([canon(lg, n) for lg, n in zip(t["league"], t["team"])], index=t.index)
+    pairs = pd.DataFrame({"n": names, "i": ids}).dropna().drop_duplicates()
+    per = pairs.groupby("n")["i"].agg(lambda s: tuple(sorted(set(s))))
+    one = {n: v[0] for n, v in per.items() if len(v) == 1}
+    key = pd.Series([f"id:{i}" if i is not None else (f"id:{one[n]}" if n in one else n)
+                     for i, n in zip(ids, names)], index=t.index, dtype=object)
+    unres = key.str.startswith("u:")
+    if unres.any():
+        print(f"[team_form] {int(unres.sum())} team-row(s) over {key[unres].nunique()} club "
+              f"spelling(s) have no team id and no canonical club - keyed on their own spelling")
+    return key
+
+
 def _to_team_rows(d: pd.DataFrame) -> pd.DataFrame:
     """One row per (fixture, team) with `for_*` / `against_*`, from home_/away_ columns.
 
@@ -113,6 +165,8 @@ def _to_team_rows(d: pd.DataFrame) -> pd.DataFrame:
             "season": d["season"],
             "match_date": pd.to_datetime(d["match_date"], errors="coerce"),
             "team": d[f"{side}_team"],
+            "team_id": (d[f"{side}_team_id"] if f"{side}_team_id" in d.columns
+                        else pd.Series(None, index=d.index, dtype=object)),
             "opponent": d[f"{opp}_team"],
             "is_home": side == "home",
         })
@@ -121,14 +175,17 @@ def _to_team_rows(d: pd.DataFrame) -> pd.DataFrame:
             blk[f"against_{m}"] = pd.to_numeric(d.get(f"{opp}_{m}"), errors="coerce")
         frames.append(blk)
     out = pd.concat(frames, ignore_index=True)
-    return out.dropna(subset=["match_date", "team"]).sort_values(["team", "match_date"])
+    out = out.dropna(subset=["match_date", "team"])
+    out["team_key"] = team_keys(out)
+    return out.sort_values(["team_key", "match_date"])
 
 
 def rolling_form(stats: pd.DataFrame, window: int = WINDOW,
                  min_prior: int = MIN_PRIOR) -> pd.DataFrame:
-    """Per (fixture, team) rolling form over the team's PRIOR `window` matches."""
+    """Per (fixture, team) rolling form over the team's PRIOR `window` matches, the team being
+    `team_key` (API-Football id, else canonical club within league; see team_keys)."""
     t = _to_team_rows(stats).reset_index(drop=True)
-    g = t.groupby("team", sort=False)
+    g = t.groupby("team_key", sort=False)
     for m in METRICS:
         for direction in ("for", "against"):
             col = f"{direction}_{m}"
@@ -176,7 +233,7 @@ def fixture_lambdas(stats: pd.DataFrame, window: int = WINDOW) -> pd.DataFrame:
     form = rolling_form(stats, window=window)
     lg = league_means(stats)
 
-    keep = ["fixture_id", "team", "is_home", "league", "season", "match_date", "n_prior",
+    keep = ["fixture_id", "team", "team_key", "is_home", "league", "season", "match_date", "n_prior",
             "roll_for_xg", "roll_against_xg", "roll_for_goals", "roll_against_goals",
             "roll_for_shots", "roll_for_sot", "roll_for_possession", "roll_for_insidebox"]
     f = form[keep]

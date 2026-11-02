@@ -201,7 +201,13 @@ def log_picks(now: dt.datetime | None = None) -> pd.DataFrame:
         return pd.DataFrame()
     fx = fx.copy()
     fx["_ko"] = pd.to_datetime(fx.get("kickoff_utc"), errors="coerce", utc=True)
-    fx = fx.dropna(subset=["_ko"]).drop_duplicates("fixture_key", keep="last")
+    # fixture_key v2 is None when the league is not a registry league or the date is unparseable;
+    # such a row has no identity to log under (and no league model), so it is skipped, counted.
+    nokey = fx["fixture_key"].isna()
+    if nokey.any():
+        print(f"[paper1x2] {int(nokey.sum())} fixture row(s) without a fixture_key "
+              f"(league not in the registry / date unparseable) - skipped")
+    fx = fx[~nokey].dropna(subset=["_ko"]).drop_duplicates("fixture_key", keep="last")
     fx = fx[(fx["_ko"] > now) & (fx["_ko"] <= now + dt.timedelta(days=HORIZON_DAYS))]
     print(f"[paper1x2] {len(fx)} upcoming fixture(s) within {HORIZON_DAYS}d")
     if fx.empty:

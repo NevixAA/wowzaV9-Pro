@@ -64,6 +64,15 @@ def fixture_key(league, match_date, home, away) -> str | None:
     return fk2.fixture_key(league, match_date, home, away)
 
 
+# Written beside `fixture_key` by add_fixture_key and carried into every warehouse row since v2.
+KEY_META = ("old_fixture_key", "fixture_key_version", "fixture_key_status")
+
+
+def key_meta(d: pd.DataFrame) -> dict:
+    """{column: Series} of KEY_META present on `d`, for building a table frame from a keyed one."""
+    return {c: d[c] for c in KEY_META if c in d.columns}
+
+
 def add_fixture_key(df: pd.DataFrame, *, league="league", date="match_date",
                     home="home_team", away="away_team") -> pd.DataFrame:
     """v2 `fixture_key` plus `old_fixture_key` (v1), `fixture_key_version`, `fixture_key_status`."""

@@ -216,6 +216,10 @@ def run_from_stats(min_season: str | None = None, quiet: bool = False) -> dict:
         return {}
     if min_season:
         stats = stats[stats["season"].astype(str) >= str(min_season)]
+    # API-Football club ids by exact fixture_id from Pro's own scout/live tables, so team form
+    # keys a club by its id where the data has one (src/data/team_ids.py).
+    from src.data.team_ids import attach_team_ids
+    stats = attach_team_ids(stats)
     lam = tf.fixture_lambdas(stats)
     res = stats[["fixture_id", "home_goals", "away_goals", "match_date", "league"]].copy()
     d = lam.merge(res, on="fixture_id", how="inner", suffixes=("", "_r"))

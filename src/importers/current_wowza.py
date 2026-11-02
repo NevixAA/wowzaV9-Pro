@@ -29,6 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from config import pro_config as cfg
 from src import quality as q
 from src.data import entities as ent
+from src.data import fixture_key_v2 as fk2
 from src.data import watermarks as wm
 from src.data.v9_source import fetch_csv, num, v9_model_version
 
@@ -81,6 +82,11 @@ _NON_FEATURE = {
 } | {c for m in _MARKETS.values() for c in m if c}
 
 
+def _KM(d: pd.DataFrame) -> list:
+    """The fixture_key v2 bookkeeping columns present on a keyed frame (entities.KEY_META)."""
+    return [c for c in ent.KEY_META if c in d.columns]
+
+
 def _base(df: pd.DataFrame) -> pd.DataFrame:
     """Identity columns shared by every table derived from predictions.csv."""
     out = df.rename(columns={"date": "match_date"}).copy()
@@ -112,16 +118,21 @@ def from_predictions() -> list[tuple[str, pd.DataFrame]]:
               f"({_mv['n_model_files']} files, {_mv['model_bytes']/1024/1024:.1f} MB)")
 
     # fixtures — the board, every fixture evaluated
-    out.append(("fixtures", d[[
-        "fixture_key", "league", "match_date", "home_team", "away_team",
-    ] + [c for c in ("kickoff_utc", "model_type") if c in d.columns]].drop_duplicates("fixture_key")))
+    # Keyless rows (league outside the registry, unparseable date) are kept one per club pair: a
+    # drop_duplicates on a null key would collapse them all into one.
+    _fx = d[["fixture_key", "league", "match_date", "home_team", "away_team",
+             *[c for c in ent.KEY_META if c in d.columns]]
+            + [c for c in ("kickoff_utc", "model_type") if c in d.columns]]
+    out.append(("fixtures", _fx.drop_duplicates(
+        ["fixture_key"] if _fx["fixture_key"].notna().all()
+        else ["fixture_key", "old_fixture_key"])))
 
     # model_snapshots — long by market. One row per fixture per market per capture.
     ms = []
     for market, (pcol, _o, _u) in _MARKETS.items():
         if pcol not in d.columns:
             continue
-        blk = d[["fixture_key", "league", "match_date", "model_type"]].copy()
+        blk = d[["fixture_key", *_KM(d), "league", "match_date", "model_type"]].copy()
         blk["market"] = market
         blk["model_prob"] = num(d[pcol])
         blk["model_id"] = "v9_baseline"
@@ -159,7 +170,7 @@ def from_predictions() -> list[tuple[str, pd.DataFrame]]:
         for side, col in (("OVER", ocol), ("UNDER", ucol)):
             if not col or col not in d.columns:
                 continue
-            blk = d[["fixture_key", "league", "match_date"]].copy()
+            blk = d[["fixture_key", *_KM(d), "league", "match_date"]].copy()
             blk["market"] = market
             blk["side"] = side
             blk["odds"] = num(d[col])
@@ -180,7 +191,7 @@ def from_predictions() -> list[tuple[str, pd.DataFrame]]:
     fcols = [c for c in d.columns if c not in _NON_FEATURE
              and c not in ("fixture_key", "entity_unresolved")]
     if fcols:
-        fs = d[["fixture_key", "league", "match_date"] + fcols].copy()
+        fs = d[["fixture_key", *_KM(d), "league", "match_date"] + fcols].copy()
         for c in fcols:
             fs[c] = num(fs[c]) if fs[c].dtype == object else fs[c]
         # v9 forces AVOID when rolling form is missing; record it as a feature-health fact.
@@ -190,7 +201,7 @@ def from_predictions() -> list[tuple[str, pd.DataFrame]]:
         out.append(("feature_snapshots", fs))
 
     # signals — every evaluated fixture, whatever the tier (section 5)
-    sg = d[["fixture_key", "league", "match_date"]].copy()
+    sg = d[["fixture_key", *_KM(d), "league", "match_date"]].copy()
     sg["market"] = "OU25"
     sg["side"] = d.get("best_side", "")
     sg["bet"] = d.get("bet", "")
@@ -320,7 +331,10 @@ def from_book_odds() -> list[tuple[str, pd.DataFrame]]:
         "match_date": raw["match_date"].astype(str).str[:10],
         "home_team": home,
         "away_team": away,
-        "kickoff_utc": raw.get("kickoff_utc", ""),
+        # v9 writes two kickoff formats into this column ('...Z' and '+00:00'); parsed with the
+        # explicit list in fixture_key_v2 and stored as one ('YYYY-MM-DDTHH:MM:SSZ'). A value
+        # matching no format is None, never a guessed time.
+        "kickoff_utc": raw.get("kickoff_utc", pd.Series(index=raw.index, dtype=object)).map(fk2.to_utc_iso),
         "market": raw.get("market", ""),
         "side": raw.get("side", ""),
         # The whole reason for the table: the REAL book name, as the provider gave it.
@@ -334,8 +348,9 @@ def from_book_odds() -> list[tuple[str, pd.DataFrame]]:
 
     # Minutes to kickoff, so the horizon question can be asked of this table directly rather
     # than by re-joining fixtures every time.
-    _ko = pd.to_datetime(blk["kickoff_utc"], errors="coerce", utc=True)
-    _ts = pd.to_datetime(blk["snapshot_ts"], errors="coerce", utc=True)
+    _fmt = "%Y-%m-%dT%H:%M:%SZ"
+    _ko = pd.to_datetime(blk["kickoff_utc"], format=_fmt, utc=True)
+    _ts = pd.to_datetime(blk["snapshot_ts"].map(fk2.to_utc_iso), format=_fmt, utc=True)
     blk["minutes_to_kickoff"] = ((_ko - _ts).dt.total_seconds() / 60.0).round(1)
     # A post-kickoff quote is NOT a pre-match price and must never be used as a close.
     blk["is_post_kickoff"] = blk["minutes_to_kickoff"] < 0
@@ -362,7 +377,7 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
         d = ent.add_fixture_key(main.assign(
             match_date=main["match_date"].astype(str).str[:10]))
         s = pd.DataFrame({
-            "fixture_key": d["fixture_key"],
+            "fixture_key": d["fixture_key"], **ent.key_meta(d),
             "league": d.get("league", ""),
             "match_date": d["match_date"],
             "market": "OU25",
@@ -418,7 +433,7 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
         _flags = q.add_flag(pd.Series("", index=d.index), _side.isna(), "SIDE_UNKNOWN")
         _flags = q.add_flag(_flags, _res.isna(), "RESULT_MISSING")
         out.append(("settlements", pd.DataFrame({
-            "fixture_key": d["fixture_key"],
+            "fixture_key": d["fixture_key"], **ent.key_meta(d),
             "league": d.get("league", ""),
             "match_date": d["match_date"],
             "market": _mkt,
@@ -468,7 +483,7 @@ def from_player_props() -> list[tuple[str, pd.DataFrame]]:
         return []
     d = ent.add_fixture_key(raw.assign(match_date=raw["match_date"].astype(str).str[:10]))
     p = pd.DataFrame({
-        "fixture_key": d["fixture_key"],
+        "fixture_key": d["fixture_key"], **ent.key_meta(d),
         "league": d.get("league", ""),
         "match_date": d["match_date"],
         "player_name": d.get("player_name", ""),
@@ -532,19 +547,19 @@ def from_clv() -> list[tuple[str, pd.DataFrame]]:
     home, away = ident["home_team"], ident["away_team"]
     mdate, league = ident["match_date"], ident["league"]
     known = mdate.notna() & league.notna()
-    keys = pd.Series(pd.NA, index=raw.index, dtype=object)
-    if known.any():
-        kd = ent.add_fixture_key(pd.DataFrame({
-            "league": league[known], "match_date": mdate[known],
-            "home_team": home[known], "away_team": away[known]}))
-        keys[known] = kd["fixture_key"]
+    # Every row goes through the key: one without a league or date gets fixture_key None and a
+    # LEAGUE_UNKNOWN / DATE_UNPARSEABLE status, never a key built from blanks.
+    kd = ent.add_fixture_key(pd.DataFrame({"league": league, "match_date": mdate,
+                                           "home_team": home, "away_team": away},
+                                          index=raw.index))
+    keys = kd["fixture_key"]
     flags = q.add_flag(pd.Series("", index=raw.index), mdate.isna(), "DATE_MISSING")
     flags = q.add_flag(flags, league.isna(), "LEAGUE_MISSING")
     if (~known).any():
         print(f"[import] clv: {int((~known).sum())} of {len(raw)} row(s) without a league or "
               f"date - stored with no fixture_key")
     return [("clv", pd.DataFrame({
-        "fixture_key": keys,
+        "fixture_key": keys, **ent.key_meta(kd),
         "league": league,
         "match_date": mdate,
         "market": raw.get("market", ""),
@@ -573,7 +588,7 @@ def from_live_signals() -> list[tuple[str, pd.DataFrame]]:
     })
     d = ent.add_fixture_key(d)
     return [("live_signals", pd.DataFrame({
-        "fixture_key": d["fixture_key"],
+        "fixture_key": d["fixture_key"], **ent.key_meta(d),
         "league": d["league"],
         "match_date": d["match_date"],
         "score": raw.get("score", ""),
