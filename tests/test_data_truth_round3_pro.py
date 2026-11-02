@@ -190,3 +190,60 @@ def test_paper_1x2_notify_refuses_stale_price_and_records_fresh_one(monkeypatch)
     assert r["sent"] == 1
     assert d2.loc[0, "notified_odds"] in (3.0, 3.4, 2.4) and d2.loc[0, "o_home"] == 2.0
     assert str(d2.loc[0, "notified_price_at"]).startswith("2026-11-02 09:00")
+
+
+# ── re-collect rule: a fixture stored before its kickoff is not "already collected" ─────────────
+def test_team_stats_recollects_fixture_stored_before_kickoff(monkeypatch):
+    from src.data import season_store as store
+    from src.pipelines import team_stats as ts
+    prev = pd.DataFrame({"fixture_id": ["1555431", "1555407"],
+                         "kickoff_utc": ["2026-11-28T17:00:00+00:00", "2026-10-25T15:30:00+00:00"],
+                         "observed_at": ["2026-10-25T19:19:02Z", "2026-10-25T19:19:02Z"]})
+    monkeypatch.setattr(store, "read", lambda t: prev)
+    assert ts._already_collected() == {"1555407"}
+    assert ts._not_yet_played({"fixture": {"date": "2099-01-01T00:00:00+00:00"}}, pd.Timestamp(NOW))
+    assert not ts._not_yet_played({"fixture": {"date": "2026-10-25T15:30:00+00:00"}}, pd.Timestamp(NOW))
+
+
+# ── scout: "already a Wowza league" by API-Football id, fail closed ─────────────────────────────
+def _readable_row(lid: int, country: str, name: str) -> dict:
+    return {"league_id": lid, "country": country, "league": name, "status": "READABLE",
+            "settled_with_close": 999, "results": 9999, "history_seasons": 5}
+
+
+def test_scout_gate_refuses_a_league_v9_already_has():
+    from src.scout import promotion as P
+    extra = {"current_season_settled": 100, "odds_coverage": {m: 1.0 for m in P.KEY_MARKETS}}
+    ok, gate = P.candidate_gate(_readable_row(62, "France", "Ligue 2"), extra, {62, "Ligue 2"})
+    assert not ok and gate["checks"]["not already a Wowza league"] is False
+    ok, gate = P.candidate_gate(_readable_row(62, "France", "Ligue 2"), extra, set())   # registry unread
+    assert gate["checks"]["not already a Wowza league"] is False
+    ok, gate = P.candidate_gate(_readable_row(333, "Ukraine", "Premier League"), extra,
+                                {39, "Premier League"})   # same bare name, different league
+    assert gate["checks"]["not already a Wowza league"] is True
+
+
+def test_scout_wowza_leagues_raises_when_registry_unreadable(monkeypatch):
+    from src.data import v9_config
+    from src.scout import promotion as P
+
+    class _Reg:
+        @staticmethod
+        def leagues():
+            return []
+    monkeypatch.setattr(v9_config, "league_ids", lambda: {})
+    monkeypatch.setattr(v9_config, "league_registry", lambda: _Reg)
+    with pytest.raises(RuntimeError):
+        P.wowza_leagues()
+
+
+# ── registry season_type comes from v9's season rule, not from the model format ─────────────────
+def test_registry_season_type_derived_from_v9_season_rule():
+    from src.scout import registry as R
+    assert R.season_type_from_rule({"type": "start_year", "start_month": 7}) == "split_season"
+    assert R.season_type_from_rule({"type": "calendar_year"}) == "calendar_year"
+    j1 = {"eras": [{"until": "2026-07-01", "type": "calendar_year"},
+                   {"from": "2026-07-01", "type": "end_year", "start_month": 7}]}
+    assert R.season_type_from_rule(j1, "2026-11-02") == "split_season"
+    assert R.season_type_from_rule(j1, "2026-03-01") == "calendar_year"
+    assert R.season_type_from_rule(None) is None

@@ -131,7 +131,8 @@ def test_review_never_changes_production():
     r = {"EXISTING_PRODUCTION_SELECTION_CHANGED": "NO"}
     assert P.CALC_VERSION and r["EXISTING_PRODUCTION_SELECTION_CHANGED"] == "NO"
     src = Path(P.__file__).read_text(encoding="utf-8")
-    assert "V9_LOCAL" in src and ".write_text" in src
+    # v9 is read through src/data/v9_config (its league registry), never written
+    assert ("V9_LOCAL" in src or "v9_config" in src) and ".write_text" in src
     assert "wowza-betting" not in src.replace("NevixAA/wowza-betting", "")   # no repo writes from here
 
 def test_registry_parses_literals_without_running_code(tmp_path):

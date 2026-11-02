@@ -113,7 +113,9 @@ def residual(y, p_mkt, p_mod) -> dict:
 
 
 def build() -> dict:
-    res = store.read("scout_results")
+    from src.data import result_guard as rg
+    res = rg.drop_unplayed(store.read("scout_results"), "scout_results", kickoff_col="kickoff_ts",
+                           kickoff_unit="s")
     odds = store.read("scout_odds")
     mdl = store.read("scout_model")
     names = {x["id"]: (x["country"], x["name"], x["priority"]) for x in reg.load()}
@@ -230,7 +232,9 @@ def league_status(report: dict | None = None) -> dict:
     """
     import json as _json
     watch = reg.load()
+    from src.data import result_guard as rg
     res, odds, mdl = store.read("scout_results"), store.read("scout_odds"), store.read("scout_model")
+    res = rg.drop_unplayed(res, "scout_results", kickoff_col="kickoff_ts", kickoff_unit="s")
     done_f = OUT / "history_done.json"
     done = _json.loads(done_f.read_text(encoding="utf-8")) if done_f.exists() else {}
     now = pd.Timestamp.now(tz="UTC")

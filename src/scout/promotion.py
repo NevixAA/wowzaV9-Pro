@@ -120,8 +120,12 @@ def candidate_gate(row: dict, extra: dict, wowza_leagues: set[str]) -> tuple[boo
         ">= 80% odds coverage on 2+ key markets":
             sum(1 for m in KEY_MARKETS if cov.get(m, 0) >= GATE["odds_coverage"]) >= GATE["key_markets_covered"],
         "known API-Football league id": isinstance(row.get("league_id"), int) and row.get("league_id", 0) > 0,
-        "not already a Wowza league": f"{row.get('country')} {row.get('league')}".strip() not in wowza_leagues
-            and str(row.get("league")) not in wowza_leagues,
+        # By API-Football id (the scout's own key); "country league" as a second line of defence.
+        # A bare league name is NOT compared: "Premier League" is a different league in every
+        # country. An empty set means the v9 registry was not read - that fails the check.
+        "not already a Wowza league": bool(wowza_leagues)
+            and row.get("league_id") not in wowza_leagues
+            and f"{row.get('country')} {row.get('league')}".strip() not in wowza_leagues,
     }
     distance = {
         "settled_with_close": max(0, GATE["settled_with_close"] - int(row.get("settled_with_close", 0))),
@@ -135,8 +139,11 @@ def candidate_gate(row: dict, extra: dict, wowza_leagues: set[str]) -> tuple[boo
 # ── store-derived facts ───────────────────────────────────────────────────────────────────────
 def _store():
     from src.data import season_store as store
+    from src.data import result_guard as rg
     res, odds, mdl = store.read("scout_results"), store.read("scout_odds"), store.read("scout_model")
     if not res.empty:
+        # A score observed before its own kickoff is a provider error and never counts (result_guard).
+        res = rg.drop_unplayed(res, "scout_results", kickoff_col="kickoff_ts", kickoff_unit="s")
         res = res.sort_values("ingested_at").drop_duplicates("fixture_id", keep="last")
     return res, odds, mdl
 
@@ -385,18 +392,35 @@ def report_md(row, extra, dq, mm, p) -> str:
     return "\n".join(L) + "\n"
 
 
-def wowza_leagues() -> set[str]:
-    try:
-        txt = (cfg.V9_LOCAL / "config.py").read_text(encoding="utf-8")
-        names = set()
-        for var in ("STANDARD_FORMAT_LEAGUES", "NEW_FORMAT_LEAGUES", "ENABLED_LEAGUES"):
-            m = re.search(var + r"\s*=\s*\{(.*?)\n\}", txt, re.S)
-            if m:
-                names |= set(re.findall(r'^\s*"([^"]+)"', m.group(1), re.M))
-                names |= set(re.findall(r'"([^"]+)"\s*,', m.group(1)))
-        return names
-    except Exception:
-        return set()
+#: Fewer v9 leagues than this means the registry read failed, not that v9 has no leagues.
+MIN_WOWZA_LEAGUES = 20
+
+
+def wowza_leagues() -> set:
+    """Every league v9 already has, as API-Football ids AND canonical names + aliases, from v9's
+    league registry (config/leagues.json via src/data/v9_config).
+
+    Data Truth round 3: this used to regex v9's config.py for `NAME = {...}` literals. Since R2-A
+    (2026-11-01) config.py DERIVES those sets from config/leagues.json, so the regex matched nothing,
+    returned an empty set, and "not already a Wowza league" passed for every scouted league while 18
+    of them (Ligue 2 = AF 62 among them) already exist in v9 - with auto-onboarding on. It also
+    compared names, and the scout's API-Football names ('Ligue 2' under country 'France') are not
+    v9's. The check is now by API-Football id, and an unreadable or implausibly small registry
+    RAISES: an empty answer must never mean "nothing is ours"."""
+    from src.data import v9_config
+    ids = v9_config.league_ids()
+    out: set = {int(v) for v in ids.values() if v is not None and str(v).lstrip("-").isdigit()}
+    reg = v9_config.league_registry()
+    for e in reg.leagues():
+        out.add(str(e.get("name")))
+        out |= {str(a) for a in (e.get("aliases") or [])}
+        if e.get("api_football_id") is not None:
+            out.add(int(e["api_football_id"]))
+    n_ids = sum(1 for x in out if isinstance(x, int))
+    if n_ids < MIN_WOWZA_LEAGUES:
+        raise RuntimeError(f"v9 league registry gave only {n_ids} API-Football ids (< "
+                           f"{MIN_WOWZA_LEAGUES}); refusing to judge 'already a Wowza league'")
+    return out
 
 
 def run(status: dict | None = None, week: str | None = None) -> dict:

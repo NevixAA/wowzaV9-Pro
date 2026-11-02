@@ -69,6 +69,31 @@ def drop_unplayed(df: pd.DataFrame, label: str = "results", **kw) -> pd.DataFram
     return df[~bad]
 
 
+def played_team_results(columns: list[str]) -> pd.DataFrame:
+    """team_match_stats read with column projection (kickoff_utc/observed_at added for the guard,
+    then dropped), scored rows only, with every row stored before its own kickoff removed. For the
+    studies that read the parquet files directly instead of season_store.read()."""
+    import glob
+
+    import pyarrow.parquet as pq
+
+    from config import pro_config as cfg
+    fs = sorted(glob.glob(str(cfg.BASE_DIR / "data" / "season_2026_27" / "team_match_stats" / "**"
+                              / "*.parquet"), recursive=True))
+    if not fs:
+        return pd.DataFrame(columns=columns)
+    want = list(dict.fromkeys(list(columns) + ["kickoff_utc", "observed_at"]))
+    parts = []
+    for f in fs:
+        have = set(pq.ParquetFile(f).schema.names)
+        parts.append(pd.read_parquet(f, columns=[c for c in want if c in have]))
+    r = pd.concat(parts, ignore_index=True)
+    if {"home_goals", "away_goals"} <= set(r.columns):
+        r = r.dropna(subset=["home_goals", "away_goals"])
+    r = drop_unplayed(r, "team_match_stats")
+    return r[[c for c in columns if c in r.columns]]
+
+
 def reschedule_verdict(tip_kickoff, result_kickoff) -> str:
     """How a tip settles against the match actually played (owner rule 2026-11-02)."""
     a = pd.to_datetime(tip_kickoff, utc=True, errors="coerce")

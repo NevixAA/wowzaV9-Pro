@@ -57,9 +57,8 @@ def _resolver(v9: str):
 
 
 def _results() -> pd.DataFrame:
-    fs = sorted(glob.glob(str(cfg.BASE_DIR / "data" / "season_2026_27" / "team_match_stats" / "**" / "*.parquet"), recursive=True))
-    r = pd.concat([pd.read_parquet(f, columns=["league", "match_date", "home_team", "away_team", "home_goals", "away_goals"])
-                   for f in fs], ignore_index=True).dropna(subset=["home_goals", "away_goals"])
+    from src.data import result_guard as rg          # kickoff guard: no score stored before kickoff
+    r = rg.played_team_results(["league", "match_date", "home_team", "away_team", "home_goals", "away_goals"])
     r = r.drop_duplicates(["league", "match_date", "home_team", "away_team"], keep="last")
     r["md"] = pd.to_datetime(r["match_date"]).dt.normalize()
     return r

@@ -386,7 +386,9 @@ def leaderboard_verdicts(report: dict, summary: dict, top: int = 10) -> list[dic
 
 def main() -> int:
     from src.data import season_store as store
+    from src.data import result_guard as rg
     res, odds, mdl = store.read("scout_results"), store.read("scout_odds"), store.read("scout_model")
+    res = rg.drop_unplayed(res, "scout_results", kickoff_col="kickoff_ts", kickoff_unit="s")
     summ = review(res, odds, mdl)
     reg = load_registry()
     print(json.dumps(reg["last_review"], indent=1, default=str))

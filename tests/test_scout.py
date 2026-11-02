@@ -17,6 +17,8 @@ from src.data import season_store as store  # noqa: E402
 from src.scout import leagues, model, parse, report  # noqa: E402
 
 NOW = 1_800_000_000
+# Results are PLAYED matches: a stored score with a future kickoff is dropped by src/data/result_guard.
+PAST = 1_790_000_000
 
 
 def _odds_payload(ko, books):
@@ -148,7 +150,7 @@ def test_report_finds_a_model_the_market_ignores(scratch):
     n = 600
     true_p = rng.uniform(0.25, 0.75, n)
     y_tot = np.where(rng.random(n) < true_p, 3, 1)
-    res = pd.DataFrame({"fixture_id": range(n), "league_id": 7, "kickoff_ts": NOW + np.arange(n),
+    res = pd.DataFrame({"fixture_id": range(n), "league_id": 7, "kickoff_ts": PAST + np.arange(n),
                         "home_team": "a", "away_team": "b", "home_goals": y_tot, "away_goals": 0,
                         "quality_flags": ""})
     fair = 0.5
@@ -177,7 +179,7 @@ def test_league_status_lists_every_watched_league_with_its_stage(scratch, monkey
         {"id": 7, "country": "X", "name": "Priced", "priority": 1},
         {"id": 8, "country": "Y", "name": "History only", "priority": 2},
         {"id": 9, "country": "Z", "name": "Nothing", "priority": 2}])
-    res = pd.DataFrame({"fixture_id": [1, 2], "league_id": [7, 8], "kickoff_ts": [NOW, NOW], "home_team": "a",
+    res = pd.DataFrame({"fixture_id": [1, 2], "league_id": [7, 8], "kickoff_ts": [PAST, PAST], "home_team": "a",
                         "away_team": "b", "home_goals": 1, "away_goals": 1, "quality_flags": ""})
     odds = pd.DataFrame({"fixture_id": [3], "league_id": [7], "kickoff_ts": [NOW * 2], "market": "ou25",
                          "selection": "over", "bookmaker": "bet365", "odds": 2.0, "snapshot_ts": "2027-01-01T00:00:00Z",
