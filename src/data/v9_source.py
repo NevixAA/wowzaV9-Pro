@@ -25,6 +25,22 @@ class SourceUnavailable(RuntimeError):
     nothing is the exact failure mode that hid two multi-day outages in v9."""
 
 
+class SchemaIncompatible(SourceUnavailable):
+    """A v9 artifact was read but does not carry the columns Pro's contract needs (Phase 2 Part 10,
+    2026-11-03). A renamed column must stop the import, not become an all-NaN column."""
+
+
+def require_columns(df: pd.DataFrame, cols, rel_path: str) -> None:
+    """Raise SchemaIncompatible naming every contract column `df` lacks. An empty frame (file absent
+    and not required) is the caller's business and passes."""
+    if df is None or df.empty:
+        return
+    missing = [c for c in cols if c not in df.columns]
+    if missing:
+        raise SchemaIncompatible(f"v9 {rel_path} lacks contract column(s) {missing}; "
+                                 f"present: {sorted(df.columns)[:40]}")
+
+
 def v9_head_sha() -> str:
     """v9's commit sha, recorded on every imported row so a row can be traced to the exact
     baseline state that produced it."""

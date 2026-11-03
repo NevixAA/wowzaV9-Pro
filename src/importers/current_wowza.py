@@ -32,7 +32,7 @@ from src.data import entities as ent
 from src.data import fixture_key_v2 as fk2
 from src.data import observation_time as ot
 from src.data import watermarks as wm
-from src.data.v9_source import fetch_csv, num, v9_model_version
+from src.data.v9_source import fetch_csv, num, require_columns, v9_model_version
 
 # Watermarks are only committed AFTER the caller has written the rows, so a crash between
 # read and write re-imports a little rather than skipping data permanently.
@@ -382,9 +382,20 @@ def from_book_odds() -> list[tuple[str, pd.DataFrame]]:
 
 # ── ledgers -> settlements ───────────────────────────────────────────────────
 
+#: Columns of v9's ledgers this importer's settlement rows are built from (Phase 2 Part 10). A ledger
+#: missing one is REJECTED (SchemaIncompatible), never imported with that field silently all-NaN.
+MAIN_LEDGER_REQUIRED = ("match_date", "league", "home_team", "away_team", "side", "odds", "edge_pct",
+                        "signal_tier", "result", "pnl", "model_type")
+SIDE_LEDGER_REQUIRED = ("match_date", "league", "home_team", "away_team", "market", "odds", "edge_pct",
+                        "signal_tier", "result", "pnl", "model_type")
+
+
 def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
     out = []
     main = fetch_csv("output/bets_ledger.csv", required=False)
+    require_columns(main, MAIN_LEDGER_REQUIRED, "output/bets_ledger.csv")
+    side = fetch_csv("output/side_bets_ledger.csv", required=False)
+    require_columns(side, SIDE_LEDGER_REQUIRED, "output/side_bets_ledger.csv")
     if not main.empty:
         d = ent.add_fixture_key(main.assign(
             match_date=main["match_date"].astype(str).str[:10]))
@@ -437,7 +448,6 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
                                         "CLV_FIRST_HALF_CONTAMINATED")
         out.append(("settlements", s))
 
-    side = fetch_csv("output/side_bets_ledger.csv", required=False)
     if not side.empty:
         d = ent.add_fixture_key(side.assign(
             match_date=side["match_date"].astype(str).str[:10]))
