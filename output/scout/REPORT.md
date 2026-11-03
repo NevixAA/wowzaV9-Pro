@@ -1,4 +1,4 @@
-# League scout — 2026-11-03T10:09 UTC
+# League scout — 2026-11-03T18:06 UTC
 
 Results stored: 243,466 · fixtures priced: 4,913 · model frozen: 4,848
 
@@ -131,8 +131,8 @@ COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a pre-kicko
 | 2 | Israel Liga Alef | ou35 | 68 | COLLECTING | -0.003 | -0.08 | – |
 | 2 | Israel Liga Alef | btts | 68 | COLLECTING | +0.030 | -1.46 | – |
 | 2 | Japan J3 League | ou15 | 59 | COLLECTING | +0.003 | -0.85 | – |
-| 2 | Japan J3 League | ou25 | 59 | COLLECTING | -0.012 | 0.23 | +40.7% (17) |
-| 2 | Japan J3 League | ou35 | 59 | COLLECTING | +0.021 | 1.85 | – |
+| 2 | Japan J3 League | ou25 | 59 | COLLECTING | -0.012 | 0.24 | +40.7% (17) |
+| 2 | Japan J3 League | ou35 | 59 | COLLECTING | +0.021 | 1.87 | – |
 | 2 | Japan J3 League | btts | 59 | COLLECTING | -0.041 | 1.19 | – |
 | 2 | England National League - South | ou15 | 56 | COLLECTING | +0.031 | 0.18 | -9.2% (12) |
 | 2 | England National League - South | ou25 | 56 | COLLECTING | +0.022 | 0.82 | -11.1% (26) |
