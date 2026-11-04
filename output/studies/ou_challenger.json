@@ -1,8 +1,8 @@
 {
  "window_from": "2026-08-10",
- "decision_fixtures": 2036,
- "settled_matched": 1656,
- "oos_fixtures": 1364,
+ "decision_fixtures": 2057,
+ "settled_matched": 1671,
+ "oos_fixtures": 1379,
  "weekly_coefficients": [
   {
    "week": "2026-08-31/2026-09-06",
@@ -87,36 +87,36 @@
  ],
  "probabilistic_oos": {
   "market": {
-   "logloss": 0.68049,
-   "brier": 0.2438
+   "logloss": 0.68128,
+   "brier": 0.24418
   },
   "v9": {
-   "logloss": 0.69624,
-   "brier": 0.25151
+   "logloss": 0.69669,
+   "brier": 0.25173
   },
   "challenger": {
-   "logloss": 0.68124,
-   "brier": 0.24413
+   "logloss": 0.68185,
+   "brier": 0.24442
   }
  },
  "challenger_minus_v9_logloss": {
-  "mean": -0.015,
+  "mean": -0.01484,
   "ci90": [
-   -0.0216,
-   -0.0087
+   -0.0214,
+   -0.0083
   ]
  },
  "tips_at_5pct_edge": {
   "v9": {
-   "n": 403,
-   "under_share": 0.831,
-   "units": -55.42,
-   "roi": -0.1375,
+   "n": 405,
+   "under_share": 0.832,
+   "units": -54.47,
+   "roi": -0.1345,
    "roi_ci90": [
-    -0.2256,
-    -0.0522
+    -0.2233,
+    -0.0469
    ],
-   "mean_clv_pp": -4.02,
+   "mean_clv_pp": -4.01,
    "avg_odds_taken": 2.444
   },
   "challenger": {
@@ -126,15 +126,15 @@
  "tips_by_track": {
   "new_format": {
    "v9": {
-    "n": 288,
+    "n": 290,
     "under_share": 0.969,
-    "units": -28.79,
-    "roi": -0.1,
+    "units": -27.84,
+    "roi": -0.096,
     "roi_ci90": [
-     -0.202,
-     0.0015
+     -0.1984,
+     0.0065
     ],
-    "mean_clv_pp": -3.96,
+    "mean_clv_pp": -3.94,
     "avg_odds_taken": 2.493
    },
    "challenger": {
@@ -148,8 +148,8 @@
     "units": -26.62,
     "roi": -0.2315,
     "roi_ci90": [
-     -0.4043,
-     -0.0391
+     -0.4026,
+     -0.032
     ],
     "mean_clv_pp": -4.17,
     "avg_odds_taken": 2.322
@@ -160,11 +160,11 @@
   }
  },
  "current_weights": {
-  "a": 0.077,
-  "b_market": 0.778,
+  "a": 0.08,
+  "b_market": 0.759,
   "c_model": 0.0,
-  "c_model_unconstrained": -0.462,
-  "n_train": 1656
+  "c_model_unconstrained": -0.478,
+  "n_train": 1671
  },
- "forward_logged_this_run": 8
+ "forward_logged_this_run": 21
 }
