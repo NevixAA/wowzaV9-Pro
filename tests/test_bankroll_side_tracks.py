@@ -6,6 +6,7 @@ not walk-forward validated), keyed with v9's own track_key.
 """
 from __future__ import annotations
 
+import copy
 import sys
 from pathlib import Path
 
@@ -68,6 +69,17 @@ def test_policy_has_both_sides_and_no_parent(pol):
     assert "new_format|OU25" not in pol["tracks"] and "standard|OU25" not in pol["tracks"]
 
 
+def _both_sides_real(pol):
+    """The policy with NF O/U 2.5 UNDER restored to the real settings it had before the owner made it
+    PAPER on 2026-11-02 (its recorded `previous_state`), so a per-side REDUCE can be exercised."""
+    p = copy.deepcopy(pol)
+    under = p["tracks"]["new_format|OU25_UNDER"]
+    if under.get("state") == "PAPER" and under.get("previous_state"):
+        under.update(under.pop("previous_state"))
+    assert under["state"] != "PAPER" and float(under["base_fraction"]) > 0
+    return p
+
+
 def test_allocator_reviews_each_side_as_its_own_track(pol):
     from src.bankroll import allocator as A
     from src.bankroll.evidence import track_evidence
@@ -77,21 +89,33 @@ def test_allocator_reviews_each_side_as_its_own_track(pol):
     p, dec, _ = A.propose(pol, b, "2026-11-10")
     d = {x["track"]: x for x in dec}
     assert set(SIDES) <= set(d) and "new_format|OU25" not in d
-    assert d["new_format|OU25_UNDER"]["decision"] in ("REDUCE", "STOP")             # the losing side only
+    # Owner 2026-11-02: NF O/U 2.5 UNDER is PAPER - reviewed on its own evidence, never given money.
+    assert pol["tracks"]["new_format|OU25_UNDER"]["state"] == "PAPER"
+    assert d["new_format|OU25_UNDER"]["decision"] == "KEEP_PAPER"
+    assert d["new_format|OU25_UNDER"]["proposed_fraction"] == 0.0
     assert d["new_format|OU25_OVER"]["decision"] not in ("REDUCE", "STOP")
     assert d["new_format|OU25_OVER"]["n"] != d["new_format|OU25_UNDER"]["n"]
+    assert A.validate(p) == []
+    # Both sides real: only the losing side is reduced.
+    p, dec, _ = A.propose(_both_sides_real(pol), b, "2026-11-10")
+    d = {x["track"]: x for x in dec}
+    assert d["new_format|OU25_UNDER"]["decision"] in ("REDUCE", "STOP")             # the losing side only
+    assert d["new_format|OU25_OVER"]["decision"] not in ("REDUCE", "STOP")
     assert A.validate(p) == []
 
 
 def test_reductions_only_moves_only_the_losing_side(pol):
     from src.bankroll import allocator as A
-    p, _, _ = A.propose(pol, _bets(), "2026-11-10")
-    rec = A.reduce_only(pol, p)
-    over, under = rec["tracks"]["new_format|OU25_OVER"], rec["tracks"]["new_format|OU25_UNDER"]
-    assert over == pol["tracks"]["new_format|OU25_OVER"]                            # never raised here
-    assert float(under["base_fraction"]) < float(pol["tracks"]["new_format|OU25_UNDER"]["base_fraction"])
-    for k, t in rec["tracks"].items():                                              # nothing ever increases
-        assert float(t.get("base_fraction", 0)) <= float(pol["tracks"][k].get("base_fraction", 0)) + 1e-12
+    for cur in (pol, _both_sides_real(pol)):
+        p, _, _ = A.propose(cur, _bets(), "2026-11-10")
+        rec = A.reduce_only(cur, p)
+        over, under = rec["tracks"]["new_format|OU25_OVER"], rec["tracks"]["new_format|OU25_UNDER"]
+        assert over == cur["tracks"]["new_format|OU25_OVER"]                        # never raised here
+        for k, t in rec["tracks"].items():                                          # nothing ever increases
+            assert float(t.get("base_fraction", 0)) <= float(cur["tracks"][k].get("base_fraction", 0)) + 1e-12
+    assert float(under["base_fraction"]) < float(cur["tracks"]["new_format|OU25_UNDER"]["base_fraction"])
+    p, _, _ = A.propose(pol, _bets(), "2026-11-10")                                 # paper stays paper at 0
+    assert A.reduce_only(pol, p)["tracks"]["new_format|OU25_UNDER"] == pol["tracks"]["new_format|OU25_UNDER"]
 
 
 def test_simulator_routes_ou25_by_side(pol):

@@ -61,11 +61,31 @@ def test_blocked_paper_and_odds(R, pol):
 
 
 def test_one_position_per_fixture_uses_evidence_not_edge(R, pol):
+    """The rule itself, when a policy switches it on. v9's committed policy has it OFF since
+    2026-11-04 (owner: several bets on one match are fine unless they point in opposite goal
+    directions), so the rule is exercised on a copy with the flag set back to true."""
+    one = copy.deepcopy(pol)
+    one["portfolio"]["one_position_per_fixture"] = True
     rows = pd.DataFrame([sel(market="OU25", side="OVER", odds=2.4), sel(market="BTTS", odds=1.9)])
-    r = R.size_day(rows, pol, 100, 100)
+    r = R.size_day(rows, one, 100, 100)
     kept = r[r["final_fraction"] > 0]
     assert len(kept) == 1 and kept.iloc[0]["market"] == "BTTS"       # higher evidence_score
     assert r[r["market"] == "OU25"].iloc[0]["reason"] == "ONE_POSITION_PER_FIXTURE"
+
+
+def test_same_direction_positions_share_a_fixture_opposites_do_not(R, pol):
+    """v9 policy 2026-11-04: one_position_per_fixture false; BTTS YES counts as OVER and BTTS NO as
+    UNDER (bankroll_policy.goal_direction). Over 2.5 + BTTS Yes are both staked; Over 2.5 + BTTS No
+    point in opposite directions, so the O/U 2.5 position stands and the BTTS No stake is zeroed."""
+    assert pol["portfolio"]["one_position_per_fixture"] is False
+    rows = pd.DataFrame([sel(market="OU25", side="OVER", odds=2.4), sel(market="BTTS", odds=1.9)])
+    r = R.size_day(rows, pol, 100, 100)
+    assert (r["final_fraction"] > 0).all() and list(r["reason"]) == ["OK", "OK"]
+    assert r["final_fraction"].sum() <= pol["portfolio"]["fixture_cap"] + 1e-12
+    rows = pd.DataFrame([sel(market="OU25", side="OVER", odds=2.4), sel(market="BTTS", side="NO", odds=1.9)])
+    r = R.size_day(rows, pol, 100, 100)
+    assert r.loc[0, "final_fraction"] > 0 and r.loc[0, "reason"] == "OK"
+    assert r.loc[1, "final_fraction"] == 0 and r.loc[1, "reason"] == "OPPOSITE_DIRECTION_ON_FIXTURE"
 
 
 def test_daily_cap_scales_everything_proportionally(R, pol):

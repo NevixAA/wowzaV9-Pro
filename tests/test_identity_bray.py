@@ -62,7 +62,8 @@ def test_two_spellings_are_one_club_in_the_data(ireland, short, long_):
 
 
 def test_identity_map_state_matches_the_evidence():
-    """Drogheda is aliased; Bray is still refused on the >=2-date rule (pending v9 decision)."""
+    """Drogheda is aliased; Bray is aliased since identity/1.1 (owner-accepted 2026-11-02, v9
+    identity_repair v9r-identity-1.1) - refused under identity/1.0 on the >=2-date rule."""
     d = json.loads(CI.ALIAS_MAP_PATH.read_text(encoding="utf-8"))
     m = d["map"].get(LEAGUE, {})
     assert m.get("Drogheda United") == "Drogheda"
