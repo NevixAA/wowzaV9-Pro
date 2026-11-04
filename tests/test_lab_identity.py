@@ -46,7 +46,7 @@ def test_alias_map_hash_is_pinned_and_structurally_valid():
     amap = CI.load_alias_map()
     assert CI.map_sha256(amap) == CI.ALIAS_MAP_SHA256
     st = CI.validate_alias_map(amap)
-    assert st["aliases"] == 142 and st["leagues"] == 18
+    assert st["aliases"] == 143 and st["leagues"] == 18          # identity/1.1: + Bray Wanderers -> Bray
 
 
 def test_alias_map_is_identical_to_v9_serving_map():
@@ -145,10 +145,12 @@ def test_af_enrichment_never_expands_rows_and_is_league_scoped():
 # ---------------------------------------------------------------- proof against v9's own code
 
 def _v9_stage1(v9: Path):
-    """Extract _AFFIX_RE, _norm_club and _canonicalise_clubs from v9's data_loader.py verbatim."""
+    """Extract _canonicalise_clubs from v9's data_loader.py verbatim. Its club key is
+    `from src.team_names import identity_key` (v9 2026-11-02); _compare binds that import to v9's
+    own team_names, since `src` here is Pro's package."""
     src = (v9 / "src" / "data_loader.py").read_text(encoding="utf-8")
     tree = ast.parse(src)
-    want = {"_AFFIX_RE", "_norm_club", "_canonicalise_clubs"}
+    want = {"_canonicalise_clubs"}
     parts = []
     for node in tree.body:
         name = (node.name if isinstance(node, ast.FunctionDef) else
@@ -170,10 +172,25 @@ def _v9_identity_repair(v9: Path):
     return mod
 
 
+def _v9_team_names(v9: Path):
+    spec = importlib.util.spec_from_file_location("v9_team_names", v9 / "src" / "team_names.py")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
 def _compare(raw: pd.DataFrame, amap: dict, v9: Path):
     stage1 = _v9_stage1(v9)
     ir = _v9_identity_repair(v9)
-    ref, _ = ir.canonicalise_and_dedupe(stage1(raw), amap, derive=False)
+    saved = sys.modules.get("src.team_names")
+    sys.modules["src.team_names"] = _v9_team_names(v9)
+    try:
+        ref, _ = ir.canonicalise_and_dedupe(stage1(raw), amap, derive=False)
+    finally:
+        if saved is None:
+            sys.modules.pop("src.team_names", None)
+        else:
+            sys.modules["src.team_names"] = saved
     mine, _ = CI.canonicalise_fixtures(raw, amap)
     cols = ["date", "league", "home_team", "away_team", "home_goals", "away_goals"]
     a = ref[cols].sort_values(cols).reset_index(drop=True)

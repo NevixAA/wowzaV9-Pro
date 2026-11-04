@@ -34,13 +34,19 @@ def test_matcher_accepts_abbreviations_and_refuses_ambiguity():
     assert C.same_club("Dep. Riestra", "Deportivo Riestra")
     assert not C.same_club("Real Madrid", "Real Sociedad")
     lg = "Argentina Primera Division"
-    left = pd.DataFrame([{"league": lg, "match_date": "2026-09-01", "home_team": "Gimnasia", "away_team": "Boca"}])
+    left = pd.DataFrame([{"league": lg, "match_date": "2026-09-01", "home_team": "Gimnasia La Plata",
+                          "away_team": "Boca Juniors"}])
     right = pd.DataFrame([
         {"league": lg, "match_date": "2026-09-02", "home_team": "Gimnasia L.P.", "away_team": "Boca Juniors"},
         {"league": lg, "match_date": "2026-09-01", "home_team": "Gimnasia Mendoza", "away_team": "Boca Juniors"}])
-    assert pd.isna(C.match_frames(left, right).iloc[0]), "two candidates must be refused, not guessed"
-    right = right.iloc[:1]
+    # the alias store proves Gimnasia La Plata = Gimnasia L.P.; Gimnasia Mendoza is another club
     assert C.match_frames(left, right).iloc[0] == 0, "a UTC date one day later still matches"
+    two = pd.concat([right.iloc[:1], right.iloc[:1].assign(match_date="2026-09-01")], ignore_index=True)
+    assert pd.isna(C.match_frames(left, two).iloc[0]), "two candidates must be refused, not guessed"
+    # Owner rule 2026-11-02 (v9 team_names, proven club identity only): a bare 'Gimnasia' / 'Boca'
+    # is not provably either club, so it matches nothing - never the nearest spelling.
+    bare = left.assign(home_team="Gimnasia", away_team="Boca")
+    assert pd.isna(C.match_frames(bare, right).iloc[0]) and pd.isna(C.match_frames(bare, right.iloc[:1]).iloc[0])
     # A league the registry does not know never matches - no raw-string league join.
     assert pd.isna(C.match_frames(left.assign(league="Not A League"),
                                   right.assign(league="Not A League")).iloc[0])

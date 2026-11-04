@@ -26,13 +26,24 @@ from src.pipelines import migrate_fixture_key_v2 as mig  # noqa: E402
 # ── the key ───────────────────────────────────────────────────────────────────────────────────
 
 def test_two_spellings_of_one_club_give_one_key():
-    a = fk2.key_and_status("Bundesliga", "2026-10-03", "Bayern Munich", "Dortmund")
+    # Spellings v9's resolver PROVES are one club: the alias store (Bayern Munich = Bayern München)
+    # and the identity-token tier with club-form words removed (Freiburg = SC Freiburg).
+    a = fk2.key_and_status("Bundesliga", "2026-10-03", "Bayern Munich", "Freiburg")
     b = fk2.key_and_status("Bundesliga", "2026-10-03T16:30:00Z", "FC Bayern München",
-                           "Borussia Dortmund")
+                           "SC Freiburg")
     assert a == b and a[1] == fk2.RESOLVED and a[0] is not None
     # v1 gave two keys for the same fixture - the reason v2 exists
-    assert (ent.fixture_key_v1("Bundesliga", "2026-10-03", "Bayern Munich", "Dortmund")
-            != ent.fixture_key_v1("Bundesliga", "2026-10-03", "FC Bayern München", "Borussia Dortmund"))
+    assert (ent.fixture_key_v1("Bundesliga", "2026-10-03", "Bayern Munich", "Freiburg")
+            != ent.fixture_key_v1("Bundesliga", "2026-10-03", "FC Bayern München", "SC Freiburg"))
+
+
+def test_unproven_spelling_is_not_merged():
+    """Owner rule 2026-11-02 (v9 team_names: proven club identity only). The token-subset tier is
+    gone, so a bare 'Dortmund' is NOT placed on 'Borussia Dortmund' without an alias: the row is
+    CLUB_UNRESOLVED and keeps its own spelling, a different key from the canonical one."""
+    k1, s1 = fk2.key_and_status("Bundesliga", "2026-10-03", "Bayern Munich", "Dortmund")
+    k2, s2 = fk2.key_and_status("Bundesliga", "2026-10-03", "Bayern Munich", "Borussia Dortmund")
+    assert s1 == fk2.CLUB_UNRESOLVED and s2 == fk2.RESOLVED and k1 is not None and k1 != k2
 
 
 def test_entities_fixture_key_is_v2():
@@ -73,12 +84,12 @@ def test_vocabulary_is_hash_pinned(tmp_path):
 
 def test_add_fixture_key_writes_old_key_and_status():
     d = pd.DataFrame({"league": ["Bundesliga", "Nowhere"], "match_date": ["2026-10-03"] * 2,
-                      "home_team": ["Bayern Munich", "A"], "away_team": ["Dortmund", "B"]})
+                      "home_team": ["Bayern Munich", "A"], "away_team": ["Borussia Dortmund", "B"]})
     out = ent.add_fixture_key(d)
     assert list(out["fixture_key_status"]) == [fk2.RESOLVED, fk2.LEAGUE_UNKNOWN]
     assert out["fixture_key"].iloc[1] is None
     assert out["old_fixture_key"].iloc[0] == ent.fixture_key_v1("Bundesliga", "2026-10-03",
-                                                                "Bayern Munich", "Dortmund")
+                                                                "Bayern Munich", "Borussia Dortmund")
     assert set(ent.KEY_META) <= set(out.columns)
 
 
@@ -91,7 +102,7 @@ def _v1(lg, d, h, a):
 def _fixture_frames():
     fx = pd.DataFrame({"league": ["Bundesliga", "Bundesliga"], "match_date": ["2026-10-03"] * 2,
                        "home_team": ["Bayern Munich", "FC Bayern München"],
-                       "away_team": ["Dortmund", "Borussia Dortmund"]})
+                       "away_team": ["Freiburg", "SC Freiburg"]})
     fx["fixture_key"] = [_v1(*r) for r in fx[["league", "match_date", "home_team", "away_team"]].itertuples(index=False)]
     st = pd.DataFrame({"fixture_key": [fx["fixture_key"].iloc[0], fx["fixture_key"].iloc[1], "deadbeefdeadbeef"],
                        "league": ["Bundesliga"] * 3, "match_date": ["2026-10-03"] * 3,
@@ -201,14 +212,17 @@ def test_stored_warehouse_is_v2_and_old_new_keys_agree():
 
 def test_team_form_keys_by_id_then_canonical_club():
     from src.features import team_form as tf
-    t = pd.DataFrame({"league": ["Bundesliga"] * 4,
-                      "team": ["Bayern Munich", "FC Bayern München", "Dortmund", "Zzyzx Athletic"],
-                      "team_id": ["157", None, None, None]})
+    t = pd.DataFrame({"league": ["Bundesliga"] * 6,
+                      "team": ["Bayern Munich", "FC Bayern München", "Freiburg", "Zzyzx Athletic",
+                               "SC Freiburg", "Dortmund"],
+                      "team_id": ["157", None, None, None, None, None]})
     k = tf.team_keys(t)
     assert k.iloc[0] == "id:157"
     assert k.iloc[1] == "id:157"                  # same canonical club, its one id
     assert k.iloc[2].startswith("c:Bundesliga|")  # no id anywhere: canonical club within league
     assert k.iloc[3].startswith("u:")             # unresolved: own spelling, never another club
+    assert k.iloc[4] == k.iloc[2]                 # two spellings, one canonical club
+    assert k.iloc[5].startswith("u:")             # unproven spelling (owner 2026-11-02): not merged
 
 
 def test_team_ids_attach_by_fixture_id_and_refuse_conflicts():
