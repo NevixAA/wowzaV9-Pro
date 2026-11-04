@@ -51,9 +51,12 @@ def test_balanced_base_and_tier(R, pol):
 
 
 def test_blocked_paper_and_odds(R, pol):
-    rows = pd.DataFrame([sel(fixture="a", market="OVER35"), sel(fixture="b", model_type="standard", market="OU25", side="UNDER"),
+    # Over-line markets take side OVER: 'YES' (the BTTS default of sel) is not their side, and v9's
+    # stake contract (2026-11-03) refuses it as NO_REAL_STAKE_INVALID_SIDE before any other reason
+    rows = pd.DataFrame([sel(fixture="a", market="OVER35", side="OVER"),
+                         sel(fixture="b", model_type="standard", market="OU25", side="UNDER"),
                          sel(fixture="c", league="USA MLS"), sel(fixture="d", odds=2.61),
-                         sel(fixture="e", market="OVER15", odds=1.40), sel(fixture="f", odds=3.2)])
+                         sel(fixture="e", market="OVER15", side="OVER", odds=1.40), sel(fixture="f", odds=3.2)])
     r = R.size_day(rows, pol, 100, 100)
     assert (r["final_fraction"] == 0).all()
     assert list(r["reason"]) == ["NO_REAL_STAKE_BLOCKED", "NO_REAL_STAKE_PAPER", "PAPER_LEAGUE",
