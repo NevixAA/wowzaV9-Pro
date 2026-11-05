@@ -1,8 +1,8 @@
 {
  "window_from": "2026-08-10",
  "decision_fixtures": 2057,
- "settled_matched": 1671,
- "oos_fixtures": 1379,
+ "settled_matched": 1677,
+ "oos_fixtures": 1385,
  "weekly_coefficients": [
   {
    "week": "2026-08-31/2026-09-06",
@@ -87,37 +87,37 @@
  ],
  "probabilistic_oos": {
   "market": {
-   "logloss": 0.68128,
-   "brier": 0.24418
+   "logloss": 0.68113,
+   "brier": 0.24411
   },
   "v9": {
-   "logloss": 0.69669,
-   "brier": 0.25173
+   "logloss": 0.69692,
+   "brier": 0.25184
   },
   "challenger": {
-   "logloss": 0.68185,
-   "brier": 0.24442
+   "logloss": 0.68175,
+   "brier": 0.24438
   }
  },
  "challenger_minus_v9_logloss": {
-  "mean": -0.01484,
+  "mean": -0.01517,
   "ci90": [
-   -0.0214,
-   -0.0083
+   -0.0217,
+   -0.0088
   ]
  },
  "tips_at_5pct_edge": {
   "v9": {
-   "n": 405,
-   "under_share": 0.832,
-   "units": -54.47,
-   "roi": -0.1345,
+   "n": 407,
+   "under_share": 0.833,
+   "units": -56.47,
+   "roi": -0.1387,
    "roi_ci90": [
-    -0.2233,
-    -0.0469
+    -0.2236,
+    -0.0538
    ],
-   "mean_clv_pp": -4.01,
-   "avg_odds_taken": 2.444
+   "mean_clv_pp": -4.04,
+   "avg_odds_taken": 2.446
   },
   "challenger": {
    "n": 0
@@ -126,15 +126,15 @@
  "tips_by_track": {
   "new_format": {
    "v9": {
-    "n": 290,
+    "n": 291,
     "under_share": 0.969,
-    "units": -27.84,
-    "roi": -0.096,
+    "units": -28.84,
+    "roi": -0.0991,
     "roi_ci90": [
-     -0.1984,
-     0.0065
+     -0.2062,
+     0.0048
     ],
-    "mean_clv_pp": -3.94,
+    "mean_clv_pp": -3.98,
     "avg_odds_taken": 2.493
    },
    "challenger": {
@@ -143,16 +143,16 @@
   },
   "standard": {
    "v9": {
-    "n": 115,
-    "under_share": 0.487,
-    "units": -26.62,
-    "roi": -0.2315,
+    "n": 116,
+    "under_share": 0.491,
+    "units": -27.62,
+    "roi": -0.2381,
     "roi_ci90": [
-     -0.4026,
-     -0.032
+     -0.405,
+     -0.0472
     ],
-    "mean_clv_pp": -4.17,
-    "avg_odds_taken": 2.322
+    "mean_clv_pp": -4.19,
+    "avg_odds_taken": 2.327
    },
    "challenger": {
     "n": 0
@@ -160,11 +160,11 @@
   }
  },
  "current_weights": {
-  "a": 0.08,
-  "b_market": 0.759,
+  "a": 0.078,
+  "b_market": 0.764,
   "c_model": 0.0,
-  "c_model_unconstrained": -0.478,
-  "n_train": 1671
+  "c_model_unconstrained": -0.497,
+  "n_train": 1677
  },
- "forward_logged_this_run": 21
+ "forward_logged_this_run": 0
 }
