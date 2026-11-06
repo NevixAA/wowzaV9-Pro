@@ -1,0 +1,81 @@
+name: Tests
+
+# Go-live prep (runbook D10), 2026-11-06. Pro had no test workflow, so a break against v9 could
+# land unseen. This runs the FULL pytest suite and the self-check (python -m src.pro_tests) on every
+# push and pull request to main and data-truth-100.
+#
+# v9 is read from a checkout of the MATCHING branch: data-truth-100 for data-truth-100 (and for
+# prep/** branches cut from it), main for main. Pull requests use their base branch. The production
+# workflows are unchanged and still read v9 main.
+#
+# The self-check runs v11's closing_snapshot in v11's own process, from a sibling folder named
+# wowza-v11 (src/pro_tests.py: Path(__file__).parents[2] / "wowza-v11"). actions/checkout can
+# only write inside the workspace, so v11 is checked out to _v11 and moved to ../wowza-v11: the
+# check runs for real against v11's code at the matching branch.
+#
+# Offline: no secret is passed. v9 and v11 are public, so the checkouts need none.
+
+on:
+  push:
+    branches: [main, data-truth-100, 'prep/**']
+  pull_request:
+    branches: [main, data-truth-100]
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      V9_LOCAL: ${{ github.workspace }}/_v9
+      PEER_REF: ${{ ((github.event_name == 'pull_request' && github.base_ref) || github.ref_name) == 'main' && 'main' || 'data-truth-100' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out v9 at the matching branch (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: ${{ env.PEER_REF }}
+          path: _v9
+          fetch-depth: 1
+      - name: Check out v11 at the matching branch (read-only, for the self-check)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza_v11
+          ref: ${{ env.PEER_REF }}
+          path: _v11
+          fetch-depth: 1
+      - name: Place v11 where the self-check looks (../wowza-v11)
+        run: mv _v11 ../wowza-v11
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: requirements.txt
+      - name: Install
+        run: pip install -r requirements.txt -r ../wowza-v11/requirements.txt pytest
+      - name: Full test suite
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python -m pytest -q -p no:cacheprovider tests
+      - name: Self-check (python -m src.pro_tests)
+        if: always()
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python -m src.pro_tests
+      - name: The run left the tree clean
+        if: always()
+        run: |
+          # _v9 is the read-only peer checkout made above, not a file the tests wrote
+          if [ -n "$(git status --porcelain -- . ':!_v9')" ]; then
+            git status --short -- . ':!_v9'
+            echo "::error title=Test hygiene::the test run changed or created files in the repo tree"
+            exit 1
+          fi
