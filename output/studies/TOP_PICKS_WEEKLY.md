@@ -1,10 +1,10 @@
-# Top picks — weekly table (2026-W45, updated 2026-11-05 14:47 UTC)
+# Top picks — weekly table (2026-W45, updated 2026-11-06 14:25 UTC)
 
 | List | How it's ranked | Live, this week | Live, to date | Backtest (all days with >= 10 tips) |
 |---|---|---|---|---|
-| Best bets | most expected profit, at least a 45% chance | 33% hit, avg odds 1.76, -41% ROI, 0% 0/5 days (3 days, 9 picks) | 47% hit, avg odds 1.94, -10% ROI, 12% 0/5 days (17 days, 66 picks) | 56% hit, avg odds 1.96, +9% ROI, 4% 0/5 days (53 days, 258 picks) |
-| Safest | the 5 shortest prices | 33% hit, avg odds 2.26, -21% ROI, 0% 0/5 days (3 days, 9 picks) | 54% hit, avg odds 1.85, -5% ROI, 0% 0/5 days (17 days, 71 picks) | 62% hit, avg odds 1.69, +3% ROI, 0% 0/5 days (53 days, 265 picks) |
-| Value | most expected profit | 38% hit, avg odds 2.34, -11% ROI, 0% 0/5 days (3 days, 8 picks) | 48% hit, avg odds 2.05, -1% ROI, 6% 0/5 days (17 days, 68 picks) | 54% hit, avg odds 2.09, +10% ROI, 4% 0/5 days (53 days, 265 picks) |
+| Best bets | most expected profit, at least a 45% chance | 38% hit, avg odds 1.84, -27% ROI, 0% 0/5 days (4 days, 13 picks) | 47% hit, avg odds 1.94, -9% ROI, 11% 0/5 days (18 days, 70 picks) | 56% hit, avg odds 1.96, +9% ROI, 4% 0/5 days (53 days, 258 picks) |
+| Safest | the 5 shortest prices | 36% hit, avg odds 2.23, -16% ROI, 0% 0/5 days (4 days, 11 picks) | 53% hit, avg odds 1.86, -4% ROI, 0% 0/5 days (18 days, 73 picks) | 62% hit, avg odds 1.69, +3% ROI, 0% 0/5 days (53 days, 265 picks) |
+| Value | most expected profit | 33% hit, avg odds 2.26, -23% ROI, 0% 0/5 days (4 days, 12 picks) | 47% hit, avg odds 2.05, -4% ROI, 6% 0/5 days (18 days, 72 picks) | 54% hit, avg odds 2.09, +10% ROI, 4% 0/5 days (53 days, 265 picks) |
 | Random 5 | 5 random tips (what users did before) | — | — | 48% hit, avg odds 2.13, -2% ROI, 4% 0/5 days (53 days, 265 picks) |
 | Current order | tier, then edge (the old order) | — | — | 45% hit, avg odds 2.26, -3% ROI, 11% 0/5 days (53 days, 265 picks) |
 
@@ -12,9 +12,9 @@
 
 | Week | List | Hit | Avg odds | ROI | 0/5 days | Picks |
 |---|---|---|---|---|---|---|
-| 2026-W45 | Best bets | 33% | 1.76 | -41% | 0% | 9 |
-| 2026-W45 | Safest | 33% | 2.26 | -21% | 0% | 9 |
-| 2026-W45 | Value | 38% | 2.34 | -11% | 0% | 8 |
+| 2026-W45 | Best bets | 38% | 1.84 | -27% | 0% | 13 |
+| 2026-W45 | Safest | 36% | 2.23 | -16% | 0% | 11 |
+| 2026-W45 | Value | 33% | 2.26 | -23% | 0% | 12 |
 | 2026-W44 | Best bets | 40% | 1.97 | -23% | 17% | 20 |
 | 2026-W44 | Safest | 56% | 1.83 | +0% | 0% | 23 |
 | 2026-W44 | Value | 48% | 2.05 | +0% | 0% | 21 |
