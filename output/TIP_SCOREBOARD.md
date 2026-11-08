@@ -1,10 +1,10 @@
-# Tip scoreboard — 2026-11-08T12:04 UTC
+# Tip scoreboard — 2026-11-08T18:00 UTC
 
 ## 1X2 tips sent
 
-- Sent 51 (excl. paper leagues), settled 46, pending 5
-- Won 12/46 = **26%** vs break-even 31% (model claimed 42%)
-- Flat stakes: **-8.38u**, ROI -18.2%, 90% CI [-48%, +16%]
+- Sent 52 (excl. paper leagues), settled 47, pending 5
+- Won 12/47 = **26%** vs break-even 30% (model claimed 42%)
+- Flat stakes: **-9.38u**, ROI -20.0%, 90% CI [-51%, +13%]
 - Sent with negative EV: 1
 
 ## Bet Builder combos sent
