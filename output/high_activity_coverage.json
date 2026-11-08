@@ -377,7 +377,7 @@
       "active_missed_windows": null,
       "active_p90_gap_min": null,
       "first": "2026-08-22T02:02:56Z",
-      "fixtures_kicking_off": 934,
+      "fixtures_kicking_off": 935,
       "last": "2026-11-07T23:54:38Z",
       "max_gap_min": 9146.0,
       "median_gap_min": 263.4,
@@ -390,13 +390,13 @@
       "active_missed_windows": null,
       "active_p90_gap_min": null,
       "first": "2026-08-23T02:11:25Z",
-      "fixtures_kicking_off": 562,
-      "last": "2026-11-08T19:04:07Z",
+      "fixtures_kicking_off": 565,
+      "last": "2026-11-08T23:58:49Z",
       "max_gap_min": 9230.9,
-      "median_gap_min": 263.9,
-      "missed_windows": 11078,
-      "n_observations": 79,
-      "p90_gap_min": 8752.8
+      "median_gap_min": 265.0,
+      "missed_windows": 11106,
+      "n_observations": 80,
+      "p90_gap_min": 8750.4
     },
     "Thu": {
       "active_median_gap_min": null,
@@ -439,16 +439,16 @@
     }
   },
   "fixtures": {
-    "in_store": 2158,
+    "in_store": 2162,
     "kicked_off": 2123,
-    "with_market_snapshot": 13486,
-    "with_model_snapshot": 2158,
+    "with_market_snapshot": 13490,
+    "with_model_snapshot": 2162,
     "with_player_props": 2426
   },
-  "generated_at": "2026-11-08T19:04:47Z",
+  "generated_at": "2026-11-08T23:59:42Z",
   "live": {
-    "live_odds_fixtures": 7616,
-    "live_odds_rows": 326081,
+    "live_odds_fixtures": 7647,
+    "live_odds_rows": 327478,
     "live_signal_fixtures": 312
   },
   "near_kickoff_market": {
@@ -507,10 +507,10 @@
   "recommendations": [
     "T-10m market coverage is 6.2% of kicked-off fixtures. Closing price cannot be backfilled, so this is a permanent loss per uncovered fixture.",
     "T-1h market coverage is 28.5%. The final hour is where the sharp money moves; a capture window inside it is worth more than an extra one three days out.",
-    "market_snapshots p90 gap is 440 min against a 10 min target (1905 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
-    "model_snapshots p90 gap is 585 min against a 10 min target (1916 missed windows) \u2014 the tail, not the median, is where captures are being lost."
+    "market_snapshots p90 gap is 440 min against a 10 min target (1914 missed windows) \u2014 the tail, not the median, is where captures are being lost.",
+    "model_snapshots p90 gap is 585 min against a 10 min target (1936 missed windows) \u2014 the tail, not the median, is where captures are being lost."
   ],
-  "scheduler_mode": "LIVE_MATCH",
+  "scheduler_mode": "HIGH_ACTIVITY",
   "status": "WARN",
   "target_interval_min": 10,
   "weekend": {
@@ -524,7 +524,7 @@
       "props_observations": 172728
     },
     "Sat": {
-      "fixtures_kicking_off": 934,
+      "fixtures_kicking_off": 935,
       "live_odds_observations": 121676,
       "market_median_gap_min": 263.4,
       "market_observations": 57258,
@@ -533,12 +533,12 @@
       "props_observations": 171290
     },
     "Sun": {
-      "fixtures_kicking_off": 562,
-      "live_odds_observations": 82200,
-      "market_median_gap_min": 263.9,
-      "market_observations": 62833,
-      "market_p90_gap_min": 8752.8,
-      "model_observations": 54892,
+      "fixtures_kicking_off": 565,
+      "live_odds_observations": 83597,
+      "market_median_gap_min": 265.0,
+      "market_observations": 62963,
+      "market_p90_gap_min": 8750.4,
+      "model_observations": 55114,
       "props_observations": 184389
     }
   },
