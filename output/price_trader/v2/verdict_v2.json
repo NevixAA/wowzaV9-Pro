@@ -4,37 +4,37 @@
  "EXECUTABLE_EDGE": "NOT_TESTABLE (no lay ladder / size)",
  "ARBITRAGE_PROVEN": "NOT_TESTABLE (no simultaneous sized quotes)",
  "historical_primary": {
-  "n": 936,
-  "mean_pnl_per_unit": -0.09223,
-  "full_green_rate": 0.0669,
+  "n": 939,
+  "mean_pnl_per_unit": -0.09212,
+  "full_green_rate": 0.0665,
   "status": "EXPLORATORY (pre-registration history)"
  },
  "forward_gates": {
-  "N_completed_forward": 192,
+  "N_completed_forward": 195,
   "N_required": 150,
-  "match_days": 18,
+  "match_days": 19,
   "days_required": 30,
-  "mean_pnl": -0.0946,
+  "mean_pnl": -0.09404,
   "ci90": [
-   -0.10293,
-   -0.08596
+   -0.10179,
+   -0.08563
   ],
   "median_clv": 0.0,
   "beats_all_controls_historical": false,
   "max_league_profit_share": null
  },
  "states_primary": {
-  "CLOSED_STOP": 844,
+  "CLOSED_STOP": 847,
   "CLOSED_GREEN": 92
  },
  "labels_primary": {
-  "EXECUTABLE_BACK_TO_LAY": 936,
-  "PREDICTED_PRICE_EDGE": 440
+  "EXECUTABLE_BACK_TO_LAY": 939,
+  "PREDICTED_PRICE_EDGE": 445
  },
  "data_status": {
   "BOOKMAKER_QUOTES_REAL": "YES",
   "EXCHANGE_BACK_PRICES_RECORDED": "YES",
-  "exchange_opposite_coverage_of_path_rows": 0.545,
+  "exchange_opposite_coverage_of_path_rows": 0.5448,
   "EXCHANGE_LAY_LADDER_AVAILABLE": "NO",
   "EXECUTABLE_EXCHANGE_DATA_AVAILABLE": "NO",
   "EXECUTABLE_EXCHANGE_NOTE": "exchange BACK prices on the opposite side exist (== a lay price) but with no matched/available size, so executability is unverified",
@@ -48,9 +48,9 @@
   "available_lay_size": "UNKNOWN",
   "max_executable_stake": "UNKNOWN",
   "expected_pnl_per_trade_at_10": -0.92,
-  "expected_pnl_per_trade_at_100": -9.22,
-  "expected_pnl_per_trade_at_500": -46.12,
-  "expected_pnl_per_trade_at_1000": -92.23,
+  "expected_pnl_per_trade_at_100": -9.21,
+  "expected_pnl_per_trade_at_500": -46.06,
+  "expected_pnl_per_trade_at_1000": -92.12,
   "note": "linear in stake ONLY because no size data exists; real limits would cut this"
  },
  "PRODUCTION_SELECTION_CHANGED": "NO",
@@ -58,19 +58,19 @@
  "PRODUCTION_STAKING_CHANGED": "NO",
  "REAL_BETTING_ENABLED": "NO",
  "lineage": {
-  "generated_at": "2026-11-07 14:25 UTC",
+  "generated_at": "2026-11-08 14:34 UTC",
   "source_git_sha": {
-   "pro": "f6c997ab0ebd",
-   "v9": "210f6d1a7548"
+   "pro": "8c00f66dface",
+   "v9": "1cac42530656"
   },
   "calculation_version": "price_trader-2.0.0",
   "data_start": "2026-08-19 09:23:27",
-  "data_end": "2026-11-07 12:54:34",
-  "number_of_rows": 795800,
+  "data_end": "2026-11-08 13:17:51",
+  "number_of_rows": 802200,
   "registration_version": "price_trader_registration_v1",
   "input_hashes": {
-   "trades.parquet": "1431f095d831bbb2",
-   "price_paths.parquet": "7d20fefb37b71640"
+   "trades.parquet": "1f8e1187ccf34035",
+   "price_paths.parquet": "a85a8cfe4e3b9d58"
   }
  }
 }
