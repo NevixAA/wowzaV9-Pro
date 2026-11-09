@@ -52,4 +52,55 @@ So the ranking is useful, but the probability levels need calibration before any
 
 - **Under/Over 1.5** (the 0-1 goals special): v9 captures both sides, and the tracker attaches the last quote before kickoff. In a 2026-11-05 dry run, 18 of 90 fixtures were quoted.
 - **Correct score (0-0, exact scores) and Over 4.5 / 5.5 / 6.5:** not captured anywhere before kickoff, so the tracker records them as NOT_CAPTURED. Pro's API-Football live feed has a handful of "Not Started" rows: Over 4.5 for 7 fixtures, home 4+ for 191. Those are keyed by API-Football fixture id, with no proven join to Pro's fixture_key, so they are not used.
-- **Adding them** would take API-Football `/odds?fixture=` calls (correct score, exact goals, Over 4.5/5.5): about 1 call per fixture per snapshot. At one pre-match snapshot per tracked fixture, that is roughly 100–200 calls a day on the 75k/day plan. This is an owner decision.
+- **Collected since 2026-11-09 (owner approved):** `src/specials/prices.py` takes real quotes from API-Football `/odds?fixture=`.
+  - **Markets:** Goals Over/Under 0.5/1.5/4.5/5.5/6.5, Exact Score, and Total - Home/Away 3.5. Exact full-time bet names only; every bookmaker; both sides as offered; our capture time and the provider's update time.
+  - **Proven link:** a provider fixture is used only when it is the one fixture of its canonical league on the same UTC date whose home and away clubs v9's resolver places on the Pro fixture. Otherwise it is counted as unproven or no_pro_fixture.
+  - **Budget:** `/status` is read first. A run never draws the key below 25,000 and makes at most 250 calls; each run is recorded in `special_price_runs.csv`.
+- **Dry runs (2026-11-09, CI, nothing written):**
+  - **Linked run (run 42598820410):** the 3-day window during the international break held 3 provider fixtures in 2 leagues; 1 was linked and its odds call returned no quote yet. Calls: 2 `/fixtures` + 1 `/odds`.
+  - **Availability probe (run 42599161057):** next 7 days of our leagues, 40 fixtures in 7 leagues, 60 calls by our counter (the provider's remaining-requests header moved 73,101 → 73,076). 34 of 40 were quoted:
+
+    | Market | Share of probed fixtures | Bookmakers |
+    |---|---|---|
+    | Over/Under 4.5 and 5.5 | 85% | 7 |
+    | Over 6.5 | 82.5% | 3 |
+    | Under 6.5 | 62.5% | 3 |
+    | Under/Over 0.5 | 85% | 6 |
+    | Under 1.5 | 85% | 7 |
+    | Exact Score 0:0, 4:3, 3:3 | 85% | 8 |
+    | Exact Score 5:2, 4:4 | 85% | 7 |
+    | Home / Away Over 3.5 | 85% / 82.5% | 5 |
+
+    121 distinct exact scores were quoted, from 9 bookmakers in all.
+
+## Calibration (CAL-1)
+
+`src/specials/calibration.py` uses q = sigmoid(a_k + b_k·logit(p) + δ_k,L):
+
+- **Per outcome:** a_k and b_k are fitted on every league's earlier out-of-sample rows.
+- **Per league:** each league gets its own intercept δ_k,L, shrunk toward 0 by a learned empirical-Bayes weight. That weight is reported for each league: 0.29–0.90 across outcomes, median 0.60–0.79.
+- **No stand-ins:** a league with fewer than 200 earlier rows gets no calibrated probability. Nothing pooled is served to it.
+- **Walk-forward:** each month is calibrated only on earlier months. The raw and calibrated probabilities are stored side by side.
+- **Flags unchanged:** flagging is unaffected, because the calibration is monotone within a league.
+
+Before and after, on 48,940 out-of-sample rows (Brier skill against the league base rate):
+
+| Special | Actual | Raw mean | Calibrated mean | Skill raw → calibrated | Flagged: actual / raw / calibrated |
+|---|---|---|---|---|---|
+| 5+ goals | 13.8% | 13.9% | 13.5% | −0.0058 → +0.0083 | 19.7% / 28.3% / 20.3% |
+| 6+ goals | 5.6% | 6.2% | 5.3% | −0.0070 → +0.0065 | 9.05% / 15.2% / 9.04% |
+| 7+ goals | 2.0% | 2.5% | 2.0% | −0.0119 → +0.0030 | 3.2% / 7.3% / 3.7% |
+| a side 4+ | 10.4% | 11.5% | 10.3% | +0.0044 → +0.0153 | 18.0% / 25.8% / 17.9% |
+| win by 4+ | 5.1% | 5.6% | 5.0% | +0.0100 → +0.0160 | 10.9% / 15.2% / 10.9% |
+| 0-0 | 7.4% | 8.6% | 7.8% | −0.0107 → +0.0020 | 9.7% / 16.8% / 11.0% |
+| 0-1 goals | 25.3% | 27.0% | 26.1% | −0.0103 → +0.0058 | 31.6% / 44.8% / 34.7% |
+
+After calibration the model beats every league's own base rate on every special. That is the precondition for any later comparison with the real prices above.
+
+## Go-live
+
+Set the repository variable `PRO_SPECIALS_ENABLED` to `true`; that is the only step. The daily job (07:53 UTC) then:
+1. collects prices;
+2. logs, settles and evaluates;
+3. on the 1st of each month, re-runs the study and the calibration;
+4. commits only `output/specials/*`.
