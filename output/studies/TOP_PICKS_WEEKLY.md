@@ -1,12 +1,12 @@
-# Top picks — weekly table (2026-W45, updated 2026-11-08 13:36 UTC)
+# Top picks — weekly table (2026-W46, updated 2026-11-09 16:33 UTC)
 
 | List | How it's ranked | Live, this week | Live, to date | Backtest (all days with >= 10 tips) |
 |---|---|---|---|---|
-| Best bets | most expected profit, at least a 45% chance | 35% hit, avg odds 1.91, -31% ROI, 17% 0/5 days (6 days, 17 picks) | 46% hit, avg odds 1.95, -11% ROI, 15% 0/5 days (20 days, 74 picks) | 55% hit, avg odds 1.97, +8% ROI, 4% 0/5 days (55 days, 268 picks) |
-| Safest | the 5 shortest prices | 53% hit, avg odds 2.06, +4% ROI, 0% 0/5 days (6 days, 15 picks) | 56% hit, avg odds 1.84, -1% ROI, 0% 0/5 days (20 days, 77 picks) | 62% hit, avg odds 1.68, +2% ROI, 0% 0/5 days (55 days, 275 picks) |
-| Value | most expected profit | 24% hit, avg odds 2.76, -45% ROI, 33% 0/5 days (6 days, 17 picks) | 44% hit, avg odds 2.17, -10% ROI, 15% 0/5 days (20 days, 77 picks) | 52% hit, avg odds 2.15, +7% ROI, 6% 0/5 days (55 days, 275 picks) |
-| Random 5 | 5 random tips (what users did before) | — | — | 48% hit, avg odds 2.14, -2% ROI, 4% 0/5 days (55 days, 275 picks) |
-| Current order | tier, then edge (the old order) | — | — | 45% hit, avg odds 2.28, -4% ROI, 11% 0/5 days (55 days, 275 picks) |
+| Best bets | most expected profit, at least a 45% chance | — | 47% hit, avg odds 1.94, -10% ROI, 14% 0/5 days (21 days, 79 picks) | 55% hit, avg odds 1.96, +8% ROI, 4% 0/5 days (56 days, 273 picks) |
+| Safest | the 5 shortest prices | — | 56% hit, avg odds 1.86, +0% ROI, 0% 0/5 days (21 days, 82 picks) | 62% hit, avg odds 1.68, +3% ROI, 0% 0/5 days (56 days, 280 picks) |
+| Value | most expected profit | — | 45% hit, avg odds 2.18, -8% ROI, 14% 0/5 days (21 days, 82 picks) | 53% hit, avg odds 2.14, +8% ROI, 5% 0/5 days (56 days, 280 picks) |
+| Random 5 | 5 random tips (what users did before) | — | — | 48% hit, avg odds 2.14, -2% ROI, 4% 0/5 days (56 days, 280 picks) |
+| Current order | tier, then edge (the old order) | — | — | 45% hit, avg odds 2.28, -4% ROI, 11% 0/5 days (56 days, 280 picks) |
 
 ## Week by week (live picks)
 
