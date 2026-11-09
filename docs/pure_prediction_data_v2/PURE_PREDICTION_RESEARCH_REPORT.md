@@ -21,11 +21,11 @@ improves log loss on that same target. Accuracy was the wrong instrument.
 
 | Target | N test | Base (rock) accuracy | Model accuracy | Lift | Brier | LogLoss | AUC | ECE |
 |---|---|---|---|---|---|---|---|---|
-| btts | 24,347 | 0.5313 | 0.5405 | +0.92pp | 0.24721 | 0.68753 | 0.5494 | 0.0085 |
-| over15 | 24,347 | 0.7430 | 0.7427 | -0.04pp | 0.18796 | 0.56199 | 0.5813 | 0.0045 |
-| over25 | 24,347 | 0.5072 | 0.5525 | +4.52pp | 0.24478 | 0.68253 | 0.5789 | 0.0084 |
-| over35 | 24,347 | 0.7170 | 0.7177 | +0.07pp | 0.19849 | 0.58504 | 0.5879 | 0.0049 |
-| player scores | 257,623 | 0.9211 | 0.9211 | +0.00pp | 0.06669 | 0.23948 | 0.7683 | 0.0025 |
+| btts | 24,425 | 0.5315 | 0.5394 | +0.79pp | 0.24717 | 0.68747 | 0.5522 | 0.0107 |
+| over15 | 24,425 | 0.7432 | 0.7424 | -0.08pp | 0.18819 | 0.56254 | 0.5791 | 0.0087 |
+| over25 | 24,425 | 0.5072 | 0.5550 | +4.79pp | 0.24477 | 0.68250 | 0.5790 | 0.0085 |
+| over35 | 24,425 | 0.7171 | 0.7175 | +0.04pp | 0.19843 | 0.58485 | 0.5886 | 0.0063 |
+| player scores | 258,888 | 0.9210 | 0.9210 | +0.00pp | 0.06673 | 0.23963 | 0.7685 | 0.0025 |
 
 The rock is 'always call the class that was more common **in the test period itself**', 
 which is the hard version — the naive classifier is allowed to know the answer's base 
@@ -44,22 +44,22 @@ A model that wins once and loses three times is not better (rule 33).
 
 | target | fold | t_start | t_end | n | log_loss | rock_log_loss | model_accuracy | rock_accuracy | lift_pp | auc |
 |---|---|---|---|---|---|---|---|---|---|---|
-| btts | fold1 | 2024-02-04 | 2024-08-25 | 6058 | 0.6859 | 0.69 | 0.548 | 0.5398 | 0.8254 | 0.5511 |
-| btts | fold2 | 2024-08-26 | 2025-03-02 | 6063 | 0.6902 | 0.6929 | 0.5207 | 0.512 | 0.8742 | 0.5499 |
-| btts | fold3 | 2025-03-03 | 2025-09-29 | 6023 | 0.687 | 0.6899 | 0.5509 | 0.5403 | 1.0626 | 0.545 |
-| btts | fold4 | 2025-09-30 | 2026-04-11 | 6203 | 0.6871 | 0.691 | 0.5423 | 0.5331 | 0.9189 | 0.5518 |
-| over15 | fold1 | 2024-02-04 | 2024-08-25 | 6058 | 0.5607 | 0.5683 | 0.7433 | 0.7445 | -0.1155 | 0.5811 |
-| over15 | fold2 | 2024-08-26 | 2025-03-02 | 6063 | 0.5768 | 0.5833 | 0.73 | 0.73 | 0.0 | 0.578 |
-| over15 | fold3 | 2025-03-03 | 2025-09-29 | 6023 | 0.5555 | 0.5638 | 0.7486 | 0.7486 | 0.0 | 0.5842 |
-| over15 | fold4 | 2025-09-30 | 2026-04-11 | 6203 | 0.555 | 0.5634 | 0.7487 | 0.749 | -0.0322 | 0.5846 |
-| over25 | fold1 | 2024-02-04 | 2024-08-25 | 6058 | 0.6802 | 0.6925 | 0.5622 | 0.5177 | 4.4569 | 0.5872 |
-| over25 | fold2 | 2024-08-26 | 2025-03-02 | 6063 | 0.6852 | 0.6928 | 0.5476 | 0.5128 | 3.4801 | 0.5703 |
-| over25 | fold3 | 2025-03-03 | 2025-09-29 | 6023 | 0.6821 | 0.6929 | 0.5461 | 0.5107 | 3.5364 | 0.5808 |
-| over25 | fold4 | 2025-09-30 | 2026-04-11 | 6203 | 0.6826 | 0.6928 | 0.5539 | 0.5133 | 4.0626 | 0.5774 |
-| over35 | fold1 | 2024-02-04 | 2024-08-25 | 6058 | 0.599 | 0.6108 | 0.7049 | 0.7001 | 0.4787 | 0.589 |
-| over35 | fold2 | 2024-08-26 | 2025-03-02 | 6063 | 0.5664 | 0.5745 | 0.7353 | 0.7386 | -0.3299 | 0.5857 |
-| over35 | fold3 | 2025-03-03 | 2025-09-29 | 6023 | 0.5891 | 0.6015 | 0.7104 | 0.7108 | -0.0332 | 0.5974 |
-| over35 | fold4 | 2025-09-30 | 2026-04-11 | 6203 | 0.5857 | 0.5942 | 0.7201 | 0.7187 | 0.1451 | 0.5774 |
+| btts | fold1 | 2024-02-05 | 2024-08-30 | 6093 | 0.6856 | 0.6903 | 0.5444 | 0.5377 | 0.6729 | 0.5568 |
+| btts | fold2 | 2024-08-31 | 2025-03-08 | 6205 | 0.6898 | 0.6928 | 0.5228 | 0.5131 | 0.967 | 0.5505 |
+| btts | fold3 | 2025-03-09 | 2025-10-04 | 6021 | 0.6877 | 0.6894 | 0.5458 | 0.5431 | 0.2657 | 0.5423 |
+| btts | fold4 | 2025-10-05 | 2026-04-14 | 6106 | 0.6868 | 0.691 | 0.5449 | 0.5324 | 1.2447 | 0.5587 |
+| over15 | fold1 | 2024-02-05 | 2024-08-30 | 6093 | 0.5655 | 0.571 | 0.7402 | 0.742 | -0.1805 | 0.5749 |
+| over15 | fold2 | 2024-08-31 | 2025-03-08 | 6205 | 0.5771 | 0.5838 | 0.7283 | 0.7294 | -0.1128 | 0.5799 |
+| over15 | fold3 | 2025-03-09 | 2025-10-04 | 6021 | 0.5526 | 0.5603 | 0.7517 | 0.7519 | -0.0166 | 0.5805 |
+| over15 | fold4 | 2025-10-05 | 2026-04-14 | 6106 | 0.5546 | 0.5626 | 0.7496 | 0.7498 | -0.0164 | 0.5849 |
+| over25 | fold1 | 2024-02-05 | 2024-08-30 | 6093 | 0.6804 | 0.6927 | 0.5569 | 0.5152 | 4.1687 | 0.5863 |
+| over25 | fold2 | 2024-08-31 | 2025-03-08 | 6205 | 0.6848 | 0.6928 | 0.5499 | 0.5135 | 3.6422 | 0.5724 |
+| over25 | fold3 | 2025-03-09 | 2025-10-04 | 6021 | 0.6835 | 0.6928 | 0.5521 | 0.5129 | 3.9196 | 0.5771 |
+| over25 | fold4 | 2025-10-05 | 2026-04-14 | 6106 | 0.6814 | 0.6927 | 0.5614 | 0.5146 | 4.6839 | 0.5805 |
+| over35 | fold1 | 2024-02-05 | 2024-08-30 | 6093 | 0.598 | 0.6093 | 0.7051 | 0.7018 | 0.3282 | 0.586 |
+| over35 | fold2 | 2024-08-31 | 2025-03-08 | 6205 | 0.5655 | 0.574 | 0.736 | 0.7391 | -0.3062 | 0.5869 |
+| over35 | fold3 | 2025-03-09 | 2025-10-04 | 6021 | 0.59 | 0.6024 | 0.7092 | 0.7097 | -0.0498 | 0.5996 |
+| over35 | fold4 | 2025-10-05 | 2026-04-14 | 6106 | 0.5863 | 0.5955 | 0.7191 | 0.7173 | 0.1802 | 0.5799 |
 
 
 ## Model family tournament
@@ -68,26 +68,26 @@ Same folds, same features, same scoring for every family.
 
 | target | model | n | log_loss | brier | auc | lift_pp | fold_ll_spread | fit_seconds |
 |---|---|---|---|---|---|---|---|---|
-| btts | random_forest | 24347 | 0.6867 | 0.2468 | 0.5536 | 1.0925 | 0.0035 | 56.2 |
-| btts | hgb | 24347 | 0.6875 | 0.2472 | 0.5494 | 0.92 | 0.0043 | 3.5 |
-| btts | gboost | 24347 | 0.688 | 0.2474 | 0.5506 | 1.2774 | 0.0027 | 15.2 |
-| btts | logreg | 24347 | 0.6886 | 0.2477 | 0.5455 | 0.3984 | 0.0038 | 7.6 |
-| btts | lightgbm | 24347 | 0.6956 | 0.2509 | 0.5415 | 0.7188 | 0.0068 | 13.0 |
-| over15 | random_forest | 24347 | 0.5616 | 0.1878 | 0.5817 | -0.0698 | 0.0199 | 55.0 |
-| over15 | gboost | 24347 | 0.562 | 0.1881 | 0.5848 | -0.1438 | 0.0184 | 16.3 |
-| over15 | hgb | 24347 | 0.562 | 0.188 | 0.5813 | -0.037 | 0.0218 | 3.5 |
-| over15 | logreg | 24347 | 0.5623 | 0.1881 | 0.5809 | -0.0246 | 0.0163 | 4.9 |
-| over15 | lightgbm | 24347 | 0.572 | 0.1911 | 0.564 | 0.0041 | 0.0287 | 13.5 |
-| over25 | random_forest | 24347 | 0.6816 | 0.2443 | 0.5836 | 5.2039 | 0.0039 | 54.8 |
-| over25 | hgb | 24347 | 0.6825 | 0.2448 | 0.5789 | 4.5221 | 0.005 | 3.9 |
-| over25 | gboost | 24347 | 0.6831 | 0.245 | 0.5801 | 4.5796 | 0.001 | 15.6 |
-| over25 | logreg | 24347 | 0.6836 | 0.2453 | 0.5772 | 3.7458 | 0.0034 | 7.9 |
-| over25 | lightgbm | 24347 | 0.6908 | 0.2486 | 0.5664 | 3.5487 | 0.0091 | 13.2 |
-| over35 | random_forest | 24347 | 0.5841 | 0.1981 | 0.5927 | 0.1643 | 0.0312 | 55.1 |
-| over35 | hgb | 24347 | 0.585 | 0.1985 | 0.5879 | 0.0657 | 0.0326 | 3.7 |
-| over35 | logreg | 24347 | 0.5861 | 0.199 | 0.584 | 0.0329 | 0.0359 | 6.5 |
-| over35 | gboost | 24347 | 0.5875 | 0.1996 | 0.5868 | -0.0329 | 0.0451 | 15.6 |
-| over35 | lightgbm | 24347 | 0.594 | 0.202 | 0.5718 | 0.115 | 0.0437 | 13.7 |
+| btts | random_forest | 24425 | 0.6868 | 0.2469 | 0.553 | 0.7902 | 0.003 | 52.7 |
+| btts | gboost | 24425 | 0.687 | 0.2469 | 0.5546 | 1.216 | 0.0041 | 12.8 |
+| btts | hgb | 24425 | 0.6875 | 0.2472 | 0.5522 | 0.7902 | 0.0042 | 3.4 |
+| btts | logreg | 24425 | 0.6884 | 0.2476 | 0.5465 | 0.8352 | 0.0033 | 7.6 |
+| btts | lightgbm | 24425 | 0.6953 | 0.2508 | 0.5405 | 0.6305 | 0.0055 | 11.2 |
+| over15 | random_forest | 24425 | 0.5614 | 0.1877 | 0.5826 | -0.0614 | 0.0236 | 49.6 |
+| over15 | gboost | 24425 | 0.5619 | 0.1879 | 0.5823 | -0.0368 | 0.0221 | 12.6 |
+| over15 | logreg | 24425 | 0.562 | 0.188 | 0.5818 | -0.0287 | 0.0199 | 4.7 |
+| over15 | hgb | 24425 | 0.5625 | 0.1882 | 0.5791 | -0.0819 | 0.0245 | 3.3 |
+| over15 | lightgbm | 24425 | 0.5724 | 0.1913 | 0.5648 | -0.0205 | 0.0296 | 11.2 |
+| over25 | random_forest | 24425 | 0.6816 | 0.2443 | 0.5834 | 5.1627 | 0.0034 | 49.4 |
+| over25 | hgb | 24425 | 0.6825 | 0.2448 | 0.579 | 4.7861 | 0.0044 | 3.5 |
+| over25 | gboost | 24425 | 0.6826 | 0.2448 | 0.581 | 3.9959 | 0.0026 | 12.7 |
+| over25 | logreg | 24425 | 0.6835 | 0.2453 | 0.5774 | 3.7544 | 0.0035 | 4.9 |
+| over25 | lightgbm | 24425 | 0.6905 | 0.2484 | 0.568 | 4.0655 | 0.0085 | 11.2 |
+| over35 | random_forest | 24425 | 0.584 | 0.198 | 0.5928 | 0.0737 | 0.0303 | 51.2 |
+| over35 | hgb | 24425 | 0.5848 | 0.1984 | 0.5886 | 0.0368 | 0.0325 | 3.5 |
+| over35 | logreg | 24425 | 0.5858 | 0.1988 | 0.5849 | 0.0983 | 0.0343 | 6.2 |
+| over35 | gboost | 24425 | 0.588 | 0.1998 | 0.5863 | 0.0041 | 0.0437 | 12.8 |
+| over35 | lightgbm | 24425 | 0.5919 | 0.2011 | 0.5789 | 0.0246 | 0.0388 | 11.4 |
 
 
 **Winner on mean log loss: `random_forest`.** The spread between families is small — a few thousandths of a nat — which is itself the finding: the ceiling here is set by the information in the features, not by the algorithm. Swapping boosters will not rescue a target that the data cannot predict.
@@ -99,18 +99,18 @@ off it — instead of fitting four binary models that each rediscover 'goals'.
 
 | target | approach | n | log_loss | brier | auc | lift_pp |
 |---|---|---|---|---|---|---|
-| btts | bipoisson_dc | 24347 | 0.68712 | 0.24701 | 0.55329 | 1.39648 |
-| btts | bipoisson | 24347 | 0.68731 | 0.2471 | 0.55327 | 1.20754 |
-| btts | binary_classifiers | 24347 | 0.68753 | 0.24721 | 0.5494 | 0.92003 |
-| over15 | bipoisson | 24347 | 0.56114 | 0.18771 | 0.58435 | 0.00821 |
-| over15 | bipoisson_dc | 24347 | 0.5612 | 0.18772 | 0.58431 | 0.00821 |
-| over15 | binary_classifiers | 24347 | 0.56199 | 0.18796 | 0.58127 | -0.03697 |
-| over25 | bipoisson | 24347 | 0.68222 | 0.24463 | 0.58109 | 4.66998 |
-| over25 | bipoisson_dc | 24347 | 0.68222 | 0.24463 | 0.58109 | 4.66998 |
-| over25 | binary_classifiers | 24347 | 0.68253 | 0.24478 | 0.57888 | 4.52212 |
-| over35 | bipoisson | 24347 | 0.58376 | 0.19793 | 0.5927 | 0.19715 |
-| over35 | bipoisson_dc | 24347 | 0.58376 | 0.19793 | 0.5927 | 0.19715 |
-| over35 | binary_classifiers | 24347 | 0.58504 | 0.19849 | 0.5879 | 0.06572 |
+| btts | bipoisson_dc | 24425 | 0.68633 | 0.24662 | 0.55587 | 1.53531 |
+| btts | bipoisson | 24425 | 0.6865 | 0.24671 | 0.55585 | 1.31832 |
+| btts | binary_classifiers | 24425 | 0.68747 | 0.24717 | 0.55216 | 0.79017 |
+| over15 | bipoisson | 24425 | 0.56026 | 0.18736 | 0.58633 | 0.00819 |
+| over15 | bipoisson_dc | 24425 | 0.5603 | 0.18737 | 0.58636 | 0.00819 |
+| over15 | binary_classifiers | 24425 | 0.56254 | 0.18819 | 0.57913 | -0.08188 |
+| over25 | bipoisson | 24425 | 0.68184 | 0.24445 | 0.58136 | 4.87615 |
+| over25 | bipoisson_dc | 24425 | 0.68184 | 0.24445 | 0.58136 | 4.87615 |
+| over25 | binary_classifiers | 24425 | 0.6825 | 0.24477 | 0.57903 | 4.78608 |
+| over35 | bipoisson | 24425 | 0.58363 | 0.19787 | 0.59221 | 0.2129 |
+| over35 | bipoisson_dc | 24425 | 0.58363 | 0.19787 | 0.59221 | 0.2129 |
+| over35 | binary_classifiers | 24425 | 0.58485 | 0.19843 | 0.58863 | 0.03685 |
 
 
 **4 of 4 targets go to the scoreline model.** It wins on all three Over lines and loses on BTTS — and the exception has a mechanism rather than being noise. An independent-Poisson model assumes the two sides score independently, which is exactly the assumption BTTS is most sensitive to. The Dixon-Coles correction that exists to repair this fitted rho in the range -0.04 to -0.05: real, negative as the literature says, and far too small to close the gap.
@@ -126,15 +126,15 @@ are present. Negative is better in both columns.
 
 | family | add_one_dLL | drop_one_dLL | add_one_dAcc_pp | drop_one_dAcc_pp |
 |---|---|---|---|---|
-| SOT | -0.00383 | 0.00054 | 0.43845 | -0.05442 |
-| FORM | -0.00377 | 0.00071 | 0.2834 | -0.00924 |
-| STRENGTH | -0.00346 | 9e-05 | 0.08933 | 0.11192 |
-| SHOTS | -0.00299 | 0.00012 | 0.08523 | 0.10268 |
-| CORNERS | -0.00128 | 0.00027 | -0.17867 | -0.03389 |
-| H2H | -0.00069 | 0.00019 | -0.17353 | -0.03902 |
-| DISCIPLINE | -0.00065 | 0.00015 | 0.01232 | -0.0267 |
-| REST | -0.00061 | 0.00061 | -0.17045 | -0.1571 |
-| HT | 0.00036 | -9e-05 | -0.08933 | 0.10884 |
+| SOT | -0.00321 | -0.00017 | 0.31525 | -0.03071 |
+| FORM | -0.00311 | 0.00032 | 0.22211 | 0.03685 |
+| STRENGTH | -0.00294 | -8e-05 | 0.17605 | 0.11464 |
+| SHOTS | -0.00262 | 0.00028 | 0.13306 | 0.07677 |
+| CORNERS | -0.00115 | -7e-05 | -0.03173 | -0.07779 |
+| H2H | -0.00023 | -9e-05 | -0.2651 | 0.08905 |
+| DISCIPLINE | -0.00014 | -0.00024 | -0.17912 | 0.07677 |
+| REST | 5e-05 | 0.00029 | -0.02149 | -0.05937 |
+| HT | 0.00154 | -0.00037 | -0.13408 | 0.1259 |
 
 
 **The gap between the two columns is the whole story.** Shots on target is the strongest family on its own — adding it to BASE improves log loss by around 0.008 — and is worth almost nothing once everything else is present, because rolling goals, 
@@ -146,7 +146,7 @@ right about its information and wrong about its marginal value (rule 18).
 
 ## Football only vs market vs both
 
-Restricted to the 9,899 out-of-sample fixtures that carry a real 
+Restricted to the 9,955 out-of-sample fixtures that carry a real 
 two-sided, de-vigged Over/Under 2.5 price. Comparing a football number from 26,000 
 fixtures against a market number from a different 5,000 would be meaningless.
 
@@ -154,10 +154,10 @@ Out-of-sample **log loss** (lower is better):
 
 | target | base_only | football_only | market_only | football_plus_market |
 |---|---|---|---|---|
-| btts | 0.68934 | 0.68861 | 0.68744 | 0.68634 |
-| over15 | 0.55552 | 0.55072 | 0.54387 | 0.54618 |
-| over25 | 0.69364 | 0.68749 | 0.67957 | 0.68033 |
-| over35 | 0.60193 | 0.59774 | 0.59033 | 0.5908 |
+| btts | 0.69074 | 0.68889 | 0.68765 | 0.68713 |
+| over15 | 0.5563 | 0.55185 | 0.54435 | 0.54703 |
+| over25 | 0.69462 | 0.68792 | 0.68099 | 0.6801 |
+| over35 | 0.60266 | 0.59987 | 0.59031 | 0.59089 |
 
 
 **MARKET_ONLY_STRONGER_THAN_FOOTBALL = YES.** The bookmaker is better on Over 2.5 and Over 3.5, our football model is marginally better on Over 1.5, and BTTS is a wash where nothing beats the league base rate. Given that the market sees team news, lineups and money we do not, 'roughly level' is a respectable result for a model built only from historical match statistics.
@@ -170,16 +170,16 @@ Out-of-sample **log loss** (lower is better):
 
 | setting | btts | over15 | over25 | over35 |
 |---|---|---|---|---|
-| expanding | 0.68753 | 0.56199 | 0.68253 | 0.58504 |
-| expanding_hl_1y | 0.68872 | 0.56623 | 0.68483 | 0.58688 |
-| expanding_hl_2y | 0.68754 | 0.56448 | 0.68324 | 0.58588 |
-| last_1y | 0.6897 | 0.56617 | 0.68629 | 0.58851 |
-| last_2y | 0.68748 | 0.56411 | 0.68452 | 0.58667 |
-| last_3y | 0.68669 | 0.5632 | 0.68177 | 0.58543 |
-| last_4y | 0.68823 | 0.56269 | 0.68129 | 0.5845 |
+| expanding | 0.68747 | 0.56254 | 0.6825 | 0.58485 |
+| expanding_hl_1y | 0.68806 | 0.56637 | 0.68392 | 0.58545 |
+| expanding_hl_2y | 0.68821 | 0.56384 | 0.68365 | 0.58505 |
+| last_1y | 0.68907 | 0.56494 | 0.68686 | 0.58786 |
+| last_2y | 0.68748 | 0.5633 | 0.68274 | 0.5856 |
+| last_3y | 0.68763 | 0.56302 | 0.68247 | 0.5845 |
+| last_4y | 0.68769 | 0.56241 | 0.68248 | 0.58478 |
 
 
-Best setting per target: btts:last_3y; over15:expanding; over25:last_4y; over35:last_4y. 
+Best setting per target: btts:expanding; over15:last_4y; over25:last_3y; over35:last_3y. 
 Recency weighting helps: **NO**.
 
 ## Learning curves — is more data still helping?
@@ -188,26 +188,26 @@ The test period is held fixed; only the amount of training history varies.
 
 | target | train_n | test_n | log_loss | brier | auc | lift_pp |
 |---|---|---|---|---|---|---|
-| btts | 3000 | 8099 | 0.68804 | 0.24744 | 0.53575 | -1.50636 |
-| btts | 6000 | 8099 | 0.68679 | 0.24683 | 0.5242 | -0.93839 |
-| btts | 12000 | 8099 | 0.68543 | 0.24614 | 0.54606 | -0.18521 |
-| btts | 24000 | 8099 | 0.6847 | 0.24582 | 0.54428 | -0.85196 |
-| btts | 40000 | 8099 | 0.68338 | 0.24525 | 0.54663 | -1.17298 |
-| over15 | 3000 | 8099 | 0.54235 | 0.17859 | 0.54929 | -0.18521 |
-| over15 | 6000 | 8099 | 0.54134 | 0.17818 | 0.54873 | 0.0 |
-| over15 | 12000 | 8099 | 0.53609 | 0.1762 | 0.57344 | -0.01235 |
-| over15 | 24000 | 8099 | 0.5338 | 0.17531 | 0.58357 | -0.01235 |
-| over15 | 40000 | 8099 | 0.53247 | 0.17484 | 0.58864 | 0.01235 |
-| over25 | 3000 | 8099 | 0.69113 | 0.24894 | 0.54888 | 0.72848 |
-| over25 | 6000 | 8099 | 0.68753 | 0.24721 | 0.55082 | 1.08655 |
-| over25 | 12000 | 8099 | 0.68529 | 0.24606 | 0.5705 | 2.35832 |
-| over25 | 24000 | 8099 | 0.68173 | 0.24437 | 0.57875 | 2.16076 |
-| over25 | 40000 | 8099 | 0.6797 | 0.24339 | 0.58596 | 2.91394 |
-| over35 | 3000 | 8099 | 0.61801 | 0.21307 | 0.56234 | -0.09878 |
-| over35 | 6000 | 8099 | 0.61232 | 0.21097 | 0.56743 | 0.01235 |
-| over35 | 12000 | 8099 | 0.6141 | 0.21146 | 0.57292 | 0.03704 |
-| over35 | 24000 | 8099 | 0.60935 | 0.20961 | 0.58175 | 0.07408 |
-| over35 | 40000 | 8099 | 0.60825 | 0.20909 | 0.5841 | 0.17286 |
+| btts | 3000 | 8131 | 0.69001 | 0.24844 | 0.52798 | -2.87787 |
+| btts | 6000 | 8131 | 0.68615 | 0.24652 | 0.53069 | -1.19297 |
+| btts | 12000 | 8131 | 0.68825 | 0.24747 | 0.53638 | -1.16837 |
+| btts | 24000 | 8131 | 0.68479 | 0.24586 | 0.54098 | -0.29517 |
+| btts | 40000 | 8131 | 0.68241 | 0.24473 | 0.55086 | -0.43045 |
+| over15 | 3000 | 8131 | 0.54031 | 0.17779 | 0.54818 | -0.29517 |
+| over15 | 6000 | 8131 | 0.53479 | 0.17545 | 0.55815 | 0.0 |
+| over15 | 12000 | 8131 | 0.53217 | 0.17439 | 0.57749 | 0.04919 |
+| over15 | 24000 | 8131 | 0.52908 | 0.17315 | 0.58453 | 0.0246 |
+| over15 | 40000 | 8131 | 0.52837 | 0.17294 | 0.58685 | 0.0369 |
+| over25 | 3000 | 8131 | 0.6875 | 0.2472 | 0.55874 | 0.15988 |
+| over25 | 6000 | 8131 | 0.68787 | 0.24733 | 0.55757 | 0.61493 |
+| over25 | 12000 | 8131 | 0.68614 | 0.2465 | 0.56352 | 1.03308 |
+| over25 | 24000 | 8131 | 0.6816 | 0.24429 | 0.57882 | 2.93937 |
+| over25 | 40000 | 8131 | 0.67907 | 0.24308 | 0.58687 | 2.84098 |
+| over35 | 3000 | 8131 | 0.62476 | 0.21559 | 0.55968 | -0.25827 |
+| over35 | 6000 | 8131 | 0.61378 | 0.2117 | 0.57467 | 0.04919 |
+| over35 | 12000 | 8131 | 0.6157 | 0.21236 | 0.57744 | -0.18448 |
+| over35 | 24000 | 8131 | 0.61205 | 0.21086 | 0.57985 | 0.19678 |
+| over35 | 40000 | 8131 | 0.61259 | 0.21105 | 0.58014 | 0.06149 |
 
 
 **MORE_DATA_IS_IMPROVING_MODELS = YES**
@@ -216,68 +216,68 @@ The test period is held fixed; only the amount of training history varies.
 
 | bucket | n | mean_predicted | actual_rate | gap_pp | brier |
 |---|---|---|---|---|---|
-| 0.00-0.50 | 11288 | 0.4423 | 0.4498 | -0.7494 | 0.2455 |
-| 0.50-0.55 | 6089 | 0.5248 | 0.5183 | 0.6465 | 0.2495 |
-| 0.55-0.60 | 4357 | 0.5721 | 0.5637 | 0.8397 | 0.2456 |
-| 0.60-0.65 | 1833 | 0.6202 | 0.6127 | 0.7553 | 0.2369 |
-| 0.65-0.70 | 543 | 0.6701 | 0.6446 | 2.549 | 0.2299 |
-| 0.70-0.75 | 191 | 0.7205 | 0.7853 | -6.4887 | 0.1737 |
-| 0.75-0.80 | 40 | 0.7673 | 0.8 | -3.2684 | 0.1624 |
-| 0.80-1.01 | 6 | 0.8167 | 1.0 | -18.3345 | 0.0337 |
+| 0.00-0.50 | 11335 | 0.4417 | 0.4491 | -0.7474 | 0.2456 |
+| 0.50-0.55 | 5967 | 0.5245 | 0.5152 | 0.9317 | 0.25 |
+| 0.55-0.60 | 4374 | 0.5728 | 0.5661 | 0.6704 | 0.2453 |
+| 0.60-0.65 | 1888 | 0.6203 | 0.6118 | 0.8582 | 0.2367 |
+| 0.65-0.70 | 579 | 0.6699 | 0.6546 | 1.5305 | 0.2264 |
+| 0.70-0.75 | 213 | 0.7203 | 0.7371 | -1.6839 | 0.1945 |
+| 0.75-0.80 | 54 | 0.7698 | 0.7593 | 1.0568 | 0.1818 |
+| 0.80-1.01 | 15 | 0.8178 | 1.0 | -18.2168 | 0.0336 |
 
 
 ### Accuracy on the most confident calls
 
 | target | k_pct | n | accuracy | base_rate_in_slice | mean_confidence |
 |---|---|---|---|---|---|
-| btts | 1 | 243 | 0.6626 | 0.6379 | 0.1749 |
-| btts | 5 | 1217 | 0.6376 | 0.6261 | 0.1441 |
-| btts | 10 | 2434 | 0.6212 | 0.6056 | 0.1283 |
-| btts | 25 | 6086 | 0.5876 | 0.5716 | 0.1038 |
-| btts | 50 | 12173 | 0.5678 | 0.5518 | 0.0813 |
-| btts | 100 | 24347 | 0.5429 | 0.5313 | 0.0514 |
-| over15 | 1 | 243 | 0.8889 | 0.8889 | 0.3994 |
-| over15 | 5 | 1217 | 0.8537 | 0.8537 | 0.3611 |
-| over15 | 10 | 2434 | 0.8274 | 0.8274 | 0.3429 |
-| over15 | 25 | 6086 | 0.8056 | 0.8056 | 0.3179 |
-| over15 | 50 | 12173 | 0.7903 | 0.7903 | 0.2934 |
-| over15 | 100 | 24347 | 0.743 | 0.743 | 0.2467 |
-| over25 | 1 | 243 | 0.7778 | 0.679 | 0.2332 |
-| over25 | 5 | 1217 | 0.6968 | 0.5514 | 0.1835 |
-| over25 | 10 | 2434 | 0.6631 | 0.5386 | 0.1592 |
-| over25 | 25 | 6086 | 0.6186 | 0.5245 | 0.1255 |
-| over25 | 50 | 12173 | 0.5881 | 0.5133 | 0.0968 |
-| over25 | 100 | 24347 | 0.5538 | 0.5072 | 0.0609 |
-| over35 | 1 | 243 | 0.8765 | 0.1235 | 0.356 |
-| over35 | 5 | 1217 | 0.8348 | 0.1652 | 0.3323 |
-| over35 | 10 | 2434 | 0.8114 | 0.1886 | 0.3176 |
-| over35 | 25 | 6086 | 0.7921 | 0.2079 | 0.2927 |
-| over35 | 50 | 12173 | 0.7665 | 0.2336 | 0.2669 |
-| over35 | 100 | 24347 | 0.7188 | 0.283 | 0.2152 |
-| home_scores | 1 | 243 | 0.9547 | 0.9547 | 0.4328 |
-| home_scores | 5 | 1217 | 0.9219 | 0.9219 | 0.4043 |
-| home_scores | 10 | 2434 | 0.8961 | 0.8961 | 0.3881 |
-| home_scores | 25 | 6086 | 0.862 | 0.862 | 0.3621 |
-| home_scores | 50 | 12173 | 0.8277 | 0.8277 | 0.3328 |
-| home_scores | 100 | 24347 | 0.7682 | 0.7683 | 0.2721 |
-| away_scores | 1 | 243 | 0.9095 | 0.9095 | 0.3766 |
-| away_scores | 5 | 1217 | 0.8562 | 0.8562 | 0.3349 |
-| away_scores | 10 | 2434 | 0.8283 | 0.8283 | 0.3143 |
-| away_scores | 25 | 6086 | 0.7808 | 0.7808 | 0.281 |
-| away_scores | 50 | 12173 | 0.7443 | 0.7443 | 0.2485 |
-| away_scores | 100 | 24347 | 0.687 | 0.6874 | 0.1865 |
-| home_2plus | 1 | 243 | 0.8189 | 0.5103 | 0.319 |
-| home_2plus | 5 | 1217 | 0.7666 | 0.3862 | 0.277 |
-| home_2plus | 10 | 2434 | 0.7449 | 0.371 | 0.2526 |
-| home_2plus | 25 | 6086 | 0.7014 | 0.3751 | 0.2111 |
-| home_2plus | 50 | 12173 | 0.6671 | 0.3921 | 0.1695 |
-| home_2plus | 100 | 24347 | 0.6067 | 0.4309 | 0.1095 |
-| away_2plus | 1 | 243 | 0.8601 | 0.1399 | 0.3532 |
-| away_2plus | 5 | 1217 | 0.8102 | 0.1898 | 0.3243 |
-| away_2plus | 10 | 2434 | 0.7987 | 0.2017 | 0.3076 |
-| away_2plus | 25 | 6086 | 0.7726 | 0.2277 | 0.2773 |
-| away_2plus | 50 | 12173 | 0.7379 | 0.265 | 0.2417 |
-| away_2plus | 100 | 24347 | 0.6722 | 0.335 | 0.1728 |
+| btts | 1 | 244 | 0.6311 | 0.6475 | 0.1886 |
+| btts | 5 | 1221 | 0.6192 | 0.6093 | 0.1547 |
+| btts | 10 | 2442 | 0.6126 | 0.6032 | 0.137 |
+| btts | 25 | 6106 | 0.5839 | 0.5727 | 0.1102 |
+| btts | 50 | 12212 | 0.5703 | 0.5546 | 0.0857 |
+| btts | 100 | 24425 | 0.5434 | 0.5315 | 0.0541 |
+| over15 | 1 | 244 | 0.8975 | 0.8975 | 0.4053 |
+| over15 | 5 | 1221 | 0.8526 | 0.8526 | 0.3662 |
+| over15 | 10 | 2442 | 0.8264 | 0.8264 | 0.3476 |
+| over15 | 25 | 6106 | 0.8049 | 0.8049 | 0.321 |
+| over15 | 50 | 12212 | 0.7912 | 0.7912 | 0.2953 |
+| over15 | 100 | 24425 | 0.7431 | 0.7432 | 0.247 |
+| over25 | 1 | 244 | 0.7705 | 0.6967 | 0.2414 |
+| over25 | 5 | 1221 | 0.6871 | 0.5667 | 0.1861 |
+| over25 | 10 | 2442 | 0.6704 | 0.5422 | 0.1615 |
+| over25 | 25 | 6106 | 0.6227 | 0.5249 | 0.1274 |
+| over25 | 50 | 12212 | 0.5895 | 0.5151 | 0.0986 |
+| over25 | 100 | 24425 | 0.5544 | 0.5072 | 0.0621 |
+| over35 | 1 | 244 | 0.8811 | 0.1189 | 0.3565 |
+| over35 | 5 | 1221 | 0.8354 | 0.1646 | 0.3334 |
+| over35 | 10 | 2442 | 0.8227 | 0.1773 | 0.3186 |
+| over35 | 25 | 6106 | 0.793 | 0.207 | 0.2933 |
+| over35 | 50 | 12212 | 0.7658 | 0.2341 | 0.2667 |
+| over35 | 100 | 24425 | 0.7191 | 0.2829 | 0.2147 |
+| home_scores | 1 | 244 | 0.9713 | 0.9713 | 0.4318 |
+| home_scores | 5 | 1221 | 0.9197 | 0.9197 | 0.4028 |
+| home_scores | 10 | 2442 | 0.8972 | 0.8972 | 0.3873 |
+| home_scores | 25 | 6106 | 0.8611 | 0.8611 | 0.3618 |
+| home_scores | 50 | 12212 | 0.8275 | 0.8275 | 0.3322 |
+| home_scores | 100 | 24425 | 0.7679 | 0.7683 | 0.2713 |
+| away_scores | 1 | 244 | 0.9098 | 0.9098 | 0.3739 |
+| away_scores | 5 | 1221 | 0.8559 | 0.8559 | 0.3372 |
+| away_scores | 10 | 2442 | 0.8301 | 0.8301 | 0.3168 |
+| away_scores | 25 | 6106 | 0.7805 | 0.7805 | 0.2834 |
+| away_scores | 50 | 12212 | 0.7443 | 0.7443 | 0.2499 |
+| away_scores | 100 | 24425 | 0.6859 | 0.6873 | 0.1869 |
+| home_2plus | 1 | 244 | 0.8156 | 0.4959 | 0.3178 |
+| home_2plus | 5 | 1221 | 0.7707 | 0.3849 | 0.2763 |
+| home_2plus | 10 | 2442 | 0.742 | 0.3661 | 0.2523 |
+| home_2plus | 25 | 6106 | 0.7028 | 0.369 | 0.2119 |
+| home_2plus | 50 | 12212 | 0.6673 | 0.3882 | 0.1707 |
+| home_2plus | 100 | 24425 | 0.6052 | 0.4309 | 0.1105 |
+| away_2plus | 1 | 244 | 0.8689 | 0.1311 | 0.3544 |
+| away_2plus | 5 | 1221 | 0.8133 | 0.1867 | 0.3257 |
+| away_2plus | 10 | 2442 | 0.8104 | 0.1896 | 0.3091 |
+| away_2plus | 25 | 6106 | 0.7748 | 0.2257 | 0.2782 |
+| away_2plus | 50 | 12212 | 0.7374 | 0.2647 | 0.242 |
+| away_2plus | 100 | 24425 | 0.6714 | 0.3351 | 0.1721 |
 
 
 ## Player goalscorer research
@@ -287,18 +287,18 @@ and worthless. The baseline that matters is **the player's own prior scoring rat
 
 | population | spec | n | base_rate | log_loss | brier | auc |
 |---|---|---|---|---|---|---|
-| appeared | global_rate | 393132 | 0.07981 | 0.27835 | 0.07345 | 0.4942 |
-| appeared | position_prior | 393132 | 0.07981 | 0.26371 | 0.07153 | 0.68124 |
-| appeared | own_history | 393132 | 0.07981 | 0.25616 | 0.06978 | 0.7143 |
-| appeared | full_player_model | 393132 | 0.07981 | 0.24878 | 0.06866 | 0.74241 |
-| started | global_rate | 299438 | 0.08891 | 0.30005 | 0.08101 | 0.4953 |
-| started | position_prior | 299438 | 0.08891 | 0.27401 | 0.07688 | 0.70349 |
-| started | own_history | 299438 | 0.08891 | 0.27104 | 0.07568 | 0.73318 |
-| started | full_player_model | 299438 | 0.08891 | 0.26164 | 0.07428 | 0.76239 |
-| exp_minutes_60 | global_rate | 257623 | 0.07891 | 0.27617 | 0.07269 | 0.49576 |
-| exp_minutes_60 | position_prior | 257623 | 0.07891 | 0.25333 | 0.06928 | 0.71372 |
-| exp_minutes_60 | own_history | 257623 | 0.07891 | 0.24737 | 0.06777 | 0.74253 |
-| exp_minutes_60 | full_player_model | 257623 | 0.07891 | 0.23948 | 0.06669 | 0.76827 |
+| appeared | global_rate | 398487 | 0.07983 | 0.27839 | 0.07346 | 0.49446 |
+| appeared | position_prior | 398487 | 0.07983 | 0.26131 | 0.0712 | 0.68491 |
+| appeared | own_history | 398487 | 0.07983 | 0.25628 | 0.06978 | 0.71449 |
+| appeared | full_player_model | 398487 | 0.07983 | 0.24872 | 0.06867 | 0.74277 |
+| started | global_rate | 304210 | 0.08901 | 0.30028 | 0.08109 | 0.4961 |
+| started | position_prior | 304210 | 0.08901 | 0.27964 | 0.0779 | 0.69919 |
+| started | own_history | 304210 | 0.08901 | 0.2707 | 0.07564 | 0.73404 |
+| started | full_player_model | 304210 | 0.08901 | 0.26234 | 0.07445 | 0.76104 |
+| exp_minutes_60 | global_rate | 258888 | 0.07902 | 0.27644 | 0.07279 | 0.49652 |
+| exp_minutes_60 | position_prior | 258888 | 0.07902 | 0.25516 | 0.06974 | 0.71415 |
+| exp_minutes_60 | own_history | 258888 | 0.07902 | 0.24682 | 0.06773 | 0.74558 |
+| exp_minutes_60 | full_player_model | 258888 | 0.07902 | 0.23963 | 0.06673 | 0.76846 |
 
 
 `appeared` is an explanatory upper bound only — whether a player appears is not 
@@ -309,30 +309,30 @@ the player's own prior rolling minutes and is the deployable number.
 
 | league | target | n | rock_accuracy | model_accuracy | lift_pp | log_loss | auc |
 |---|---|---|---|---|---|---|---|
-| Greek Super League | over25 | 526 | 0.5 | 0.5399 | 3.9924 | 0.6904 | 0.5529 |
-| Brazil Serie A | over25 | 916 | 0.5371 | 0.5721 | 3.4934 | 0.6812 | 0.5756 |
-| Belgian First Division A | over25 | 688 | 0.5102 | 0.5422 | 3.1977 | 0.6887 | 0.5669 |
-| Romanian Superliga | over25 | 1293 | 0.5669 | 0.594 | 2.7069 | 0.6739 | 0.5765 |
-| La Liga 2 | btts | 1044 | 0.5125 | 0.5374 | 2.4904 | 0.6879 | 0.5614 |
-| Greek Super League | btts | 526 | 0.5095 | 0.5342 | 2.4715 | 0.6914 | 0.5629 |
-| Scottish League Two | btts | 415 | 0.5398 | 0.5639 | 2.4096 | 0.6918 | 0.504 |
-| Brazil Serie A | btts | 916 | 0.5109 | 0.5306 | 1.9651 | 0.6886 | 0.554 |
-| League One | over25 | 1261 | 0.5028 | 0.5194 | 1.6653 | 0.6917 | 0.546 |
-| Sweden Allsvenskan | btts | 495 | 0.5293 | 0.5455 | 1.6162 | 0.6905 | 0.529 |
-| Portuguese Primeira Liga | over25 | 693 | 0.5267 | 0.5411 | 1.443 | 0.6769 | 0.5863 |
-| La Liga 2 | over25 | 1044 | 0.5345 | 0.5479 | 1.341 | 0.6877 | 0.5501 |
-| China Super League | over25 | 517 | 0.5996 | 0.6112 | 1.1605 | 0.6536 | 0.6192 |
-| Saudi Pro League | over35 | 694 | 0.6455 | 0.6571 | 1.1527 | 0.6286 | 0.6261 |
-| Romanian Superliga | btts | 1293 | 0.5004 | 0.5104 | 1.0054 | 0.6886 | 0.5424 |
-| K-League 1 | over25 | 502 | 0.5259 | 0.5359 | 0.996 | 0.6898 | 0.5317 |
-| Norway Eliteserien | btts | 508 | 0.5433 | 0.5531 | 0.9843 | 0.6898 | 0.533 |
-| USA MLS | over35 | 1348 | 0.6202 | 0.6298 | 0.9644 | 0.6544 | 0.5751 |
-| League One | btts | 1261 | 0.517 | 0.5258 | 0.8723 | 0.691 | 0.5328 |
-| Sweden Allsvenskan | over25 | 495 | 0.5333 | 0.5414 | 0.8081 | 0.6902 | 0.5349 |
-| Ireland Premier Division | over25 | 417 | 0.5588 | 0.5659 | 0.7194 | 0.6851 | 0.528 |
-| Austrian Bundesliga | over25 | 442 | 0.5158 | 0.5226 | 0.6787 | 0.6948 | 0.5106 |
-| Championship | btts | 1260 | 0.5198 | 0.5262 | 0.6349 | 0.691 | 0.5338 |
-| League Two | btts | 1273 | 0.5114 | 0.5177 | 0.6284 | 0.6933 | 0.5231 |
+| Greek Super League | over25 | 521 | 0.501 | 0.5451 | 4.4146 | 0.6909 | 0.5509 |
+| Brazil Serie A | over25 | 923 | 0.5374 | 0.5677 | 3.0336 | 0.682 | 0.5699 |
+| Romanian Superliga | btts | 1299 | 0.5027 | 0.5312 | 2.8483 | 0.6873 | 0.5547 |
+| Mexico Liga MX | over25 | 793 | 0.5448 | 0.5712 | 2.6482 | 0.6807 | 0.5645 |
+| China Super League | over25 | 520 | 0.6 | 0.625 | 2.5 | 0.6522 | 0.6236 |
+| La Liga 2 | btts | 1046 | 0.5115 | 0.5363 | 2.4857 | 0.6888 | 0.5538 |
+| Greek Super League | btts | 521 | 0.5106 | 0.5336 | 2.3033 | 0.692 | 0.5561 |
+| Belgian First Division A | over25 | 688 | 0.5102 | 0.532 | 2.1802 | 0.692 | 0.5444 |
+| Saudi Pro League | over35 | 695 | 0.6446 | 0.6647 | 2.0144 | 0.6316 | 0.6188 |
+| Scottish Premiership | btts | 515 | 0.5398 | 0.5592 | 1.9417 | 0.688 | 0.5256 |
+| League One | over25 | 1266 | 0.5024 | 0.5174 | 1.5008 | 0.6937 | 0.5322 |
+| Ligue 2 | over25 | 725 | 0.5255 | 0.5393 | 1.3793 | 0.6969 | 0.4958 |
+| Portuguese Primeira Liga | over25 | 693 | 0.5296 | 0.5426 | 1.2987 | 0.6781 | 0.5841 |
+| Sweden Allsvenskan | btts | 500 | 0.53 | 0.542 | 1.2 | 0.6955 | 0.4972 |
+| China Super League | over35 | 520 | 0.5865 | 0.5981 | 1.1538 | 0.67 | 0.6019 |
+| La Liga 2 | over25 | 1046 | 0.5344 | 0.5459 | 1.1472 | 0.6893 | 0.5375 |
+| Austrian Bundesliga | btts | 444 | 0.5518 | 0.5631 | 1.1261 | 0.6828 | 0.5587 |
+| Scottish League Two | over25 | 415 | 0.506 | 0.5157 | 0.9639 | 0.6931 | 0.5272 |
+| Sweden Allsvenskan | over25 | 500 | 0.536 | 0.544 | 0.8 | 0.6885 | 0.5452 |
+| Romanian Superliga | over25 | 1299 | 0.5689 | 0.5766 | 0.7698 | 0.6778 | 0.5651 |
+| Scottish League One | over35 | 416 | 0.6803 | 0.6875 | 0.7212 | 0.6241 | 0.5411 |
+| Brazil Serie A | btts | 923 | 0.5103 | 0.5168 | 0.6501 | 0.692 | 0.5358 |
+| League One | btts | 1266 | 0.5166 | 0.5221 | 0.5529 | 0.6905 | 0.5415 |
+| Japan J-League | over25 | 831 | 0.5187 | 0.5235 | 0.4813 | 0.6966 | 0.5156 |
 
 
 League-specific models help: **NO** 
@@ -342,10 +342,10 @@ League-specific models help: **NO**
 
 **Can Wowza predict these better than a naive baseline?**
 
-- **btts: YES.** Accuracy 0.5405 against a rock of 0.5313 (+0.92pp), log loss 0.68753 against 0.69119, AUC 0.5494, winning on log loss in 4 of 4 folds.
-- **over15: UNCLEAR.** Accuracy 0.7427 against a rock of 0.7430 (-0.04pp), log loss 0.56199 against 0.56984, AUC 0.5813, winning on log loss in 4 of 4 folds.
-- **over25: YES.** Accuracy 0.5525 against a rock of 0.5072 (+4.52pp), log loss 0.68253 against 0.69304, AUC 0.5789, winning on log loss in 4 of 4 folds.
-- **over35: YES.** Accuracy 0.7177 against a rock of 0.7170 (+0.07pp), log loss 0.58504 against 0.59572, AUC 0.5879, winning on log loss in 4 of 4 folds.
+- **btts: YES.** Accuracy 0.5394 against a rock of 0.5315 (+0.79pp), log loss 0.68747 against 0.69117, AUC 0.5522, winning on log loss in 4 of 4 folds.
+- **over15: UNCLEAR.** Accuracy 0.7424 against a rock of 0.7432 (-0.08pp), log loss 0.56254 against 0.56971, AUC 0.5791, winning on log loss in 4 of 4 folds.
+- **over25: YES.** Accuracy 0.5550 against a rock of 0.5072 (+4.79pp), log loss 0.68250 against 0.69304, AUC 0.5790, winning on log loss in 4 of 4 folds.
+- **over35: YES.** Accuracy 0.7175 against a rock of 0.7171 (+0.04pp), log loss 0.58485 against 0.59568, AUC 0.5886, winning on log loss in 4 of 4 folds.
 
 - **player scores: YES.** The model beats the player's own career scoring rate, which is the only baseline worth beating here.
 
@@ -374,22 +374,22 @@ League-specific models help: **NO**
 ```text
 DATASET_LEAKAGE_SAFE=YES
 BTTS_PREDICTABLE_ABOVE_BASELINE=YES
-BEST_CURRENT_OOS_ACCURACY_BTTS=0.5405
-BEST_CURRENT_OOS_BRIER_BTTS=0.24721
+BEST_CURRENT_OOS_ACCURACY_BTTS=0.5394
+BEST_CURRENT_OOS_BRIER_BTTS=0.24717
 OVER15_PREDICTABLE_ABOVE_BASELINE=UNCLEAR
-BEST_CURRENT_OOS_ACCURACY_OVER15=0.7427
-BEST_CURRENT_OOS_BRIER_OVER15=0.18796
+BEST_CURRENT_OOS_ACCURACY_OVER15=0.7424
+BEST_CURRENT_OOS_BRIER_OVER15=0.18819
 OVER25_PREDICTABLE_ABOVE_BASELINE=YES
-BEST_CURRENT_OOS_ACCURACY_OVER25=0.5525
-BEST_CURRENT_OOS_BRIER_OVER25=0.24478
+BEST_CURRENT_OOS_ACCURACY_OVER25=0.555
+BEST_CURRENT_OOS_BRIER_OVER25=0.24477
 OVER35_PREDICTABLE_ABOVE_BASELINE=YES
-BEST_CURRENT_OOS_ACCURACY_OVER35=0.7177
-BEST_CURRENT_OOS_BRIER_OVER35=0.19849
+BEST_CURRENT_OOS_ACCURACY_OVER35=0.7175
+BEST_CURRENT_OOS_BRIER_OVER35=0.19843
 PLAYER_GOAL_PREDICTABLE_ABOVE_BASELINE=YES
-BEST_CURRENT_OOS_ACCURACY_PLAYER_GOAL=0.9211
-BEST_CURRENT_OOS_AUC_PLAYER_GOAL=0.7683
-PLAYER_GOAL_BASELINE_AUC_OWN_HISTORY=0.7425
-BEST_CURRENT_OOS_BRIER_PLAYER_GOAL=0.06669
+BEST_CURRENT_OOS_ACCURACY_PLAYER_GOAL=0.921
+BEST_CURRENT_OOS_AUC_PLAYER_GOAL=0.7685
+PLAYER_GOAL_BASELINE_AUC_OWN_HISTORY=0.7456
+BEST_CURRENT_OOS_BRIER_PLAYER_GOAL=0.06673
 BEST_PLAYER_GOAL_MODEL=hgb on prior-only player form (expected-minutes population)
 BEST_MATCH_MODEL=random_forest
 GOAL_DISTRIBUTION_MODEL_BEATS_SEPARATE_CLASSIFIERS=YES
@@ -401,7 +401,7 @@ MARKET_ONLY_STRONGER_THAN_FOOTBALL=YES
 MARKET_ADDS_TO_FOOTBALL_MODEL=YES
 FOOTBALL_ONLY_ADDS_SIGNAL=YES
 ODDS_MOVEMENT_ADDS_PREDICTIVE_INFORMATION=NOT_TESTED
-BEST_TRAINING_WINDOW=btts:last_3y; over15:expanding; over25:last_4y; over35:last_4y
+BEST_TRAINING_WINDOW=btts:expanding; over15:last_4y; over25:last_3y; over35:last_3y
 RECENCY_WEIGHTING_HELPS=NO
 MORE_DATA_IS_IMPROVING_MODELS=YES
 LEAGUE_SPECIFIC_MODELS_HELP=NO
