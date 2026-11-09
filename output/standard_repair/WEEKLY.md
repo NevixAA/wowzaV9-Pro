@@ -1,16 +1,16 @@
-# Standard repair - weekly (2026-11-02 17:32 UTC)
+# Standard repair - weekly (2026-11-09 17:53 UTC)
 
 Production change: **NONE - research only; nothing here is read by v9**
 
-New first-sight observations: 222; new settlements: 0.
+New first-sight observations: 102; new settlements: 0.
 
 ## Served model vs market (first sight, forward)
 
 | market | n settled | weeks | dLL (v9 - market) | CI95 | CLV lean side | CLV coverage |
 |---|---|---|---|---|---|---|
-| BTTS | 430 | 8 | 0.002419 | [-0.013112, 0.012513] | -0.0026 | 0.91 |
-| OU15 | 2 | 2 | None | None | -0.0152 | 0.007 |
-| OU25 | 443 | 9 | 0.01205 | [0.001424, 0.021738] | 0.0019 | 0.933 |
+| BTTS | 430 | 8 | 0.002419 | [-0.013112, 0.012513] | -0.0015 | 0.913 |
+| OU15 | 2 | 2 | None | None | -0.0152 | 0.006 |
+| OU25 | 443 | 9 | 0.01205 | [0.001424, 0.021738] | 0.0031 | 0.935 |
 
 ## Tracks
 

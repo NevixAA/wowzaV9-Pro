@@ -3,16 +3,16 @@
  "status": "PASS",
  "failures": [],
  "rule": "no model research starts until this file exists with status PASS and a CURRENT fingerprint",
- "data_cutoff": "2026-11-01",
+ "data_cutoff": "2026-11-08",
  "frame": {
   "build": "frame_build/1.0",
   "mode": "fd_dir",
-  "v9_commit": "f2533e9362fc99ca0f7a47cb3042483d8e91f9d6",
-  "legacy_rows_standard": 31954,
-  "canonical_rows_standard": 31651,
-  "benchmark_rows_standard": 31651,
+  "v9_commit": "9d03dc1d2c99a65f7b298db68e6ee05dc5afd761",
+  "legacy_rows_standard": 32093,
+  "canonical_rows_standard": 31790,
+  "benchmark_rows_standard": 31786,
   "alias_rows_removed": 1767,
-  "quarantined_standard_rows": 0,
+  "quarantined_standard_rows": 4,
   "fd_files_missing": [
    "new_ROM.csv"
   ],
@@ -20,14 +20,32 @@
  },
  "identity": {
   "legacy_v9_frame": {
-   "rows": 31954,
+   "rows": 32093,
    "exact_duplicate_fixtures": 0,
-   "same_day_collision_fixtures": 602,
+   "same_day_collision_fixtures": 606,
    "score_conflicts": 0,
    "side_mismatch_conflicts": 0,
    "date_shifted_same_score_copies": 0,
    "collision_examples": [
     {
+     "league": "Belgian First Division A",
+     "date": "2026-11-04",
+     "team": "Kortrijk",
+     "opp": "KV Mechelen",
+     "home_goals": 1.0,
+     "away_goals": 3.0,
+     "side": "H"
+    },
+    {
+     "league": "Belgian First Division A",
+     "date": "2026-11-04",
+     "team": "Kortrijk",
+     "opp": "Mechelen",
+     "home_goals": 1.0,
+     "away_goals": 3.0,
+     "side": "H"
+    },
+    {
      "league": "Bundesliga 2",
      "date": "2023-07-29",
      "team": "Fortuna Dusseldorf",
@@ -85,7 +103,7 @@
      "league": "Bundesliga 2",
      "date": "2023-08-26",
      "team": "Greuther Furth",
-     "opp": "Hertha",
+     "opp": "Hertha Berlin",
      "home_goals": 5.0,
      "away_goals": 0.0,
      "side": "A"
@@ -94,7 +112,7 @@
      "league": "Bundesliga 2",
      "date": "2023-08-26",
      "team": "Greuther Furth",
-     "opp": "Hertha Berlin",
+     "opp": "Hertha",
      "home_goals": 5.0,
      "away_goals": 0.0,
      "side": "A"
@@ -337,7 +355,7 @@
      "league": "Bundesliga 2",
      "date": "2024-01-21",
      "team": "Fortuna Dusseldorf",
-     "opp": "Hertha",
+     "opp": "Hertha Berlin",
      "home_goals": 2.0,
      "away_goals": 2.0,
      "side": "A"
@@ -346,7 +364,7 @@
      "league": "Bundesliga 2",
      "date": "2024-01-21",
      "team": "Fortuna Dusseldorf",
-     "opp": "Hertha Berlin",
+     "opp": "Hertha",
      "home_goals": 2.0,
      "away_goals": 2.0,
      "side": "A"
@@ -368,28 +386,10 @@
      "home_goals": 3.0,
      "away_goals": 1.0,
      "side": "H"
-    },
-    {
-     "league": "Bundesliga 2",
-     "date": "2024-02-03",
-     "team": "Hamburger SV",
-     "opp": "Hertha",
-     "home_goals": 1.0,
-     "away_goals": 2.0,
-     "side": "A"
-    },
-    {
-     "league": "Bundesliga 2",
-     "date": "2024-02-03",
-     "team": "Hamburger SV",
-     "opp": "Hertha Berlin",
-     "home_goals": 1.0,
-     "away_goals": 2.0,
-     "side": "A"
     }
    ],
    "v9_canonicaliser": {
-    "raw_rows": 65813,
+    "raw_rows": 66090,
     "raw_rows_renamed": 1064,
     "spellings_merged": 23,
     "examples": [
@@ -415,6 +415,11 @@
      },
      {
       "league": "Bundesliga 2",
+      "raw": "FC Schalke 04",
+      "canon": "Schalke 04"
+     },
+     {
+      "league": "Bundesliga 2",
       "raw": "SV Elversberg",
       "canon": "Elversberg"
      },
@@ -425,18 +430,13 @@
      },
      {
       "league": "Bundesliga 2",
-      "raw": "FC Schalke 04",
-      "canon": "Schalke 04"
+      "raw": "FC Magdeburg",
+      "canon": "Magdeburg"
      },
      {
       "league": "Bundesliga 2",
       "raw": "FC Nurnberg",
       "canon": "Nurnberg"
-     },
-     {
-      "league": "Bundesliga 2",
-      "raw": "FC Magdeburg",
-      "canon": "Magdeburg"
      },
      {
       "league": "La Liga 2",
@@ -495,13 +495,13 @@
      },
      {
       "league": "Bundesliga 2",
-      "raw": "1. FC Heidenheim",
-      "canon": "Heidenheim"
+      "raw": "VfL Wolfsburg",
+      "canon": "Wolfsburg"
      },
      {
       "league": "Bundesliga 2",
-      "raw": "VfL Wolfsburg",
-      "canon": "Wolfsburg"
+      "raw": "1. FC Heidenheim",
+      "canon": "Heidenheim"
      },
      {
       "league": "Bundesliga 2",
@@ -513,7 +513,7 @@
   },
   "canonical_before_quarantine": {
    "exact_duplicate_fixtures": 0,
-   "same_day_collision_fixtures": 0,
+   "same_day_collision_fixtures": 4,
    "score_conflicts": 0
   },
   "benchmark": {
@@ -523,6 +523,13 @@
   },
   "aliases_resolved_total": 40,
   "alias_pairs_rejected": [
+   {
+    "league": "Belgian First Division A",
+    "a": "KV Mechelen",
+    "b": "Mechelen",
+    "evidence_dates": 1,
+    "reason": "only 1 evidence date(s)"
+   },
    {
     "league": "China Super League",
     "a": "Chongqing Liangjiang Athletic",
@@ -536,58 +543,65 @@
     "b": "Bray Wanderers",
     "evidence_dates": 1,
     "reason": "only 1 evidence date(s)"
+   },
+   {
+    "league": "League One",
+    "a": "Oxford",
+    "b": "Oxford Utd",
+    "evidence_dates": 1,
+    "reason": "only 1 evidence date(s)"
    }
   ],
   "post_fix_canonical_proof": "benchmark frame = v9 loader at v9_commit (includes v9's 6c80672f club canonicaliser) + Pro evidence-based alias map + quarantine; exact duplicates and same-day club collisions in the benchmark are both 0",
   "rolling_order_leak_legacy": {
    "n_window": 5,
-   "standard_fixtures": 31954,
+   "standard_fixtures": 32093,
    "standard_fixtures_with_future_match_in_window": 271,
    "standard_fixtures_with_cross_league_window": 396,
    "teams_in_more_than_one_league": 77,
    "per_league": {
     "Belgian First Division A": {
-     "sides": 3270,
+     "sides": 3292,
      "future": 0,
      "cross": 0
     },
     "Bundesliga 2": {
-     "sides": 3442,
+     "sides": 3460,
      "future": 0,
      "cross": 0
     },
     "Championship": {
-     "sides": 5850,
+     "sides": 5898,
      "future": 0,
      "cross": 0
     },
     "Dutch Eredivisie": {
-     "sides": 3254,
+     "sides": 3272,
      "future": 0,
      "cross": 0
     },
     "Greek Super League": {
-     "sides": 2642,
+     "sides": 2660,
      "future": 0,
      "cross": 0
     },
     "La Liga 2": {
-     "sides": 5156,
+     "sides": 5176,
      "future": 0,
      "cross": 0
     },
     "League One": {
-     "sides": 5852,
+     "sides": 5860,
      "future": 70,
      "cross": 105
     },
     "League Two": {
-     "sides": 5870,
+     "sides": 5872,
      "future": 75,
      "cross": 115
     },
     "Ligue 2": {
-     "sides": 3686,
+     "sides": 3708,
      "future": 0,
      "cross": 0
     },
@@ -597,37 +611,37 @@
      "cross": 80
     },
     "Portuguese Primeira Liga": {
-     "sides": 3232,
+     "sides": 3252,
      "future": 0,
      "cross": 0
     },
     "Scottish Championship": {
-     "sides": 1924,
+     "sides": 1934,
      "future": 0,
      "cross": 0
     },
     "Scottish League One": {
-     "sides": 1926,
+     "sides": 1936,
      "future": 45,
      "cross": 55
     },
     "Scottish League Two": {
-     "sides": 1918,
+     "sides": 1928,
      "future": 45,
      "cross": 50
     },
     "Scottish Premiership": {
-     "sides": 2418,
+     "sides": 2430,
      "future": 25,
      "cross": 35
     },
     "Serie B": {
-     "sides": 4054,
+     "sides": 4074,
      "future": 0,
      "cross": 0
     },
     "Turkish Super Lig": {
-     "sides": 3612,
+     "sides": 3632,
      "future": 0,
      "cross": 0
     }
@@ -635,53 +649,53 @@
   },
   "rolling_order_leak_canonical": {
    "n_window": 5,
-   "standard_fixtures": 31651,
+   "standard_fixtures": 31790,
    "standard_fixtures_with_future_match_in_window": 271,
    "standard_fixtures_with_cross_league_window": 396,
    "teams_in_more_than_one_league": 77,
    "per_league": {
     "Belgian First Division A": {
-     "sides": 3270,
+     "sides": 3292,
      "future": 0,
      "cross": 0
     },
     "Bundesliga 2": {
-     "sides": 3238,
+     "sides": 3256,
      "future": 0,
      "cross": 0
     },
     "Championship": {
-     "sides": 5850,
+     "sides": 5898,
      "future": 0,
      "cross": 0
     },
     "Dutch Eredivisie": {
-     "sides": 3254,
+     "sides": 3272,
      "future": 0,
      "cross": 0
     },
     "Greek Super League": {
-     "sides": 2502,
+     "sides": 2520,
      "future": 0,
      "cross": 0
     },
     "La Liga 2": {
-     "sides": 4902,
+     "sides": 4922,
      "future": 0,
      "cross": 0
     },
     "League One": {
-     "sides": 5852,
+     "sides": 5860,
      "future": 70,
      "cross": 105
     },
     "League Two": {
-     "sides": 5870,
+     "sides": 5872,
      "future": 75,
      "cross": 115
     },
     "Ligue 2": {
-     "sides": 3686,
+     "sides": 3708,
      "future": 0,
      "cross": 0
     },
@@ -691,37 +705,37 @@
      "cross": 80
     },
     "Portuguese Primeira Liga": {
-     "sides": 3232,
+     "sides": 3252,
      "future": 0,
      "cross": 0
     },
     "Scottish Championship": {
-     "sides": 1924,
+     "sides": 1934,
      "future": 0,
      "cross": 0
     },
     "Scottish League One": {
-     "sides": 1926,
+     "sides": 1936,
      "future": 45,
      "cross": 55
     },
     "Scottish League Two": {
-     "sides": 1918,
+     "sides": 1928,
      "future": 45,
      "cross": 50
     },
     "Scottish Premiership": {
-     "sides": 2418,
+     "sides": 2430,
      "future": 25,
      "cross": 35
     },
     "Serie B": {
-     "sides": 4046,
+     "sides": 4066,
      "future": 0,
      "cross": 0
     },
     "Turkish Super Lig": {
-     "sides": 3612,
+     "sides": 3632,
      "future": 0,
      "cross": 0
     }
@@ -730,8 +744,8 @@
  },
  "provenance": {
   "source_predictability": {
-   "rows": 31651,
-   "archive_share": 0.3769,
+   "rows": 31786,
+   "archive_share": 0.3753,
    "auc_missingness_serving_features": 0.9989,
    "auc_missingness_all_inputs": 1.0,
    "overlap_seasons": [],
@@ -749,64 +763,64 @@
      "column": "home_ht_conceded_last5",
      "BACKTEST_ARCHIVE": 0.9913,
      "FOOTBALL_DATA_ARCHIVE": 0.0115,
-     "FOOTBALL_DATA_CURRENT": 0.0125,
-     "gap": 0.9793
+     "FOOTBALL_DATA_CURRENT": 0.0116,
+     "gap": 0.9797
     },
     {
      "column": "home_ht_over05_rate",
      "BACKTEST_ARCHIVE": 0.9913,
      "FOOTBALL_DATA_ARCHIVE": 0.0115,
-     "FOOTBALL_DATA_CURRENT": 0.0125,
-     "gap": 0.9793
+     "FOOTBALL_DATA_CURRENT": 0.0116,
+     "gap": 0.9797
     },
     {
      "column": "home_ht_attack_str",
      "BACKTEST_ARCHIVE": 0.9913,
      "FOOTBALL_DATA_ARCHIVE": 0.0115,
-     "FOOTBALL_DATA_CURRENT": 0.0125,
-     "gap": 0.9793
+     "FOOTBALL_DATA_CURRENT": 0.0116,
+     "gap": 0.9797
     },
     {
      "column": "home_ht_scored_last5",
      "BACKTEST_ARCHIVE": 0.9913,
      "FOOTBALL_DATA_ARCHIVE": 0.0115,
-     "FOOTBALL_DATA_CURRENT": 0.0125,
-     "gap": 0.9793
+     "FOOTBALL_DATA_CURRENT": 0.0116,
+     "gap": 0.9797
     },
     {
      "column": "home_ht_over15_rate",
      "BACKTEST_ARCHIVE": 0.9913,
      "FOOTBALL_DATA_ARCHIVE": 0.0115,
-     "FOOTBALL_DATA_CURRENT": 0.0125,
-     "gap": 0.9793
+     "FOOTBALL_DATA_CURRENT": 0.0116,
+     "gap": 0.9797
     },
     {
-     "column": "away_ht_over05_rate",
-     "BACKTEST_ARCHIVE": 0.9907,
-     "FOOTBALL_DATA_ARCHIVE": 0.0113,
-     "FOOTBALL_DATA_CURRENT": 0.0131,
-     "gap": 0.9785
-    },
-    {
-     "column": "away_ht_scored_last5",
-     "BACKTEST_ARCHIVE": 0.9907,
-     "FOOTBALL_DATA_ARCHIVE": 0.0113,
-     "FOOTBALL_DATA_CURRENT": 0.0131,
-     "gap": 0.9785
-    },
-    {
-     "column": "away_ht_over15_rate",
-     "BACKTEST_ARCHIVE": 0.9907,
-     "FOOTBALL_DATA_ARCHIVE": 0.0113,
-     "FOOTBALL_DATA_CURRENT": 0.0131,
-     "gap": 0.9785
+     "column": "combined_ht_goals_avg",
+     "BACKTEST_ARCHIVE": 0.9977,
+     "FOOTBALL_DATA_ARCHIVE": 0.0143,
+     "FOOTBALL_DATA_CURRENT": 0.0227,
+     "gap": 0.9792
     },
     {
      "column": "away_ht_attack_str",
      "BACKTEST_ARCHIVE": 0.9907,
      "FOOTBALL_DATA_ARCHIVE": 0.0113,
-     "FOOTBALL_DATA_CURRENT": 0.0131,
-     "gap": 0.9785
+     "FOOTBALL_DATA_CURRENT": 0.0121,
+     "gap": 0.979
+    },
+    {
+     "column": "away_ht_over15_rate",
+     "BACKTEST_ARCHIVE": 0.9907,
+     "FOOTBALL_DATA_ARCHIVE": 0.0113,
+     "FOOTBALL_DATA_CURRENT": 0.0121,
+     "gap": 0.979
+    },
+    {
+     "column": "away_ht_over05_rate",
+     "BACKTEST_ARCHIVE": 0.9907,
+     "FOOTBALL_DATA_ARCHIVE": 0.0113,
+     "FOOTBALL_DATA_CURRENT": 0.0121,
+     "gap": 0.979
     }
    ],
    "verdict": "SOURCE_REGIME_DETECTABLE",
@@ -815,7 +829,7 @@
   "rows_by_source": {
    "FOOTBALL_DATA_ARCHIVE": 17963,
    "BACKTEST_ARCHIVE": 11928,
-   "FOOTBALL_DATA_CURRENT": 1760
+   "FOOTBALL_DATA_CURRENT": 1895
   },
   "season_label_conventions": [
    "2021/22",
@@ -899,7 +913,7 @@
     "btts_1h_rows_removed_total": 1,
     "window": [
      "2026-08-19 09:23:27+00:00",
-     "2026-11-02 15:43:42+00:00"
+     "2026-11-09 06:17:38+00:00"
     ]
    },
    "v9_captures": {
@@ -920,13 +934,13 @@
    }
   },
   "ou25_frame_price_class_all": {
-   "FD_CLOSING": 26684,
-   "FD_CLOSING_EQ_PREMATCH": 3122,
+   "FD_CLOSING": 26803,
+   "FD_CLOSING_EQ_PREMATCH": 3138,
    "UNVERIFIED": 1050,
    "ARCHIVE_UNKNOWN": 702,
    "NO_PRICE": 93
   },
-  "ou25_frame_price_equals_closing_share_where_both_known": 0.8953,
+  "ou25_frame_price_equals_closing_share_where_both_known": 0.8952,
   "entry_ne_closing_fields": true,
   "min_books_certified_close": 3
  },
@@ -1067,26 +1081,34 @@
  "per_league": {
   "Belgian First Division A": {
    "bet_league": false,
-   "rows": 1635,
+   "rows": 1644,
    "date_range": [
     "2021-07-23",
-    "2026-11-01"
+    "2026-11-08"
    ],
    "rows_by_source": {
     "FOOTBALL_DATA_ARCHIVE": 935,
     "BACKTEST_ARCHIVE": 611,
-    "FOOTBALL_DATA_CURRENT": 89
+    "FOOTBALL_DATA_CURRENT": 98
    },
    "fixture_duplicates_legacy": 0,
-   "alias_collision_fixtures_legacy": 0,
-   "alias_collision_share_legacy": 0.0,
+   "alias_collision_fixtures_legacy": 2,
+   "alias_collision_share_legacy": 0.0012,
    "aliases_resolved": 0,
    "alias_map": {},
-   "alias_conflicts_unresolved": [],
+   "alias_conflicts_unresolved": [
+    {
+     "league": "Belgian First Division A",
+     "a": "KV Mechelen",
+     "b": "Mechelen",
+     "evidence_dates": 1,
+     "reason": "only 1 evidence date(s)"
+    }
+   ],
    "score_conflicts_legacy": 0,
    "fixture_duplicates_benchmark": 0,
    "alias_collision_fixtures_benchmark": 0,
-   "quarantined_rows": 0,
+   "quarantined_rows": 2,
    "rolling_window_future_leak_sides_legacy": 0,
    "rolling_window_future_leak_sides_canonical": 0,
    "target_completeness": {
@@ -1094,33 +1116,33 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8251,
+   "serving_feature_completeness": 0.826,
    "serving_feature_min_completeness": {
     "feature": "away_xg_last5",
-    "share": 0.3364
+    "share": 0.34
    },
    "degraded_feature_rows": 15,
-   "degraded_feature_share": 0.0092,
+   "degraded_feature_share": 0.0091,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [],
-    "live_feature_health_ts": "2026-11-02T15:44:16.711017+00:00"
+    "live_feature_health_ts": "2026-11-09T17:28:27.122546+00:00"
    },
    "price_coverage": {
     "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
     "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1475,
-     "FD_CLOSING_EQ_PREMATCH": 160
+     "FD_CLOSING": 1482,
+     "FD_CLOSING_EQ_PREMATCH": 162
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
-    "BTTS_real_forward_two_sided_fixtures_v9_capture": 57,
-    "OU15_real_forward_two_sided_fixtures_v9_capture": 57,
-    "OU35_real_forward_two_sided_fixtures_v9_capture": 57,
+    "BTTS_real_forward_two_sided_fixtures_v9_capture": 59,
+    "OU15_real_forward_two_sided_fixtures_v9_capture": 59,
+    "OU35_real_forward_two_sided_fixtures_v9_capture": 59,
     "frame_side_price_share": {
-     "BTTS": 0.0073,
-     "OU15": 0.0073,
-     "OU35": 0.0073
+     "BTTS": 0.0085,
+     "OU15": 0.0085,
+     "OU35": 0.0085
     },
     "forward_pro_snapshots": {}
    },
@@ -1153,19 +1175,19 @@
   },
   "Bundesliga 2": {
    "bet_league": true,
-   "rows": 1619,
+   "rows": 1628,
    "date_range": [
     "2021-07-24",
-    "2026-11-01"
+    "2026-11-08"
    ],
    "rows_by_source": {
     "FOOTBALL_DATA_ARCHIVE": 923,
     "BACKTEST_ARCHIVE": 606,
-    "FOOTBALL_DATA_CURRENT": 90
+    "FOOTBALL_DATA_CURRENT": 99
    },
    "fixture_duplicates_legacy": 0,
    "alias_collision_fixtures_legacy": 204,
-   "alias_collision_share_legacy": 0.1185,
+   "alias_collision_share_legacy": 0.1179,
    "aliases_resolved": 2,
    "alias_map": {
     "Hertha Berlin": "Hertha",
@@ -1183,36 +1205,36 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8102,
+   "serving_feature_completeness": 0.8112,
    "serving_feature_min_completeness": {
     "feature": "away_xg_last5",
-    "share": 0.2267
+    "share": 0.231
    },
    "degraded_feature_rows": 29,
-   "degraded_feature_share": 0.0179,
+   "degraded_feature_share": 0.0178,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [],
-    "live_feature_health_ts": "2026-11-02T15:44:16.711017+00:00"
+    "live_feature_health_ts": "2026-11-09T17:28:27.122546+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.7393,
-    "OU25_close_FD_CLOSING": 0.7393,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 0.7408,
+    "OU25_close_FD_CLOSING": 0.7408,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1063,
+     "FD_CLOSING": 1071,
      "UNVERIFIED": 226,
      "ARCHIVE_UNKNOWN": 191,
-     "FD_CLOSING_EQ_PREMATCH": 134,
+     "FD_CLOSING_EQ_PREMATCH": 135,
      "NO_PRICE": 5
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 601,
-    "BTTS_real_forward_two_sided_fixtures_v9_capture": 72,
-    "OU15_real_forward_two_sided_fixtures_v9_capture": 90,
-    "OU35_real_forward_two_sided_fixtures_v9_capture": 90,
+    "BTTS_real_forward_two_sided_fixtures_v9_capture": 81,
+    "OU15_real_forward_two_sided_fixtures_v9_capture": 99,
+    "OU35_real_forward_two_sided_fixtures_v9_capture": 99,
     "frame_side_price_share": {
-     "BTTS": 0.2736,
+     "BTTS": 0.2721,
      "OU15": 0.0,
-     "OU35": 0.0056
+     "OU35": 0.0055
     },
     "forward_pro_snapshots": {
      "BTTS": {
@@ -1224,23 +1246,32 @@
       "certified_t30_close": 0,
       "certified_t30_close_share": 0.0
      },
+     "OU15": {
+      "league": "Bundesliga 2",
+      "fixtures": 9,
+      "two_sided_any": 9,
+      "two_sided_min_books": 9,
+      "t30_captured": 0,
+      "certified_t30_close": 0,
+      "certified_t30_close_share": 0.0
+     },
      "OU25": {
       "league": "Bundesliga 2",
       "fixtures": 81,
       "two_sided_any": 81,
       "two_sided_min_books": 81,
-      "t30_captured": 8,
-      "certified_t30_close": 8,
-      "certified_t30_close_share": 0.0988
+      "t30_captured": 9,
+      "certified_t30_close": 9,
+      "certified_t30_close_share": 0.1111
      },
      "OU35": {
       "league": "Bundesliga 2",
-      "fixtures": 69,
-      "two_sided_any": 69,
-      "two_sided_min_books": 66,
-      "t30_captured": 5,
-      "certified_t30_close": 4,
-      "certified_t30_close_share": 0.058
+      "fixtures": 72,
+      "two_sided_any": 72,
+      "two_sided_min_books": 69,
+      "t30_captured": 6,
+      "certified_t30_close": 5,
+      "certified_t30_close_share": 0.0694
      }
     }
    },
@@ -1261,15 +1292,20 @@
      "certified": 0,
      "share": 0.0
     },
+    "OU15": {
+     "fixtures": 9,
+     "certified": 0,
+     "share": 0.0
+    },
     "OU25": {
      "fixtures": 81,
-     "certified": 8,
-     "share": 0.0988
+     "certified": 9,
+     "share": 0.1111
     },
     "OU35": {
-     "fixtures": 69,
-     "certified": 4,
-     "share": 0.058
+     "fixtures": 72,
+     "certified": 5,
+     "share": 0.0694
     }
    },
    "post_fix_first_sight_rows": {
@@ -1297,15 +1333,15 @@
   },
   "Championship": {
    "bet_league": true,
-   "rows": 2925,
+   "rows": 2949,
    "date_range": [
     "2021-08-06",
-    "2026-10-31"
+    "2026-11-07"
    ],
    "rows_by_source": {
     "FOOTBALL_DATA_ARCHIVE": 1669,
     "BACKTEST_ARCHIVE": 1100,
-    "FOOTBALL_DATA_CURRENT": 156
+    "FOOTBALL_DATA_CURRENT": 180
    },
    "fixture_duplicates_legacy": 0,
    "alias_collision_fixtures_legacy": 0,
@@ -1324,36 +1360,36 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8179,
+   "serving_feature_completeness": 0.8194,
    "serving_feature_min_completeness": {
     "feature": "home_xg_last5",
-    "share": 0.2509
+    "share": 0.257
    },
    "degraded_feature_rows": 33,
-   "degraded_feature_share": 0.0113,
+   "degraded_feature_share": 0.0112,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [],
-    "live_feature_health_ts": "2026-11-02T15:44:16.711017+00:00"
+    "live_feature_health_ts": "2026-11-09T17:28:27.122546+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.8868,
-    "OU25_close_FD_CLOSING": 0.8868,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 0.8878,
+    "OU25_close_FD_CLOSING": 0.8878,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 2346,
+     "FD_CLOSING": 2370,
      "FD_CLOSING_EQ_PREMATCH": 248,
      "UNVERIFIED": 226,
      "ARCHIVE_UNKNOWN": 92,
      "NO_PRICE": 13
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 1010,
-    "BTTS_real_forward_two_sided_fixtures_v9_capture": 146,
-    "OU15_real_forward_two_sided_fixtures_v9_capture": 169,
-    "OU35_real_forward_two_sided_fixtures_v9_capture": 169,
+    "BTTS_real_forward_two_sided_fixtures_v9_capture": 157,
+    "OU15_real_forward_two_sided_fixtures_v9_capture": 180,
+    "OU35_real_forward_two_sided_fixtures_v9_capture": 180,
     "frame_side_price_share": {
-     "BTTS": 0.3248,
-     "OU15": 0.0448,
-     "OU35": 0.0448
+     "BTTS": 0.3289,
+     "OU15": 0.0512,
+     "OU35": 0.0512
     },
     "forward_pro_snapshots": {
      "BTTS": {
@@ -1365,23 +1401,32 @@
       "certified_t30_close": 0,
       "certified_t30_close_share": 0.0
      },
+     "OU15": {
+      "league": "Championship",
+      "fixtures": 24,
+      "two_sided_any": 24,
+      "two_sided_min_books": 24,
+      "t30_captured": 0,
+      "certified_t30_close": 0,
+      "certified_t30_close_share": 0.0
+     },
      "OU25": {
       "league": "Championship",
       "fixtures": 168,
       "two_sided_any": 168,
-      "two_sided_min_books": 166,
-      "t30_captured": 35,
-      "certified_t30_close": 35,
-      "certified_t30_close_share": 0.2083
+      "two_sided_min_books": 168,
+      "t30_captured": 43,
+      "certified_t30_close": 43,
+      "certified_t30_close_share": 0.256
      },
      "OU35": {
       "league": "Championship",
-      "fixtures": 36,
-      "two_sided_any": 36,
-      "two_sided_min_books": 27,
-      "t30_captured": 1,
-      "certified_t30_close": 1,
-      "certified_t30_close_share": 0.0278
+      "fixtures": 56,
+      "two_sided_any": 56,
+      "two_sided_min_books": 47,
+      "t30_captured": 3,
+      "certified_t30_close": 3,
+      "certified_t30_close_share": 0.0536
      }
     }
    },
@@ -1402,15 +1447,20 @@
      "certified": 0,
      "share": 0.0
     },
+    "OU15": {
+     "fixtures": 24,
+     "certified": 0,
+     "share": 0.0
+    },
     "OU25": {
      "fixtures": 168,
-     "certified": 35,
-     "share": 0.2083
+     "certified": 43,
+     "share": 0.256
     },
     "OU35": {
-     "fixtures": 36,
-     "certified": 1,
-     "share": 0.0278
+     "fixtures": 56,
+     "certified": 3,
+     "share": 0.0536
     }
    },
    "post_fix_first_sight_rows": {
@@ -1438,15 +1488,15 @@
   },
   "Dutch Eredivisie": {
    "bet_league": false,
-   "rows": 1627,
+   "rows": 1636,
    "date_range": [
     "2021-08-14",
-    "2026-11-01"
+    "2026-11-08"
    ],
    "rows_by_source": {
     "FOOTBALL_DATA_ARCHIVE": 918,
     "BACKTEST_ARCHIVE": 610,
-    "FOOTBALL_DATA_CURRENT": 99
+    "FOOTBALL_DATA_CURRENT": 108
    },
    "fixture_duplicates_legacy": 0,
    "alias_collision_fixtures_legacy": 0,
@@ -1465,33 +1515,33 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8287,
+   "serving_feature_completeness": 0.8297,
    "serving_feature_min_completeness": {
-    "feature": "home_xg_last5",
-    "share": 0.394
+    "feature": "away_xg_last5",
+    "share": 0.3967
    },
    "degraded_feature_rows": 18,
-   "degraded_feature_share": 0.0111,
+   "degraded_feature_share": 0.011,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [],
-    "live_feature_health_ts": "2026-11-02T15:44:16.711017+00:00"
+    "live_feature_health_ts": "2026-11-09T17:28:27.122546+00:00"
    },
    "price_coverage": {
     "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
     "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1430,
-     "FD_CLOSING_EQ_PREMATCH": 197
+     "FD_CLOSING": 1438,
+     "FD_CLOSING_EQ_PREMATCH": 198
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
-    "BTTS_real_forward_two_sided_fixtures_v9_capture": 78,
-    "OU15_real_forward_two_sided_fixtures_v9_capture": 78,
-    "OU35_real_forward_two_sided_fixtures_v9_capture": 78,
+    "BTTS_real_forward_two_sided_fixtures_v9_capture": 80,
+    "OU15_real_forward_two_sided_fixtures_v9_capture": 80,
+    "OU35_real_forward_two_sided_fixtures_v9_capture": 80,
     "frame_side_price_share": {
-     "BTTS": 0.0227,
-     "OU15": 0.0227,
-     "OU35": 0.0227
+     "BTTS": 0.0257,
+     "OU15": 0.0257,
+     "OU35": 0.0257
     },
     "forward_pro_snapshots": {}
    },
@@ -1524,19 +1574,19 @@
   },
   "Greek Super League": {
    "bet_league": false,
-   "rows": 1251,
+   "rows": 1260,
    "date_range": [
     "2021-09-11",
-    "2026-11-01"
+    "2026-11-08"
    ],
    "rows_by_source": {
     "FOOTBALL_DATA_ARCHIVE": 711,
     "BACKTEST_ARCHIVE": 480,
-    "FOOTBALL_DATA_CURRENT": 60
+    "FOOTBALL_DATA_CURRENT": 69
    },
    "fixture_duplicates_legacy": 0,
    "alias_collision_fixtures_legacy": 140,
-   "alias_collision_share_legacy": 0.106,
+   "alias_collision_share_legacy": 0.1053,
    "aliases_resolved": 2,
    "alias_map": {
     "Levadiakos": "Levadeiakos",
@@ -1554,24 +1604,24 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8121,
+   "serving_feature_completeness": 0.8134,
    "serving_feature_min_completeness": {
     "feature": "home_xg_last5",
-    "share": 0.2382
+    "share": 0.2437
    },
    "degraded_feature_rows": 14,
-   "degraded_feature_share": 0.0112,
+   "degraded_feature_share": 0.0111,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [],
-    "live_feature_health_ts": "2026-11-02T15:44:16.711017+00:00"
+    "live_feature_health_ts": "2026-11-09T17:28:27.122546+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.8881,
-    "OU25_close_FD_CLOSING": 0.8881,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 0.8889,
+    "OU25_close_FD_CLOSING": 0.8889,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1009,
-     "FD_CLOSING_EQ_PREMATCH": 102,
+     "FD_CLOSING": 1016,
+     "FD_CLOSING_EQ_PREMATCH": 104,
      "ARCHIVE_UNKNOWN": 69,
      "UNVERIFIED": 68,
      "NO_PRICE": 3
@@ -1581,9 +1631,9 @@
     "OU15_real_forward_two_sided_fixtures_v9_capture": 87,
     "OU35_real_forward_two_sided_fixtures_v9_capture": 87,
     "frame_side_price_share": {
-     "BTTS": 0.0136,
-     "OU15": 0.0136,
-     "OU35": 0.0136
+     "BTTS": 0.0159,
+     "OU15": 0.0159,
+     "OU35": 0.0159
     },
     "forward_pro_snapshots": {}
    },
@@ -1616,19 +1666,19 @@
   },
   "La Liga 2": {
    "bet_league": true,
-   "rows": 2451,
+   "rows": 2461,
    "date_range": [
     "2021-08-13",
-    "2026-11-01"
+    "2026-11-08"
    ],
    "rows_by_source": {
     "FOOTBALL_DATA_ARCHIVE": 1403,
     "BACKTEST_ARCHIVE": 920,
-    "FOOTBALL_DATA_CURRENT": 128
+    "FOOTBALL_DATA_CURRENT": 138
    },
    "fixture_duplicates_legacy": 0,
    "alias_collision_fixtures_legacy": 250,
-   "alias_collision_share_legacy": 0.097,
+   "alias_collision_share_legacy": 0.0966,
    "aliases_resolved": 3,
    "alias_map": {
     "Villarreal II": "Villarreal B",
@@ -1647,72 +1697,72 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8173,
+   "serving_feature_completeness": 0.818,
    "serving_feature_min_completeness": {
     "feature": "away_xg_last5",
-    "share": 0.2562
+    "share": 0.2592
    },
    "degraded_feature_rows": 32,
-   "degraded_feature_share": 0.0131,
+   "degraded_feature_share": 0.013,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [],
-    "live_feature_health_ts": "2026-11-02T15:44:16.711017+00:00"
+    "live_feature_health_ts": "2026-11-09T17:28:27.122546+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.9588,
-    "OU25_close_FD_CLOSING": 0.9588,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 0.959,
+    "OU25_close_FD_CLOSING": 0.959,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 2173,
-     "FD_CLOSING_EQ_PREMATCH": 177,
+     "FD_CLOSING": 2182,
+     "FD_CLOSING_EQ_PREMATCH": 178,
      "UNVERIFIED": 84,
      "NO_PRICE": 17
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 900,
-    "BTTS_real_forward_two_sided_fixtures_v9_capture": 115,
-    "OU15_real_forward_two_sided_fixtures_v9_capture": 131,
-    "OU35_real_forward_two_sided_fixtures_v9_capture": 131,
+    "BTTS_real_forward_two_sided_fixtures_v9_capture": 126,
+    "OU15_real_forward_two_sided_fixtures_v9_capture": 142,
+    "OU35_real_forward_two_sided_fixtures_v9_capture": 142,
     "frame_side_price_share": {
-     "BTTS": 0.3798,
-     "OU15": 0.0343,
-     "OU35": 0.0363
+     "BTTS": 0.3811,
+     "OU15": 0.037,
+     "OU35": 0.039
     },
     "forward_pro_snapshots": {
      "BTTS": {
       "league": "La Liga 2",
-      "fixtures": 134,
-      "two_sided_any": 134,
-      "two_sided_min_books": 132,
+      "fixtures": 145,
+      "two_sided_any": 145,
+      "two_sided_min_books": 140,
       "t30_captured": 0,
       "certified_t30_close": 0,
       "certified_t30_close_share": 0.0
      },
      "OU15": {
       "league": "La Liga 2",
-      "fixtures": 14,
-      "two_sided_any": 14,
-      "two_sided_min_books": 12,
+      "fixtures": 25,
+      "two_sided_any": 25,
+      "two_sided_min_books": 22,
       "t30_captured": 1,
       "certified_t30_close": 1,
-      "certified_t30_close_share": 0.0714
+      "certified_t30_close_share": 0.04
      },
      "OU25": {
       "league": "La Liga 2",
-      "fixtures": 135,
-      "two_sided_any": 135,
-      "two_sided_min_books": 132,
-      "t30_captured": 29,
-      "certified_t30_close": 29,
-      "certified_t30_close_share": 0.2148
+      "fixtures": 146,
+      "two_sided_any": 146,
+      "two_sided_min_books": 144,
+      "t30_captured": 32,
+      "certified_t30_close": 32,
+      "certified_t30_close_share": 0.2192
      },
      "OU35": {
       "league": "La Liga 2",
-      "fixtures": 19,
-      "two_sided_any": 19,
-      "two_sided_min_books": 13,
+      "fixtures": 29,
+      "two_sided_any": 29,
+      "two_sided_min_books": 22,
       "t30_captured": 1,
       "certified_t30_close": 1,
-      "certified_t30_close_share": 0.0526
+      "certified_t30_close_share": 0.0345
      }
     }
    },
@@ -1729,36 +1779,36 @@
    },
    "certified_t30_close": {
     "BTTS": {
-     "fixtures": 134,
+     "fixtures": 145,
      "certified": 0,
      "share": 0.0
     },
     "OU15": {
-     "fixtures": 14,
+     "fixtures": 25,
      "certified": 1,
-     "share": 0.0714
+     "share": 0.04
     },
     "OU25": {
-     "fixtures": 135,
-     "certified": 29,
-     "share": 0.2148
+     "fixtures": 146,
+     "certified": 32,
+     "share": 0.2192
     },
     "OU35": {
-     "fixtures": 19,
+     "fixtures": 29,
      "certified": 1,
-     "share": 0.0526
+     "share": 0.0345
     }
    },
    "post_fix_first_sight_rows": {
     "since_settlement_trusted": {
-     "OU25": 107,
-     "BTTS": 107,
-     "OU15": 107
+     "OU25": 118,
+     "BTTS": 118,
+     "OU15": 118
     },
     "since_model_inputs_trusted": {
-     "OU25": 67,
-     "BTTS": 67,
-     "OU15": 67
+     "OU25": 78,
+     "BTTS": 78,
+     "OU15": 78
     },
     "forward_phase": "PRE_REPAIR_FORWARD (no STD-V9R registration yet)"
    },
@@ -1774,26 +1824,34 @@
   },
   "League One": {
    "bet_league": true,
-   "rows": 2926,
+   "rows": 2928,
    "date_range": [
     "2021-08-07",
-    "2026-11-01"
+    "2026-11-03"
    ],
    "rows_by_source": {
     "FOOTBALL_DATA_ARCHIVE": 1670,
     "BACKTEST_ARCHIVE": 1101,
-    "FOOTBALL_DATA_CURRENT": 155
+    "FOOTBALL_DATA_CURRENT": 157
    },
    "fixture_duplicates_legacy": 0,
-   "alias_collision_fixtures_legacy": 0,
-   "alias_collision_share_legacy": 0.0,
+   "alias_collision_fixtures_legacy": 2,
+   "alias_collision_share_legacy": 0.0007,
    "aliases_resolved": 0,
    "alias_map": {},
-   "alias_conflicts_unresolved": [],
+   "alias_conflicts_unresolved": [
+    {
+     "league": "League One",
+     "a": "Oxford",
+     "b": "Oxford Utd",
+     "evidence_dates": 1,
+     "reason": "only 1 evidence date(s)"
+    }
+   ],
    "score_conflicts_legacy": 0,
    "fixture_duplicates_benchmark": 0,
    "alias_collision_fixtures_benchmark": 0,
-   "quarantined_rows": 0,
+   "quarantined_rows": 2,
    "rolling_window_future_leak_sides_legacy": 70,
    "rolling_window_future_leak_sides_canonical": 70,
    "target_completeness": {
@@ -1801,73 +1859,73 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8222,
+   "serving_feature_completeness": 0.8221,
    "serving_feature_min_completeness": {
     "feature": "home_xg_last5",
-    "share": 0.2532
+    "share": 0.2514
    },
-   "degraded_feature_rows": 23,
-   "degraded_feature_share": 0.0079,
+   "degraded_feature_rows": 22,
+   "degraded_feature_share": 0.0075,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [],
-    "live_feature_health_ts": "2026-11-02T15:44:16.711017+00:00"
+    "live_feature_health_ts": "2026-11-09T17:28:27.122546+00:00"
    },
    "price_coverage": {
-    "OU25_entry_real_FD_PREMATCH_APPROX": 0.9323,
-    "OU25_close_FD_CLOSING": 0.9323,
+    "OU25_entry_real_FD_PREMATCH_APPROX": 0.9324,
+    "OU25_close_FD_CLOSING": 0.9324,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 2460,
-     "FD_CLOSING_EQ_PREMATCH": 268,
+     "FD_CLOSING": 2461,
+     "FD_CLOSING_EQ_PREMATCH": 269,
      "UNVERIFIED": 138,
      "ARCHIVE_UNKNOWN": 46,
      "NO_PRICE": 14
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 1103,
-    "BTTS_real_forward_two_sided_fixtures_v9_capture": 145,
-    "OU15_real_forward_two_sided_fixtures_v9_capture": 169,
-    "OU35_real_forward_two_sided_fixtures_v9_capture": 169,
+    "BTTS_real_forward_two_sided_fixtures_v9_capture": 146,
+    "OU15_real_forward_two_sided_fixtures_v9_capture": 170,
+    "OU35_real_forward_two_sided_fixtures_v9_capture": 170,
     "frame_side_price_share": {
-     "BTTS": 0.3674,
-     "OU15": 0.0256,
-     "OU35": 0.0256
+     "BTTS": 0.3675,
+     "OU15": 0.026,
+     "OU35": 0.026
     },
     "forward_pro_snapshots": {
      "BTTS": {
       "league": "League One",
-      "fixtures": 161,
-      "two_sided_any": 161,
-      "two_sided_min_books": 156,
+      "fixtures": 173,
+      "two_sided_any": 173,
+      "two_sided_min_books": 168,
       "t30_captured": 0,
       "certified_t30_close": 0,
       "certified_t30_close_share": 0.0
      },
      "OU15": {
       "league": "League One",
-      "fixtures": 4,
-      "two_sided_any": 4,
-      "two_sided_min_books": 0,
+      "fixtures": 7,
+      "two_sided_any": 7,
+      "two_sided_min_books": 3,
       "t30_captured": 0,
       "certified_t30_close": 0,
       "certified_t30_close_share": 0.0
      },
      "OU25": {
       "league": "League One",
-      "fixtures": 162,
-      "two_sided_any": 162,
-      "two_sided_min_books": 160,
+      "fixtures": 174,
+      "two_sided_any": 174,
+      "two_sided_min_books": 170,
       "t30_captured": 42,
       "certified_t30_close": 42,
-      "certified_t30_close_share": 0.2593
+      "certified_t30_close_share": 0.2414
      },
      "OU35": {
       "league": "League One",
-      "fixtures": 48,
-      "two_sided_any": 48,
-      "two_sided_min_books": 31,
+      "fixtures": 53,
+      "two_sided_any": 53,
+      "two_sided_min_books": 35,
       "t30_captured": 7,
       "certified_t30_close": 7,
-      "certified_t30_close_share": 0.1458
+      "certified_t30_close_share": 0.1321
      }
     }
    },
@@ -1884,36 +1942,36 @@
    },
    "certified_t30_close": {
     "BTTS": {
-     "fixtures": 161,
+     "fixtures": 173,
      "certified": 0,
      "share": 0.0
     },
     "OU15": {
-     "fixtures": 4,
+     "fixtures": 7,
      "certified": 0,
      "share": 0.0
     },
     "OU25": {
-     "fixtures": 162,
+     "fixtures": 174,
      "certified": 42,
-     "share": 0.2593
+     "share": 0.2414
     },
     "OU35": {
-     "fixtures": 48,
+     "fixtures": 53,
      "certified": 7,
-     "share": 0.1458
+     "share": 0.1321
     }
    },
    "post_fix_first_sight_rows": {
     "since_settlement_trusted": {
-     "OU25": 115,
-     "BTTS": 115,
-     "OU15": 115
+     "OU25": 127,
+     "BTTS": 127,
+     "OU15": 127
     },
     "since_model_inputs_trusted": {
-     "OU25": 79,
-     "BTTS": 79,
-     "OU15": 79
+     "OU25": 91,
+     "BTTS": 91,
+     "OU15": 91
     },
     "forward_phase": "PRE_REPAIR_FORWARD (no STD-V9R registration yet)"
    },
@@ -1929,15 +1987,15 @@
   },
   "League Two": {
    "bet_league": true,
-   "rows": 2935,
+   "rows": 2936,
    "date_range": [
     "2021-08-07",
-    "2026-10-31"
+    "2026-11-03"
    ],
    "rows_by_source": {
     "FOOTBALL_DATA_ARCHIVE": 1669,
     "BACKTEST_ARCHIVE": 1103,
-    "FOOTBALL_DATA_CURRENT": 163
+    "FOOTBALL_DATA_CURRENT": 164
    },
    "fixture_duplicates_legacy": 0,
    "alias_collision_fixtures_legacy": 0,
@@ -1956,73 +2014,73 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8233,
+   "serving_feature_completeness": 0.8234,
    "serving_feature_min_completeness": {
     "feature": "home_xg_last5",
-    "share": 0.2583
+    "share": 0.2585
    },
    "degraded_feature_rows": 17,
    "degraded_feature_share": 0.0058,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [],
-    "live_feature_health_ts": "2026-11-02T15:44:16.711017+00:00"
+    "live_feature_health_ts": "2026-11-09T17:28:27.122546+00:00"
    },
    "price_coverage": {
     "OU25_entry_real_FD_PREMATCH_APPROX": 0.7871,
     "OU25_close_FD_CLOSING": 0.7871,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 2020,
+     "FD_CLOSING": 2021,
      "UNVERIFIED": 308,
      "ARCHIVE_UNKNOWN": 304,
      "FD_CLOSING_EQ_PREMATCH": 290,
      "NO_PRICE": 13
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 1103,
-    "BTTS_real_forward_two_sided_fixtures_v9_capture": 142,
-    "OU15_real_forward_two_sided_fixtures_v9_capture": 166,
-    "OU35_real_forward_two_sided_fixtures_v9_capture": 166,
+    "BTTS_real_forward_two_sided_fixtures_v9_capture": 154,
+    "OU15_real_forward_two_sided_fixtures_v9_capture": 178,
+    "OU35_real_forward_two_sided_fixtures_v9_capture": 178,
     "frame_side_price_share": {
-     "BTTS": 0.3584,
-     "OU15": 0.0341,
-     "OU35": 0.0341
+     "BTTS": 0.3587,
+     "OU15": 0.0344,
+     "OU35": 0.0344
     },
     "forward_pro_snapshots": {
      "BTTS": {
       "league": "League Two",
-      "fixtures": 157,
-      "two_sided_any": 157,
-      "two_sided_min_books": 157,
+      "fixtures": 168,
+      "two_sided_any": 168,
+      "two_sided_min_books": 168,
       "t30_captured": 0,
       "certified_t30_close": 0,
       "certified_t30_close_share": 0.0
      },
      "OU15": {
       "league": "League Two",
-      "fixtures": 5,
-      "two_sided_any": 5,
-      "two_sided_min_books": 0,
+      "fixtures": 6,
+      "two_sided_any": 6,
+      "two_sided_min_books": 1,
       "t30_captured": 0,
       "certified_t30_close": 0,
       "certified_t30_close_share": 0.0
      },
      "OU25": {
       "league": "League Two",
-      "fixtures": 157,
-      "two_sided_any": 157,
-      "two_sided_min_books": 157,
+      "fixtures": 168,
+      "two_sided_any": 168,
+      "two_sided_min_books": 168,
       "t30_captured": 42,
       "certified_t30_close": 42,
-      "certified_t30_close_share": 0.2675
+      "certified_t30_close_share": 0.25
      },
      "OU35": {
       "league": "League Two",
-      "fixtures": 26,
-      "two_sided_any": 26,
-      "two_sided_min_books": 10,
+      "fixtures": 28,
+      "two_sided_any": 28,
+      "two_sided_min_books": 11,
       "t30_captured": 3,
       "certified_t30_close": 3,
-      "certified_t30_close_share": 0.1154
+      "certified_t30_close_share": 0.1071
      }
     }
    },
@@ -2039,36 +2097,36 @@
    },
    "certified_t30_close": {
     "BTTS": {
-     "fixtures": 157,
+     "fixtures": 168,
      "certified": 0,
      "share": 0.0
     },
     "OU15": {
-     "fixtures": 5,
+     "fixtures": 6,
      "certified": 0,
      "share": 0.0
     },
     "OU25": {
-     "fixtures": 157,
+     "fixtures": 168,
      "certified": 42,
-     "share": 0.2675
+     "share": 0.25
     },
     "OU35": {
-     "fixtures": 26,
+     "fixtures": 28,
      "certified": 3,
-     "share": 0.1154
+     "share": 0.1071
     }
    },
    "post_fix_first_sight_rows": {
     "since_settlement_trusted": {
-     "OU25": 109,
-     "BTTS": 109,
-     "OU15": 109
+     "OU25": 120,
+     "BTTS": 120,
+     "OU15": 120
     },
     "since_model_inputs_trusted": {
-     "OU25": 73,
-     "BTTS": 73,
-     "OU15": 73
+     "OU25": 84,
+     "BTTS": 84,
+     "OU15": 84
     },
     "forward_phase": "PRE_REPAIR_FORWARD (no STD-V9R registration yet)"
    },
@@ -2084,15 +2142,15 @@
   },
   "Ligue 2": {
    "bet_league": true,
-   "rows": 1843,
+   "rows": 1854,
    "date_range": [
     "2021-07-24",
-    "2026-10-31"
+    "2026-11-07"
    ],
    "rows_by_source": {
     "FOOTBALL_DATA_ARCHIVE": 991,
     "BACKTEST_ARCHIVE": 755,
-    "FOOTBALL_DATA_CURRENT": 97
+    "FOOTBALL_DATA_CURRENT": 108
    },
    "fixture_duplicates_legacy": 0,
    "alias_collision_fixtures_legacy": 0,
@@ -2111,33 +2169,33 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8017,
+   "serving_feature_completeness": 0.8029,
    "serving_feature_min_completeness": {
     "feature": "home_xg_last5",
-    "share": 0.2018
+    "share": 0.2066
    },
    "degraded_feature_rows": 27,
-   "degraded_feature_share": 0.0147,
+   "degraded_feature_share": 0.0146,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [],
-    "live_feature_health_ts": "2026-11-02T15:44:16.711017+00:00"
+    "live_feature_health_ts": "2026-11-09T17:28:27.122546+00:00"
    },
    "price_coverage": {
     "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
     "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1671,
-     "FD_CLOSING_EQ_PREMATCH": 172
+     "FD_CLOSING": 1681,
+     "FD_CLOSING_EQ_PREMATCH": 173
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 610,
-    "BTTS_real_forward_two_sided_fixtures_v9_capture": 38,
-    "OU15_real_forward_two_sided_fixtures_v9_capture": 38,
-    "OU35_real_forward_two_sided_fixtures_v9_capture": 38,
+    "BTTS_real_forward_two_sided_fixtures_v9_capture": 50,
+    "OU15_real_forward_two_sided_fixtures_v9_capture": 50,
+    "OU35_real_forward_two_sided_fixtures_v9_capture": 50,
     "frame_side_price_share": {
-     "BTTS": 0.3445,
-     "OU15": 0.0136,
-     "OU35": 0.0136
+     "BTTS": 0.3463,
+     "OU15": 0.0173,
+     "OU35": 0.0173
     },
     "forward_pro_snapshots": {
      "BTTS": {
@@ -2151,27 +2209,27 @@
      },
      "OU15": {
       "league": "Ligue 2",
-      "fixtures": 4,
-      "two_sided_any": 4,
-      "two_sided_min_books": 3,
+      "fixtures": 13,
+      "two_sided_any": 13,
+      "two_sided_min_books": 12,
       "t30_captured": 1,
       "certified_t30_close": 1,
-      "certified_t30_close_share": 0.25
+      "certified_t30_close_share": 0.0769
      },
      "OU25": {
       "league": "Ligue 2",
       "fixtures": 92,
       "two_sided_any": 92,
       "two_sided_min_books": 92,
-      "t30_captured": 22,
-      "certified_t30_close": 22,
-      "certified_t30_close_share": 0.2391
+      "t30_captured": 23,
+      "certified_t30_close": 23,
+      "certified_t30_close_share": 0.25
      },
      "OU35": {
       "league": "Ligue 2",
-      "fixtures": 12,
-      "two_sided_any": 12,
-      "two_sided_min_books": 6,
+      "fixtures": 20,
+      "two_sided_any": 20,
+      "two_sided_min_books": 14,
       "t30_captured": 1,
       "certified_t30_close": 0,
       "certified_t30_close_share": 0.0
@@ -2196,17 +2254,17 @@
      "share": 0.0
     },
     "OU15": {
-     "fixtures": 4,
+     "fixtures": 13,
      "certified": 1,
-     "share": 0.25
+     "share": 0.0769
     },
     "OU25": {
      "fixtures": 92,
-     "certified": 22,
-     "share": 0.2391
+     "certified": 23,
+     "share": 0.25
     },
     "OU35": {
-     "fixtures": 12,
+     "fixtures": 20,
      "certified": 0,
      "share": 0.0
     }
@@ -2263,7 +2321,7 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.7357,
+   "serving_feature_completeness": 0.7356,
    "serving_feature_min_completeness": {
     "feature": "away_corners_pg_roll",
     "share": 0.0734
@@ -2273,7 +2331,7 @@
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [],
-    "live_feature_health_ts": "2026-11-02T15:44:16.711017+00:00"
+    "live_feature_health_ts": "2026-11-09T17:28:27.122546+00:00"
    },
    "price_coverage": {
     "OU25_entry_real_FD_PREMATCH_APPROX": 0.9955,
@@ -2283,9 +2341,9 @@
      "FD_CLOSING_EQ_PREMATCH": 417
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
-    "BTTS_real_forward_two_sided_fixtures_v9_capture": 126,
-    "OU15_real_forward_two_sided_fixtures_v9_capture": 126,
-    "OU35_real_forward_two_sided_fixtures_v9_capture": 126,
+    "BTTS_real_forward_two_sided_fixtures_v9_capture": 130,
+    "OU15_real_forward_two_sided_fixtures_v9_capture": 130,
+    "OU35_real_forward_two_sided_fixtures_v9_capture": 130,
     "frame_side_price_share": {
      "BTTS": 0.0172,
      "OU15": 0.0172,
@@ -2322,15 +2380,15 @@
   },
   "Portuguese Primeira Liga": {
    "bet_league": false,
-   "rows": 1616,
+   "rows": 1626,
    "date_range": [
     "2021-08-06",
-    "2026-11-01"
+    "2026-11-08"
    ],
    "rows_by_source": {
     "FOOTBALL_DATA_ARCHIVE": 918,
     "BACKTEST_ARCHIVE": 610,
-    "FOOTBALL_DATA_CURRENT": 88
+    "FOOTBALL_DATA_CURRENT": 98
    },
    "fixture_duplicates_legacy": 0,
    "alias_collision_fixtures_legacy": 0,
@@ -2349,33 +2407,33 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8284,
+   "serving_feature_completeness": 0.8295,
    "serving_feature_min_completeness": {
     "feature": "away_xg_last5",
-    "share": 0.4035
+    "share": 0.4071
    },
    "degraded_feature_rows": 18,
    "degraded_feature_share": 0.0111,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [],
-    "live_feature_health_ts": "2026-11-02T15:44:16.711017+00:00"
+    "live_feature_health_ts": "2026-11-09T17:28:27.122546+00:00"
    },
    "price_coverage": {
     "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
     "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1494,
+     "FD_CLOSING": 1504,
      "FD_CLOSING_EQ_PREMATCH": 122
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
-    "BTTS_real_forward_two_sided_fixtures_v9_capture": 52,
-    "OU15_real_forward_two_sided_fixtures_v9_capture": 52,
-    "OU35_real_forward_two_sided_fixtures_v9_capture": 52,
+    "BTTS_real_forward_two_sided_fixtures_v9_capture": 61,
+    "OU15_real_forward_two_sided_fixtures_v9_capture": 61,
+    "OU35_real_forward_two_sided_fixtures_v9_capture": 61,
     "frame_side_price_share": {
-     "BTTS": 0.0248,
-     "OU15": 0.0248,
-     "OU35": 0.0248
+     "BTTS": 0.0283,
+     "OU15": 0.0283,
+     "OU35": 0.0283
     },
     "forward_pro_snapshots": {}
    },
@@ -2408,15 +2466,15 @@
   },
   "Scottish Championship": {
    "bet_league": false,
-   "rows": 962,
+   "rows": 967,
    "date_range": [
     "2021-07-31",
-    "2026-10-31"
+    "2026-11-07"
    ],
    "rows_by_source": {
     "FOOTBALL_DATA_ARCHIVE": 540,
     "BACKTEST_ARCHIVE": 358,
-    "FOOTBALL_DATA_CURRENT": 64
+    "FOOTBALL_DATA_CURRENT": 69
    },
    "fixture_duplicates_legacy": 0,
    "alias_collision_fixtures_legacy": 0,
@@ -2435,33 +2493,33 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8126,
+   "serving_feature_completeness": 0.8136,
    "serving_feature_min_completeness": {
     "feature": "home_xg_last5",
-    "share": 0.2173
+    "share": 0.2213
    },
    "degraded_feature_rows": 16,
-   "degraded_feature_share": 0.0166,
+   "degraded_feature_share": 0.0165,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [],
-    "live_feature_health_ts": "2026-11-02T15:44:16.711017+00:00"
+    "live_feature_health_ts": "2026-11-09T17:28:27.122546+00:00"
    },
    "price_coverage": {
     "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
     "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 851,
-     "FD_CLOSING_EQ_PREMATCH": 111
+     "FD_CLOSING": 854,
+     "FD_CLOSING_EQ_PREMATCH": 113
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
-    "BTTS_real_forward_two_sided_fixtures_v9_capture": 45,
-    "OU15_real_forward_two_sided_fixtures_v9_capture": 45,
-    "OU35_real_forward_two_sided_fixtures_v9_capture": 45,
+    "BTTS_real_forward_two_sided_fixtures_v9_capture": 49,
+    "OU15_real_forward_two_sided_fixtures_v9_capture": 49,
+    "OU35_real_forward_two_sided_fixtures_v9_capture": 49,
     "frame_side_price_share": {
-     "BTTS": 0.0146,
-     "OU15": 0.0146,
-     "OU35": 0.0146
+     "BTTS": 0.0155,
+     "OU15": 0.0155,
+     "OU35": 0.0155
     },
     "forward_pro_snapshots": {}
    },
@@ -2494,15 +2552,15 @@
   },
   "Scottish League One": {
    "bet_league": false,
-   "rows": 963,
+   "rows": 968,
    "date_range": [
     "2021-07-31",
-    "2026-10-31"
+    "2026-11-07"
    ],
    "rows_by_source": {
     "FOOTBALL_DATA_ARCHIVE": 540,
     "BACKTEST_ARCHIVE": 359,
-    "FOOTBALL_DATA_CURRENT": 64
+    "FOOTBALL_DATA_CURRENT": 69
    },
    "fixture_duplicates_legacy": 0,
    "alias_collision_fixtures_legacy": 0,
@@ -2521,33 +2579,33 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8077,
+   "serving_feature_completeness": 0.808,
    "serving_feature_min_completeness": {
     "feature": "away_xg_last5",
-    "share": 0.1194
+    "share": 0.1147
    },
    "degraded_feature_rows": 9,
    "degraded_feature_share": 0.0093,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [],
-    "live_feature_health_ts": "2026-11-02T15:44:16.711017+00:00"
+    "live_feature_health_ts": "2026-11-09T17:28:27.122546+00:00"
    },
    "price_coverage": {
     "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
     "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 834,
-     "FD_CLOSING_EQ_PREMATCH": 129
+     "FD_CLOSING": 838,
+     "FD_CLOSING_EQ_PREMATCH": 130
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
-    "BTTS_real_forward_two_sided_fixtures_v9_capture": 16,
-    "OU15_real_forward_two_sided_fixtures_v9_capture": 16,
-    "OU35_real_forward_two_sided_fixtures_v9_capture": 16,
+    "BTTS_real_forward_two_sided_fixtures_v9_capture": 26,
+    "OU15_real_forward_two_sided_fixtures_v9_capture": 26,
+    "OU35_real_forward_two_sided_fixtures_v9_capture": 26,
     "frame_side_price_share": {
-     "BTTS": 0.0042,
-     "OU15": 0.0042,
-     "OU35": 0.0042
+     "BTTS": 0.0062,
+     "OU15": 0.0062,
+     "OU35": 0.0062
     },
     "forward_pro_snapshots": {}
    },
@@ -2580,15 +2638,15 @@
   },
   "Scottish League Two": {
    "bet_league": false,
-   "rows": 959,
+   "rows": 964,
    "date_range": [
     "2021-07-31",
-    "2026-10-31"
+    "2026-11-07"
    ],
    "rows_by_source": {
     "FOOTBALL_DATA_ARCHIVE": 540,
     "BACKTEST_ARCHIVE": 359,
-    "FOOTBALL_DATA_CURRENT": 60
+    "FOOTBALL_DATA_CURRENT": 65
    },
    "fixture_duplicates_legacy": 0,
    "alias_collision_fixtures_legacy": 0,
@@ -2607,33 +2665,33 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8076,
+   "serving_feature_completeness": 0.8081,
    "serving_feature_min_completeness": {
     "feature": "away_xg_last5",
-    "share": 0.0824
+    "share": 0.082
    },
    "degraded_feature_rows": 6,
-   "degraded_feature_share": 0.0063,
+   "degraded_feature_share": 0.0062,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [],
-    "live_feature_health_ts": "2026-11-02T15:44:16.711017+00:00"
+    "live_feature_health_ts": "2026-11-09T17:28:27.122546+00:00"
    },
    "price_coverage": {
     "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
     "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 836,
-     "FD_CLOSING_EQ_PREMATCH": 123
+     "FD_CLOSING": 840,
+     "FD_CLOSING_EQ_PREMATCH": 124
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
-    "BTTS_real_forward_two_sided_fixtures_v9_capture": 10,
-    "OU15_real_forward_two_sided_fixtures_v9_capture": 10,
-    "OU35_real_forward_two_sided_fixtures_v9_capture": 10,
+    "BTTS_real_forward_two_sided_fixtures_v9_capture": 20,
+    "OU15_real_forward_two_sided_fixtures_v9_capture": 20,
+    "OU35_real_forward_two_sided_fixtures_v9_capture": 20,
     "frame_side_price_share": {
-     "BTTS": 0.0052,
-     "OU15": 0.0052,
-     "OU35": 0.0052
+     "BTTS": 0.0073,
+     "OU15": 0.0073,
+     "OU35": 0.0073
     },
     "forward_pro_snapshots": {}
    },
@@ -2666,15 +2724,15 @@
   },
   "Scottish Premiership": {
    "bet_league": false,
-   "rows": 1209,
+   "rows": 1215,
    "date_range": [
     "2021-07-31",
-    "2026-11-01"
+    "2026-11-08"
    ],
    "rows_by_source": {
     "FOOTBALL_DATA_ARCHIVE": 684,
     "BACKTEST_ARCHIVE": 456,
-    "FOOTBALL_DATA_CURRENT": 69
+    "FOOTBALL_DATA_CURRENT": 75
    },
    "fixture_duplicates_legacy": 0,
    "alias_collision_fixtures_legacy": 0,
@@ -2693,33 +2751,33 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8223,
+   "serving_feature_completeness": 0.823,
    "serving_feature_min_completeness": {
     "feature": "home_xg_last5",
-    "share": 0.2663
+    "share": 0.27
    },
-   "degraded_feature_rows": 5,
-   "degraded_feature_share": 0.0041,
+   "degraded_feature_rows": 6,
+   "degraded_feature_share": 0.0049,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [],
-    "live_feature_health_ts": "2026-11-02T15:44:16.711017+00:00"
+    "live_feature_health_ts": "2026-11-09T17:28:27.122546+00:00"
    },
    "price_coverage": {
     "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
     "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1107,
+     "FD_CLOSING": 1113,
      "FD_CLOSING_EQ_PREMATCH": 102
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
-    "BTTS_real_forward_two_sided_fixtures_v9_capture": 57,
-    "OU15_real_forward_two_sided_fixtures_v9_capture": 57,
-    "OU35_real_forward_two_sided_fixtures_v9_capture": 57,
+    "BTTS_real_forward_two_sided_fixtures_v9_capture": 65,
+    "OU15_real_forward_two_sided_fixtures_v9_capture": 65,
+    "OU35_real_forward_two_sided_fixtures_v9_capture": 65,
     "frame_side_price_share": {
-     "BTTS": 0.0256,
-     "OU15": 0.0256,
-     "OU35": 0.0256
+     "BTTS": 0.0288,
+     "OU15": 0.0288,
+     "OU35": 0.0288
     },
     "forward_pro_snapshots": {}
    },
@@ -2752,15 +2810,15 @@
   },
   "Serie B": {
    "bet_league": true,
-   "rows": 2023,
+   "rows": 2033,
    "date_range": [
     "2021-08-20",
-    "2026-11-01"
+    "2026-11-08"
    ],
    "rows_by_source": {
     "FOOTBALL_DATA_ARCHIVE": 1168,
     "BACKTEST_ARCHIVE": 755,
-    "FOOTBALL_DATA_CURRENT": 100
+    "FOOTBALL_DATA_CURRENT": 110
    },
    "fixture_duplicates_legacy": 0,
    "alias_collision_fixtures_legacy": 8,
@@ -2782,34 +2840,34 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.8137,
+   "serving_feature_completeness": 0.8147,
    "serving_feature_min_completeness": {
     "feature": "home_xg_last5",
-    "share": 0.2457
+    "share": 0.2494
    },
    "degraded_feature_rows": 36,
-   "degraded_feature_share": 0.0178,
+   "degraded_feature_share": 0.0177,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [],
-    "live_feature_health_ts": "2026-11-02T15:44:16.711017+00:00"
+    "live_feature_health_ts": "2026-11-09T17:28:27.122546+00:00"
    },
    "price_coverage": {
     "OU25_entry_real_FD_PREMATCH_APPROX": 0.9857,
     "OU25_close_FD_CLOSING": 0.9862,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1805,
+     "FD_CLOSING": 1815,
      "FD_CLOSING_EQ_PREMATCH": 190,
      "NO_PRICE": 28
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 760,
-    "BTTS_real_forward_two_sided_fixtures_v9_capture": 94,
-    "OU15_real_forward_two_sided_fixtures_v9_capture": 100,
-    "OU35_real_forward_two_sided_fixtures_v9_capture": 100,
+    "BTTS_real_forward_two_sided_fixtures_v9_capture": 104,
+    "OU15_real_forward_two_sided_fixtures_v9_capture": 110,
+    "OU35_real_forward_two_sided_fixtures_v9_capture": 110,
     "frame_side_price_share": {
-     "BTTS": 0.4132,
-     "OU15": 0.04,
-     "OU35": 0.04
+     "BTTS": 0.4152,
+     "OU15": 0.0438,
+     "OU35": 0.0438
     },
     "forward_pro_snapshots": {
      "BTTS": {
@@ -2823,9 +2881,9 @@
      },
      "OU15": {
       "league": "Serie B",
-      "fixtures": 3,
-      "two_sided_any": 3,
-      "two_sided_min_books": 2,
+      "fixtures": 13,
+      "two_sided_any": 13,
+      "two_sided_min_books": 12,
       "t30_captured": 0,
       "certified_t30_close": 0,
       "certified_t30_close_share": 0.0
@@ -2841,9 +2899,9 @@
      },
      "OU35": {
       "league": "Serie B",
-      "fixtures": 4,
-      "two_sided_any": 4,
-      "two_sided_min_books": 2,
+      "fixtures": 14,
+      "two_sided_any": 14,
+      "two_sided_min_books": 12,
       "t30_captured": 0,
       "certified_t30_close": 0,
       "certified_t30_close_share": 0.0
@@ -2868,7 +2926,7 @@
      "share": 0.0
     },
     "OU15": {
-     "fixtures": 3,
+     "fixtures": 13,
      "certified": 0,
      "share": 0.0
     },
@@ -2878,7 +2936,7 @@
      "share": 0.2342
     },
     "OU35": {
-     "fixtures": 4,
+     "fixtures": 14,
      "certified": 0,
      "share": 0.0
     }
@@ -2908,15 +2966,15 @@
   },
   "Turkish Super Lig": {
    "bet_league": false,
-   "rows": 1806,
+   "rows": 1816,
    "date_range": [
     "2021-08-13",
-    "2026-11-01"
+    "2026-11-08"
    ],
    "rows_by_source": {
     "FOOTBALL_DATA_ARCHIVE": 1028,
     "BACKTEST_ARCHIVE": 689,
-    "FOOTBALL_DATA_CURRENT": 89
+    "FOOTBALL_DATA_CURRENT": 99
    },
    "fixture_duplicates_legacy": 0,
    "alias_collision_fixtures_legacy": 0,
@@ -2935,33 +2993,33 @@
     "btts": 1.0,
     "over15": 1.0
    },
-   "serving_feature_completeness": 0.812,
+   "serving_feature_completeness": 0.813,
    "serving_feature_min_completeness": {
     "feature": "away_xg_last5",
-    "share": 0.2265
+    "share": 0.2302
    },
    "degraded_feature_rows": 23,
    "degraded_feature_share": 0.0127,
    "parity": {
     "status": "PENDING_R1_feature_parity_csv",
     "live_constant_features_v9": [],
-    "live_feature_health_ts": "2026-11-02T15:44:16.711017+00:00"
+    "live_feature_health_ts": "2026-11-09T17:28:27.122546+00:00"
    },
    "price_coverage": {
     "OU25_entry_real_FD_PREMATCH_APPROX": 1.0,
     "OU25_close_FD_CLOSING": 1.0,
     "OU25_frame_price_class": {
-     "FD_CLOSING": 1626,
-     "FD_CLOSING_EQ_PREMATCH": 180
+     "FD_CLOSING": 1633,
+     "FD_CLOSING_EQ_PREMATCH": 183
     },
     "BTTS_real_historical_two_sided_fixtures_backfill_date_only": 0,
-    "BTTS_real_forward_two_sided_fixtures_v9_capture": 62,
-    "OU15_real_forward_two_sided_fixtures_v9_capture": 62,
-    "OU35_real_forward_two_sided_fixtures_v9_capture": 62,
+    "BTTS_real_forward_two_sided_fixtures_v9_capture": 71,
+    "OU15_real_forward_two_sided_fixtures_v9_capture": 71,
+    "OU35_real_forward_two_sided_fixtures_v9_capture": 71,
     "frame_side_price_share": {
-     "BTTS": 0.0183,
-     "OU15": 0.0183,
-     "OU35": 0.0183
+     "BTTS": 0.0209,
+     "OU15": 0.0209,
+     "OU35": 0.0209
     },
     "forward_pro_snapshots": {}
    },
@@ -2995,29 +3053,29 @@
  },
  "fingerprint": {
   "schema": "standard_repair_fingerprint/1",
-  "generated_at": "2026-11-02T17:32:02.924646+00:00",
-  "data_cutoff": "2026-11-01",
-  "v9_commit": "f2533e9362fc99ca0f7a47cb3042483d8e91f9d6",
-  "pro_commit": "9d2ad75f1de828007aa046b058386d62919a9e82",
-  "frame_hash_at_cutoff": "47f1b54fa1cfe765",
+  "generated_at": "2026-11-09T17:53:35.389985+00:00",
+  "data_cutoff": "2026-11-08",
+  "v9_commit": "9d03dc1d2c99a65f7b298db68e6ee05dc5afd761",
+  "pro_commit": "24b9a29701ad6f59c6aee7ff7ac04e9d6417fefd",
+  "frame_hash_at_cutoff": "e1fe7743990a280f",
   "frame_rows_after_cutoff": 0,
-  "raw_fd_finished_hash": "e5c7b585c6d98e63",
-  "raw_fd_current_hash": "f22c28c2f6bd6e6e",
+  "raw_fd_finished_hash": "888b9845d75ac909",
+  "raw_fd_current_hash": "26d6050b90a3a5f8",
   "archive_hash": "6dfce00b0242e107",
   "feature_schema_version": "c5b8b138acb7ad58",
-  "team_canon_version": "047b23c5e60e7b49",
+  "team_canon_version": "397a9a6d2de25cf9",
   "imputer_version": "v9_batch_median@c51be4f0c509",
-  "price_source_version": "334a6af7f9feeb47",
+  "price_source_version": "a9fc25c2aeb104fb",
   "model_recipe_version": "legacy_v9@c51be4f0c509",
   "research_code_hash": "4483a399f5b8eec7",
   "frame_build_version": "frame_build/1.0",
   "frame_build_mode": "fd_dir"
  },
- "generated_at": "2026-11-02T17:32:02.924646+00:00",
- "v9_commit": "f2533e9362fc99ca0f7a47cb3042483d8e91f9d6",
- "pro_commit": "9d2ad75f1de828007aa046b058386d62919a9e82",
- "frame_hash": "47f1b54fa1cfe765",
+ "generated_at": "2026-11-09T17:53:35.389985+00:00",
+ "v9_commit": "9d03dc1d2c99a65f7b298db68e6ee05dc5afd761",
+ "pro_commit": "24b9a29701ad6f59c6aee7ff7ac04e9d6417fefd",
+ "frame_hash": "e1fe7743990a280f",
  "feature_version": "c5b8b138acb7ad58",
  "model_recipe_version": "legacy_v9@c51be4f0c509",
- "price_source_version": "334a6af7f9feeb47"
+ "price_source_version": "a9fc25c2aeb104fb"
 }
