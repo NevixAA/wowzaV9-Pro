@@ -46,7 +46,7 @@ permissions:
 jobs:
   paper:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
@@ -66,21 +66,19 @@ jobs:
         with:
           python-version: '3.11'
 
-      - run: pip install -r requirements.txt
+      # v9's requirements too: the clean 1X2 model reads v9's repaired history through
+      # src/pipelines/onex2_v9_bridge.py, in this interpreter. Installed AFTER Pro's so v9's
+      # scikit-learn pin is the one in force, the same as when the model was trained.
+      - run: pip install -r requirements.txt && pip install -r _v9/requirements.txt
 
-      - name: Log, settle, and send the top slice
+      - name: Log and settle (nothing is sent until a 1X2 rule is PROVEN)
         env:
           V9_LOCAL: ${{ github.workspace }}/_v9
-          # SENDS THE TOP 3% BY EDGE. Requested explicitly and twice, against the backtest — the
-          # 505-fixture sample says this slice is the worst available (12 picks, 1 winner, -73%
-          # ROI, monotonically worse the harder it selects). That sample is small, name-biased and
-          # backward-looking, and a forward record is the only thing that can settle the
-          # disagreement. Every message says PAPER and carries the counter-evidence in its own
-          # body, so nobody can act on one without seeing what the backtest found.
+          # Owner 2026-11-09: the "top 3% by edge" slice is stopped (it lost -13.6% over 3,013
+          # clean holdout bets, reports/P5_1X2_REVIEW.md). Every fixture is still logged; notify()
+          # selects nothing while src.pipelines.paper_1x2.NOTIFY_RULE is None.
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          # Tune the slice without editing code: PAPER_1X2_TOP_PCT=0 effectively stops sending.
-          PAPER_1X2_TOP_PCT: '3'
         run: |
           # pipefail, and 2>&1 so a traceback reaches the summary rather than only stdout —
           # the omission that made pro_team_stats fail three times with an empty published log.

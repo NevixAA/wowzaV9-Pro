@@ -53,12 +53,13 @@ def _tournaments() -> frozenset:
 
 
 def _history(extra: str = "") -> pd.DataFrame:
+    from src.data import result_guard as rg
     from src.data import season_store as store
     need = {"home_team", "away_team", "home_goals", "away_goals", "match_date", "league"}
     parts = []
     for t in ("team_match_stats", "settlements_backfill"):
         try:
-            d = store.read(t)
+            d = rg.drop_unplayed(store.read(t), t)
         except Exception as e:                                   # noqa: BLE001
             print(f"[tourney] could not read {t}: {type(e).__name__}: {e}")
             continue

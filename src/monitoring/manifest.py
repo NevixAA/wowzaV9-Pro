@@ -187,7 +187,18 @@ _PRO = [
        note="Scheduled in NO workflow — refreshes only when a human runs it. Current result: "
             "USA MLS and China Super League both beats_baseline = False."),
     _e(PRO, "output/model_1x2.json", "pro/train_1x2", DERIVED,
-       research_status="EARLY_RESEARCH"),
+       research_status="EARLY_RESEARCH", lifecycle="RETIRED",
+       note="No longer served (owner 2026-11-09, P5): stale since its 2026-04-27 cutoff, 31% "
+            "holdout coverage. Superseded by output/model_1x2_clean.pkl."),
+    _e(PRO, "output/model_1x2_clean.pkl", "pro/train_1x2_clean", DERIVED,
+       research_status="RESEARCH",
+       note="The served 1X2 opinion (paper): multinomial logistic on v9's repaired history, refit "
+            "monthly by pro_train_1x2_clean.yml (off until PRO_1X2_CLEAN_ENABLED)."),
+    _e(PRO, "output/model_1x2_clean.json", "pro/train_1x2_clean", DERIVED,
+       research_status="RESEARCH"),
+    _e(PRO, "output/onex2_research_cells.json", "pro/train_1x2_clean", DERIVED,
+       research_status="RESEARCH",
+       note="Monthly evidence of the 1X2 research cells (LEAGUE_WIDE Eredivisie draws), paper only."),
     _e(PRO, "docs/OUTPUT_ARCHITECTURE_HARDENING_REPORT.md", "pro/docs", REPORT),
     _e(PRO, "docs/V9_FROZEN_PROSPECTIVE_VALIDATION_PLAN.md", "pro/docs", REPORT),
     _e(PRO, "docs/PROMPT_1_5_HARDENING_COMPLETION_REPORT.md", "pro/docs", REPORT),

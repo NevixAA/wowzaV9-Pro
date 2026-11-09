@@ -101,11 +101,12 @@ def results_and_resolver(v9: str | None):
     except Exception:                                                  # noqa: BLE001
         return None, None
     fn = getattr(mod, "resolve_result", None) or mod.resolve
-    fs = sorted((cfg.BASE_DIR / "data" / "season_2026_27" / "team_match_stats").rglob("*.parquet"))
-    if not fs:
+    # Kickoff guard (result_guard): a score stored before its own kickoff never settles a row.
+    from src.data import result_guard as rg
+    r = rg.played_team_results(["league", "match_date", "home_team", "away_team", "home_goals",
+                                "away_goals"])
+    if r.empty:
         return None, fn
-    r = pd.concat([pd.read_parquet(f, columns=["league", "match_date", "home_team", "away_team", "home_goals",
-                                               "away_goals"]) for f in fs], ignore_index=True)
     r = r.dropna(subset=["home_goals", "away_goals"]).drop_duplicates(
         ["league", "match_date", "home_team", "away_team"], keep="last")
     r["md"] = pd.to_datetime(r["match_date"], errors="coerce").dt.normalize()

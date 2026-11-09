@@ -1,0 +1,22 @@
+{
+  "about": "1X2 research cells: paper only, never staked, evaluated monthly by src/pipelines/train_1x2_clean.py. A LEAGUE_WIDE cell bets one outcome on EVERY match of one league at the bettable pre-match price, with no model filter (owner 2026-11-09: allowed when the data supports it; tested, not assumed).",
+  "proven_rule": {
+    "min_live_bets": 150,
+    "family_alpha": 0.05,
+    "correction": "holm",
+    "source": "owner's strict PROVEN rule (2026-11-08): >= 150 bets and the ROI CI above zero after correction; evidence = LIVE paper bets logged from the cell's 'since' date"
+  },
+  "history_start": "2024-07-01",
+  "history_start_source": "P5 walk-forward region start (reports/P5_1X2_REVIEW.md)",
+  "cells": [
+    {
+      "id": "LEAGUE_WIDE|Dutch Eredivisie|draw",
+      "family": "LEAGUE_WIDE",
+      "league": "Dutch Eredivisie",
+      "outcome": "draw",
+      "since": "2026-11-09",
+      "origin": "P5 1X2 review: walk-forward 556 bets +4.4%; holdout 125 bets +34.2% [-1.3%, +70.3%], Holm p 0.20 -> PROMISING, not PROVEN",
+      "approved": "owner 2026-11-09 (paper / research only)"
+    }
+  ]
+}

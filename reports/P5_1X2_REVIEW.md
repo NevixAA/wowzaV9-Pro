@@ -141,3 +141,100 @@ python -m src.studies.onex2_review --extract <extract dir> --v9 <v9 root>
 
 The run was **local**: the same committed data and code, and deterministic (all seeds fixed). The
 Phase 2 comparison step outgrew GitHub's 16 GB runner, so this study does not rely on it.
+
+## 6. Implemented (owner approved all five steps, 2026-11-09, paper/research only)
+
+### 6.1 Served model: multinomial logistic, refit monthly from v9's clean data
+
+- **One door into v9.** `src/pipelines/onex2_v9_bridge.py` runs inside v9 with the network blocked.
+  - `history` mode: the training extract, the same files the study used. Rerun on `804799a1`, it
+    reproduces the study's frame hash `80dbe5a7cfe0e5fe`.
+  - `upcoming` mode: appends the upcoming fixtures, without results, to the history and runs the
+    **same** `build_features` as training. On 5 real matches blanked to "upcoming", 0 of 43 feature
+    columns differed. A club no rule can place, a club with an earlier fixture still pending, and a
+    fixture already in the history are not served, and each is counted.
+- **Model.** `src/models/onex2_clean.py`:
+  - multinomial logistic, Elo K 25 (entry at the league mean), C 0.5, 3-year window;
+  - plus a blend with the de-vigged pre-kickoff price, fitted on the last 9 months' out-of-sample
+    predictions;
+  - it refuses to serve when v9's feature code (a fingerprint) or the scikit-learn minor version
+    differs from training, and it never serves a league it was not trained on.
+- **Monthly job.** `src/pipelines/train_1x2_clean.py` with
+  `.github/workflows/pro_train_1x2_clean.yml`: the 2nd of each month, **off until the repository
+  variable `PRO_1X2_CLEAN_ENABLED` is `true` at go-live**. It reads v9's default branch, which must
+  carry the repaired loader.
+- **Local proof run** (as of 2026-11-09, v9 `804799a1`):
+  - 30,278 training matches, 32 leagues, 76 model inputs;
+  - blend fitted on 5,345 priced out-of-sample matches;
+  - last-9-months out-of-sample log loss: model 1.0266 against the entry market 1.0055 (the market
+    is still better, as P5 found);
+  - served on 91 real fixtures of 2026-11-05..08: every name resolved, fingerprint matched, all 91
+    priced and blended.
+- **Paper record.** `paper_1x2` now logs `p_*` from the clean model, `pb_*` from the blend (with
+  `blend_price_class`), the model's canonical club names, `calc_version 2.0.0`, the model date and
+  v9 commit.
+  - With no clean model on disk it logs **nothing** and says so. It never falls back to
+    `model_1x2.json`, which the manifest now marks RETIRED.
+  - Past rows are untouched.
+
+### 6.2 The top-3% picks are stopped
+
+`notify()` still re-prices each pick and records its reasons, but it selects nothing
+(`NOTIFY_RULE = None`, reason `NO_PROVEN_RULE`). Every fixture is still logged. The workflow's
+`PAPER_1X2_TOP_PCT` setting is gone.
+
+### 6.3 Eredivisie draws: a LEAGUE_WIDE research cell
+
+`config/onex2_research_cells.json` defines the cell. Every Eredivisie row in the paper record
+carries `research_cell / research_pick / research_odds`. The monthly job scores the cell on the
+bettable history since 2024-07-01 and on the **live** paper bets, applying the strict PROVEN rule
+to the live bets only. The first run gives: history 684 bets, **+9.4%** [−4.5%, +23.0%], CLV
++0.9%; live: ACCRUING.
+
+### 6.4 Pro store bug: three scored fixtures dated in the future
+
+- **Cause.** For the two Swiss rows, API-Football marked the **return** fixture FT with the first
+  leg's score. Basel v Grasshoppers 0-0 and Sion v Lausanne 1-0, both played 2026-10-25, appear
+  mirrored onto the return fixtures dated 2026-11-28 and 2026-12-06. The Ukrainian row
+  (2027-05-08) was observed 190 days before its kickoff, so it cannot be a played match, but the
+  mirror cause is **not provable** for it (its reverse fixture is not stored).
+- **Corrections, beside the originals.** `output/corrections/team_match_stats_unplayed.csv` lists
+  the 3 rows; the store rows are unchanged.
+- **Five readers were still using them unguarded:** `train_1x2`, `btts_eval`, `tourney`,
+  `xg_value` and `edge2_forward`. All now go through `result_guard`.
+- **What blocks a repeat:**
+  - `tests/test_result_guard_readers.py` fails on any result reader without the guard (it was
+    shown to fail with `btts_eval`'s fix reverted);
+  - `python -m src.pro_tests` fails when the store holds an unplayed scored row that is not in the
+    corrections file;
+  - the collector already skips such rows (since 2026-11-02).
+
+### 6.5 Cost of collecting 1X2 prices for K-League 1, the Romanian Superliga and the Saudi Pro League (not started)
+
+**Inputs (measured, not assumed):**
+- Fixtures over the last 365 days of v9's clean frame: K-League 1 **225** (77 match days, at most
+  6 a day), Romania **317** (161 days, at most 4), Saudi **339** (119 days, at most 7).
+- 3 price snapshots per fixture: first sight, 75 minutes and 15 minutes before kickoff, the
+  moments of v9's pre-kickoff capture.
+- API-Football: 1 `/odds?fixture=` call per fixture per snapshot, as v9's `src/api_football.py`
+  calls it.
+- OddsAPI: 1 credit per `/odds` call (h2h, one region), which covers a whole league.
+
+| Source | K-League 1 | Romanian Superliga | Saudi Pro League | Against the quota |
+|---|---|---|---|---|
+| **API-Football** `/odds` | 675 calls a year (1.8 a day, peak 18) | 951 (2.6 a day, peak 12) | 1,017 (2.8 a day, peak 21) | **7.2 a day on average, at most 51 on a peak day = 0.01% of 75,000 a day** |
+| **OddsAPI** h2h | 19–56 credits a month (`soccer_korea_kleague1`) | **not available**: no Romanian competition in the OddsAPI catalogue (v9, verified 2026-08-22) | 30–85 credits a month (`soccer_saudi_arabia_pro_league`) | 49–141 a month, against an account already burning about 3,700 a day (v9 `oddsapi_quota_health.json`; its 100,000 monthly allowance is marked *assumed* there) |
+| **football-data `ROM.csv`** | — | full history, but **closing prices only** (benchmark, never bettable) | — | no API cost |
+
+The cross-check, at most 51 calls on a peak day, gives the same picture. The break-even is about
+311 leagues of this size before API-Football odds use 1% of the daily quota.
+
+**Recommendation.** Use API-Football `/odds` for all three: one source, negligible quota, and it
+covers Romania, which OddsAPI cannot. Add football-data `ROM.csv` closing prices as the Romanian
+benchmark.
+
+**Two unknowns to check first (3 calls, not made):**
+- whether API-Football's `/leagues` coverage marks `odds: true` for leagues 292, 283 and 307 (v9's
+  coverage journal does not store the odds flag);
+- how far back API-Football keeps pre-match odds. Until that is checked, assume **no backfill**:
+  the market comparison for these leagues would start from the first collected round.

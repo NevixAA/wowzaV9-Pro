@@ -110,3 +110,24 @@ CI settle pass.
 **Empty Bet Builder build.** A generate run that builds nothing now writes a header-only
 `bet_builder_candidates.csv` and `bet_builder_candidates_meta.json` (generated_at, rows). The
 current file (917 rows, generated 2026-11-01T16:01:55Z) is replaced on the next generate run.
+
+## team_match_stats_unplayed.csv (2026-11-09)
+
+Three `team_match_stats` rows carry a full-time score although the row was observed BEFORE its own
+kickoff (two of the kickoffs are still in the future). `src/data/result_guard.py` already kept
+them from settling anything; the rows stay in the store unchanged (originals kept) and are listed
+here with the evidence:
+
+| fixture | match | kickoff | stored | cause |
+|---|---|---|---|---|
+| 1555431 | Grasshoppers v FC Basel 1893 | 2026-11-28 | 0-0 | the reverse fixture's 0-0 (1555407, 2026-10-25) mirrored onto the return fixture by the provider |
+| 1555438 | Lausanne v FC Sion | 2026-12-06 | 0-1 | the reverse fixture's 1-0 (1555409, 2026-10-25) mirrored |
+| 1565640 | Shakhtar Donetsk v Obolon'-Brovar | 2027-05-08 | 2-0 | observed 190 days before kickoff; mirror cause not provable (no reverse fixture stored) |
+
+What blocks a repeat:
+- the collector skips `status=FT` fixtures with a future kickoff (`team_stats._not_yet_played`);
+- EVERY reader of results goes through `result_guard.drop_unplayed` / `played_team_results`
+  (enforced by `tests/test_result_guard_readers.py`; the 1X2 trainer, btts_eval, tourney,
+  xg_value and edge2_forward were reading these rows unguarded until 2026-11-09);
+- `python -m src.pro_tests` fails when the store holds an unplayed scored row that is NOT listed
+  in this file.

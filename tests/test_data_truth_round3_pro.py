@@ -187,9 +187,10 @@ def test_paper_1x2_notify_refuses_stale_price_and_records_fresh_one(monkeypatch)
     snap["snapshot_at"] = pd.Timestamp("2026-11-02 09:00:00")                            # 3h old
     d2 = d.copy()
     r = pp.notify(d2, dry_run=False, now=NOW, latest=pd.DataFrame({"x": [1]}))
-    assert r["sent"] == 1
-    assert d2.loc[0, "notified_odds"] in (3.0, 3.4, 2.4) and d2.loc[0, "o_home"] == 2.0
-    assert str(d2.loc[0, "notified_price_at"]).startswith("2026-11-02 09:00")
+    # owner 2026-11-09: the top-3% slice is stopped; a fresh price is re-priced but NOTHING is sent
+    # until a 1X2 rule is PROVEN, and the record is left exactly as logged
+    assert r["sent"] == 0 and r["reasons"].get("NO_PROVEN_RULE") == 1
+    assert pd.isna(d2.loc[0, "notified_at"]) and d2.loc[0, "o_home"] == 2.0
 
 
 # ── re-collect rule: a fixture stored before its kickoff is not "already collected" ─────────────

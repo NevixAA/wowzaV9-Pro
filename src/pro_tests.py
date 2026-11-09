@@ -307,7 +307,8 @@ def _clv() -> None:
     # A subprocess executes the REAL function in the environment it really runs in.
     import subprocess
     import textwrap
-    v11 = Path(__file__).resolve().parents[2] / "wowza-v11"
+    from config import pro_config as _cfg
+    v11 = Path(_cfg.V11_LOCAL)            # both spellings (wowza_v11 / wowza-v11), as everywhere else
     if not v11.exists():
         check("v11 checkout present for close-selection test", False, str(v11))
         return
@@ -346,6 +347,27 @@ def _clv() -> None:
     check("an empty frame is handled", res["empty_ok"])
 
 
+def _result_guard_store() -> None:
+    """Data Truth (owner 2026-11-09): a full-time score stored before its own kickoff is a provider
+    error. Every such row in team_match_stats must be listed in output/corrections/
+    team_match_stats_unplayed.csv (original kept, excluded by result_guard); an unlisted one fails."""
+    print("\n== result guard: unplayed scored rows in the store ==")
+    from src.data import result_guard as rg
+    from src.data import season_store as store
+    d = store.read("team_match_stats")
+    corr = Path("output/corrections/team_match_stats_unplayed.csv")
+    check("the unplayed-rows corrections file exists", corr.exists())
+    if d is None or d.empty or not corr.exists():
+        return
+    bad = d[rg.unplayed_mask(d) & d["home_goals"].notna()]
+    listed = set(pd.read_csv(corr, dtype={"fixture_id": str})["fixture_id"].astype(str))
+    unlisted = sorted(set(bad["fixture_id"].astype(str)) - listed)
+    check("every unplayed scored row is listed in the corrections file", not unlisted,
+          f"unlisted fixture ids: {unlisted[:10]}")
+    check("the guard drops every listed row",
+          not set(rg.drop_unplayed(d, "team_match_stats")["fixture_id"].astype(str)) & set(bad["fixture_id"].astype(str)))
+
+
 def _raises(fn) -> bool:
     try:
         fn()
@@ -356,7 +378,8 @@ def _raises(fn) -> bool:
 
 def main() -> int:
     print("Pro deterministic tests (hardening brief section 12)")
-    for fn in (_quality, _team_form, _config_and_contract, _registry, _data_quality, _clv):
+    for fn in (_quality, _team_form, _config_and_contract, _registry, _data_quality, _clv,
+               _result_guard_store):
         try:
             fn()
         except Exception as e:                                     # noqa: BLE001

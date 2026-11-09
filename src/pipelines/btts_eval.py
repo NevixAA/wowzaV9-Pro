@@ -210,7 +210,8 @@ def run_from_stats(min_season: str | None = None, quiet: bool = False) -> dict:
     from src.features import btts as bf
     from src.features import team_form as tf
 
-    stats = store.read("team_match_stats")
+    from src.data import result_guard as rg
+    stats = rg.drop_unplayed(store.read("team_match_stats"), "team_match_stats")
     if stats is None or stats.empty:
         print("[btts_eval] team_match_stats is empty")
         return {}

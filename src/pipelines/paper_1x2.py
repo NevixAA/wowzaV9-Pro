@@ -5,6 +5,18 @@ Forward PAPER record for the 1X2 model.
     python -m src.pipelines.paper_1x2 --mode settle   # grade what has finished
     python -m src.pipelines.paper_1x2 --mode all
 
+THE MODEL (owner 2026-11-09, reports/P5_1X2_REVIEW.md): since calc_version 2.0.0 the opinion is
+src.models.onex2_clean - a multinomial logistic on v9's REPAIRED history, refit MONTHLY by
+src.pipelines.train_1x2_clean - and, where a real pre-kickoff price exists, the blend of that model
+with the de-vigged price (pb_*, logged BESIDE p_*). The stale Dixon-Coles output/model_1x2.json
+(cutoff 2026-04-27, 31% coverage) is no longer served; rows logged under it keep calc_version 1.0.0.
+No clean model on disk, a v9 feature code different from the model's, or a scikit-learn version
+change = nothing is logged, and the reason is printed. Nothing falls back to the stale model.
+
+NOTHING IS SENT (owner 2026-11-09). The "top 3% by edge" slice measured -13.6% on 3,013 clean
+holdout bets (P5). notify() still re-prices and records its reasons, but selects nothing until a
+rule is PROVEN (NOTIFY_RULE). Every fixture is still logged.
+
 WHY A FORWARD RECORD AND NOT ANOTHER BACKTEST
 
 The offline evaluation says this model loses to the closing line (log-loss 1.0693 vs 1.0305 on
@@ -35,7 +47,10 @@ would make the data unable to answer the question.
 
 WHAT IS STORED, AND WHY EACH FIELD
 
-    model p_home/p_draw/p_away  the opinion, at a stated time before kickoff
+    model p_home/p_draw/p_away  the opinion, at a stated time before kickoff (mnlogit_clean)
+    blend pb_home/pb_draw/pb_away  model + de-vigged pre-kickoff price, where a price exists
+    research_cell/_pick/_odds   paper research cells (config/onex2_research_cells.json), e.g.
+                                LEAGUE_WIDE Eredivisie draws: every match, no model filter
     market m_* and raw odds     what was actually available at that moment -- ROI needs the
                                 price with the vig in it, not the de-vigged probability
     hours_to_kickoff            so "was it early or late" is answerable, not assumed
@@ -48,6 +63,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+from collections import Counter
 import os
 import glob
 import hashlib
@@ -62,18 +78,14 @@ from src.data import v9_config
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "output"
-MODEL_FILE = OUT / "model_1x2.json"
 PAPER_FILE = OUT / "paper_1x2.csv"
 
-CALC_VERSION = "1.0.0"
 HORIZON_DAYS = 3
 
-# TOP SLICE SENT AS TIPS. Set by the owner, against the backtest, and that disagreement is the
-# point of sending them: the 505-fixture sample said this slice is the worst available (12 picks,
-# 1 winner, -73% ROI, and monotonically worse the harder it selects), but that sample is small,
-# name-biased, and backward-looking. A forward record is the only thing that can settle it, and
-# the picks are marked PAPER so settling it costs nothing but patience.
-TOP_PCT = float(os.getenv("PAPER_1X2_TOP_PCT", "3"))
+# WHAT IS SENT: nothing until a selection rule is PROVEN under the owner's strict rule (>= 150 bets,
+# ROI CI above zero after correction). The former "top 3% by edge" slice was stopped by the owner on
+# 2026-11-09: on clean data that family lost -13.6% over 3,013 holdout bets (P5).
+NOTIFY_RULE = None
 # Never more than this many in one run, however large the board — the same anti-spam floor the
 # combo notifier uses, for the same reason.
 MAX_TIPS_PER_RUN = 3
@@ -195,32 +207,27 @@ def price_age_hours(price_at, now: dt.datetime) -> float | None:
     return (pd.Timestamp(now) - t).total_seconds() / 3600.0
 
 
-def _models() -> dict:
-    if not MODEL_FILE.exists():
-        print(f"[paper1x2] {MODEL_FILE.name} not found — run train_1x2 first")
-        return {}
-    try:
-        raw = (json.loads(MODEL_FILE.read_text(encoding="utf-8")) or {}).get("leagues", {}) or {}
-        # Keyed by CANONICAL league name, so a provider alias on either side finds its model.
-        out = {}
-        for k, v in raw.items():
-            c = v9_config.canonical_league(k)
-            if c is None:
-                print(f"[paper1x2] model league {k!r} is not in the registry — skipped")
-                continue
-            out[c] = v
-        return out
-    except Exception as e:                                       # noqa: BLE001
-        print(f"[paper1x2] could not read the model: {type(e).__name__}: {e}")
-        return {}
+def _research_cells() -> list[dict]:
+    from src.models import onex2_clean as C
+    if not C.CELLS_CONFIG.exists():
+        return []
+    return json.loads(C.CELLS_CONFIG.read_text(encoding="utf-8")).get("cells", [])
 
 
 def log_picks(now: dt.datetime | None = None) -> pd.DataFrame:
-    """One row per upcoming fixture the model can price, with the price available right now."""
+    """One row per upcoming fixture the clean model can price, with the price available right now."""
+    import tempfile
     from src.data import season_store as store
+    from src.models import onex2_clean as C
     now = now or dt.datetime.now(dt.timezone.utc)
-    models = _models()
-    if not models:
+    art = C.load()
+    if art is None:
+        print(f"[paper1x2] no clean 1X2 model ({C.MODEL_FILE.name}) - nothing logged. The monthly "
+              f"train_1x2_clean job builds it (off until PRO_1X2_CLEAN_ENABLED at go-live).")
+        return pd.DataFrame()
+    v9 = _v9_root()
+    if v9 is None:
+        print("[paper1x2] no v9 checkout - the clean model reads v9's repaired history; nothing logged")
         return pd.DataFrame()
 
     fx = store.read("fixtures")
@@ -240,34 +247,49 @@ def log_picks(now: dt.datetime | None = None) -> pd.DataFrame:
     print(f"[paper1x2] {len(fx)} upcoming fixture(s) within {HORIZON_DAYS}d")
     if fx.empty:
         return pd.DataFrame()
+    fx["_lg"] = fx["league"].map(v9_config.canonical_league)
+    nolg = fx["_lg"].isna()
+    if nolg.any():
+        print(f"[paper1x2] {int(nolg.sum())} fixture(s) in a league outside v9's registry - skipped")
+    fx = fx[~nolg]
+
+    with tempfile.TemporaryDirectory(prefix="paper1x2_") as tmp:
+        src = Path(tmp) / "fixtures.csv"
+        fx[["fixture_key", "_lg", "kickoff_utc", "home_team", "away_team"]].rename(
+            columns={"_lg": "league"}).to_csv(src, index=False)
+        try:
+            C.run_bridge("upcoming", str(v9), str(src), tmp)
+        except Exception as e:                                       # noqa: BLE001
+            print(f"[paper1x2] v9 bridge failed - nothing logged: {type(e).__name__}: {e}")
+            return pd.DataFrame()
+        probs, info = C.serve(art, tmp)
+    print(f"[paper1x2] clean model {art['name']} {art['calc_version']} (as of {art['asof']}): {info}")
+    if probs.empty:
+        return pd.DataFrame()
 
     latest = _latest_prices()
-
+    cells = {c["league"]: c for c in _research_cells()}
+    by_key = fx.set_index("fixture_key")
     stamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
-    rows, no_model, no_rating = [], 0, 0
-    for _, f in fx.iterrows():
-        m = models.get(v9_config.canonical_league(f.get("league")))
-        if not m:
-            no_model += 1
-            continue
-        pr = dc.predict(m, str(f.get("home_team")), str(f.get("away_team")))
-        if not pr:
-            no_rating += 1                      # team unseen in training — no honest rating
-            continue
+    rows = []
+    for _, pr in probs.iterrows():
+        f = by_key.loc[pr["fixture_key"]]
         r = {
-            "row_id": _row_id(str(f.get("fixture_key", "")), str(f.get("match_date", "")),
+            "row_id": _row_id(str(pr["fixture_key"]), str(f.get("match_date", "")),
                               str(f.get("home_team")), str(f.get("away_team"))),
-            "logged_at": stamp, "fixture_key": f.get("fixture_key"), "league": f.get("league"),
+            "logged_at": stamp, "fixture_key": pr["fixture_key"], "league": f.get("league"),
             "match_date": f.get("match_date"),
             "kickoff_utc": f["_ko"].strftime("%Y-%m-%dT%H:%M:%SZ"),
             "home_team": f.get("home_team"), "away_team": f.get("away_team"),
+            "model_home_team": pr["home_team"], "model_away_team": pr["away_team"],
             "hours_to_kickoff": round((f["_ko"] - now).total_seconds() / 3600.0, 2),
-            "p_home": round(pr["p_home"], 4), "p_draw": round(pr["p_draw"], 4),
-            "p_away": round(pr["p_away"], 4),
-            "calc_version": CALC_VERSION,
+            "p_home": round(float(pr["p_home"]), 4), "p_draw": round(float(pr["p_draw"]), 4),
+            "p_away": round(float(pr["p_away"]), 4),
+            "calc_version": art["calc_version"], "model": art["name"], "model_asof": art["asof"],
+            "model_v9_commit": art.get("v9_commit"),
         }
-        # The price as it stands now. Absent for most fixtures — the sharp tracker covers 19
-        # leagues — and that is recorded as missing rather than guessed, because a row with no
+        # The price as it stands now. Absent for most fixtures - the sharp tracker covers 19
+        # leagues - and that is recorded as missing rather than guessed, because a row with no
         # price can still measure calibration, just not ROI.
         if len(latest):
             h = _one_fixture(latest, f.get("league"), f["_ko"].strftime("%Y-%m-%d"),
@@ -279,12 +301,23 @@ def log_picks(now: dt.datetime | None = None) -> pd.DataFrame:
                           "m_away": round(float(h["m_away"]), 4),
                           "overround": round(float(h["overround"]), 4),
                           "price_at": str(h["snapshot_at"])[:19]})
+                pb = C.blend_row(art, [pr["p_home"], pr["p_draw"], pr["p_away"]],
+                                 [h["o_home"], h["o_draw"], h["o_away"]])
+                if pb is not None:
+                    r.update({"pb_home": round(pb[0], 4), "pb_draw": round(pb[1], 4),
+                              "pb_away": round(pb[2], 4),
+                              "blend_price_class": "SHARP_LATEST_PRE_KICKOFF"})
+        cell = cells.get(f["_lg"])
+        if cell is not None:
+            r.update({"research_cell": cell["id"], "research_pick": cell["outcome"].upper()})
+            o = r.get(f"o_{cell['outcome']}")
+            if o is not None:
+                r.update({"research_odds": o, "research_price_at": r.get("price_at")})
         rows.append(r)
 
     d = pd.DataFrame(rows)
     priced = int(d["o_home"].notna().sum()) if "o_home" in d.columns else 0
-    print(f"[paper1x2] logged {len(d)} pick(s), {priced} with a market price "
-          f"(skipped: no league model {no_model}, unrated team {no_rating})")
+    print(f"[paper1x2] logged {len(d)} pick(s), {priced} with a market price")
     return d
 
 
@@ -434,7 +467,7 @@ def format_tip(row: pd.Series, pick: str, ev: float, odds: float) -> str:
     """One Telegram message. Says what it is and what the evidence says, every time."""
     side = {"HOME": row["home_team"], "AWAY": row["away_team"], "DRAW": "Draw"}[pick]
     return "\n".join([
-        "🎯 *1X2 tip* (top %.0f%% by edge)" % TOP_PCT,
+        "🎯 *1X2 tip* (PAPER)",
         "",
         f"*{row['home_team']} vs {row['away_team']}*",
         f"_{row['league']} · {str(row['kickoff_utc'])[:16]}_",
@@ -444,15 +477,14 @@ def format_tip(row: pd.Series, pick: str, ev: float, odds: float) -> str:
         "  (home/draw/away)",
         f"Edge at that price: *{ev:+.1%}*",
         "",
-        "⚠️ _PAPER. This model LOSES to the closing line in backtest "
-        "(1.0693 vs 1.0305 log-loss), and this top slice measured -73% ROI on 12 picks. "
-        "Sent forward to test that finding, not because it is beaten._",
+        "⚠️ _PAPER. No 1X2 model beats the pre-kickoff market on clean data (P5 review); "
+        "this is a research record, never a stake._",
     ])
 
 
 def notify(d: pd.DataFrame, *, dry_run: bool = True, now: dt.datetime | None = None,
            latest: pd.DataFrame | None = None) -> dict:
-    """Send the top TOP_PCT of unsent, unstarted picks. Records what was sent, in the record.
+    """Send the picks NOTIFY_RULE selects (none until a rule is PROVEN). Records what was sent.
 
     Each pick is RE-PRICED at notify time from the newest snapshot of the same fixture (league +
     kickoff date + resolved clubs, `_one_fixture`), and skipped as STALE_PRICE when that snapshot is
@@ -461,7 +493,8 @@ def notify(d: pd.DataFrame, *, dry_run: bool = True, now: dt.datetime | None = N
     from src.combo import notify as cn
     import config.pro_config as cfg
     out = {"considered": 0, "eligible": 0, "sent": 0, "dry_run": dry_run,
-           "top_pct": TOP_PCT, "max_price_age_h": MAX_PRICE_AGE_HOURS, "reasons": {}}
+           "rule": None if NOTIFY_RULE is None else getattr(NOTIFY_RULE, "__name__", "rule"),
+           "max_price_age_h": MAX_PRICE_AGE_HOURS, "reasons": Counter()}
     if d is None or d.empty:
         return out
     # THE SAME float64 TRAP AS settle(), and it had never fired only because no send had ever
@@ -487,25 +520,27 @@ def notify(d: pd.DataFrame, *, dry_run: bool = True, now: dt.datetime | None = N
             h = _one_fixture(latest, r.get("league"), _utc_day(r.get("kickoff_utc")),
                              r.get("home_team"), r.get("away_team"), date_col="_day")
         if h is None:
-            out["reasons"]["NO_PRICE"] = out["reasons"].get("NO_PRICE", 0) + 1
+            out["reasons"]["NO_PRICE"] += 1
             continue
         age = price_age_hours(h["snapshot_at"], now)
         if age is None or age > MAX_PRICE_AGE_HOURS:
-            out["reasons"]["STALE_PRICE"] = out["reasons"].get("STALE_PRICE", 0) + 1
+            out["reasons"]["STALE_PRICE"] += 1
             continue
         priced = r.copy()
         priced["o_home"], priced["o_draw"], priced["o_away"] = h["o_home"], h["o_draw"], h["o_away"]
         e = _edge(priced)
         if e is None:
-            out["reasons"]["NO_PRICE"] = out["reasons"].get("NO_PRICE", 0) + 1
+            out["reasons"]["NO_PRICE"] += 1
             continue
         price_at[i] = str(h["snapshot_at"])[:19]
         scored.append((i, *e))
     if not scored:
         return out
-    scored.sort(key=lambda x: -x[2])
-    n = max(1, int(round(len(scored) * TOP_PCT / 100.0)))
-    chosen = scored[:n]
+    if NOTIFY_RULE is None:
+        # owner 2026-11-09: no 1X2 selection rule is PROVEN, so nothing is selected or sent
+        out["reasons"]["NO_PROVEN_RULE"] = len(scored)
+        return out
+    chosen = NOTIFY_RULE(scored)
     out["eligible"] = len(chosen)
     # DELIVERY (owner 2026-10-20): the picks now ride in v9's morning album, like Bet Builder, so the
     # separate Telegram message is off by default. The pick is still SELECTED and RECORDED here exactly
