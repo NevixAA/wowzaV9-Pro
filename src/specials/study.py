@@ -136,22 +136,24 @@ def _stat_col(key: str) -> str:
 def flag_candidates(pred: pd.DataFrame, quantile: float) -> pd.DataFrame:
     """cand_<key> (True/False/NaN) and cut_<key> per row, from the league's EARLIER months only."""
     d = pred.copy()
+    league = d["league"].to_numpy()
+    month = d["month"].to_numpy()
+    new = {}
     for key in CANDIDATE_KEYS:
-        col = _stat_col(key)
-        d[f"cut_{key}"] = np.nan
-        d[f"cand_{key}"] = np.nan
-        for lg, g in d.groupby("league", sort=False):
-            months = sorted(g["month"].unique())
-            for m in months:
-                prior = g.loc[g["month"] < m, col].dropna()
+        stat = pd.to_numeric(d[_stat_col(key)], errors="coerce").to_numpy(float)
+        cut = np.full(len(d), np.nan)
+        for lg in pd.unique(league):
+            li = np.flatnonzero(league == lg)
+            lm, lv = month[li], stat[li]
+            for m in sorted(pd.unique(lm)):
+                prior = lv[(lm < m) & ~np.isnan(lv)]
                 if len(prior) < RULE["min_prior_preds"]:
                     continue
-                cut = float(np.quantile(prior.to_numpy(), quantile))
-                idx = g.index[g["month"] == m]
-                d.loc[idx, f"cut_{key}"] = cut
-                vals = d.loc[idx, col]
-                d.loc[idx, f"cand_{key}"] = np.where(vals.notna(), (vals > cut).astype(float), np.nan)
-    return d
+                cut[li[lm == m]] = float(np.quantile(prior, quantile))
+        cand = np.where(np.isnan(cut) | np.isnan(stat), np.nan, (stat > cut).astype(float))
+        new[f"cut_{key}"], new[f"cand_{key}"] = cut, cand
+    return pd.concat([d.drop(columns=[c for c in new if c in d.columns]),
+                      pd.DataFrame(new, index=d.index)], axis=1)
 
 
 # ── evaluation ──────────────────────────────────────────────────────────────────────────────────
@@ -316,15 +318,26 @@ def main(argv=None) -> int:
     ap.add_argument("--history", help="a parquet of v9's repaired history (else exported from V9_LOCAL)")
     ap.add_argument("--predictions-out", help="where to write the full out-of-sample predictions")
     ap.add_argument("--leagues", help="comma list (default: every league)")
+    ap.add_argument("--predictions-in", help="re-use a saved --predictions-out parquet (skips the walk-forward)")
+    ap.add_argument("--history-info", help="with --predictions-in: the study_summary.json whose history/"
+                                           "walk_forward blocks describe those predictions")
     a = ap.parse_args(argv)
+    from src.specials import calibration as CAL
     from src.specials import history as HI
-    if a.history:
-        hist, hinfo = HI.clean_history(pd.read_parquet(a.history))
-        hinfo["source"] = a.history
+    if a.predictions_in:
+        pred = pd.read_parquet(a.predictions_in)
+        pred["month"] = pd.PeriodIndex(pred["month"].astype(str), freq="M")
+        pred["date"] = pd.to_datetime(pred["date"])
+        prior = json.loads(Path(a.history_info).read_text(encoding="utf-8")) if a.history_info else {}
+        hinfo, winfo = prior.get("history", {"source": a.predictions_in}), prior.get("walk_forward", {})
     else:
-        hist, hinfo = HI.export_v9_history()
-        hinfo["source"] = "v9 data_loader (offline)"
-    pred, winfo = walk_forward(hist, leagues=a.leagues.split(",") if a.leagues else None)
+        if a.history:
+            hist, hinfo = HI.clean_history(pd.read_parquet(a.history))
+            hinfo["source"] = a.history
+        else:
+            hist, hinfo = HI.export_v9_history()
+            hinfo["source"] = "v9 data_loader (offline)"
+        pred, winfo = walk_forward(hist, leagues=a.leagues.split(",") if a.leagues else None)
     if pred.empty:
         print("[specials study] no predictions")
         return 1
@@ -333,6 +346,13 @@ def main(argv=None) -> int:
     res = evaluate(pred)
     res["history"] = hinfo
     res["walk_forward"] = winfo
+    # calibration, walk-forward (earlier months only), raw and calibrated side by side
+    calp = CAL.walk_forward(flag_candidates(pred, RULE["candidate_quantile"]))
+    res["calibration"] = {"rule": CAL.CAL_RULE, "before_after": CAL.before_after(calp)}
+    live_cal = CAL.final_params(pred)
+    (out / "calibration.json").write_text(json.dumps(
+        {"rule": CAL.CAL_RULE, "history_end": hinfo.get("date_max"), "v9_sha": hinfo.get("v9_sha"),
+         "outcomes": live_cal}, indent=2), encoding="utf-8")
     (out / "study_summary.json").write_text(json.dumps(res, indent=2, default=str), encoding="utf-8")
     calibration_grid(pred).to_csv(out / "study_calibration_grid.csv", index=False)
     band_calibration(pred).to_csv(out / "study_calibration_bands.csv", index=False)

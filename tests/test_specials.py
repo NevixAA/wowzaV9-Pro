@@ -158,8 +158,128 @@ def test_log_row_has_grid_bands_and_league_base_and_no_invented_price():
     past = h[h["date"] < pd.Timestamp(now.date())]
     assert r["base_ge6"] == pytest.approx(O.base_rates(past.home_goals, past.away_goals)["ge6"], abs=1e-6)
     assert r["cand_status"] == "NO_CUTOFF" and np.isnan(r["cand_ge6"])
-    assert r["price_status"] == "NO_PRICE_FILE" and r["price_other_specials"] == "NOT_CAPTURED"
-    assert "price_under15" not in rows.columns             # never a number when nothing was quoted
+    assert r["price_status"] == "NO_PRICE_FILE" and pd.isna(r["price_under15"])   # never a number
+    assert r["special_price_status"] == "NO_PRICE_FILE" and pd.isna(r["price_ge6_best"])
+    assert r["price_margin_ge4"] == "NOT_CAPTURED"
+    assert r["cal_status"] == "NO_CALIBRATION" and np.isnan(r["p_cal_ge6"])
+    assert set(TR.SPECIAL_PRICE_KEYS + TR.V9_PRICE_KEYS) <= set(rows.columns)       # fixed schema
+
+
+# ── calibration ─────────────────────────────────────────────────────────────────────────────────
+
+def _overconfident(n=12000, leagues=("A", "B"), seed=11):
+    rng = np.random.default_rng(seed)
+    rows = []
+    months = pd.period_range("2022-01", periods=24, freq="M")
+    for i in range(n):
+        lg = leagues[i % len(leagues)]
+        true = rng.uniform(0.02, 0.2) * (1.4 if lg == "B" else 1.0)
+        p = min(0.95, true * 1.7)                          # the model says 1.7x what really happens
+        y = int(rng.random() < true)
+        rows.append({"league": lg, "month": months[i * len(months) // n], "p_ge6": p, "y_ge6": y,
+                     "base_ge6": 0.1})
+    d = pd.DataFrame(rows)
+    d["date"] = d["month"].dt.to_timestamp()
+    return d
+
+
+def test_calibration_corrects_overconfidence_and_learns_league_weights(monkeypatch):
+    from src.specials import calibration as CAL
+    monkeypatch.setitem(CAL.CAL_RULE, "min_pooled_rows", 1000)
+    d = _overconfident()
+    prm = CAL.fit(d, "ge6")
+    assert prm is not None and set(prm["leagues"]) == {"A", "B"}
+    for v in prm["leagues"].values():
+        assert 0 <= v["weight"] <= 1
+    cal = CAL.walk_forward(d, keys=["ge6"])
+    ok = cal["p_cal_ge6"].notna()
+    t = cal[ok]
+    assert ((t.p_cal_ge6 - t.y_ge6) ** 2).mean() < ((t.p_ge6 - t.y_ge6) ** 2).mean()
+    assert cal.loc[cal["month"] == cal["month"].min(), "p_cal_ge6"].isna().all()   # no earlier data
+
+
+def test_calibration_uses_earlier_months_only(monkeypatch):
+    from src.specials import calibration as CAL
+    monkeypatch.setitem(CAL.CAL_RULE, "min_pooled_rows", 1000)
+    d = _overconfident()
+    seen = []
+    real = CAL.fit
+
+    def spy(train, key):
+        seen.append(train["month"].max())
+        return real(train, key)
+    monkeypatch.setattr(CAL, "fit", spy)
+    months = sorted(d["month"].unique())
+    CAL.walk_forward(d, keys=["ge6"])
+    assert len(seen) == len(months) and pd.isna(seen[0])     # month 1: nothing earlier to fit on
+    assert all(s < m for s, m in zip(seen[1:], months[1:]))
+
+
+def test_league_without_its_own_data_gets_no_calibrated_probability(monkeypatch):
+    from src.specials import calibration as CAL
+    monkeypatch.setitem(CAL.CAL_RULE, "min_pooled_rows", 1000)
+    prm = CAL.fit(_overconfident(), "ge6")
+    assert np.isnan(CAL.apply(prm, "Z", 0.1))                 # never a pooled stand-in
+    assert 0 < CAL.apply(prm, "A", 0.1) < 1
+
+
+# ── prices: proven link, kept bets, budget floor ───────────────────────────────────────────────
+
+def test_odds_rows_keep_only_full_time_special_bets_and_real_prices():
+    from src.specials import prices as PR
+    resp = [{"fixture": {"id": 7, "timestamp": 2_000_000_000}, "update": "2030-01-01T10:00:00+00:00",
+             "bookmakers": [{"id": 8, "name": "Bet365", "bets": [
+                 {"name": "Goals Over/Under", "values": [{"value": "Over 5.5", "odd": "9.0"},
+                                                         {"value": "Under 5.5", "odd": "1.05"},
+                                                         {"value": "Over 2.5", "odd": "1.9"}]},
+                 {"name": "Goals Over/Under First Half", "values": [{"value": "Over 4.5", "odd": "40"}]},
+                 {"name": "Exact Score", "values": [{"value": "0:0", "odd": "11"}, {"value": "4:3", "odd": "1.01"}]},
+                 {"name": "Total - Home", "values": [{"value": "Over 3.5", "odd": "13"}]}]}]}]
+    rows = PR.odds_rows(resp, {"fixture_key": "k"}, "2030-01-01T11:00:00Z", 1_900_000_000)
+    got = {(r["bet"], r["selection"]) for r in rows}
+    assert got == {("Goals Over/Under", "Over 5.5"), ("Goals Over/Under", "Under 5.5"),
+                   ("Exact Score", "0:0"), ("Total - Home", "Over 3.5")}
+    assert all(r["bookmaker"] == "Bet365" and r["fixture_key"] == "k" for r in rows)
+    assert PR.odds_rows(resp, {}, "x", 2_100_000_000) == []        # kicked off -> nothing
+
+
+def test_link_requires_one_proven_fixture():
+    from src.specials import prices as PR
+    pro = pd.DataFrame({"fixture_key": ["k1", "k2"], "home_team": ["H", "X"], "away_team": ["W", "Y"],
+                        "_ko": pd.to_datetime(["2030-01-02T15:00Z", "2030-01-02T15:00Z"], utc=True),
+                        "_lg": "A"})
+    ts = int(pd.Timestamp("2030-01-02T15:00Z").timestamp())
+    af = [{"fixture_id": 1, "kickoff_ts": ts, "home_team": "H", "away_team": "W"},
+          {"fixture_id": 2, "kickoff_ts": ts, "home_team": "H", "away_team": "Nobody"},
+          {"fixture_id": 3, "kickoff_ts": ts + 86400, "home_team": "X", "away_team": "Y"}]
+    links, c = PR.link_fixtures(pro, af, _TN)
+    assert set(links) == {1} and links[1]["fixture_key"] == "k1"
+    assert c["linked"] == 1 and c["unproven"] == 2
+
+
+class _Client:
+    def __init__(self, remaining):
+        self.remaining, self.calls = remaining, []
+
+    def get(self, ep, params):
+        self.calls.append(ep)
+        if ep == "/status":
+            return {"response": {"requests": {"current": 75_000 - self.remaining, "limit_day": 75_000}}}
+        return {"response": []}
+
+
+def test_price_run_stops_at_the_quota_floor():
+    from src.specials import prices as PR
+    fx = pd.DataFrame({"fixture_key": ["k1"], "league": ["A"], "home_team": ["H"], "away_team": ["W"],
+                       "_ko": pd.to_datetime(["2030-01-02T15:00Z"], utc=True)})
+    c = _Client(remaining=PR.MIN_REMAINING)
+    rows, run = PR.collect(dt.datetime(2030, 1, 1, tzinfo=dt.timezone.utc), c, _TN, lambda x: x,
+                           {"A": 1}, lambda lg, d: "2029", fx, log=lambda *a: None)
+    assert run["status"].startswith("STOPPED") and c.calls == ["/status"] and rows.empty
+    c = _Client(remaining=PR.MIN_REMAINING + 1)            # budget for exactly one call
+    rows, run = PR.collect(dt.datetime(2030, 1, 1, tzinfo=dt.timezone.utc), c, _TN, lambda x: x,
+                           {"A": 1}, lambda lg, d: "2029", fx, log=lambda *a: None)
+    assert run["calls_fixtures"] + run["calls_odds"] <= 1
 
 
 def test_unknown_league_and_unresolved_team_are_counted_not_guessed():

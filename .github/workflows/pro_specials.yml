@@ -3,14 +3,17 @@ name: Pro Specials (research)
 # Specials research tracker (owner 2026-11-09): high-scoring (5+/6+/7+ goals, a side scoring 4+,
 # 4+ margin), 0-0 / low-scoring and unusual exact-score matches, each against the LEAGUE'S OWN
 # history. Every upcoming fixture the score model can rate is logged once, before kickoff, with the
-# full exact-score grid 0-0..6-6, the goal and margin bands and the league base rates; results are
-# graded beside the log from v9's repaired history (90 minutes).
+# full exact-score grid 0-0..6-6, the goal and margin bands, the league base rates, the raw AND the
+# calibrated special probabilities, and the REAL special-market prices collected this run; results
+# are graded beside the log from v9's repaired history (90 minutes).
 #
 # RESEARCH ONLY. No Telegram, no tiers, no stakes: this workflow passes no credential that could
-# send anything. It commits only its own files under output/specials/.
+# send anything. The API-Football key is used for /status, /fixtures and /odds only, never below
+# the 25,000-request floor and at most 250 calls a run (src/specials/prices.py). It commits only its
+# own files under output/specials/.
 #
-# OFF until the owner switches it on: the job runs only when the repository variable
-# PRO_SPECIALS_ENABLED is 'true'.
+# GO-LIVE: OFF until the owner switches it on - the only step is setting the repository variable
+# PRO_SPECIALS_ENABLED to 'true' (Settings > Secrets and variables > Actions > Variables).
 
 on:
   schedule:
@@ -25,7 +28,7 @@ on:
         type: choice
         options: ['all', 'log', 'settle', 'evaluate']
       study:
-        description: 'Re-run the history study (rewrites cutoffs.json); it also runs on the 1st of each month'
+        description: 'Re-run the history study (rewrites cutoffs.json + calibration.json); also runs on the 1st'
         required: false
         default: 'false'
         type: choice
@@ -55,8 +58,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # v9 read-only: its repaired history (data_loader, offline), its name resolver and its
-      # Over/Under 1.5 price captures. Nothing is written back.
+      # v9 read-only: its repaired history (data_loader, offline), its name resolver, its league-id
+      # map and its Over/Under 1.5 captures. Nothing is written back.
       - name: Check out v9 (read-only)
         uses: actions/checkout@v4
         with:
@@ -71,7 +74,7 @@ jobs:
       # v9's own requirements too: the repaired history is read through v9's data_loader.
       - run: pip install -r requirements.txt -r _v9/requirements.txt
 
-      - name: History study (on request)
+      - name: History study + calibration (on request)
         if: github.event.inputs.study == 'true'
         env:
           V9_LOCAL: ${{ github.workspace }}/_v9
@@ -79,7 +82,7 @@ jobs:
           set -o pipefail
           python -m src.specials.study --out output/specials 2>&1 | tee study.txt
 
-      - name: Monthly study on the 1st (schedule)
+      - name: Monthly study + calibration on the 1st (schedule)
         if: github.event_name == 'schedule'
         env:
           V9_LOCAL: ${{ github.workspace }}/_v9
@@ -88,8 +91,18 @@ jobs:
           if [ "$(date -u +%d)" = "01" ]; then
             python -m src.specials.study --out output/specials 2>&1 | tee study.txt
           else
-            echo "not the 1st - cutoffs kept"
+            echo "not the 1st - cutoffs and calibration kept"
           fi
+
+      - name: Real special-market prices (API-Football /odds)
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+          APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
+        run: |
+          set -o pipefail
+          FLAG=""
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then FLAG="--dry-run"; fi
+          python -m src.specials.prices $FLAG 2>&1 | tee prices.txt
 
       - name: Log, settle, evaluate
         env:
@@ -108,6 +121,7 @@ jobs:
             echo "## Specials (research)"
             echo '```'
             tail -n 20 study.txt 2>/dev/null || true
+            tail -n 20 prices.txt 2>/dev/null || true
             tail -n 20 specials.txt 2>/dev/null || echo "(no output captured)"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
@@ -117,8 +131,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          for f in specials_log.csv specials_settled.csv specials_eval.json cutoffs.json \
-                   study_summary.json study_calibration_grid.csv study_calibration_bands.csv; do
+          for f in specials_log.csv specials_settled.csv specials_eval.json cutoffs.json calibration.json \
+                   study_summary.json study_calibration_grid.csv study_calibration_bands.csv \
+                   special_prices.csv special_price_runs.csv; do
             [ -f "output/specials/$f" ] && git add -f "output/specials/$f"
           done
           git diff --staged --quiet && { echo "no change"; exit 0; }

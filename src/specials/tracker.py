@@ -90,9 +90,18 @@ def load_prices(v9_root: Path) -> pd.DataFrame:
     return d.dropna(subset=["snap", "odds", "home", "away"])
 
 
+V9_PRICE_KEYS = ["price_status", "price_ts", "price_source"] + [f"price_{m}" for m in PRICE_MARKETS]
+
+
 def attach_price(prices: pd.DataFrame, league: str, day: str, home: str, away: str,
                  ko: pd.Timestamp, now: pd.Timestamp, tn) -> dict:
-    """The latest Under 1.5 / Over 1.5 quote taken before both `now` and kickoff, for this fixture."""
+    """The latest Under 1.5 / Over 1.5 quote taken before both `now` and kickoff, for this fixture.
+    Always the same keys (the frozen log has a fixed schema); missing values are NaN."""
+    out = _attach_price(prices, league, day, home, away, ko, now, tn)
+    return {k: out.get(k, np.nan) for k in V9_PRICE_KEYS}
+
+
+def _attach_price(prices, league, day, home, away, ko, now, tn) -> dict:
     if prices is None or prices.empty:
         return {"price_status": "NO_PRICE_FILE"}
     f = prices[(prices["league"] == league) & (prices["match_date"].astype(str) == day)]
@@ -117,9 +126,71 @@ def attach_price(prices: pd.DataFrame, league: str, day: str, home: str, away: s
 
 # ── log ─────────────────────────────────────────────────────────────────────────────────────────
 
+CAL_FILE = OUT_DIR / "calibration.json"
+# special -> (API-Football bet, selection) whose REAL price is attached from special_prices.csv
+SPECIAL_MARKETS = {"ge5": ("Goals Over/Under", "Over 4.5"), "ge6": ("Goals Over/Under", "Over 5.5"),
+                   "ge7": ("Goals Over/Under", "Over 6.5"), "nil_nil": ("Exact Score", "0:0"),
+                   "nil_nil_u05": ("Goals Over/Under", "Under 0.5"),
+                   "tot_le1": ("Goals Over/Under", "Under 1.5"), "home_ge4": ("Total - Home", "Over 3.5"),
+                   "away_ge4": ("Total - Away", "Over 3.5")}
+
+
+def load_calibration(path: Path = CAL_FILE) -> dict:
+    if not path.exists():
+        return {}
+    return (json.loads(path.read_text(encoding="utf-8")) or {}).get("outcomes", {}) or {}
+
+
+def load_special_prices(path: Path | None = None) -> pd.DataFrame:
+    from src.specials import prices as PR
+    p = path or PR.PRICES_FILE
+    if not p.exists():
+        return pd.DataFrame()
+    d = pd.read_csv(p, low_memory=False)
+    d["_cap"] = pd.to_datetime(d["captured_at"], utc=True, errors="coerce")
+    return d
+
+
+SPECIAL_PRICE_KEYS = (["special_price_status", "special_price_ts"]
+                      + [f"price_{k}_{s}" for k in list(SPECIAL_MARKETS) + ["cs_unusual"]
+                         for s in ("best", "books")])
+
+
+def special_price_cols(sp: pd.DataFrame | None, fixture_key: str, ko: pd.Timestamp, now: pd.Timestamp,
+                       unusual_pick) -> dict:
+    """Best real quote per special at log time (latest capture before now and kickoff), with the
+    number of bookmakers quoting it and the capture time. Missing stays missing (NaN), with its status;
+    always the same keys."""
+    out = _special_price_cols(sp, fixture_key, ko, now, unusual_pick)
+    return {k: out.get(k, np.nan) for k in SPECIAL_PRICE_KEYS}
+
+
+def _special_price_cols(sp, fixture_key, ko, now, unusual_pick) -> dict:
+    if sp is None or sp.empty:
+        return {"special_price_status": "NO_PRICE_FILE"}
+    f = sp[(sp["fixture_key"] == fixture_key) & (sp["_cap"] <= now) & (sp["_cap"] < ko)]
+    if f.empty:
+        return {"special_price_status": "NOT_COLLECTED"}
+    f = f[f["_cap"] == f["_cap"].max()]
+    out = {"special_price_status": "COLLECTED",
+           "special_price_ts": f["_cap"].iloc[0].strftime("%Y-%m-%dT%H:%M:%SZ")}
+    wanted = dict(SPECIAL_MARKETS)
+    if isinstance(unusual_pick, str):
+        i, j = unusual_pick[3:].split("_")
+        wanted["cs_unusual"] = ("Exact Score", f"{i}:{j}")
+    for k, (bet, sel) in wanted.items():
+        q = f[(f["bet"] == bet) & (f["selection"] == sel)]
+        out[f"price_{k}_best"] = float(q["odds"].max()) if len(q) else np.nan
+        out[f"price_{k}_books"] = int(q["bookmaker"].nunique())
+    return out
+
+
 def build_rows(hist: pd.DataFrame, fixtures: pd.DataFrame, now: dt.datetime, cutoffs: dict,
-               prices: pd.DataFrame | None, tn, canon) -> tuple[pd.DataFrame, dict]:
-    """One row per fixture the model can rate. `canon` maps a league name to v9's canonical name."""
+               prices: pd.DataFrame | None, tn, canon, cal: dict | None = None,
+               special_prices: pd.DataFrame | None = None) -> tuple[pd.DataFrame, dict]:
+    """One row per fixture the model can rate. `canon` maps a league name to v9's canonical name.
+    `cal` = calibration.json outcomes: raw and calibrated probabilities are kept side by side."""
+    from src.specials import calibration as CAL
     stamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
     today = pd.Timestamp(now.date())
     counts = {"fixtures": int(len(fixtures)), "no_league_model": 0, "unresolved_team": 0, "unrated": 0}
@@ -179,10 +250,19 @@ def build_rows(hist: pd.DataFrame, fixtures: pd.DataFrame, now: dt.datetime, cut
                     flagged.append(k)
         r["cand_status"] = "NO_CUTOFF" if not lc else "OK"
         r["flagged"] = ",".join(flagged)
+        # calibrated probability beside the raw one; NaN when the league has no fitted adjustment
+        for k in CAL.CAL_KEYS:
+            params = (cal or {}).get(k)
+            r[f"p_cal_{k}"] = CAL.apply(params, lg, p[k])
+            r[f"cal_weight_{k}"] = (params["leagues"][lg]["weight"]
+                                    if params and lg in params["leagues"] else np.nan)
+        has_cal = any(r[f"p_cal_{k}"] == r[f"p_cal_{k}"] for k in CAL.CAL_KEYS)
+        r["cal_status"] = "NO_CALIBRATION" if not cal else ("OK" if has_cal else "NO_LEAGUE_DATA")
         if prices is not None:
             r.update(attach_price(prices, lg, f["_ko"].strftime("%Y-%m-%d"), f.get("home_team"),
                                   f.get("away_team"), f["_ko"], now_ts, tn))
-        r["price_other_specials"] = "NOT_CAPTURED"
+        r.update(special_price_cols(special_prices, f["fixture_key"], f["_ko"], now_ts, pick))
+        r["price_margin_ge4"] = "NOT_CAPTURED"           # no single provider market for a 4+ margin
         rows.append(r)
     return pd.DataFrame(rows), counts
 
@@ -294,7 +374,8 @@ def main(argv=None) -> int:
     if a.mode in ("log", "all"):
         fx = upcoming_fixtures(now)
         rows, counts = build_rows(hist, fx, now, load_cutoffs(), load_prices(cfg.V9_LOCAL), tn,
-                                  v9_config.canonical_league)
+                                  v9_config.canonical_league, cal=load_calibration(),
+                                  special_prices=load_special_prices())
         n_flag = int((rows["flagged"] != "").sum()) if len(rows) else 0
         print(f"[specials] {len(rows)} fixture(s) rated, {n_flag} flagged; skipped {counts}")
         if not a.dry_run:
