@@ -15,10 +15,10 @@ name: Pro Specials (research)
 # GO-LIVE: OFF until the owner switches it on - the only step is setting the repository variable
 # PRO_SPECIALS_ENABLED to 'true' (Settings > Secrets and variables > Actions > Variables).
 
+# DISPATCH ONLY (2026-11-09). The scheduled daily run is .github/workflows/pro_specials_collect.yml on
+# main, which runs this same code from data-truth-100 until go-live; a schedule here as well would run
+# the collection twice once data-truth-100 merges to main (v9 runbook U8).
 on:
-  schedule:
-    # Daily, off the hour and clear of the other Pro crons (paper 1X2 is :41 7).
-    - cron: '53 7 * * *'
   workflow_dispatch:
     inputs:
       mode:
