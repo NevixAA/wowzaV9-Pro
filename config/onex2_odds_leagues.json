@@ -1,0 +1,14 @@
+{
+  "about": "1X2 (Match Winner: home / draw / away) price collection for the leagues the 1X2 review could not measure against a market (owner 2026-11-09, reports/P5_1X2_REVIEW.md section 6.5). Real pre-kickoff prices only, timestamped, per bookmaker (Pinnacle, Bet365) plus the cross-book median with its book count, keyed by the API-Football fixture id.",
+  "probe": "2026-11-09T12:12:50Z, 3 calls (workflow pro_onex2_odds_probe.yml on main): Match Winner with all three outcomes from 9-10 bookmakers in all three leagues; API-Football still held prices for fixtures up to 7 days after kickoff, older rounds were gone (no long backfill).",
+  "leagues": [
+    {"af_id": 292, "name": "K League 1", "v9_league": "K-League 1", "first_sight_per_fixture": false,
+     "how": "already polled by the scout (registry/scout_leagues.json): 1X2 parsed from payloads it already fetches, 0 extra calls"},
+    {"af_id": 307, "name": "Pro League", "v9_league": "Saudi Pro League", "first_sight_per_fixture": false,
+     "how": "already polled by the scout: 0 extra calls"},
+    {"af_id": 283, "name": "Liga I", "v9_league": "Romanian Superliga", "first_sight_per_fixture": true,
+     "how": "not in the scout's league sweep (v9 enables it, but v9's odds provider carries no Romanian competition, so nobody collected its prices): one /odds?fixture call at first sight, then the scout's near-kickoff loop samples it (at most 4 bands). Measured cost: 317 fixtures/yr x <= 5 calls = about 4.3 calls/day, peak 20"}
+  ],
+  "first_sight_retry_hours": 12,
+  "first_sight_retry_hours_source": "a fixture whose odds are not published yet is asked again at most every 12 hours, so an early empty answer cannot cost a call every 2-hour sweep"
+}

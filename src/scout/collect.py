@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from collections import Counter
 import time
 from datetime import datetime, timedelta, timezone
 
@@ -125,6 +126,61 @@ def step_history(c: af.Client, watch: list[dict], budget: int, dry: bool) -> int
     return n
 
 
+ONEX2_CONFIG = cfg.BASE_DIR / "config" / "onex2_odds_leagues.json"
+ONEX2_JOURNAL = OUT / "onex2_first_sight.json"
+
+
+def onex2_leagues() -> dict:
+    """{'all': league ids whose 1X2 is kept, 'first_sight': ids called per fixture at first sight,
+    'retry_h': hours before an empty first-sight answer is asked again}. No file = nothing."""
+    if not ONEX2_CONFIG.exists():
+        return {"all": frozenset(), "first_sight": frozenset(), "retry_h": None}
+    d = json.loads(ONEX2_CONFIG.read_text(encoding="utf-8"))
+    lg = d["leagues"]
+    return {"all": frozenset(int(x["af_id"]) for x in lg),
+            "first_sight": frozenset(int(x["af_id"]) for x in lg if x["first_sight_per_fixture"]),
+            "retry_h": float(d["first_sight_retry_hours"])}
+
+
+def step_onex2_first_sight(c: af.Client, fx: pd.DataFrame, ox: dict, dry: bool,
+                           summary: dict | None = None, now: int | None = None) -> int:
+    """1X2 prices for leagues the sweep does not poll (owner 2026-11-09): ONE /odds?fixture call per
+    upcoming fixture that has no stored price yet. From then on the near-kickoff loop samples it
+    like any priced fixture. A fixture whose odds are not published yet is asked again only after
+    `retry_h` hours (journal), so an early empty answer cannot cost a call every sweep."""
+    now = int(time.time()) if now is None else now
+    if fx.empty or not ox["first_sight"]:
+        return 0
+    up = fx[fx["league_id"].isin(ox["first_sight"]) & (fx["kickoff_ts"] > now)
+            & (fx["kickoff_ts"] <= now + DAYS_AHEAD * 86400) & ~fx["status"].isin(parse.FINISHED)]
+    have = _read_recent("scout_odds", QUOTE_LOOKBACK_DAYS)
+    priced = set(have["fixture_id"].astype(int)) if not have.empty else set()
+    journal = (json.loads(ONEX2_JOURNAL.read_text(encoding="utf-8"))
+               if ONEX2_JOURNAL.exists() else {})
+    snap = cfg.utc_now_iso()
+    rows, calls, empty = [], 0, 0
+    for fid in sorted(set(up["fixture_id"].astype(int)) - priced):
+        last = journal.get(str(fid))
+        if last is not None and now - int(last) < ox["retry_h"] * 3600:
+            continue
+        body = c.get("/odds", {"fixture": fid}) or {}
+        calls += 1
+        got = parse.odds_rows(body.get("response") or [], snap, now, ox["all"])
+        if not got:
+            empty += 1
+        journal[str(fid)] = now
+        rows.extend(got)
+    n = _append("scout_odds", rows, "onex2first", dry)
+    if not dry and calls:
+        OUT.mkdir(parents=True, exist_ok=True)
+        ONEX2_JOURNAL.write_text(json.dumps(journal, indent=0, sort_keys=True), encoding="utf-8")
+    if summary is not None:
+        summary["onex2_first_sight_calls"] = calls
+        summary["onex2_first_sight_empty"] = empty
+    print(f"[scout] 1X2 first sight: {calls} call(s), {empty} without published odds yet, {n} row(s) stored")
+    return calls
+
+
 def step_dates(c: af.Client, ids: set[int]) -> pd.DataFrame:
     today = datetime.now(timezone.utc).date()
     rows = []
@@ -152,7 +208,7 @@ def _last_polls(now: pd.Timestamp) -> tuple[dict, dict]:
     treated as never polled, so the first sweep after deploy polls everything once."""
     from src.monitoring import collection_policy as pol
     runs = pol.load_runs(now - pd.Timedelta(days=4))
-    last, streak = {}, {}
+    last, streak = {}, Counter()        # a league never polled has 0 unchanged polls
     if runs.empty or "detail" not in runs.columns:
         return last, streak
     for r in runs[runs["collector"] == "scout_sweep"].itertuples():
@@ -160,7 +216,7 @@ def _last_polls(now: pd.Timestamp) -> tuple[dict, dict]:
         for lid, n_changed in (polled or {}).items():
             lid = int(lid)
             last[lid] = r.ts
-            streak[lid] = 0 if int(n_changed) else streak.get(lid, 0) + 1
+            streak[lid] = 0 if int(n_changed) else streak[lid] + 1
     return last, streak
 
 
@@ -192,7 +248,7 @@ def step_odds(c: af.Client, watch: list[dict], fx: pd.DataFrame, dry: bool,
         prio = pol.priority_class(mtk, experiment=fl.get("experiment", False),
                                   candidate=fl.get("candidate", False))
         ago = None if lid not in last else (now_ts - last[lid]).total_seconds() / 60.0
-        if not pol.is_due(mtk, ago, prio, streak.get(lid, 0)):
+        if not pol.is_due(mtk, ago, prio, streak[lid]):
             skipped["not_due"] += 1
             continue
         if not guard.allowed(prio):
@@ -201,7 +257,7 @@ def step_odds(c: af.Client, watch: list[dict], fx: pd.DataFrame, dry: bool,
         before = c.calls
         resp = c.get_all_pages("/odds", {"league": lid, "season": active[lid]})
         guard.spend(c.calls - before)
-        rows.extend(parse.odds_rows(resp, snap, now))
+        rows.extend(parse.odds_rows(resp, snap, now, onex2_leagues()["all"]))
         polled_ids.append(lid)
     prev = _read_recent("scout_odds", QUOTE_LOOKBACK_DAYS)
     last_q = {}
@@ -212,9 +268,9 @@ def step_odds(c: af.Client, watch: list[dict], fx: pd.DataFrame, dry: bool,
                                                 keep="last").itertuples()}
     keep = parse.changed(rows, last_q)
     n = _append("scout_odds", keep, "odds", dry)
-    changed_by_lg = pd.Series([r["league_id"] for r in keep]).value_counts().to_dict() if keep else {}
+    changed_by_lg = Counter(r["league_id"] for r in keep)       # a polled league with no change = 0
     if summary is not None:
-        summary["leagues_polled"] = {str(x): int(changed_by_lg.get(x, 0)) for x in polled_ids}
+        summary["leagues_polled"] = {str(x): int(changed_by_lg[x]) for x in polled_ids}
         summary["leagues_skipped"] = skipped
         summary["league_seasons"] = {str(k): str(v) for k, v in active.items()}
         summary["budget_status"] = guard.b.get("status")
@@ -335,6 +391,7 @@ def near_loop(c: af.Client, minutes: float, dry: bool) -> dict:
             time.sleep(min(NEAR_SPACING_MIN * 60, max(0, end - time.time() - 60)))
             continue
         snap = cfg.utc_now_iso()
+        ox_all = onex2_leagues()["all"]
         upcoming = o[o["kickoff_ts"] > now].drop_duplicates("fixture_id")
         rows = []
         for kind, _id, _cost in pol.plan_near_calls(due, _same_day_counts(upcoming, due)):
@@ -344,7 +401,7 @@ def near_loop(c: af.Client, minutes: float, dry: bool) -> dict:
                 for day in days:
                     resp = c.get_all_pages("/odds", {"league": _id, "season": seasons[str(_id)],
                                                      "date": day})
-                    rows.extend(parse.odds_rows(resp, snap, now))
+                    rows.extend(parse.odds_rows(resp, snap, now, ox_all))
                 league_calls += 1
                 seen |= set(due[due["league_id"] == _id]["fixture_id"].astype(int))
                 continue
@@ -352,7 +409,7 @@ def near_loop(c: af.Client, minutes: float, dry: bool) -> dict:
                     else due[due["league_id"] == _id]["fixture_id"].astype(int).tolist())
             for fid in fids:
                 body = c.get("/odds", {"fixture": fid}) or {}
-                rows.extend(parse.odds_rows(body.get("response") or [], snap, now))
+                rows.extend(parse.odds_rows(body.get("response") or [], snap, now, ox_all))
                 seen.add(fid)
                 fixture_calls += 1
         last = {}
@@ -422,7 +479,8 @@ def main() -> int:
         print(json.dumps(summary))
         return 0
     watch = reg.load()
-    ids = {x["id"] for x in watch}
+    ox = onex2_leagues()
+    ids = {x["id"] for x in watch} | set(ox["all"])          # 1X2 leagues' fixtures cost no call
     c = af.Client()
     summary = {"started": cfg.utc_now_iso(), "leagues": len(watch)}
     try:
@@ -431,6 +489,7 @@ def main() -> int:
         summary["results_stored"] = step_results(fx, a.dry_run)
         quotes = step_odds(c, watch, fx, a.dry_run, summary)  # first among the bounded steps: unrecoverable
         summary["quotes_seen"] = int(len(quotes))
+        step_onex2_first_sight(c, fx, ox, a.dry_run, summary)
         summary["model_frozen"] = step_freeze(quotes, fx, a.dry_run)
         summary["history_rows"] = step_history(c, watch, a.history_budget, a.dry_run)
         summary["status"] = "ok"
@@ -454,7 +513,7 @@ def _ledger(collector: str, summary: dict, c: af.Client, dry: bool) -> None:
         from src.monitoring import collection_policy as pol
         keep = ("leagues_polled", "leagues_skipped", "league_seasons", "budget_status",
                 "max_priority_polled", "passes", "fixtures_watched", "league_calls",
-                "fixture_calls", "status")
+                "fixture_calls", "onex2_first_sight_calls", "onex2_first_sight_empty", "status")
         pol.record_run(collector, summary.get("started"), summary.get("finished"), c.calls,
                        quota_remaining=c.remaining,
                        detail={k: summary[k] for k in keep if k in summary}, dry=dry)

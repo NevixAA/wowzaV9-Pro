@@ -34,6 +34,16 @@ jobs:
               sleep 0.3
             done
           done
+      # NEW-FORMAT leagues (owner 2026-11-09): Romania's 1X2 benchmark. football-data's /new/ files
+      # carry CLOSING prices only (PSC*, MaxC*, AvgC*, B365C*), so they are a benchmark and never a
+      # bettable price; src/pipelines/onex2_v9_bridge.py reads <CODE>_new.csv as FD_CLOSE only.
+      - name: Download new-format files
+        run: |
+          for code in ROM; do
+            f="experiments/ou_info_inputs_2026_10/fd_raw/${code}_new.csv"
+            curl -sfL --max-time 60 "https://www.football-data.co.uk/new/${code}.csv" -o "$f" \
+              && echo "ok $code (new format, closing only)" || { echo "miss $code"; rm -f "$f"; }
+          done
       - name: Commit
         run: |
           git config user.name  "github-actions[bot]"

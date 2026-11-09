@@ -11,8 +11,9 @@ import time
 from config import pro_config as cfg
 
 _BASE = "https://v3.football.api-sports.io"
-#: Stop calling when the day's remaining requests fall below this.
-MIN_QUOTA = int(os.getenv("SCOUT_MIN_QUOTA", "20000"))
+#: Stop calling when the day's remaining requests fall below this. 25,000 = the owner's floor for
+#: every API-Football collector (v9 scripts/collect_common.FLOOR, data-truth collection 2026-11).
+MIN_QUOTA = int(os.getenv("SCOUT_MIN_QUOTA", "25000"))
 
 
 class QuotaFloor(RuntimeError):

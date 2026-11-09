@@ -11,12 +11,18 @@ MARKETS = {  # (API bet name, API value) -> (market, selection)
     ("Goals Over/Under", "Over 3.5"): ("ou35", "over"), ("Goals Over/Under", "Under 3.5"): ("ou35", "under"),
     ("Both Teams Score", "Yes"): ("btts", "yes"), ("Both Teams Score", "No"): ("btts", "no"),
 }
+#: 1X2 (owner 2026-11-09): parsed ONLY for the leagues the caller passes (config/onex2_odds_leagues.json),
+#: so the 200 scout leagues do not grow the store with a market nothing reads.
+MARKETS_1X2 = {("Match Winner", "Home"): ("1x2", "home"), ("Match Winner", "Draw"): ("1x2", "draw"),
+               ("Match Winner", "Away"): ("1x2", "away")}
 FINISHED = {"FT", "AET", "PEN"}
 
 
-def odds_rows(resp: list, snapshot_ts: str, now_epoch: int) -> list[dict]:
+def odds_rows(resp: list, snapshot_ts: str, now_epoch: int,
+              onex2_leagues: frozenset = frozenset()) -> list[dict]:
     """One row per (fixture, market, selection, book) for Pinnacle and Bet365, plus a
     `median` row carrying the cross-book median and the number of books quoting it.
+    Match Winner (1X2) is kept for fixtures of `onex2_leagues` only.
 
     Fixtures that have already kicked off are dropped: an in-play quote is not a pre-match price,
     and storing one would let it pass for a closing line later.
@@ -33,7 +39,10 @@ def odds_rows(resp: list, snapshot_ts: str, now_epoch: int) -> list[dict]:
             name = bk.get("name")
             for bet in bk.get("bets") or []:
                 for v in bet.get("values") or []:
-                    key = MARKETS.get((bet.get("name"), str(v.get("value"))))
+                    bv = (bet.get("name"), str(v.get("value")))
+                    key = MARKETS.get(bv)
+                    if key is None and lg is not None and int(lg) in onex2_leagues:
+                        key = MARKETS_1X2.get(bv)
                     if not key:
                         continue
                     try:
@@ -57,7 +66,8 @@ def _row(f, lg, key, book, odds, n_books, snapshot_ts, ko, now_epoch):
             "odds": float(odds), "n_books": n_books, "snapshot_ts": snapshot_ts,
             "minutes_to_kickoff": round((int(ko) - now_epoch) / 60.0, 1),
             # src/quality.py vocabulary: a thin median is a real number but not a consensus.
-            "quality_flags": "INSUFFICIENT_BOOKS" if book == "median" and (n_books or 0) < 3 else ""}
+            "quality_flags": ("INSUFFICIENT_BOOKS"
+                              if book == "median" and n_books is not None and n_books < 3 else "")}
 
 
 def fixture_rows(resp: list) -> list[dict]:
@@ -69,7 +79,8 @@ def fixture_rows(resp: list) -> list[dict]:
         st = ((f.get("status") or {}).get("short") or "")
         out.append({
             "fixture_id": int(f["id"]), "league_id": int(lg.get("id")), "season": str(lg.get("season")),
-            "round": lg.get("round"), "kickoff_ts": int(f.get("timestamp") or 0),
+            # no kickoff from the provider = MISSING (flagged below), never epoch 0 (1970-01-01)
+            "round": lg.get("round"), "kickoff_ts": int(f["timestamp"]) if f.get("timestamp") else None,
             "match_date": str(f.get("date", ""))[:10],
             "home_id": (t.get("home") or {}).get("id"), "home_team": (t.get("home") or {}).get("name"),
             "away_id": (t.get("away") or {}).get("id"), "away_team": (t.get("away") or {}).get("name"),

@@ -88,6 +88,32 @@ def _load(v9_root: str):
     return raw, meta, DL
 
 
+#: closing columns of football-data's new-format files, in preference order (average first, as for
+#: the main files' FD_CLOSE)
+NEWFMT_CLOSE_PREFS = ("AvgC", "PSC", "B365C", "MaxC")
+
+
+def newfmt_close_rows(df) -> list[dict]:
+    """Closing 1X2 triples of a football-data /new/ file: {date, home, away, book, o}. A row
+    without one complete real triple (all three > 1) yields nothing; nothing is filled."""
+    import pandas as pd
+    if not {"Date", "Home", "Away"} <= set(df.columns):
+        return []
+    out = []
+    dates = pd.to_datetime(df["Date"], dayfirst=True, errors="coerce").dt.normalize()
+    for i, x in df.iterrows():
+        d = dates.loc[i]
+        if pd.isna(d) or pd.isna(x["Home"]) or pd.isna(x["Away"]):
+            continue
+        for p in NEWFMT_CLOSE_PREFS:
+            o = [pd.to_numeric(x.get(p + s), errors="coerce") for s in ("H", "D", "A")]
+            if all(pd.notna(v) and v > 1.0 for v in o):
+                out.append({"date": d, "home": str(x["Home"]), "away": str(x["Away"]), "book": p,
+                            "o": [float(v) for v in o]})
+                break
+    return out
+
+
 def _row_ids(d):
     return (d["date"].dt.strftime("%Y-%m-%d") + "|" + d["league"].astype(str) + "|"
             + d["home_team"].astype(str) + "|" + d["away_team"].astype(str))
@@ -185,6 +211,31 @@ def history(v9_root: str, out_dir: str, fd_raw: str) -> int:
                 rows.append({"row_id": rid, "source": "football-data", "class": "FD_BET365_ENTRY",
                              "book": "B365", "o_home": o[0], "o_draw": o[1], "o_away": o[2],
                              "price_at": None, "file": Path(f).name})
+
+    # football-data NEW-FORMAT files (<CODE>_new.csv, e.g. ROM_new.csv for Romania): CLOSING prices
+    # only - a benchmark, never a bettable price (owner 2026-11-09). The league comes from v9's
+    # registry (football_data_code + football_data_format "new"), never from the file name alone.
+    reg = json.loads((Path(v9_root) / "config" / "leagues.json").read_text(encoding="utf-8"))["leagues"]
+    newfmt = {v["football_data_code"]: v["name"] for v in reg
+              if v.get("football_data_format") == "new" and v.get("football_data_code")}
+    for f in sorted(glob.glob(str(Path(fd_raw) / "*_new.csv"))):
+        lg = newfmt.get(Path(f).stem[:-len("_new")])
+        if lg is None or lg not in pools:
+            continue
+        try:
+            r = pd.read_csv(f, encoding="utf-8-sig", on_bad_lines="skip", low_memory=False)
+        except UnicodeDecodeError:
+            r = pd.read_csv(f, encoding="cp1252", encoding_errors="replace", on_bad_lines="skip",
+                            low_memory=False)
+        for x in newfmt_close_rows(r):
+            rid, why = find(lg, x["date"], x["home"], x["away"])
+            note("FD_NEW", lg, why)
+            if rid is None:
+                continue
+            rows.append({"row_id": rid, "source": "football-data new-format (closing only)",
+                         "class": "FD_CLOSE", "book": x["book"], "o_home": x["o"][0],
+                         "o_draw": x["o"][1], "o_away": x["o"][2], "price_at": None,
+                         "file": Path(f).name, "closing_only": True})
 
     for f in sorted(glob.glob(str(Path(v9_root) / "output" / "sharp_history" / "*.json"))):
         d = json.loads(Path(f).read_text(encoding="utf-8"))

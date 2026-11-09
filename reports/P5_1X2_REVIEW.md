@@ -238,3 +238,40 @@ benchmark.
   coverage journal does not store the odds flag);
 - how far back API-Football keeps pre-match odds. Until that is checked, assume **no backfill**:
   the market comparison for these leagues would start from the first collected round.
+
+### 6.6 1X2 price collection for K League 1, Romania and Saudi Arabia (owner approved 2026-11-09)
+
+**Probe (3 calls, 2026-11-09 12:12 UTC, `pro_onex2_odds_probe.yml` on main; quota afterwards 71,427):**
+
+| League (API-Football id) | Match Winner (all 3 outcomes) | Bookmakers | History still held |
+|---|---|---|---|
+| K League 1 (292) | yes, 6 fixtures | 10, incl. Pinnacle and Bet365 | fixtures of Nov 7–8 |
+| Romania Liga I (283) | yes, 10 fixtures on page 1 of 2 | 10 | back to **Nov 2** (7 days) |
+| Saudi Pro League (307) | yes, 8 fixtures | 9 | fixtures of Nov 5–7 |
+
+API-Football keeps prices for about a week after kickoff and not longer, so there is no long
+backfill. (The scout docstring's "gone once a match starts" was too strong: prices remain about a
+week, but they are no longer updated.)
+
+**Collection (in the scout; owner rule: collecting real data is allowed now, tips are not):**
+- **1X2 rows:** `src/scout/parse.py` keeps Match Winner for the three configured leagues only
+  (`config/onex2_odds_leagues.json`). Each fixture gets home, draw and away rows for Pinnacle and
+  Bet365, plus the cross-book median with its book count, each timestamped and keyed by the
+  API-Football fixture id. The other 197 scout leagues are unchanged.
+- **K League 1 and Saudi Arabia** were already polled by the scout, so their 1X2 comes from
+  payloads it already fetches: **0 extra calls**.
+- **Romania** was in nobody's collection: v9 enables it, but v9's odds provider has no Romanian
+  league, and the scout skipped v9 leagues. Now each fixture gets **one** `/odds?fixture` call at
+  first sight, and the scout's near-kickoff loop then samples it like any priced fixture (at most
+  4 bands). A fixture whose odds are not published yet is asked again at most every 12 hours
+  (journal).
+  - Measured cost: 317 fixtures a year × at most 5 calls = **about 4.3 calls a day, peak 20**.
+  - Every run records its calls in the run ledger (`onex2_first_sight_calls` and the scout's own
+    counts).
+- **Budget guard:** the scout's quota floor is now the owner's **25,000** (it was 20,000).
+- **Romania's closing benchmark:** `pro_fd_raw_fetch.yml` fetches football-data `new/ROM.csv` as
+  `fd_raw/ROM_new.csv`. The bridge reads it as **closing only** (`FD_CLOSE`, `closing_only = True`),
+  never as a bettable or entry price. It was checked end to end: 5 of 5 test rows joined through
+  v9's resolver.
+- **Data fix found on the way:** a fixture without a kickoff time was stored with `kickoff_ts = 0`
+  (1970). It is now missing and flagged `MISSING_KICKOFF`.
