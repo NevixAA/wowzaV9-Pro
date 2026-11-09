@@ -1,0 +1,1367 @@
+{
+  "rule": {
+    "version": "SPC-1",
+    "refit": "calendar month, expanding window (all earlier matches, Dixon-Coles time decay)",
+    "min_league_matches": 300,
+    "min_team_matches": 8,
+    "half_life_days": 180.0,
+    "candidate_quantile": 0.9,
+    "sensitivity_quantiles": [
+      0.95
+    ],
+    "min_prior_preds": 200,
+    "min_candidate_events": 30,
+    "bootstrap": 2000,
+    "family_alpha": 0.05
+  },
+  "quantile": 0.9,
+  "history_end": "2026-10-30",
+  "v9_sha": "bdab0d9ecad6dd38040747009962a2a5d738d966",
+  "leagues": {
+    "Argentina Primera Division": {
+      "ge5": {
+        "cutoff": 0.15332269619273434,
+        "n_preds": 2777,
+        "data_end": "2026-10-27"
+      },
+      "ge6": {
+        "cutoff": 0.06566936227393548,
+        "n_preds": 2777,
+        "data_end": "2026-10-27"
+      },
+      "ge7": {
+        "cutoff": 0.024670759692023893,
+        "n_preds": 2777,
+        "data_end": "2026-10-27"
+      },
+      "team_ge4": {
+        "cutoff": 0.131355934090533,
+        "n_preds": 2777,
+        "data_end": "2026-10-27"
+      },
+      "margin_ge4": {
+        "cutoff": 0.06426464593884788,
+        "n_preds": 2777,
+        "data_end": "2026-10-27"
+      },
+      "nil_nil": {
+        "cutoff": 0.19945258099235044,
+        "n_preds": 2777,
+        "data_end": "2026-10-27"
+      },
+      "tot_le1": {
+        "cutoff": 0.48833035738623237,
+        "n_preds": 2777,
+        "data_end": "2026-10-27"
+      },
+      "cs_unusual": {
+        "cutoff": 6.20577056751095,
+        "n_preds": 2777,
+        "data_end": "2026-10-27"
+      }
+    },
+    "Austrian Bundesliga": {
+      "ge5": {
+        "cutoff": 0.25983478846337826,
+        "n_preds": 1081,
+        "data_end": "2026-10-25"
+      },
+      "ge6": {
+        "cutoff": 0.13218543654854586,
+        "n_preds": 1081,
+        "data_end": "2026-10-25"
+      },
+      "ge7": {
+        "cutoff": 0.059389014697394785,
+        "n_preds": 1081,
+        "data_end": "2026-10-25"
+      },
+      "team_ge4": {
+        "cutoff": 0.2211395162216811,
+        "n_preds": 1081,
+        "data_end": "2026-10-25"
+      },
+      "margin_ge4": {
+        "cutoff": 0.11697025858820616,
+        "n_preds": 1081,
+        "data_end": "2026-10-25"
+      },
+      "nil_nil": {
+        "cutoff": 0.12217990129969039,
+        "n_preds": 1081,
+        "data_end": "2026-10-25"
+      },
+      "tot_le1": {
+        "cutoff": 0.3324293147702725,
+        "n_preds": 1081,
+        "data_end": "2026-10-25"
+      },
+      "cs_unusual": {
+        "cutoff": 4.416227573858632,
+        "n_preds": 1081,
+        "data_end": "2026-10-25"
+      }
+    },
+    "Belgian First Division A": {
+      "ge5": {
+        "cutoff": 0.26965836778117763,
+        "n_preds": 1695,
+        "data_end": "2026-10-25"
+      },
+      "ge6": {
+        "cutoff": 0.13893639134434604,
+        "n_preds": 1695,
+        "data_end": "2026-10-25"
+      },
+      "ge7": {
+        "cutoff": 0.06323951063721359,
+        "n_preds": 1695,
+        "data_end": "2026-10-25"
+      },
+      "team_ge4": {
+        "cutoff": 0.23920858207302964,
+        "n_preds": 1695,
+        "data_end": "2026-10-25"
+      },
+      "margin_ge4": {
+        "cutoff": 0.12993017788986935,
+        "n_preds": 1695,
+        "data_end": "2026-10-25"
+      },
+      "nil_nil": {
+        "cutoff": 0.1098303609383236,
+        "n_preds": 1695,
+        "data_end": "2026-10-25"
+      },
+      "tot_le1": {
+        "cutoff": 0.3343092199293903,
+        "n_preds": 1695,
+        "data_end": "2026-10-25"
+      },
+      "cs_unusual": {
+        "cutoff": 8.92661766967697,
+        "n_preds": 1695,
+        "data_end": "2026-10-25"
+      }
+    },
+    "Brazil Serie A": {
+      "ge5": {
+        "cutoff": 0.18135619755765264,
+        "n_preds": 2518,
+        "data_end": "2026-10-30"
+      },
+      "ge6": {
+        "cutoff": 0.08189087908590895,
+        "n_preds": 2518,
+        "data_end": "2026-10-30"
+      },
+      "ge7": {
+        "cutoff": 0.032491822686709526,
+        "n_preds": 2518,
+        "data_end": "2026-10-30"
+      },
+      "team_ge4": {
+        "cutoff": 0.15723341811573696,
+        "n_preds": 2518,
+        "data_end": "2026-10-30"
+      },
+      "margin_ge4": {
+        "cutoff": 0.08245590784758439,
+        "n_preds": 2518,
+        "data_end": "2026-10-30"
+      },
+      "nil_nil": {
+        "cutoff": 0.151570196948571,
+        "n_preds": 2518,
+        "data_end": "2026-10-30"
+      },
+      "tot_le1": {
+        "cutoff": 0.43303654042314693,
+        "n_preds": 2518,
+        "data_end": "2026-10-30"
+      },
+      "cs_unusual": {
+        "cutoff": 10.702706871975122,
+        "n_preds": 2518,
+        "data_end": "2026-10-30"
+      }
+    },
+    "Bundesliga 2": {
+      "ge5": {
+        "cutoff": 0.3007005716406054,
+        "n_preds": 1464,
+        "data_end": "2026-10-25"
+      },
+      "ge6": {
+        "cutoff": 0.16104499355388857,
+        "n_preds": 1464,
+        "data_end": "2026-10-25"
+      },
+      "ge7": {
+        "cutoff": 0.07638358442669324,
+        "n_preds": 1464,
+        "data_end": "2026-10-25"
+      },
+      "team_ge4": {
+        "cutoff": 0.23666048136774837,
+        "n_preds": 1464,
+        "data_end": "2026-10-25"
+      },
+      "margin_ge4": {
+        "cutoff": 0.10429145715629047,
+        "n_preds": 1464,
+        "data_end": "2026-10-25"
+      },
+      "nil_nil": {
+        "cutoff": 0.1003622089056854,
+        "n_preds": 1464,
+        "data_end": "2026-10-25"
+      },
+      "tot_le1": {
+        "cutoff": 0.2914316038534232,
+        "n_preds": 1464,
+        "data_end": "2026-10-25"
+      },
+      "cs_unusual": {
+        "cutoff": 7.279882467936809,
+        "n_preds": 1464,
+        "data_end": "2026-10-25"
+      }
+    },
+    "Championship": {
+      "ge5": {
+        "cutoff": 0.1942588628491526,
+        "n_preds": 2966,
+        "data_end": "2026-10-24"
+      },
+      "ge6": {
+        "cutoff": 0.08967990233316522,
+        "n_preds": 2966,
+        "data_end": "2026-10-24"
+      },
+      "ge7": {
+        "cutoff": 0.03641071421342355,
+        "n_preds": 2966,
+        "data_end": "2026-10-24"
+      },
+      "team_ge4": {
+        "cutoff": 0.16344412020082677,
+        "n_preds": 2966,
+        "data_end": "2026-10-24"
+      },
+      "margin_ge4": {
+        "cutoff": 0.0778640942538639,
+        "n_preds": 2966,
+        "data_end": "2026-10-24"
+      },
+      "nil_nil": {
+        "cutoff": 0.13777400294296527,
+        "n_preds": 2966,
+        "data_end": "2026-10-24"
+      },
+      "tot_le1": {
+        "cutoff": 0.40370711459807435,
+        "n_preds": 2966,
+        "data_end": "2026-10-24"
+      },
+      "cs_unusual": {
+        "cutoff": 10.112670353913408,
+        "n_preds": 2966,
+        "data_end": "2026-10-24"
+      }
+    },
+    "China Super League": {
+      "ge5": {
+        "cutoff": 0.305362146597139,
+        "n_preds": 1406,
+        "data_end": "2026-10-24"
+      },
+      "ge6": {
+        "cutoff": 0.1644268355247594,
+        "n_preds": 1406,
+        "data_end": "2026-10-24"
+      },
+      "ge7": {
+        "cutoff": 0.07841460368397685,
+        "n_preds": 1406,
+        "data_end": "2026-10-24"
+      },
+      "team_ge4": {
+        "cutoff": 0.28340834641782864,
+        "n_preds": 1406,
+        "data_end": "2026-10-24"
+      },
+      "margin_ge4": {
+        "cutoff": 0.15990684808371325,
+        "n_preds": 1406,
+        "data_end": "2026-10-24"
+      },
+      "nil_nil": {
+        "cutoff": 0.13210771541078042,
+        "n_preds": 1406,
+        "data_end": "2026-10-24"
+      },
+      "tot_le1": {
+        "cutoff": 0.35931406318016246,
+        "n_preds": 1406,
+        "data_end": "2026-10-24"
+      },
+      "cs_unusual": {
+        "cutoff": 8.534270286462895,
+        "n_preds": 1406,
+        "data_end": "2026-10-24"
+      }
+    },
+    "Denmark Superliga": {
+      "ge5": {
+        "cutoff": 0.253783892931533,
+        "n_preds": 1139,
+        "data_end": "2026-10-26"
+      },
+      "ge6": {
+        "cutoff": 0.12807334707300425,
+        "n_preds": 1139,
+        "data_end": "2026-10-26"
+      },
+      "ge7": {
+        "cutoff": 0.05706626663607202,
+        "n_preds": 1139,
+        "data_end": "2026-10-26"
+      },
+      "team_ge4": {
+        "cutoff": 0.20773224362461296,
+        "n_preds": 1139,
+        "data_end": "2026-10-26"
+      },
+      "margin_ge4": {
+        "cutoff": 0.10244709264283829,
+        "n_preds": 1139,
+        "data_end": "2026-10-26"
+      },
+      "nil_nil": {
+        "cutoff": 0.11090984563049905,
+        "n_preds": 1139,
+        "data_end": "2026-10-26"
+      },
+      "tot_le1": {
+        "cutoff": 0.32251562777213705,
+        "n_preds": 1139,
+        "data_end": "2026-10-26"
+      },
+      "cs_unusual": {
+        "cutoff": 10.078598652582079,
+        "n_preds": 1139,
+        "data_end": "2026-10-26"
+      }
+    },
+    "Dutch Eredivisie": {
+      "ge5": {
+        "cutoff": 0.3378566225542942,
+        "n_preds": 1660,
+        "data_end": "2026-10-25"
+      },
+      "ge6": {
+        "cutoff": 0.1887037711464355,
+        "n_preds": 1660,
+        "data_end": "2026-10-25"
+      },
+      "ge7": {
+        "cutoff": 0.0935801781644254,
+        "n_preds": 1660,
+        "data_end": "2026-10-25"
+      },
+      "team_ge4": {
+        "cutoff": 0.3275589608991257,
+        "n_preds": 1660,
+        "data_end": "2026-10-25"
+      },
+      "margin_ge4": {
+        "cutoff": 0.21032953405389082,
+        "n_preds": 1660,
+        "data_end": "2026-10-25"
+      },
+      "nil_nil": {
+        "cutoff": 0.10323889547829042,
+        "n_preds": 1660,
+        "data_end": "2026-10-25"
+      },
+      "tot_le1": {
+        "cutoff": 0.3085758886554464,
+        "n_preds": 1660,
+        "data_end": "2026-10-25"
+      },
+      "cs_unusual": {
+        "cutoff": 11.801722100464918,
+        "n_preds": 1660,
+        "data_end": "2026-10-25"
+      }
+    },
+    "Finland Veikkausliiga": {
+      "ge5": {
+        "cutoff": 0.26069919888290033,
+        "n_preds": 973,
+        "data_end": "2026-10-29"
+      },
+      "ge6": {
+        "cutoff": 0.13277788519525668,
+        "n_preds": 973,
+        "data_end": "2026-10-29"
+      },
+      "ge7": {
+        "cutoff": 0.05972771597016164,
+        "n_preds": 973,
+        "data_end": "2026-10-29"
+      },
+      "team_ge4": {
+        "cutoff": 0.22316005420315507,
+        "n_preds": 973,
+        "data_end": "2026-10-29"
+      },
+      "margin_ge4": {
+        "cutoff": 0.10873711973396792,
+        "n_preds": 973,
+        "data_end": "2026-10-29"
+      },
+      "nil_nil": {
+        "cutoff": 0.11650288735598041,
+        "n_preds": 973,
+        "data_end": "2026-10-29"
+      },
+      "tot_le1": {
+        "cutoff": 0.3562767454791064,
+        "n_preds": 973,
+        "data_end": "2026-10-29"
+      },
+      "cs_unusual": {
+        "cutoff": 8.80231196288321,
+        "n_preds": 973,
+        "data_end": "2026-10-29"
+      }
+    },
+    "Greek Super League": {
+      "ge5": {
+        "cutoff": 0.20211845207366586,
+        "n_preds": 1286,
+        "data_end": "2026-10-25"
+      },
+      "ge6": {
+        "cutoff": 0.09451274803130663,
+        "n_preds": 1286,
+        "data_end": "2026-10-25"
+      },
+      "ge7": {
+        "cutoff": 0.03888711145339651,
+        "n_preds": 1286,
+        "data_end": "2026-10-25"
+      },
+      "team_ge4": {
+        "cutoff": 0.22046997287774162,
+        "n_preds": 1286,
+        "data_end": "2026-10-25"
+      },
+      "margin_ge4": {
+        "cutoff": 0.14819366847815427,
+        "n_preds": 1286,
+        "data_end": "2026-10-25"
+      },
+      "nil_nil": {
+        "cutoff": 0.17154859586562915,
+        "n_preds": 1286,
+        "data_end": "2026-10-25"
+      },
+      "tot_le1": {
+        "cutoff": 0.44887117415331873,
+        "n_preds": 1286,
+        "data_end": "2026-10-25"
+      },
+      "cs_unusual": {
+        "cutoff": 10.174927712062079,
+        "n_preds": 1286,
+        "data_end": "2026-10-25"
+      }
+    },
+    "Ireland Premier Division": {
+      "ge5": {
+        "cutoff": 0.1801517256311283,
+        "n_preds": 1026,
+        "data_end": "2026-10-23"
+      },
+      "ge6": {
+        "cutoff": 0.0811739357933296,
+        "n_preds": 1026,
+        "data_end": "2026-10-23"
+      },
+      "ge7": {
+        "cutoff": 0.032136210743038435,
+        "n_preds": 1026,
+        "data_end": "2026-10-23"
+      },
+      "team_ge4": {
+        "cutoff": 0.16223875761211543,
+        "n_preds": 1026,
+        "data_end": "2026-10-23"
+      },
+      "margin_ge4": {
+        "cutoff": 0.09297608356067377,
+        "n_preds": 1026,
+        "data_end": "2026-10-23"
+      },
+      "nil_nil": {
+        "cutoff": 0.14466060079988963,
+        "n_preds": 1026,
+        "data_end": "2026-10-23"
+      },
+      "tot_le1": {
+        "cutoff": 0.41710429629418966,
+        "n_preds": 1026,
+        "data_end": "2026-10-23"
+      },
+      "cs_unusual": {
+        "cutoff": 6.592296028703551,
+        "n_preds": 1026,
+        "data_end": "2026-10-23"
+      }
+    },
+    "Japan J-League": {
+      "ge5": {
+        "cutoff": 0.23521748532259618,
+        "n_preds": 2186,
+        "data_end": "2026-10-25"
+      },
+      "ge6": {
+        "cutoff": 0.11567406723225657,
+        "n_preds": 2186,
+        "data_end": "2026-10-25"
+      },
+      "ge7": {
+        "cutoff": 0.050164044884248846,
+        "n_preds": 2186,
+        "data_end": "2026-10-25"
+      },
+      "team_ge4": {
+        "cutoff": 0.18849053407521493,
+        "n_preds": 2186,
+        "data_end": "2026-10-25"
+      },
+      "margin_ge4": {
+        "cutoff": 0.08733974018281897,
+        "n_preds": 2186,
+        "data_end": "2026-10-25"
+      },
+      "nil_nil": {
+        "cutoff": 0.1459227777786839,
+        "n_preds": 2186,
+        "data_end": "2026-10-25"
+      },
+      "tot_le1": {
+        "cutoff": 0.42434111453956647,
+        "n_preds": 2186,
+        "data_end": "2026-10-25"
+      },
+      "cs_unusual": {
+        "cutoff": 8.601171510334655,
+        "n_preds": 2186,
+        "data_end": "2026-10-25"
+      }
+    },
+    "K-League 1": {
+      "ge5": {
+        "cutoff": 0.18987416555116454,
+        "n_preds": 1108,
+        "data_end": "2026-08-30"
+      },
+      "ge6": {
+        "cutoff": 0.08701403702312038,
+        "n_preds": 1108,
+        "data_end": "2026-08-30"
+      },
+      "ge7": {
+        "cutoff": 0.035062048685923046,
+        "n_preds": 1108,
+        "data_end": "2026-08-30"
+      },
+      "team_ge4": {
+        "cutoff": 0.14409075945519745,
+        "n_preds": 1108,
+        "data_end": "2026-08-30"
+      },
+      "margin_ge4": {
+        "cutoff": 0.06219188978775763,
+        "n_preds": 1108,
+        "data_end": "2026-08-30"
+      },
+      "nil_nil": {
+        "cutoff": 0.13021618298082213,
+        "n_preds": 1108,
+        "data_end": "2026-08-30"
+      },
+      "tot_le1": {
+        "cutoff": 0.3850820958042144,
+        "n_preds": 1108,
+        "data_end": "2026-08-30"
+      },
+      "cs_unusual": {
+        "cutoff": 5.55455490445773,
+        "n_preds": 1108,
+        "data_end": "2026-08-30"
+      }
+    },
+    "La Liga 2": {
+      "ge5": {
+        "cutoff": 0.17694734883253974,
+        "n_preds": 2322,
+        "data_end": "2026-10-26"
+      },
+      "ge6": {
+        "cutoff": 0.07927808345582037,
+        "n_preds": 2322,
+        "data_end": "2026-10-26"
+      },
+      "ge7": {
+        "cutoff": 0.03120360421053115,
+        "n_preds": 2322,
+        "data_end": "2026-10-26"
+      },
+      "team_ge4": {
+        "cutoff": 0.14240339121920945,
+        "n_preds": 2322,
+        "data_end": "2026-10-26"
+      },
+      "margin_ge4": {
+        "cutoff": 0.06558706651935492,
+        "n_preds": 2322,
+        "data_end": "2026-10-26"
+      },
+      "nil_nil": {
+        "cutoff": 0.1825386779036936,
+        "n_preds": 2322,
+        "data_end": "2026-10-26"
+      },
+      "tot_le1": {
+        "cutoff": 0.475590422322433,
+        "n_preds": 2322,
+        "data_end": "2026-10-26"
+      },
+      "cs_unusual": {
+        "cutoff": 9.503213058532952,
+        "n_preds": 2322,
+        "data_end": "2026-10-26"
+      }
+    },
+    "League One": {
+      "ge5": {
+        "cutoff": 0.2129681803966141,
+        "n_preds": 2847,
+        "data_end": "2026-10-27"
+      },
+      "ge6": {
+        "cutoff": 0.1013203042138464,
+        "n_preds": 2847,
+        "data_end": "2026-10-27"
+      },
+      "ge7": {
+        "cutoff": 0.042448037186281755,
+        "n_preds": 2847,
+        "data_end": "2026-10-27"
+      },
+      "team_ge4": {
+        "cutoff": 0.17583584284755965,
+        "n_preds": 2847,
+        "data_end": "2026-10-27"
+      },
+      "margin_ge4": {
+        "cutoff": 0.08325337402240197,
+        "n_preds": 2847,
+        "data_end": "2026-10-27"
+      },
+      "nil_nil": {
+        "cutoff": 0.12754571083430688,
+        "n_preds": 2847,
+        "data_end": "2026-10-27"
+      },
+      "tot_le1": {
+        "cutoff": 0.39400286741715096,
+        "n_preds": 2847,
+        "data_end": "2026-10-27"
+      },
+      "cs_unusual": {
+        "cutoff": 7.394881747828225,
+        "n_preds": 2847,
+        "data_end": "2026-10-27"
+      }
+    },
+    "League Two": {
+      "ge5": {
+        "cutoff": 0.20742234926317646,
+        "n_preds": 2921,
+        "data_end": "2026-10-27"
+      },
+      "ge6": {
+        "cutoff": 0.09782740407743576,
+        "n_preds": 2921,
+        "data_end": "2026-10-27"
+      },
+      "ge7": {
+        "cutoff": 0.04061396358467328,
+        "n_preds": 2921,
+        "data_end": "2026-10-27"
+      },
+      "team_ge4": {
+        "cutoff": 0.16202859853066062,
+        "n_preds": 2921,
+        "data_end": "2026-10-27"
+      },
+      "margin_ge4": {
+        "cutoff": 0.07016382550829896,
+        "n_preds": 2921,
+        "data_end": "2026-10-27"
+      },
+      "nil_nil": {
+        "cutoff": 0.14325986834871443,
+        "n_preds": 2921,
+        "data_end": "2026-10-27"
+      },
+      "tot_le1": {
+        "cutoff": 0.4092665184143909,
+        "n_preds": 2921,
+        "data_end": "2026-10-27"
+      },
+      "cs_unusual": {
+        "cutoff": 8.325221394760169,
+        "n_preds": 2921,
+        "data_end": "2026-10-27"
+      }
+    },
+    "Ligue 2": {
+      "ge5": {
+        "cutoff": 0.18164065686551692,
+        "n_preds": 1709,
+        "data_end": "2026-10-26"
+      },
+      "ge6": {
+        "cutoff": 0.08206557918662193,
+        "n_preds": 1709,
+        "data_end": "2026-10-26"
+      },
+      "ge7": {
+        "cutoff": 0.03258466898658774,
+        "n_preds": 1709,
+        "data_end": "2026-10-26"
+      },
+      "team_ge4": {
+        "cutoff": 0.14849982737409104,
+        "n_preds": 1709,
+        "data_end": "2026-10-26"
+      },
+      "margin_ge4": {
+        "cutoff": 0.06970415738979714,
+        "n_preds": 1709,
+        "data_end": "2026-10-26"
+      },
+      "nil_nil": {
+        "cutoff": 0.16110896765956653,
+        "n_preds": 1709,
+        "data_end": "2026-10-26"
+      },
+      "tot_le1": {
+        "cutoff": 0.443711228684876,
+        "n_preds": 1709,
+        "data_end": "2026-10-26"
+      },
+      "cs_unusual": {
+        "cutoff": 9.789052900787475,
+        "n_preds": 1709,
+        "data_end": "2026-10-26"
+      }
+    },
+    "Mexico Liga MX": {
+      "ge5": {
+        "cutoff": 0.2344134639622683,
+        "n_preds": 2087,
+        "data_end": "2026-10-29"
+      },
+      "ge6": {
+        "cutoff": 0.11514269352744227,
+        "n_preds": 2087,
+        "data_end": "2026-10-29"
+      },
+      "ge7": {
+        "cutoff": 0.04986939454183715,
+        "n_preds": 2087,
+        "data_end": "2026-10-29"
+      },
+      "team_ge4": {
+        "cutoff": 0.19968533353727547,
+        "n_preds": 2087,
+        "data_end": "2026-10-29"
+      },
+      "margin_ge4": {
+        "cutoff": 0.09957910318408848,
+        "n_preds": 2087,
+        "data_end": "2026-10-29"
+      },
+      "nil_nil": {
+        "cutoff": 0.12544678431616454,
+        "n_preds": 2087,
+        "data_end": "2026-10-29"
+      },
+      "tot_le1": {
+        "cutoff": 0.3623670281783911,
+        "n_preds": 2087,
+        "data_end": "2026-10-29"
+      },
+      "cs_unusual": {
+        "cutoff": 11.294967344900165,
+        "n_preds": 2087,
+        "data_end": "2026-10-29"
+      }
+    },
+    "National League": {
+      "ge5": {
+        "cutoff": 0.27510118628189284,
+        "n_preds": 2778,
+        "data_end": "2026-10-28"
+      },
+      "ge6": {
+        "cutoff": 0.14273924210536798,
+        "n_preds": 2778,
+        "data_end": "2026-10-28"
+      },
+      "ge7": {
+        "cutoff": 0.0654705516969992,
+        "n_preds": 2778,
+        "data_end": "2026-10-28"
+      },
+      "team_ge4": {
+        "cutoff": 0.2321932221710428,
+        "n_preds": 2778,
+        "data_end": "2026-10-28"
+      },
+      "margin_ge4": {
+        "cutoff": 0.10966616680058336,
+        "n_preds": 2778,
+        "data_end": "2026-10-28"
+      },
+      "nil_nil": {
+        "cutoff": 0.12496269104813816,
+        "n_preds": 2778,
+        "data_end": "2026-10-28"
+      },
+      "tot_le1": {
+        "cutoff": 0.375807531310248,
+        "n_preds": 2778,
+        "data_end": "2026-10-28"
+      },
+      "cs_unusual": {
+        "cutoff": 8.883925222457428,
+        "n_preds": 2778,
+        "data_end": "2026-10-28"
+      }
+    },
+    "Norway Eliteserien": {
+      "ge5": {
+        "cutoff": 0.3377963864327498,
+        "n_preds": 1502,
+        "data_end": "2026-10-25"
+      },
+      "ge6": {
+        "cutoff": 0.18870886763793457,
+        "n_preds": 1502,
+        "data_end": "2026-10-25"
+      },
+      "ge7": {
+        "cutoff": 0.09355578430341585,
+        "n_preds": 1502,
+        "data_end": "2026-10-25"
+      },
+      "team_ge4": {
+        "cutoff": 0.3028717725921832,
+        "n_preds": 1502,
+        "data_end": "2026-10-25"
+      },
+      "margin_ge4": {
+        "cutoff": 0.1637092512942986,
+        "n_preds": 1502,
+        "data_end": "2026-10-25"
+      },
+      "nil_nil": {
+        "cutoff": 0.10204953754961263,
+        "n_preds": 1502,
+        "data_end": "2026-10-25"
+      },
+      "tot_le1": {
+        "cutoff": 0.31665366227232133,
+        "n_preds": 1502,
+        "data_end": "2026-10-25"
+      },
+      "cs_unusual": {
+        "cutoff": 8.879765213102392,
+        "n_preds": 1502,
+        "data_end": "2026-10-25"
+      }
+    },
+    "Portuguese Primeira Liga": {
+      "ge5": {
+        "cutoff": 0.2376260012317711,
+        "n_preds": 1755,
+        "data_end": "2026-10-26"
+      },
+      "ge6": {
+        "cutoff": 0.11724198292281651,
+        "n_preds": 1755,
+        "data_end": "2026-10-26"
+      },
+      "ge7": {
+        "cutoff": 0.05099411487323707,
+        "n_preds": 1755,
+        "data_end": "2026-10-26"
+      },
+      "team_ge4": {
+        "cutoff": 0.25606521841336166,
+        "n_preds": 1755,
+        "data_end": "2026-10-26"
+      },
+      "margin_ge4": {
+        "cutoff": 0.17031380174422064,
+        "n_preds": 1755,
+        "data_end": "2026-10-26"
+      },
+      "nil_nil": {
+        "cutoff": 0.13489714312680737,
+        "n_preds": 1755,
+        "data_end": "2026-10-26"
+      },
+      "tot_le1": {
+        "cutoff": 0.41987902175406266,
+        "n_preds": 1755,
+        "data_end": "2026-10-26"
+      },
+      "cs_unusual": {
+        "cutoff": 11.09228987802019,
+        "n_preds": 1755,
+        "data_end": "2026-10-26"
+      }
+    },
+    "Romanian Superliga": {
+      "ge5": {
+        "cutoff": 0.17409474852209192,
+        "n_preds": 1863,
+        "data_end": "2026-10-26"
+      },
+      "ge6": {
+        "cutoff": 0.07759975771316549,
+        "n_preds": 1863,
+        "data_end": "2026-10-26"
+      },
+      "ge7": {
+        "cutoff": 0.030381880859487124,
+        "n_preds": 1863,
+        "data_end": "2026-10-26"
+      },
+      "team_ge4": {
+        "cutoff": 0.15077549596166034,
+        "n_preds": 1863,
+        "data_end": "2026-10-26"
+      },
+      "margin_ge4": {
+        "cutoff": 0.0781097031873856,
+        "n_preds": 1863,
+        "data_end": "2026-10-26"
+      },
+      "nil_nil": {
+        "cutoff": 0.16656166012146637,
+        "n_preds": 1863,
+        "data_end": "2026-10-26"
+      },
+      "tot_le1": {
+        "cutoff": 0.4595359432325011,
+        "n_preds": 1863,
+        "data_end": "2026-10-26"
+      },
+      "cs_unusual": {
+        "cutoff": 11.157791486660003,
+        "n_preds": 1863,
+        "data_end": "2026-10-26"
+      }
+    },
+    "Saudi Pro League": {
+      "ge5": {
+        "cutoff": 0.2891623255254287,
+        "n_preds": 1519,
+        "data_end": "2026-09-04"
+      },
+      "ge6": {
+        "cutoff": 0.15270842740136945,
+        "n_preds": 1519,
+        "data_end": "2026-09-04"
+      },
+      "ge7": {
+        "cutoff": 0.07134095098922666,
+        "n_preds": 1519,
+        "data_end": "2026-09-04"
+      },
+      "team_ge4": {
+        "cutoff": 0.26806331496677266,
+        "n_preds": 1519,
+        "data_end": "2026-09-04"
+      },
+      "margin_ge4": {
+        "cutoff": 0.1618909342124042,
+        "n_preds": 1519,
+        "data_end": "2026-09-04"
+      },
+      "nil_nil": {
+        "cutoff": 0.11970320546697832,
+        "n_preds": 1519,
+        "data_end": "2026-09-04"
+      },
+      "tot_le1": {
+        "cutoff": 0.3736295494500971,
+        "n_preds": 1519,
+        "data_end": "2026-09-04"
+      },
+      "cs_unusual": {
+        "cutoff": 15.146408476906709,
+        "n_preds": 1519,
+        "data_end": "2026-09-04"
+      }
+    },
+    "Scottish Championship": {
+      "ge5": {
+        "cutoff": 0.21389786368813798,
+        "n_preds": 804,
+        "data_end": "2026-10-27"
+      },
+      "ge6": {
+        "cutoff": 0.10190972998338423,
+        "n_preds": 804,
+        "data_end": "2026-10-27"
+      },
+      "ge7": {
+        "cutoff": 0.04275988553462447,
+        "n_preds": 804,
+        "data_end": "2026-10-27"
+      },
+      "team_ge4": {
+        "cutoff": 0.17878871918075584,
+        "n_preds": 804,
+        "data_end": "2026-10-27"
+      },
+      "margin_ge4": {
+        "cutoff": 0.08857460527380491,
+        "n_preds": 804,
+        "data_end": "2026-10-27"
+      },
+      "nil_nil": {
+        "cutoff": 0.14266799540600214,
+        "n_preds": 804,
+        "data_end": "2026-10-27"
+      },
+      "tot_le1": {
+        "cutoff": 0.3797170382027559,
+        "n_preds": 804,
+        "data_end": "2026-10-27"
+      },
+      "cs_unusual": {
+        "cutoff": 6.096804515284731,
+        "n_preds": 804,
+        "data_end": "2026-10-27"
+      }
+    },
+    "Scottish League One": {
+      "ge5": {
+        "cutoff": 0.26833132267404486,
+        "n_preds": 757,
+        "data_end": "2026-10-24"
+      },
+      "ge6": {
+        "cutoff": 0.1380486582720544,
+        "n_preds": 757,
+        "data_end": "2026-10-24"
+      },
+      "ge7": {
+        "cutoff": 0.06276740828438167,
+        "n_preds": 757,
+        "data_end": "2026-10-24"
+      },
+      "team_ge4": {
+        "cutoff": 0.22538783471782584,
+        "n_preds": 757,
+        "data_end": "2026-10-24"
+      },
+      "margin_ge4": {
+        "cutoff": 0.11389597871698295,
+        "n_preds": 757,
+        "data_end": "2026-10-24"
+      },
+      "nil_nil": {
+        "cutoff": 0.12286107059044349,
+        "n_preds": 757,
+        "data_end": "2026-10-24"
+      },
+      "tot_le1": {
+        "cutoff": 0.34796037898697335,
+        "n_preds": 757,
+        "data_end": "2026-10-24"
+      },
+      "cs_unusual": {
+        "cutoff": 8.672914842377386,
+        "n_preds": 757,
+        "data_end": "2026-10-24"
+      }
+    },
+    "Scottish League Two": {
+      "ge5": {
+        "cutoff": 0.24733818637636226,
+        "n_preds": 812,
+        "data_end": "2026-10-17"
+      },
+      "ge6": {
+        "cutoff": 0.12371146942325138,
+        "n_preds": 812,
+        "data_end": "2026-10-17"
+      },
+      "ge7": {
+        "cutoff": 0.054596360072847405,
+        "n_preds": 812,
+        "data_end": "2026-10-17"
+      },
+      "team_ge4": {
+        "cutoff": 0.19040374011542857,
+        "n_preds": 812,
+        "data_end": "2026-10-17"
+      },
+      "margin_ge4": {
+        "cutoff": 0.07848042340116215,
+        "n_preds": 812,
+        "data_end": "2026-10-17"
+      },
+      "nil_nil": {
+        "cutoff": 0.11288464987582059,
+        "n_preds": 812,
+        "data_end": "2026-10-17"
+      },
+      "tot_le1": {
+        "cutoff": 0.3467836865773522,
+        "n_preds": 812,
+        "data_end": "2026-10-17"
+      },
+      "cs_unusual": {
+        "cutoff": 8.079591162650223,
+        "n_preds": 812,
+        "data_end": "2026-10-17"
+      }
+    },
+    "Scottish Premiership": {
+      "ge5": {
+        "cutoff": 0.24933410111764326,
+        "n_preds": 1230,
+        "data_end": "2026-10-28"
+      },
+      "ge6": {
+        "cutoff": 0.1250503532944373,
+        "n_preds": 1230,
+        "data_end": "2026-10-28"
+      },
+      "ge7": {
+        "cutoff": 0.05533499716029475,
+        "n_preds": 1230,
+        "data_end": "2026-10-28"
+      },
+      "team_ge4": {
+        "cutoff": 0.2737505271186419,
+        "n_preds": 1230,
+        "data_end": "2026-10-28"
+      },
+      "margin_ge4": {
+        "cutoff": 0.18540442782273092,
+        "n_preds": 1230,
+        "data_end": "2026-10-28"
+      },
+      "nil_nil": {
+        "cutoff": 0.12969500019859026,
+        "n_preds": 1230,
+        "data_end": "2026-10-28"
+      },
+      "tot_le1": {
+        "cutoff": 0.3859834310291243,
+        "n_preds": 1230,
+        "data_end": "2026-10-28"
+      },
+      "cs_unusual": {
+        "cutoff": 12.970136192966898,
+        "n_preds": 1230,
+        "data_end": "2026-10-28"
+      }
+    },
+    "Serie B": {
+      "ge5": {
+        "cutoff": 0.18362595772846238,
+        "n_preds": 1812,
+        "data_end": "2026-10-28"
+      },
+      "ge6": {
+        "cutoff": 0.08324969979864871,
+        "n_preds": 1812,
+        "data_end": "2026-10-28"
+      },
+      "ge7": {
+        "cutoff": 0.03317180185589938,
+        "n_preds": 1812,
+        "data_end": "2026-10-28"
+      },
+      "team_ge4": {
+        "cutoff": 0.1506178041657765,
+        "n_preds": 1812,
+        "data_end": "2026-10-28"
+      },
+      "margin_ge4": {
+        "cutoff": 0.07263637752466047,
+        "n_preds": 1812,
+        "data_end": "2026-10-28"
+      },
+      "nil_nil": {
+        "cutoff": 0.1573330453274622,
+        "n_preds": 1812,
+        "data_end": "2026-10-28"
+      },
+      "tot_le1": {
+        "cutoff": 0.39795901407827783,
+        "n_preds": 1812,
+        "data_end": "2026-10-28"
+      },
+      "cs_unusual": {
+        "cutoff": 9.186288240505432,
+        "n_preds": 1812,
+        "data_end": "2026-10-28"
+      }
+    },
+    "Sweden Allsvenskan": {
+      "ge5": {
+        "cutoff": 0.2665247103004689,
+        "n_preds": 1490,
+        "data_end": "2026-10-29"
+      },
+      "ge6": {
+        "cutoff": 0.13679222509410502,
+        "n_preds": 1490,
+        "data_end": "2026-10-29"
+      },
+      "ge7": {
+        "cutoff": 0.06203570637750955,
+        "n_preds": 1490,
+        "data_end": "2026-10-29"
+      },
+      "team_ge4": {
+        "cutoff": 0.22765792042765498,
+        "n_preds": 1490,
+        "data_end": "2026-10-29"
+      },
+      "margin_ge4": {
+        "cutoff": 0.11712044781928885,
+        "n_preds": 1490,
+        "data_end": "2026-10-29"
+      },
+      "nil_nil": {
+        "cutoff": 0.12697024718498515,
+        "n_preds": 1490,
+        "data_end": "2026-10-29"
+      },
+      "tot_le1": {
+        "cutoff": 0.38160849369758487,
+        "n_preds": 1490,
+        "data_end": "2026-10-29"
+      },
+      "cs_unusual": {
+        "cutoff": 8.117871485348612,
+        "n_preds": 1490,
+        "data_end": "2026-10-29"
+      }
+    },
+    "Turkish Super Lig": {
+      "ge5": {
+        "cutoff": 0.2545607842259903,
+        "n_preds": 2016,
+        "data_end": "2026-10-26"
+      },
+      "ge6": {
+        "cutoff": 0.1285910987150004,
+        "n_preds": 2016,
+        "data_end": "2026-10-26"
+      },
+      "ge7": {
+        "cutoff": 0.057347580353801664,
+        "n_preds": 2016,
+        "data_end": "2026-10-26"
+      },
+      "team_ge4": {
+        "cutoff": 0.219900069491931,
+        "n_preds": 2016,
+        "data_end": "2026-10-26"
+      },
+      "margin_ge4": {
+        "cutoff": 0.11988483311244866,
+        "n_preds": 2016,
+        "data_end": "2026-10-26"
+      },
+      "nil_nil": {
+        "cutoff": 0.11766302119801336,
+        "n_preds": 2016,
+        "data_end": "2026-10-26"
+      },
+      "tot_le1": {
+        "cutoff": 0.325635675034701,
+        "n_preds": 2016,
+        "data_end": "2026-10-26"
+      },
+      "cs_unusual": {
+        "cutoff": 11.128864598876588,
+        "n_preds": 2016,
+        "data_end": "2026-10-26"
+      }
+    },
+    "USA MLS": {
+      "ge5": {
+        "cutoff": 0.2883846839398222,
+        "n_preds": 3352,
+        "data_end": "2026-10-29"
+      },
+      "ge6": {
+        "cutoff": 0.15216447724986823,
+        "n_preds": 3352,
+        "data_end": "2026-10-29"
+      },
+      "ge7": {
+        "cutoff": 0.07104701950384623,
+        "n_preds": 3352,
+        "data_end": "2026-10-29"
+      },
+      "team_ge4": {
+        "cutoff": 0.23169239077371742,
+        "n_preds": 3352,
+        "data_end": "2026-10-29"
+      },
+      "margin_ge4": {
+        "cutoff": 0.10460428321361943,
+        "n_preds": 3352,
+        "data_end": "2026-10-29"
+      },
+      "nil_nil": {
+        "cutoff": 0.10539687658685896,
+        "n_preds": 3352,
+        "data_end": "2026-10-29"
+      },
+      "tot_le1": {
+        "cutoff": 0.3143346928927982,
+        "n_preds": 3352,
+        "data_end": "2026-10-29"
+      },
+      "cs_unusual": {
+        "cutoff": 6.043223057075563,
+        "n_preds": 3352,
+        "data_end": "2026-10-29"
+      }
+    }
+  },
+  "history_source": "v9 src.data_loader.load_all_matches(force=True), offline (download off, network blocked), wowza-betting data-truth-100 at bdab0d9ecad6dd38040747009962a2a5d738d966, exported 2026-11-09"
+}

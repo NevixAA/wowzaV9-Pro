@@ -564,3 +564,15 @@ experiments/standard_repair_2026_10/rebuild/
 !output/corrections/*.md
 !output/corrections/*.json
 !experiments/valuable_2026_10/prematch_snapshots_manifest.json
+
+# Specials research tracker (owner 2026-11-09; src/specials, .github/workflows/pro_specials.yml).
+# The forward record MUST be committed: it is evidence of what the model believed before kickoff,
+# and v9's dashboard reads it over a sibling checkout. Named file by file, never a glob.
+!output/specials/
+!output/specials/specials_log.csv
+!output/specials/specials_settled.csv
+!output/specials/specials_eval.json
+!output/specials/cutoffs.json
+!output/specials/study_summary.json
+!output/specials/study_calibration_grid.csv
+!output/specials/study_calibration_bands.csv
