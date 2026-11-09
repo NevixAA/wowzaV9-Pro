@@ -1,0 +1,399 @@
+{
+ "extract": {
+  "v9_commit": "804799a104bb11ae7e748629eaca178ca40031dc",
+  "frame_hash": "80dbe5a7cfe0e5fe",
+  "matches": 58472,
+  "duplicate_row_ids_dropped": 0,
+  "covid_rows_excluded": 12271,
+  "feature_rows": 58472,
+  "prices_by_class": {
+   "FD_CLOSE": 24279,
+   "FD_ENTRY": 24264,
+   "FD_BET365_ENTRY": 24234,
+   "SHARP_OPEN": 2305,
+   "SHARP_CLOSE": 2305
+  },
+  "join": {
+   "FD": {
+    "Belgian First Division A": {
+     "ok": 1312,
+     "no_match_on_date": 1
+    },
+    "Bundesliga 2": {
+     "no_match_on_date": 2,
+     "ok": 1217,
+     "name_unresolved": 68
+    },
+    "Championship": {
+     "ok": 2325,
+     "no_match_on_date": 2
+    },
+    "League One": {
+     "ok": 1757,
+     "no_match_on_date": 1
+    },
+    "League Two": {
+     "ok": 2322
+    },
+    "National League": {
+     "ok": 2361,
+     "no_match_on_date": 2
+    },
+    "Ligue 2": {
+     "ok": 1439,
+     "no_match_on_date": 4
+    },
+    "Greek Super League": {
+     "ok": 889,
+     "name_unresolved": 101,
+     "no_match_on_date": 1
+    },
+    "Serie B": {
+     "ok": 1578,
+     "no_match_on_date": 2
+    },
+    "Dutch Eredivisie": {
+     "ok": 1296
+    },
+    "Portuguese Primeira Liga": {
+     "ok": 1294,
+     "no_match_on_date": 1
+    },
+    "Scottish Premiership": {
+     "ok": 960
+    },
+    "Scottish Championship": {
+     "ok": 767,
+     "no_match_on_date": 1
+    },
+    "Scottish League One": {
+     "ok": 768,
+     "no_match_on_date": 1
+    },
+    "Scottish League Two": {
+     "no_match_on_date": 1,
+     "ok": 769
+    },
+    "La Liga 2": {
+     "no_match_on_date": 1,
+     "ok": 1822,
+     "name_unresolved": 124
+    },
+    "Turkish Super Lig": {
+     "no_match_on_date": 30,
+     "ok": 1403
+    }
+   },
+   "SHARP": {
+    "Japan J-League": {
+     "ok": 105,
+     "no_match_on_date": 45
+    },
+    "Ireland Premier Division": {
+     "ok": 83,
+     "no_match_on_date": 14
+    },
+    "Finland Veikkausliiga": {
+     "ok": 121,
+     "no_match_on_date": 3
+    },
+    "China Super League": {
+     "ok": 114,
+     "no_match_on_date": 14
+    },
+    "La Liga 2": {
+     "ok": 129,
+     "name_unresolved": 2,
+     "no_match_on_date": 22
+    },
+    "USA MLS": {
+     "ok": 262,
+     "no_match_on_date": 33
+    },
+    "Argentina Primera Division": {
+     "ok": 223,
+     "no_match_on_date": 46
+    },
+    "Norway Eliteserien": {
+     "ok": 105,
+     "no_match_on_date": 16
+    },
+    "Brazil Serie A": {
+     "ok": 154,
+     "no_match_on_date": 19
+    },
+    "Mexico Liga MX": {
+     "ok": 126,
+     "no_match_on_date": 22
+    },
+    "Sweden Allsvenskan": {
+     "ok": 127,
+     "no_match_on_date": 16
+    },
+    "Denmark Superliga": {
+     "ok": 72,
+     "no_match_on_date": 14
+    },
+    "Austrian Bundesliga": {
+     "ok": 60,
+     "no_match_on_date": 13
+    },
+    "League Two": {
+     "ok": 151,
+     "no_match_on_date": 18
+    },
+    "Championship": {
+     "ok": 144,
+     "no_match_on_date": 36
+    },
+    "Ligue 2": {
+     "ok": 72,
+     "no_match_on_date": 20
+    },
+    "Bundesliga 2": {
+     "ok": 72,
+     "name_unresolved": 11,
+     "no_match_on_date": 16
+    },
+    "League One": {
+     "ok": 130,
+     "name_unresolved": 14,
+     "no_match_on_date": 30
+    },
+    "Serie B": {
+     "ok": 90,
+     "no_match_on_date": 20
+    }
+   }
+  }
+ },
+ "comparison_rules": {
+  "reference": "champion_recipe",
+  "primary_metric": "log_loss",
+  "secondary_metrics": [
+   "brier",
+   "ece",
+   "calibration_slope"
+  ],
+  "rows": "COMMON rows only: every compared probability must exist on the row",
+  "test": "one-sided paired bootstrap over MATCH DATES of the mean per-row log-loss difference (candidate - reference); p = (k + 1) / (B + 1) where k counts bootstrap means >= 0",
+  "correction": "holm",
+  "family": "every (stage, track, market, candidate) comparison in one run",
+  "family_alpha": 0.05,
+  "better_means": "Holm-adjusted p < family_alpha AND mean log-loss improvement >= min_effect_logloss AND n >= min_n_rows AND Brier not worse by more than max_brier_worsening AND matchdays >= min_matchdays",
+  "min_effect_logloss": 0.001,
+  "min_n_rows": 1000,
+  "max_brier_worsening": 0.0001,
+  "min_matchdays": 20,
+  "min_league_n": 150,
+  "n_boot": 2000,
+  "seed": 20261025,
+  "ece_bins": 10,
+  "thresholds_source": "config/promotion_gate.json PG-1.0 holdout block (declared 2026-10-25, before any candidate was scored): material_ll_improvement, min_n_per_track, max_brier_worsening, min_bootstrap_blocks, min_league_n, n_boot, bootstrap_seed, ece_bins. Reused, not re-chosen. family_alpha = 1 - ci_level.",
+  "verdict_words": "BETTER_THAN_REFERENCE | NOT_SHOWN_BETTER | INSUFFICIENT_N | NOT_COMPARABLE. These are forecasting-quality statements only. No verdict promotes anything: promotion is the owner's decision."
+ },
+ "design": {
+  "wf": [
+   "2024-07-01",
+   "2026-03-31"
+  ],
+  "holdout": [
+   "2026-04-01",
+   "2026-11-08"
+  ],
+  "fit_window_days": 1095,
+  "dc_half_lives": [
+   90.0,
+   180.0,
+   365.0
+  ],
+  "elo_k": [
+   15.0,
+   25.0,
+   40.0
+  ],
+  "elo_new_offset": [
+   0.0,
+   50.0,
+   100.0
+  ],
+  "logistic_C": 0.5,
+  "blend_valid": [
+   "2025-07-01",
+   "2026-03-31"
+  ]
+ },
+ "elo_choice": {
+  "wf_logloss": {
+   "K15.0_off0.0": 1.02954,
+   "K15.0_off50.0": 1.02989,
+   "K15.0_off100.0": 1.03189,
+   "K25.0_off0.0": 1.02829,
+   "K25.0_off50.0": 1.02831,
+   "K25.0_off100.0": 1.02923,
+   "K40.0_off0.0": 1.02913,
+   "K40.0_off50.0": 1.02899,
+   "K40.0_off100.0": 1.02933
+  },
+  "chosen": {
+   "K": 25.0,
+   "new_offset": 0.0
+  }
+ },
+ "dc_half_life_choice": {
+  "wf_logloss": {
+   "90": 1.0395465373895478,
+   "180": 1.0287708941126659,
+   "365": 1.0274689626965252
+  },
+  "chosen": 365
+ },
+ "best_model_on_wf": {
+  "wf_delta_logloss_vs_dc180_common_rows": {
+   "dc180": 0.0,
+   "elo_ord": -0.0013006936334956447,
+   "mnlogit": -0.0023353691856412315,
+   "dc_hl": -0.001301931416140585
+  },
+  "chosen": "mnlogit"
+ },
+ "blend": {
+  "n_fit": 4822,
+  "coef": [
+   [
+    -0.2453,
+    -0.0369,
+    -0.0275,
+    0.6577,
+    -0.0772,
+    -0.5957
+   ],
+   [
+    0.0963,
+    -0.0664,
+    0.0691,
+    -0.4961,
+    0.6784,
+    -0.441
+   ],
+   [
+    0.149,
+    0.1033,
+    -0.0415,
+    -0.1616,
+    -0.6012,
+    1.0367
+   ]
+  ],
+  "classes": [
+   "0",
+   "1",
+   "2"
+  ]
+ },
+ "diagnosis": {
+  "holdout_rows": 5576,
+  "served_model": {
+   "trained_at_cutoff": "2026-04-27",
+   "leagues": 21,
+   "holdout_rows_rated": 1729,
+   "holdout_coverage": 0.3101
+  },
+  "observed_by_year": {
+   "2019": {
+    "n": 2171,
+    "home": 0.4698,
+    "draw": 0.246,
+    "away": 0.2842
+   },
+   "2021": {
+    "n": 6562,
+    "home": 0.4322,
+    "draw": 0.2688,
+    "away": 0.299
+   },
+   "2022": {
+    "n": 10310,
+    "home": 0.4306,
+    "draw": 0.2642,
+    "away": 0.3051
+   },
+   "2023": {
+    "n": 10365,
+    "home": 0.4403,
+    "draw": 0.263,
+    "away": 0.2967
+   },
+   "2024": {
+    "n": 10241,
+    "home": 0.4378,
+    "draw": 0.2681,
+    "away": 0.294
+   },
+   "2025": {
+    "n": 10423,
+    "home": 0.4327,
+    "draw": 0.2582,
+    "away": 0.3091
+   },
+   "2026": {
+    "n": 8400,
+    "home": 0.4395,
+    "draw": 0.2583,
+    "away": 0.3021
+   }
+  },
+  "dc180_holdout_calibration_by_outcome": {
+   "home": {
+    "mean_p": 0.4351,
+    "observed": 0.4344
+   },
+   "draw": {
+    "mean_p": 0.2539,
+    "observed": 0.2588
+   },
+   "away": {
+    "mean_p": 0.311,
+    "observed": 0.3068
+   }
+  },
+  "dc180_draw_reliability": {
+   "(0.0, 0.2]": {
+    "n": 615,
+    "mean_p": 0.1697,
+    "observed": 0.1984
+   },
+   "(0.2, 0.24]": {
+    "n": 1211,
+    "mean_p": 0.2233,
+    "observed": 0.2403
+   },
+   "(0.24, 0.27]": {
+    "n": 1409,
+    "mean_p": 0.2548,
+    "observed": 0.2718
+   },
+   "(0.27, 0.3]": {
+    "n": 1025,
+    "mean_p": 0.2834,
+    "observed": 0.2751
+   },
+   "(0.3, 0.35]": {
+    "n": 643,
+    "mean_p": 0.319,
+    "observed": 0.297
+   },
+   "(0.35, 1.0]": {
+    "n": 127,
+    "mean_p": 0.376,
+    "observed": 0.2598
+   }
+  }
+ },
+ "selection": {
+  "configs_searched_on_wf": 111,
+  "carried_to_holdout": 7,
+  "probability_used": "mnlogit",
+  "bettable_price": "football-data B365 pre-match; sharp tracker opening h2h where football-data has none (book not recorded)"
+ }
+}
