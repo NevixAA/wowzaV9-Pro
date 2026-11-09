@@ -1,0 +1,149 @@
+name: Pro Specials collect (research, runs the data-truth-100 code)
+
+# Owner 2026-11-09: "collect it" - the specials research collection runs NOW, before go-live.
+# Collecting real data is always allowed; this is research only: no Telegram, no tiers, no stakes.
+#
+# WHY THIS FILE IS ON MAIN. GitHub fires schedules only from the default branch, and the specials code
+# lives on data-truth-100 until go-live. So this workflow, and nothing else, sits on main. Its job checks
+# out Pro data-truth-100 and v9 data-truth-100 (the repaired history and club resolver), runs
+# src/specials there, and commits ONLY output/specials/* back to Pro data-truth-100.
+#
+# READ-ONLY INPUTS FROM MAIN (never committed):
+#   * Pro main's fixture store (data/season_2026_27/fixtures): the live upcoming fixtures; the
+#     data-truth-100 copy stops when that branch was cut.
+#   * v9 main's two odds-history CSVs: the live Over/Under 1.5 captures (v9's odds capture commits to main).
+#
+# BUDGET: src/specials/prices.py reads /status first, never takes the shared API-Football key below
+# 25,000 remaining and makes at most 250 calls a run; every run's calls go to special_price_runs.csv.
+#
+# GO-LIVE (v9 runbook U8): when data-truth-100 merges to main, change both checkout refs to main, the
+# push target to main, drop the two read-only overlays, and delete the dispatch-only duplicate
+# .github/workflows/pro_specials.yml (or this file) so the job runs once a day.
+#
+# ON/OFF: the repository variable PRO_SPECIALS_ENABLED ('true' = on).
+
+on:
+  schedule:
+    - cron: '53 7 * * *'          # daily, off the hour and clear of the other Pro crons
+  workflow_dispatch:
+    inputs:
+      study:
+        description: 'Re-run the history study + calibration (also runs on the 1st of each month)'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+      dry_run:
+        description: 'Compute and report, write nothing'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+concurrency:
+  group: pro-specials-collect
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    if: vars.PRO_SPECIALS_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check out Pro data-truth-100 (the specials code)
+        uses: actions/checkout@v4
+        with:
+          ref: data-truth-100
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Live fixture store from Pro main (read-only, never committed)
+        run: |
+          git fetch -q origin main
+          git checkout origin/main -- data/season_2026_27/fixtures
+          git reset -q -- data/season_2026_27/fixtures        # unstaged: only output/specials is committed
+
+      - name: Check out v9 data-truth-100 (repaired history and resolver, read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          ref: data-truth-100
+          path: _v9
+          fetch-depth: 1
+
+      - name: Live Over/Under 1.5 captures from v9 main (read-only)
+        run: |
+          git -C _v9 fetch -q --depth 1 origin main
+          git -C _v9 checkout FETCH_HEAD -- output/standard_sidemarket_odds_history.csv output/newformat_odds_history.csv
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - run: pip install -r requirements.txt -r _v9/requirements.txt
+
+      - name: History study + calibration (on request, or on the 1st of the month)
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: |
+          set -o pipefail
+          if [ "${{ github.event.inputs.study }}" = "true" ] || \
+             { [ "${{ github.event_name }}" = "schedule" ] && [ "$(date -u +%d)" = "01" ]; }; then
+            python -m src.specials.study --out output/specials 2>&1 | tee study.txt
+          else
+            echo "study not due - cutoffs and calibration kept"
+          fi
+
+      - name: Real special-market prices (API-Football /odds)
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+          APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
+        run: |
+          set -o pipefail
+          FLAG=""; [ "${{ github.event.inputs.dry_run }}" = "true" ] && FLAG="--dry-run"
+          python -m src.specials.prices $FLAG 2>&1 | tee prices.txt
+
+      - name: Log, settle, evaluate
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: |
+          set -o pipefail
+          FLAG=""; [ "${{ github.event.inputs.dry_run }}" = "true" ] && FLAG="--dry-run"
+          python -m src.specials.tracker --mode all $FLAG 2>&1 | tee specials.txt
+
+      - name: Publish the summary
+        if: always()
+        run: |
+          {
+            echo "## Specials collect (research)"
+            echo '```'
+            tail -n 20 study.txt 2>/dev/null || true
+            tail -n 20 prices.txt 2>/dev/null || true
+            tail -n 20 specials.txt 2>/dev/null || echo "(no output captured)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit output/specials/* to Pro data-truth-100
+        if: success() && github.event.inputs.dry_run != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          for f in specials_log.csv specials_settled.csv specials_eval.json cutoffs.json calibration.json \
+                   study_summary.json study_calibration_grid.csv study_calibration_bands.csv \
+                   special_prices.csv special_price_runs.csv; do
+            [ -f "output/specials/$f" ] && git add -f "output/specials/$f"
+          done
+          if git diff --cached --name-only | grep -v '^output/specials/'; then
+            echo "::error::something outside output/specials/ was staged - refusing to commit"; exit 1
+          fi
+          git diff --cached --quiet && { echo "no change"; exit 0; }
+          git commit -m "pro: specials research $(date -u '+%Y-%m-%d %H:%M') UTC"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin data-truth-100 && git push origin HEAD:data-truth-100 && exit 0
+            echo "push race - retry $i"; sleep $((RANDOM % 5 + 3))
+          done
+          echo "::error title=push failed::Specials rows were logged but NOT persisted."
+          exit 1
