@@ -86,12 +86,12 @@ def link_fixtures(pro: pd.DataFrame, af: list[dict], tn) -> tuple[dict, dict]:
     """{af_fixture_id: Pro identity} for proven pairs, and counts. `af` = parse.fixture_rows output
     (already one league); `pro` = that league's upcoming Pro fixtures (columns fixture_key, home_team,
     away_team, kickoff_utc as UTC timestamps in `_ko`)."""
-    links, counts = {}, {"af_fixtures": len(af), "linked": 0, "unproven": 0}
+    links, counts = {}, {"af_fixtures": len(af), "linked": 0, "unproven": 0, "no_pro_fixture": 0}
     for a in af:
         day = pd.to_datetime(a["kickoff_ts"], unit="s", utc=True).strftime("%Y-%m-%d")
         same = pro[pro["_ko"].dt.strftime("%Y-%m-%d") == day]
         if same.empty:
-            counts["unproven"] += 1
+            counts["no_pro_fixture"] += 1          # the provider lists it; Pro has no fixture that day
             continue
         h = tn.resolve(str(a["home_team"]), sorted(same["home_team"].astype(str).unique()))
         w = tn.resolve(str(a["away_team"]), sorted(same["away_team"].astype(str).unique()))
@@ -114,7 +114,7 @@ def collect(now: dt.datetime, client, tn, canon, league_ids, api_season, fixture
     from src.scout import parse as P
     run = {"run_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "calls_fixtures": 0, "calls_odds": 0,
            "remaining_before": None, "remaining_after": None, "leagues": 0, "af_fixtures": 0, "linked": 0,
-           "unproven": 0, "no_league_id": 0, "quoted_fixtures": 0, "rows": 0, "status": "OK"}
+           "unproven": 0, "no_pro_fixture": 0, "no_league_id": 0, "quoted_fixtures": 0, "rows": 0, "status": "OK"}
     status = client.get("/status", {})
     rem = (((status or {}).get("response") or {}).get("requests") or {})
     if rem.get("limit_day") is not None and rem.get("current") is not None:
@@ -151,6 +151,7 @@ def collect(now: dt.datetime, client, tn, canon, league_ids, api_season, fixture
         run["af_fixtures"] += c["af_fixtures"]
         run["linked"] += c["linked"]
         run["unproven"] += c["unproven"]
+        run["no_pro_fixture"] += c["no_pro_fixture"]
     stamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
     now_epoch = int(now.timestamp())
     for fid, link in links.items():
@@ -168,6 +169,70 @@ def collect(now: dt.datetime, client, tn, canon, league_ids, api_season, fixture
     run["remaining_after"] = client.remaining
     log(f"[specials prices] {run}")
     return pd.DataFrame(rows, columns=PRICE_COLS), run
+
+
+def probe(now: dt.datetime, client, leagues: list[str], league_ids, api_season, days: int,
+          max_fixtures: int, log=print) -> dict:
+    """AVAILABILITY PROBE (dry run only, nothing stored): which special markets does API-Football quote
+    for our leagues' next `days` days? No Pro link is needed because no row is written; it measures the
+    share of probed fixtures quoting each kept (bet, selection) and how many bookmakers quote it."""
+    from src.scout import parse as P
+    start = now.strftime("%Y-%m-%d")
+    end = (now + dt.timedelta(days=days)).strftime("%Y-%m-%d")
+    status = client.get("/status", {})
+    req = (((status or {}).get("response") or {}).get("requests") or {})
+    remaining = (int(req["limit_day"]) - int(req["current"])) if req.get("limit_day") is not None else None
+    if remaining is None or remaining - MIN_REMAINING <= 0:
+        return {"status": f"STOPPED: remaining {remaining} vs floor {MIN_REMAINING}"}
+    budget = min(remaining - MIN_REMAINING, MAX_CALLS_PER_RUN)
+    fx, used = [], 0
+    for lg in leagues:
+        lid, season = league_ids.get(lg), api_season(lg, start)
+        if not lid or not season or used >= budget:
+            continue
+        body = client.get("/fixtures", {"league": lid, "season": season, "from": start, "to": end})
+        used += 1
+        fx += [dict(r, league=lg) for r in P.fixture_rows((body or {}).get("response") or [])
+               if r["status"] == "NS"]
+    fx = sorted(fx, key=lambda r: r["kickoff_ts"])
+    # spread over leagues: round-robin so one big league does not take the whole sample
+    by_lg: dict = {}
+    for r in fx:
+        by_lg.setdefault(r["league"], []).append(r)
+    sample = []
+    while len(sample) < max_fixtures and any(by_lg.values()):
+        for lg in list(by_lg):
+            if by_lg[lg] and len(sample) < max_fixtures:
+                sample.append(by_lg[lg].pop(0))
+    rows, quoted = [], 0
+    now_epoch = int(now.timestamp())
+    for r in sample:
+        if used >= budget:
+            break
+        body = client.get("/odds", {"fixture": r["fixture_id"]})
+        used += 1
+        got = odds_rows((body or {}).get("response") or [], {"league": r["league"]}, "probe", now_epoch)
+        quoted += bool(got)
+        rows += got
+    d = pd.DataFrame(rows)
+    out = {"status": "OK", "days": days, "provider_fixtures": len(fx), "probed": len(sample),
+           "quoted_fixtures": quoted, "calls": used, "remaining_before": remaining,
+           "remaining_after": client.remaining, "leagues_probed": sorted({r["league"] for r in sample})}
+    if not d.empty:
+        g = d.groupby(["bet", "selection"]).agg(fixtures=("af_fixture_id", "nunique"),
+                                                 bookmakers=("bookmaker", "nunique"))
+        g["share_of_probed"] = (g["fixtures"] / max(len(sample), 1)).round(3)
+        keep = [("Goals Over/Under", s) for s in ("Over 4.5", "Under 4.5", "Over 5.5", "Under 5.5",
+                                                     "Over 6.5", "Under 6.5", "Under 0.5", "Over 0.5",
+                                                     "Under 1.5", "Over 1.5")]
+        keep += [("Exact Score", s) for s in ("0:0", "4:3", "3:3", "5:2", "4:4")]
+        keep += [("Total - Home", "Over 3.5"), ("Total - Away", "Over 3.5")]
+        out["coverage"] = {f"{b} | {s}": g.loc[(b, s)].to_dict() if (b, s) in g.index else None
+                           for b, s in keep}
+        out["exact_scores_quoted"] = int(d[d["bet"] == "Exact Score"]["selection"].nunique())
+        out["bookmakers"] = int(d["bookmaker"].nunique())
+    log(f"[specials probe] {out}")
+    return out
 
 
 def append_prices(new: pd.DataFrame, path: Path = PRICES_FILE) -> int:
@@ -194,7 +259,19 @@ def append_run(run: dict, path: Path = RUNS_FILE) -> None:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description="Specials: real pre-match prices (API-Football /odds)")
     ap.add_argument("--dry-run", action="store_true", help="call the API and report, write nothing")
+    ap.add_argument("--probe", type=int, metavar="N", help="availability probe (dry run, nothing stored): "
+                                                          "up to N provider fixtures over --probe-days")
+    ap.add_argument("--probe-days", type=int)
     a = ap.parse_args(argv)
+    if a.probe:
+        from src.data import v9_config
+        from src.scout.af import Client
+        if not a.probe_days:
+            ap.error("--probe needs --probe-days")
+        lgs = sorted(v9_config.enabled_leagues())
+        probe(dt.datetime.now(dt.timezone.utc), Client(), lgs, v9_config.league_ids(),
+              v9_config.api_season, a.probe_days, a.probe)
+        return 0
     from src.data import v9_config
     from src.scout.af import Client
     from src.specials import tracker as TR

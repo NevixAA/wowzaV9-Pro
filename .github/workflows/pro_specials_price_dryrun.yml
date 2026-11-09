@@ -35,4 +35,7 @@ jobs:
         env:
           V9_LOCAL: ${{ github.workspace }}/_v9
           APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
-        run: python -m src.specials.prices --dry-run
+        run: |
+          python -m src.specials.prices --dry-run
+          # availability probe: what API-Football quotes for our leagues over 7 days (<= 40 fixtures)
+          python -m src.specials.prices --probe 40 --probe-days 7

@@ -254,7 +254,7 @@ def test_link_requires_one_proven_fixture():
           {"fixture_id": 3, "kickoff_ts": ts + 86400, "home_team": "X", "away_team": "Y"}]
     links, c = PR.link_fixtures(pro, af, _TN)
     assert set(links) == {1} and links[1]["fixture_key"] == "k1"
-    assert c["linked"] == 1 and c["unproven"] == 2
+    assert c["linked"] == 1 and c["unproven"] == 1 and c["no_pro_fixture"] == 1
 
 
 class _Client:
