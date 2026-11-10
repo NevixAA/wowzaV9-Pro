@@ -20,7 +20,8 @@ from src.scout import promotion as P  # noqa: E402
 def iso(tmp_path, monkeypatch):
     monkeypatch.setattr(P, "OUT", tmp_path / "scout")
     monkeypatch.setattr(P, "LIFECYCLE_FILE", tmp_path / "registry" / "league_lifecycle.json")
-    monkeypatch.setattr(P, "wowza_leagues", lambda: {"Championship", "Mexico Liga MX"})
+    monkeypatch.setattr(P, "v9_league_ids", lambda: {40, 262})
+    monkeypatch.setattr(P, "_aux", lambda: (pd.DataFrame(), pd.DataFrame()))
     from src.scout import hypotheses as H
     monkeypatch.setattr(H, "REGISTRY_FILE", tmp_path / "registry" / "scout_hypotheses.json")
     (tmp_path / "scout").mkdir()
@@ -39,13 +40,16 @@ def _store(lid=999, n=420, seed=1, model_noise=0.10, close_cov=1.0):
                         "season": [2025 if k < now - pd.Timedelta(days=200) else 2026 for k in ko],
                         "kickoff_ts": [k.timestamp() for k in ko], "home_id": rng.integers(1, 13, n),
                         "away_id": rng.integers(13, 25, n) % 12 + 1, "home_goals": hg, "away_goals": ag,
-                        "ingested_at": 1})
+                        "status": "FT", "ingested_at": "2026-01-01T00:00:00Z"})
     from scipy.stats import poisson
     tot = lam_h + lam_a
     true = {"ou15": 1 - poisson.cdf(1, tot), "ou25": 1 - poisson.cdf(2, tot), "ou35": 1 - poisson.cdf(3, tot),
             "btts": (1 - np.exp(-lam_h)) * (1 - np.exp(-lam_a))}
     sides = {"ou15": ("over", "under"), "ou25": ("over", "under"), "ou35": ("over", "under"), "btts": ("yes", "no")}
-    rows, mdl = [], {"fixture_id": res["fixture_id"], "frozen_ts": res["kickoff_ts"] - 3600}
+    rows = []
+    mdl = {"fixture_id": res["fixture_id"], "league_id": lid, "home_id": res["home_id"], "away_id": res["away_id"],
+           "kickoff_ts": res["kickoff_ts"], "home_games": 20, "away_games": 20, "quality_flags": "",
+           "frozen_ts": [pd.Timestamp(k - 3600, unit="s", tz="UTC").isoformat() for k in res["kickoff_ts"]]}
     for m, p in true.items():
         pm = np.clip(p + rng.normal(0, 0.03, n), 0.03, 0.97)               # market close
         mdl[{"btts": "p_btts_yes"}.get(m, f"p_{m}_over")] = np.clip(p + rng.normal(0, model_noise, n), 0.02, 0.98)
@@ -73,15 +77,16 @@ def test_collecting_league_is_never_a_candidate(iso):
 
 def test_gate_fails_closed():
     row = _status()["leagues"][0]
-    ok, g = P.candidate_gate({**row, "league_id": None}, {"current_season_settled": 100,
-                             "odds_coverage": {"ou25": 1, "btts": 1, "ou15": 1}}, set())
+    good = {"current_season_settled": 100, "odds_coverage": {"ou25": 1, "btts": 1, "ou15": 1}}
+    ok, g = P.candidate_gate({**row, "league_id": None}, good, set())
     assert not ok and not g["checks"]["known API-Football league id"]
     ok, g = P.candidate_gate(row, {"current_season_settled": 100, "odds_coverage": {"ou25": 0.5}}, set())
     assert not ok
-    ok, _ = P.candidate_gate({**row, "country": "Mexico", "league": "Liga MX"},
-                             {"current_season_settled": 100, "odds_coverage": {"ou25": 1, "btts": 1, "ou15": 1}},
-                             {"Mexico Liga MX"})
-    assert not ok                                                       # already a Wowza league
+    assert P.candidate_gate(row, good, set())[0]                        # the control: everything met
+    ok, g = P.candidate_gate(row, good, {999})                          # already a Wowza league, BY ID
+    assert not ok and not g["checks"]["not already a Wowza league (by API-Football id)"]
+    ok, g = P.candidate_gate(row, good, None)                           # v9 registry unreadable: blocks
+    assert not ok and not g["checks"]["v9 league registry readable"]
 
 
 def test_readable_league_validates_and_is_idempotent(iso, monkeypatch):
@@ -108,7 +113,7 @@ def test_readable_league_validates_and_is_idempotent(iso, monkeypatch):
 
 def test_bad_data_blocks_before_any_model_work(iso, monkeypatch):
     res, odds, mdl = _store()
-    res = pd.concat([res, res.head(5)])                                 # duplicate fixtures
+    res = pd.concat([res, res.head(5).assign(home_goals=lambda x: x["home_goals"] + 1)])  # conflicting copies
     monkeypatch.setattr(P, "_store", lambda: (res, odds, mdl))
     r = P.run(_status(), week="2026-W42")
     assert r["blocked"] == ["Testland Div 2"]
@@ -117,7 +122,7 @@ def test_bad_data_blocks_before_any_model_work(iso, monkeypatch):
 
 def test_blocked_league_waits_four_weeks(iso, monkeypatch):
     res, odds, mdl = _store()
-    bad = pd.concat([res, res.head(5)])
+    bad = pd.concat([res, res.head(5).assign(home_goals=lambda x: x["home_goals"] + 1)])
     monkeypatch.setattr(P, "_store", lambda: (bad, odds, mdl))
     P.run(_status(), week="2026-W42")
     monkeypatch.setattr(P, "_store", lambda: (res, odds, mdl))

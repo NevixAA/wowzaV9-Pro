@@ -15,10 +15,19 @@ LIFECYCLE (registry/league_lifecycle.json, committed, append-only history per le
   Advanced states are STICKY: running the review twice never promotes a league twice.
 
 CANDIDATE GATE (fail closed; any unknown -> not a candidate)
-  scout status READABLE (>= 300 settled with a captured close); >= 300 historical results over
-  >= 2 seasons; >= 40 settled this season; odds coverage >= 80% of settled fixtures in the capture
-  window for >= 2 key markets; a known API-Football league id; not already a Wowza league.
-  Goal rate never enters the gate.
+  scout status READABLE (>= 300 settled with a GENUINE close); >= 300 historical results over
+  >= 2 seasons; >= 40 settled this season; genuine-close coverage >= 80% of settled fixtures in the
+  capture window for >= 2 key markets; a known API-Football league id; v9's league registry
+  (config/leagues.json on v9 main, V9_LOCAL) READABLE and the id NOT in it — compared by
+  api_football_id, never by name (Data Truth R1, 2026-11-10). Goal rate never enters the gate.
+
+PRE-REGISTERED RESEARCH GATES (owner 2026-11-10). GATE, the score bands and the calibration limit
+decide what to study and what to PROPOSE for onboarding. They are never a staking bar; nothing that
+sizes or places a bet may read them (tests/test_scout_data_truth.py). A bar that bets is per league.
+
+DATA QUALITY (Data Truth R2, 2026-11-10) runs on the RAW store, not on a de-duplicated copy, and
+on every priced or frozen fixture, not only on stored results — the old duplicate and missing-result
+checks read a frame that could not contain either defect.
 
 VALIDATION (per candidate, independently)
   data quality  duplicates, missing results, impossible scores/dates, odds <= 1, outliers,
@@ -74,6 +83,10 @@ CONFIRMATION_RETRY_WEEKS = 1
 GATE = {"settled_with_close": 300, "results": 300, "history_seasons": 2, "current_season_settled": 40,
         "odds_coverage": 0.80, "key_markets_covered": 2}
 KEY_MARKETS = ("ou25", "btts", "ou15")
+#: The existing "> 2% of played fixtures have no result" tolerance, applied to every defect share
+#: data_quality measures (one bar, not a new number per check).
+MAX_DEFECT_SHARE = 0.02
+RESEARCH_GATE_ONLY = True
 
 
 def slug(s: str) -> str:
@@ -108,9 +121,11 @@ def scout_state(row: dict) -> str:
 
 
 # ── candidate gate ────────────────────────────────────────────────────────────────────────────
-def candidate_gate(row: dict, extra: dict, wowza_leagues: set[str]) -> tuple[bool, dict]:
-    """extra: {current_season_settled, odds_coverage: {market: share}} from the store."""
+def candidate_gate(row: dict, extra: dict, v9_ids: set[int] | None) -> tuple[bool, dict]:
+    """extra: {current_season_settled, odds_coverage: {market: share}} from the store.
+    v9_ids: every api_football_id in v9's config/leagues.json; None = could not be read (blocks)."""
     cov = extra.get("odds_coverage", {})
+    lid = row.get("league_id")
     checks = {
         "scout READABLE (>= 300 settled with a close)": row.get("status") == "READABLE"
             and row.get("settled_with_close", 0) >= GATE["settled_with_close"],
@@ -120,8 +135,9 @@ def candidate_gate(row: dict, extra: dict, wowza_leagues: set[str]) -> tuple[boo
         ">= 80% odds coverage on 2+ key markets":
             sum(1 for m in KEY_MARKETS if cov.get(m, 0) >= GATE["odds_coverage"]) >= GATE["key_markets_covered"],
         "known API-Football league id": isinstance(row.get("league_id"), int) and row.get("league_id", 0) > 0,
-        "not already a Wowza league": f"{row.get('country')} {row.get('league')}".strip() not in wowza_leagues
-            and str(row.get("league")) not in wowza_leagues,
+        "v9 league registry readable": v9_ids is not None,
+        "not already a Wowza league (by API-Football id)": v9_ids is not None and isinstance(lid, int)
+            and lid not in v9_ids,
     }
     distance = {
         "settled_with_close": max(0, GATE["settled_with_close"] - int(row.get("settled_with_close", 0))),
@@ -134,64 +150,115 @@ def candidate_gate(row: dict, extra: dict, wowza_leagues: set[str]) -> tuple[boo
 
 # ── store-derived facts ───────────────────────────────────────────────────────────────────────
 def _store():
+    """The RAW scout tables (Data Truth R2: checks run on what is stored, not on a cleaned copy)."""
     from src.data import season_store as store
-    res, odds, mdl = store.read("scout_results"), store.read("scout_odds"), store.read("scout_model")
-    if not res.empty:
-        res = res.sort_values("ingested_at").drop_duplicates("fixture_id", keep="last")
-    return res, odds, mdl
+    return store.read("scout_results"), store.read("scout_odds"), store.read("scout_model")
 
 
-def league_extra(lid: int, res: pd.DataFrame, odds: pd.DataFrame) -> dict:
-    r = res[res["league_id"] == lid] if not res.empty else res
+def _aux():
+    """(scout_results_ft90, scout_fixture_status): corrections and reasons stored beside the raw rows."""
+    from src.data import season_store as store
+    return store.read("scout_results_ft90"), store.read("scout_fixture_status")
+
+
+def _lg(df: pd.DataFrame | None, lid: int, ids: set | None = None) -> pd.DataFrame:
+    if df is None or df.empty:
+        return pd.DataFrame() if df is None else df
+    if "league_id" in df.columns:
+        return df[df["league_id"] == lid]
+    return df[df["fixture_id"].isin(ids or set())]
+
+
+def league_extra(lid: int, res: pd.DataFrame, odds: pd.DataFrame, mdl: pd.DataFrame | None = None,
+                 ft90: pd.DataFrame | None = None) -> dict:
+    from src.scout import truth as T
+    r = _lg(res, lid)
     if r.empty:
         return {"current_season_settled": 0, "odds_coverage": {}}
-    r = r.dropna(subset=["home_goals", "away_goals"])
-    cur = r["season"].max() if "season" in r.columns else None
-    cur_n = int((r["season"] == cur).sum()) if cur is not None else 0
+    served = T.results(r, _lg(ft90, lid, set(r["fixture_id"]))).dropna(subset=["home_goals", "away_goals"])
+    cur = served["season"].max() if "season" in served.columns and len(served) else None
+    cur_n = int((served["season"] == cur).sum()) if cur is not None else 0
     cov = {}
-    o = odds[odds["league_id"] == lid] if not odds.empty else odds
+    o = _lg(odds, lid)
     if len(o):
         start = pd.to_datetime(o["snapshot_ts"], utc=True, errors="coerce").min()
-        when = pd.to_datetime(r.get("kickoff_ts", r.get("date")), unit="s" if "kickoff_ts" in r else None,
-                              utc=True, errors="coerce")
-        window = r[when >= start]
-        for m in KEY_MARKETS:
-            got = set(o[o["market"] == m]["fixture_id"])
+        window = served[pd.to_datetime(served["kickoff_ts"], unit="s", utc=True, errors="coerce") >= start]
+        s = T.settled(r, o, _lg(mdl, lid), _lg(ft90, lid, set(r["fixture_id"])))
+        for m in KEY_MARKETS:                       # GENUINE closes only (Data Truth R7)
+            got = set(s[s["market"] == m]["fixture_id"]) if len(s) else set()
             cov[m] = round(len(set(window["fixture_id"]) & got) / max(len(window), 1), 3)
     return {"current_season": None if cur is None else str(cur), "current_season_settled": cur_n,
             "odds_coverage": cov}
 
 
-def data_quality(lid: int, res: pd.DataFrame, odds: pd.DataFrame) -> dict:
-    r = res[res["league_id"] == lid] if not res.empty else res
-    o = odds[odds["league_id"] == lid] if not odds.empty else odds
-    now = pd.Timestamp.now(tz="UTC")
-    dates = pd.to_datetime(r.get("kickoff_ts"), unit="s", utc=True, errors="coerce") if "kickoff_ts" in r else \
-        pd.to_datetime(r.get("date"), utc=True, errors="coerce")
-    teams = set(r.get("home_id", pd.Series(dtype=float)).dropna()) | set(r.get("away_id", pd.Series(dtype=float)).dropna())
-    hg, ag = pd.to_numeric(r.get("home_goals"), errors="coerce"), pd.to_numeric(r.get("away_goals"), errors="coerce")
-    played = dates < now
+def data_quality(lid: int, res: pd.DataFrame, odds: pd.DataFrame, mdl: pd.DataFrame | None = None,
+                 ft90: pd.DataFrame | None = None, status: pd.DataFrame | None = None,
+                 now: pd.Timestamp | None = None) -> dict:
+    """On the RAW store (Data Truth R2). Every check here can fail (tests/test_scout_data_truth.py)."""
+    from src.scout import truth as T
+    now = pd.Timestamp.now(tz="UTC") if now is None else pd.Timestamp(now)
+    r, o, m = _lg(res, lid), _lg(odds, lid), _lg(mdl, lid)
+    ids = (set(r["fixture_id"]) if len(r) else set()) | (set(o["fixture_id"]) if len(o) else set()) \
+        | (set(m["fixture_id"]) if len(m) else set())
+    f9 = _lg(ft90, lid, ids)
+    st = status[status["fixture_id"].isin(ids)] if status is not None and len(status) else status
+    a = T.audit(r, o, m, f9, st, now) if len(r) else {}
+    served = T.results(r, f9) if len(r) else r
+    dates = (pd.to_datetime(served["kickoff_ts"], unit="s", utc=True, errors="coerce") if len(served)
+             else pd.Series(dtype="datetime64[ns, UTC]"))
+    teams = (set(served["home_id"].dropna()) | set(served["away_id"].dropna())) if len(served) else set()
+    hg = pd.to_numeric(served.get("home_goals"), errors="coerce") if len(served) else pd.Series(dtype=float)
+    ag = pd.to_numeric(served.get("away_goals"), errors="coerce") if len(served) else pd.Series(dtype=float)
     od = pd.to_numeric(o.get("odds"), errors="coerce") if len(o) else pd.Series(dtype=float)
+    priced = int(a.get("settled_settled_priced", a.get("settled_priced", 0)) or 0)
+    mfx = int(a.get("model_fixtures", 0) or 0)
     checks = {
-        "fixture_count": int(r["fixture_id"].nunique()) if len(r) else 0,
-        "date_span": [str(dates.min())[:10], str(dates.max())[:10]] if len(r) else None,
-        "seasons": sorted(map(str, r["season"].dropna().unique())) if "season" in r else [],
+        "fixture_count": int(served["fixture_id"].nunique()) if len(served) else 0,
+        "date_span": [str(dates.min())[:10], str(dates.max())[:10]] if len(served) else None,
+        "seasons": sorted(map(str, served["season"].dropna().unique())) if "season" in served else [],
         "team_count": len(teams),
-        "duplicate_fixtures": int(r["fixture_id"].duplicated().sum()) if len(r) else 0,
-        "missing_results_played": int((played & (hg.isna() | ag.isna())).sum()) if len(r) else 0,
-        "impossible_scores": int(((hg < 0) | (ag < 0) | (hg > 15) | (ag > 15)).sum()) if len(r) else 0,
-        "impossible_dates": int((dates > now + pd.Timedelta(days=400)).sum() + (dates < "1990-01-01").sum()) if len(r) else 0,
+        "raw_result_rows": int(a.get("result_rows", 0)),
+        "duplicate_fixtures": int(a.get("result_duplicate_fixtures", 0)),
+        "conflicting_duplicate_fixtures": int(a.get("result_conflicting_duplicates", 0)),
+        "due_fixtures": int(a.get("due_fixtures", 0)),
+        "due_without_result": int(a.get("due_without_result", 0)),
+        "due_without_result_unexplained": int(a.get("due_without_result_unexplained", 0)),
+        "aet_pen_missing_90": int(a.get("aet_pen_missing_90", 0)),
+        "odds_duplicate_groups": int(a.get("odds_dup_groups", 0)),
+        "odds_conflict_fixtures": int(a.get("odds_conflict_fixtures", 0)),
+        "priced_fixtures": int(o["fixture_id"].nunique()) if len(o) else 0,
+        "settled_priced": priced,
+        "rescheduled_void": int(a.get("settled_rescheduled_void", 0)),
+        "team_id_mismatches": int(a.get("settled_model_identity_mismatch", 0)),
+        "model_frozen_after_actual_kickoff": int(a.get("settled_model_frozen_after_actual_kickoff", 0)),
+        "model_fixtures": mfx,
+        "stale_or_thin_close": int(a.get("settled_stale_or_thin_close", 0)),
+        "impossible_scores": int(((hg < 0) | (ag < 0) | (hg > 15) | (ag > 15)).sum()) if len(served) else 0,
+        "impossible_dates": int((dates > now + pd.Timedelta(days=400)).sum() + (dates < "1990-01-01").sum()) if len(served) else 0,
         "odds_le_1": int((od <= 1.0).sum()) if len(o) else 0,
         "odds_outliers_gt_50": int((od > 50).sum()) if len(o) else 0,
-        "last_result": str(dates[hg.notna()].max())[:10] if len(r) else None,
+        "last_result": str(dates[hg.notna()].max())[:10] if len(served) else None,
     }
+    share = lambda k, n: (checks[k] / n) if n else 0.0                    # noqa: E731
+    bar, close_bar = MAX_DEFECT_SHARE, 1 - GATE["odds_coverage"]
     crit = []
-    if checks["duplicate_fixtures"]: crit.append("duplicate fixtures")
+    if checks["conflicting_duplicate_fixtures"]: crit.append("duplicate fixtures with conflicting content")
     if checks["impossible_scores"]: crit.append("impossible scores")
     if checks["impossible_dates"]: crit.append("impossible dates")
     if checks["odds_le_1"]: crit.append("odds <= 1")
-    if checks["fixture_count"] and checks["missing_results_played"] / checks["fixture_count"] > 0.02:
-        crit.append("> 2% of played fixtures have no result")
+    if checks["model_frozen_after_actual_kickoff"]: crit.append("model frozen after the actual kickoff")
+    if share("due_without_result_unexplained", checks["due_fixtures"]) > bar:
+        crit.append(f"> {bar:.0%} of due fixtures have no result and no recorded reason")
+    if share("aet_pen_missing_90", checks["fixture_count"]) > bar:
+        crit.append(f"> {bar:.0%} of results lack their 90-minute score")
+    if share("odds_conflict_fixtures", checks["priced_fixtures"]) > bar:
+        crit.append(f"> {bar:.0%} of priced fixtures carry conflicting duplicate quotes")
+    if share("rescheduled_void", priced) > bar:
+        crit.append(f"> {bar:.0%} of settled priced fixtures moved > {T.RESCHEDULE_VOID_HOURS} h")
+    if share("team_id_mismatches", mfx) > bar:
+        crit.append(f"> {bar:.0%} of frozen fixtures do not match the result's teams")
+    if share("stale_or_thin_close", priced) > close_bar:
+        crit.append(f"> {close_bar:.0%} of settled priced fixtures have no genuine close")
     if checks["last_result"] and (now - pd.Timestamp(checks["last_result"], tz="UTC")).days > 21:
         crit.append("no result in 21 days (feed stale or off-season)")
     if checks["team_count"] < 8: crit.append("fewer than 8 teams")
@@ -217,22 +284,21 @@ def _fit_predict(Xtr, ytr, Xte):
     return 1 / (1 + np.exp(-np.column_stack([np.ones(len(Xte)), Xte]) @ b))
 
 
-def market_matrix(lid: int, res, odds, mdl, seed: int = 3) -> pd.DataFrame:
-    close = R.fair_prob(R.closing(odds[odds["league_id"] == lid]))
-    r = res[(res["league_id"] == lid)].dropna(subset=["home_goals", "away_goals"])
-    m0 = mdl.sort_values("frozen_ts").drop_duplicates("fixture_id", keep="first") if not mdl.empty else mdl
+def market_matrix(lid: int, res, odds, mdl, seed: int = 3, ft90: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Settled fixtures with a GENUINE close and an eligible frozen model (src/scout/truth.settled:
+    the one close rule, freeze before the actual kickoff, league + team ids matched, >48h void)."""
+    from src.scout import truth as T
+    r = _lg(res, lid)
+    s = T.settled(r, _lg(odds, lid), _lg(mdl, lid), _lg(ft90, lid, set(r["fixture_id"]) if len(r) else set()))
     rows = []
     for m in R.SIDE:
-        c = close[close["market"] == m]
-        ref = c[c["bookmaker"] == "pinnacle"].set_index("fixture_id")["p"].combine_first(
-            c[c["bookmaker"] == "median"].set_index("fixture_id")["p"])
-        g = r.set_index("fixture_id").join(ref.rename("p_mkt"), how="inner")
-        g = g.join(m0.set_index("fixture_id")[[R.MODEL_COL[m]]].rename(columns={R.MODEL_COL[m]: "p_mod"}), how="inner")
+        g = (s[(s["market"] == m) & s["p_model"].notna()]
+             .rename(columns={"p_close": "p_mkt", "p_model": "p_mod"}).set_index("fixture_id")
+             if len(s) else pd.DataFrame(columns=["p_mkt", "p_mod", "y", "kickoff_ts"]))
         if len(g) < 60:
             rows.append({"league_id": lid, "market": m, "n": len(g), "verdict": "INSUFFICIENT_DATA"})
             continue
-        g = g.assign(y=R.outcome(m, g["home_goals"].astype(float), g["away_goals"].astype(float)))
-        g = g.sort_values("kickoff_ts" if "kickoff_ts" in g else "frozen_ts")
+        g = g.sort_values("kickoff_ts")
         half = len(g) // 2
         tr, te = g.iloc[:half], g.iloc[half:]
         lg = lambda p: np.log(np.clip(p, 1e-4, 1 - 1e-4) / (1 - np.clip(p, 1e-4, 1 - 1e-4)))  # noqa: E731
@@ -284,7 +350,8 @@ def promotion_score(dq: dict, mm: pd.DataFrame, extra: dict, row: dict) -> tuple
     return round(sum(parts.values()), 1), parts
 
 
-def validate(row: dict, extra: dict, res, odds, mdl, week: str, mtc: dict | None = None) -> dict:
+def validate(row: dict, extra: dict, res, odds, mdl, week: str, mtc: dict | None = None,
+             ft90: pd.DataFrame | None = None, status: pd.DataFrame | None = None) -> dict:
     """mtc: this league's multiple-testing summary from src.scout.hypotheses.review
     ({confirmed_markets, confirming_markets, states}). None or empty -> nothing is confirmed."""
     lid = int(row["league_id"])
@@ -292,11 +359,11 @@ def validate(row: dict, extra: dict, res, odds, mdl, week: str, mtc: dict | None
     confirmed = list(mtc.get("confirmed_markets") or [])
     out_dir = OUT / "promotions" / slug(f"{row['country']} {row['league']}")
     out_dir.mkdir(parents=True, exist_ok=True)
-    dq = data_quality(lid, res, odds)
+    dq = data_quality(lid, res, odds, mdl, ft90, status)
     (out_dir / "league_onboarding_data_quality.json").write_text(json.dumps(dq, indent=1, default=str), encoding="utf-8")
     if dq["verdict"] != "PASS":
         return {"new_state": "DATA_QUALITY_BLOCKED", "data_quality": "FAIL", "reason": dq["critical"]}
-    mm = market_matrix(lid, res, odds, mdl)
+    mm = market_matrix(lid, res, odds, mdl, ft90=ft90)
     mm.insert(0, "league", f"{row['country']} {row['league']}")
     mm.to_csv(out_dir / "model_matrix.csv", index=False)
     score, parts = promotion_score(dq, mm, extra, row)
@@ -385,34 +452,41 @@ def report_md(row, extra, dq, mm, p) -> str:
     return "\n".join(L) + "\n"
 
 
-def wowza_leagues() -> set[str]:
+def v9_league_ids() -> set[int] | None:
+    """Every api_football_id in v9's league registry, config/leagues.json (v9 main, checked out at
+    V9_LOCAL by the workflow) — the source of truth since v9 R2-A. None when it cannot be read or
+    reads implausibly small: the candidate gate then BLOCKS (fail closed, Data Truth R1). The old
+    name-regex over config.py matched nothing after R2-A and let every league through."""
+    from src.scout.registry import MIN_V9_LEAGUES
     try:
-        txt = (cfg.V9_LOCAL / "config.py").read_text(encoding="utf-8")
-        names = set()
-        for var in ("STANDARD_FORMAT_LEAGUES", "NEW_FORMAT_LEAGUES", "ENABLED_LEAGUES"):
-            m = re.search(var + r"\s*=\s*\{(.*?)\n\}", txt, re.S)
-            if m:
-                names |= set(re.findall(r'^\s*"([^"]+)"', m.group(1), re.M))
-                names |= set(re.findall(r'"([^"]+)"\s*,', m.group(1)))
-        return names
-    except Exception:
-        return set()
+        v = json.loads((cfg.V9_LOCAL / "config" / "leagues.json").read_text(encoding="utf-8"))
+        lg = v["leagues"]
+        recs = lg.values() if isinstance(lg, dict) else lg
+        ids = {int(x["api_football_id"]) for x in recs if x.get("api_football_id") is not None}
+    except Exception as e:                                             # noqa: BLE001
+        print(f"[promotion] v9 league registry unreadable ({type(e).__name__}: {e}) - gate blocks")
+        return None
+    if len(ids) < MIN_V9_LEAGUES // 2:
+        print(f"[promotion] v9 league registry has only {len(ids)} ids - gate blocks")
+        return None
+    return ids
 
 
 def run(status: dict | None = None, week: str | None = None) -> dict:
     status = status or json.loads((OUT / "league_status.json").read_text(encoding="utf-8"))
     week = week or pd.Timestamp.now(tz="UTC").strftime("%G-W%V")
     lc = load_lifecycle()
-    have = wowza_leagues()
+    have = v9_league_ids()
     # E3: every registered league x market hypothesis is reviewed every week — discovery evidence
     # can open a confirmation window long before a league is READABLE. Fail closed: any error
     # leaves nothing confirmed.
     res, odds, mdl = _store()
+    ft90, fstatus = _aux()
     try:
         from src.scout import hypotheses as H
         watch = [{"id": int(r["league_id"]), "country": r.get("country", ""), "name": r.get("league", "")}
                  for r in status.get("leagues", []) if r.get("league_id") is not None]
-        mtc_all = H.review(res, odds, mdl, leagues=watch, week=week)
+        mtc_all = H.review(res, odds, mdl, leagues=watch, week=week, ft90=ft90)
         mtc_error = None
     except Exception as e:                                           # noqa: BLE001
         mtc_all, mtc_error = {}, f"{type(e).__name__}: {e}"
@@ -445,7 +519,7 @@ def run(status: dict | None = None, week: str | None = None) -> dict:
                 "results": max(0, GATE["results"] - int(row.get("results", 0))),
                 "history_seasons": max(0, GATE["history_seasons"] - int(row.get("history_seasons", 0)))}}
             continue
-        extra = league_extra(int(row["league_id"]), res, odds)
+        extra = league_extra(int(row["league_id"]), res, odds, mdl, ft90)
         ok, gate = candidate_gate(row, extra, have)
         if not ok:
             transition(lc, lid, "READABLE", "candidate gate not met", week)
@@ -455,7 +529,7 @@ def run(status: dict | None = None, week: str | None = None) -> dict:
         transition(lc, lid, "PROMOTION_CANDIDATE", "candidate gate met", week)
         review["new_candidates"].append(name)
         transition(lc, lid, "VALIDATING", "validation started", week)
-        v = validate(row, extra, res, odds, mdl, week, mtc_all.get(int(row["league_id"])))
+        v = validate(row, extra, res, odds, mdl, week, mtc_all.get(int(row["league_id"])), ft90, fstatus)
         transition(lc, lid, v["new_state"], "; ".join(map(str, v.get("reason", []))), week)
         review["details"][name] = {"previous_state": cur, **v}
         bucket = {"SHADOW_APPROVED": "promoted", "DATA_QUALITY_BLOCKED": "blocked",
@@ -470,6 +544,8 @@ def run(status: dict | None = None, week: str | None = None) -> dict:
         "leagues_confirming": sorted(int(k) for k, v in mtc_all.items() if v.get("confirming_markets")),
         "registry": "registry/scout_hypotheses.json",
         "rule": "SHADOW_APPROVED and the auto-onboard queue require >= 1 CONFIRMED league-market hypothesis"}
+    review["v9_league_registry"] = ("unreadable - every candidate blocked" if have is None
+                                    else f"{len(have)} api_football_ids from V9_LOCAL/config/leagues.json")
     review["EXISTING_PRODUCTION_SELECTION_CHANGED"] = "NO"
     review["EXISTING_LEAGUE_MODELS_RETRAINED"] = "NO"
     review["NEW_LEAGUES_PROMOTED"] = review["promoted"]

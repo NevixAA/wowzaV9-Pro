@@ -107,7 +107,8 @@ def _league(start: pd.Timestamp, n_days: int, *, model_noise: float, market_nois
     sides = {"ou15": ("over", "under"), "ou25": ("over", "under"), "ou35": ("over", "under"),
              "btts": ("yes", "no")}
     rows = []
-    mdl = {"fixture_id": ids, "kickoff_ts": ko,
+    mdl = {"fixture_id": ids, "kickoff_ts": ko, "league_id": LID, "home_id": home, "away_id": away,
+           "home_games": 20, "away_games": 20, "quality_flags": "",
            "frozen_ts": [pd.Timestamp(k - 86400, unit="s", tz="UTC").isoformat() for k in ko]}
     for m, p in true.items():
         pm = np.clip(p + rng.normal(0, market_noise, n), 0.03, 0.97)

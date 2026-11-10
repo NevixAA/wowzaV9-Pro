@@ -70,7 +70,7 @@ def test_keeps_exactly_the_requested_full_time_quotes():
     assert {(r["bookmaker"], r["bet"], r["selection"], r["odds"]) for r in rows} == KEPT
     r = rows[0]
     assert r["league"] == "Registry League" and r["league_id"] == 7 and r["home_team"] == "Home FC"
-    assert r["fixture_key"] == "Registry League|2030-01-01|Home FC|Away FC"
+    assert r["fixture_key"] == "Somewhere Registry League [7]|2030-01-01|Home FC|Away FC"
     assert r["kickoff_utc"] == "2030-01-01T17:00:00Z" and r["provider_update"] == "2030-01-01T11:55:00Z"
     assert r["ladder_band"] == "T-6h" and r["minutes_to_kickoff"] == 300.0
 

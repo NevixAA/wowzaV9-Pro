@@ -25,7 +25,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['.github/workflows/weekly_league_promotion.yml', 'src/scout/promotion.py', 'src/scout/registry.py', 'src/scout/hypotheses.py']
+    paths: ['.github/workflows/weekly_league_promotion.yml', 'src/scout/promotion.py', 'src/scout/registry.py', 'src/scout/hypotheses.py', 'src/scout/truth.py']
 
 concurrency:
   group: weekly-league-promotion
@@ -52,7 +52,7 @@ jobs:
           python-version: '3.11'
       - run: pip install -r requirements.txt
       - name: Tests
-        run: python -m pytest tests/test_league_promotion.py tests/test_regression_harness.py tests/test_scout_hypotheses.py -q
+        run: python -m pytest tests/test_league_promotion.py tests/test_regression_harness.py tests/test_scout_hypotheses.py tests/test_scout_data_truth.py -q
       - name: Refresh scout status
         run: python -m src.scout.report
       - name: Weekly promotion review
@@ -69,7 +69,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           for p in output/scout/weekly_promotion_review.json output/scout/WEEKLY_PROMOTION_REVIEW.md \
                    registry/league_lifecycle.json registry/wowza_league_registry.json registry/scout_hypotheses.json output/scout/report.json output/scout/REPORT.md \
-                   output/scout/league_status.json output/scout/auto_onboard_queue.json; do
+                   output/scout/league_status.json output/scout/scout_health.json output/scout/auto_onboard_queue.json; do
             [ -e "$p" ] && git add "$p"
           done
           [ -d output/scout/promotions ] && git add output/scout/promotions

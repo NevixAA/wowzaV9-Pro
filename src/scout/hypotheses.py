@@ -43,6 +43,11 @@ WHAT THIS ADDS — every item the brief lists:
                                 no single team > 35%: an "edge" that is one freak weekend or one
                                 club's season is not a league property.
 
+PRE-REGISTERED RESEARCH GATE (owner 2026-11-10). CRITERIA (blend weight, minimum counts, BH family and
+q levels) decide WHAT TO STUDY and whether a league may be proposed for onboarding. They are NEVER a
+staking bar: nothing that sizes or places a bet may read them (tests/test_scout_data_truth.py
+asserts it). A bar that bets is per league, like v9's.
+
 States: REGISTERED -> DISCOVERY -> CONFIRMING -> CONFIRMED, or REJECTED (confirmation data say the
 model does not help: mean <= 0 once the minimums are met, or no confirmation by twice the minimum).
 CONFIRMED is re-evaluated weekly on the growing forward set and can fall back to CONFIRMING.
@@ -64,6 +69,8 @@ from config import pro_config as cfg
 from src.scout import report as R
 
 REGISTRY_FILE = cfg.REGISTRY_DIR / "scout_hypotheses.json"
+#: Research gate, not a staking bar (see the module docstring).
+RESEARCH_GATE_ONLY = True
 MARKETS = tuple(R.SIDE)                     # ou15, ou25, ou35, btts
 
 CRITERIA = {
@@ -173,51 +180,24 @@ def concentration(d: np.ndarray, matchdays: np.ndarray, home: np.ndarray, away: 
 
 
 # ── evidence table: one row per settled fixture x market with a genuine close and a model ─────
-def evidence(res: pd.DataFrame, odds: pd.DataFrame, mdl: pd.DataFrame) -> pd.DataFrame:
+def evidence(res: pd.DataFrame, odds: pd.DataFrame, mdl: pd.DataFrame,
+             ft90: pd.DataFrame | None = None) -> pd.DataFrame:
+    """Built by src/scout/truth.settled (Data Truth 2026-11-10): genuine close against the ACTUAL
+    kickoff, 90-minute results, fixtures moved > 48 h void, and only model rows with the result's
+    league + home + away ids, frozen before the actual kickoff, with a real (not UNKNOWN_TEAM / not
+    FEATURE_DEGRADED) prediction. The statistic and the criteria are unchanged."""
+    from src.scout import truth as T
     cols = ["fixture_id", "league_id", "market", "kickoff_ts", "matchday", "home_id", "away_id",
             "y", "p_close", "p_model", "d"]
-    if res.empty or odds.empty or mdl.empty:
+    if res is None or odds is None or mdl is None or res.empty or odds.empty or mdl.empty:
         return pd.DataFrame(columns=cols)
-    g = CRITERIA["genuine_close"]
-    close = R.closing(odds)
-    close = close[close["minutes_to_kickoff"] <= g["max_minutes_before_kickoff"]]
-    ok_book = (close["bookmaker"] == "pinnacle") | (
-        (close["bookmaker"] == "median")
-        & ~close.get("quality_flags", pd.Series("", index=close.index)).fillna("").str.contains("INSUFFICIENT_BOOKS"))
-    fair = R.fair_prob(close[ok_book])
-    if fair.empty:
+    x = T.settled(res, odds, mdl, ft90)
+    x = x[x["p_model"].notna()].copy() if len(x) else x
+    if x.empty:
         return pd.DataFrame(columns=cols)
-    r = (res.sort_values("ingested_at").drop_duplicates("fixture_id", keep="last")
-         .dropna(subset=["home_goals", "away_goals"]))
-    m0 = mdl.sort_values("frozen_ts").drop_duplicates("fixture_id", keep="first")
-    if "kickoff_ts" in m0.columns:
-        fz = pd.to_datetime(m0["frozen_ts"], utc=True, errors="coerce")
-        ko = pd.to_datetime(m0["kickoff_ts"], unit="s", utc=True, errors="coerce")
-        m0 = m0[fz < ko]                                     # prospective only
-    out = []
-    for m in MARKETS:
-        f = fair[fair["market"] == m]
-        ref = f[f["bookmaker"] == "pinnacle"].set_index("fixture_id")["p"].combine_first(
-            f[f["bookmaker"] == "median"].set_index("fixture_id")["p"])
-        col = R.MODEL_COL[m]
-        if col not in m0.columns:
-            continue
-        x = (r.set_index("fixture_id")[["league_id", "kickoff_ts", "home_id", "away_id", "home_goals", "away_goals"]]
-             .join(ref.rename("p_close"), how="inner")
-             .join(m0.set_index("fixture_id")[[col]].rename(columns={col: "p_model"}), how="inner")
-             .dropna(subset=["p_close", "p_model"]))
-        if x.empty:
-            continue
-        x["y"] = R.outcome(m, x["home_goals"].astype(float), x["away_goals"].astype(float))
-        x["d"] = improvement(x["p_close"].to_numpy(), x["p_model"].to_numpy(), x["y"].to_numpy())
-        x["market"] = m
-        x["matchday"] = pd.to_datetime(x["kickoff_ts"], unit="s", utc=True).dt.strftime("%Y-%m-%d")
-        out.append(x.reset_index())
-    if not out:
-        return pd.DataFrame(columns=cols)
-    e = pd.concat(out, ignore_index=True)
-    e["league_id"] = e["league_id"].astype(int)
-    return e[cols]
+    x["d"] = improvement(x["p_close"].to_numpy(float), x["p_model"].to_numpy(float), x["y"].to_numpy(float))
+    x["league_id"] = x["league_id"].astype(int)
+    return x[cols].reset_index(drop=True)
 
 
 def stage_stats(e: pd.DataFrame, stage: str) -> dict:
@@ -279,7 +259,8 @@ def _set_state(h: dict, new: str, week: str, why: str) -> None:
 
 
 def review(res: pd.DataFrame, odds: pd.DataFrame, mdl: pd.DataFrame, *, leagues: list[dict] | None = None,
-           now: pd.Timestamp | None = None, week: str | None = None, save: bool = True) -> dict:
+           now: pd.Timestamp | None = None, week: str | None = None, save: bool = True,
+           ft90: pd.DataFrame | None = None) -> dict:
     """Run both stages over every registered hypothesis. Returns {league_id: summary}."""
     now = pd.Timestamp.now(tz="UTC") if now is None else pd.Timestamp(now)
     week = week or now.strftime("%G-W%V")
@@ -291,7 +272,7 @@ def review(res: pd.DataFrame, odds: pd.DataFrame, mdl: pd.DataFrame, *, leagues:
     ensure_registered(reg, leagues, now_iso)
 
     blocked = reg.get("criteria_sha256") != criteria_sha256()
-    e = evidence(res, odds, mdl)
+    e = evidence(res, odds, mdl, ft90)
     hyps = reg["hypotheses"]
     by_key = {k: g for k, g in e.groupby(["league_id", "market"])} if len(e) else {}
 
@@ -387,7 +368,7 @@ def leaderboard_verdicts(report: dict, summary: dict, top: int = 10) -> list[dic
 def main() -> int:
     from src.data import season_store as store
     res, odds, mdl = store.read("scout_results"), store.read("scout_odds"), store.read("scout_model")
-    summ = review(res, odds, mdl)
+    summ = review(res, odds, mdl, ft90=store.read("scout_results_ft90"))
     reg = load_registry()
     print(json.dumps(reg["last_review"], indent=1, default=str))
     rep_f = cfg.OUTPUT_DIR / "scout" / "report.json"

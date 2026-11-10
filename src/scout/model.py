@@ -101,13 +101,26 @@ def probs(lh, la) -> dict:
             "btts": (1 - np.exp(-lh)) * (1 - np.exp(-la))}
 
 
+#: Flag on a frozen row whose team the league fit has never seen (Data Truth R9).
+UNKNOWN_TEAM = "UNKNOWN_TEAM"
+P_COLS = ("p_ou15_over", "p_ou25_over", "p_ou35_over", "p_btts_yes", "p_ou25_over_raw")
+
+
 def predict(m: dict, home_id: int, away_id: int) -> dict:
-    """Probabilities for every scout market, plus the inputs that produced them."""
+    """Probabilities for every scout market, plus the inputs that produced them.
+
+    A team the league fit has never seen gets NO prediction (Data Truth R9). It used to be rated
+    1.0 / 1.0 (the league average), a typed stand-in for data that does not exist; now every
+    probability is missing and the row carries UNKNOWN_TEAM, so it is recorded and never scored."""
     ih, ia = m["teams"].get(int(home_id)), m["teams"].get(int(away_id))
-    Ah = m["A"][ih] if ih is not None else 1.0
-    Dh = m["D"][ih] if ih is not None else 1.0
-    Aa = m["A"][ia] if ia is not None else 1.0
-    Da = m["D"][ia] if ia is not None else 1.0
+    if ih is None or ia is None:
+        out = {k: None for k in P_COLS}
+        out.update({"lambda_home": None, "lambda_away": None,
+                    "home_games": int(m["games"][ih]) if ih is not None else 0,
+                    "away_games": int(m["games"][ia]) if ia is not None else 0,
+                    "league_matches": m["n_matches"], "unknown_team": True})
+        return out
+    Ah, Dh, Aa, Da = m["A"][ih], m["D"][ih], m["A"][ia], m["D"][ia]
     lh, la = m["mu_h"] * Ah * Da, m["mu_a"] * Aa * Dh
     raw = probs(lh, la)
     cal = {k: float(_sigmoid(_logit(np.clip(raw[k][0], 1e-6, 1 - 1e-6)) + m["offset"][k]))
@@ -115,7 +128,6 @@ def predict(m: dict, home_id: int, away_id: int) -> dict:
     out = {"p_ou15_over": cal["ou15"], "p_ou25_over": cal["ou25"], "p_ou35_over": cal["ou35"],
            "p_btts_yes": cal["btts"], "p_ou25_over_raw": float(raw["ou25"][0])}
     out.update({"lambda_home": round(lh, 4), "lambda_away": round(la, 4),
-                "home_games": int(m["games"][ih]) if ih is not None else 0,
-                "away_games": int(m["games"][ia]) if ia is not None else 0,
-                "league_matches": m["n_matches"]})
+                "home_games": int(m["games"][ih]), "away_games": int(m["games"][ia]),
+                "league_matches": m["n_matches"], "unknown_team": False})
     return out

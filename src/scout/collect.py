@@ -16,9 +16,18 @@ ONE SWEEP DOES FOUR THINGS, in this order, each bounded:
    hours, where every observation is kept so the close is seen with a timestamp. THIS IS THE STEP
    THAT CANNOT BE BACKFILLED — once a match starts its odds are gone from the API.
 4. MODEL FREEZE. The first time a fixture is seen with odds, the baseline model's probabilities
-   are written once and never revised, so the later comparison is prospective.
+   are written once and never revised, so the later comparison is prospective. A team the league
+   fit has never seen gets NO prediction: the row is written with missing probabilities and
+   UNKNOWN_TEAM (Data Truth R9).
+5. RESULT BACKFILL + 90-MINUTE SCORES (Data Truth R3/R4, 2026-11-10). Priced or frozen fixtures past
+   kickoff + 3 h with no result are re-fetched by id (/fixtures?ids=, 20 per call), and so are
+   stored AET / PEN results that lack their 90-minute score. Finished ones land in scout_results,
+   the provider's reason for an unfinished one (PST/CANC/ABD/AWD/WO/...) in scout_fixture_status,
+   and the 90-minute score beside the original row in scout_results_ft90. These calls come out of
+   the same --history-budget as step 1 and stop at the quota floor like every other call.
 
-Writes only Pro's own season store (scout_results, scout_odds, scout_model). Never v9.
+Writes only Pro's own season store (scout_results, scout_odds, scout_model, scout_results_ft90,
+scout_fixture_status). Never v9.
 """
 from __future__ import annotations
 
@@ -39,6 +48,11 @@ HISTORY_DONE = OUT / "history_done.json"
 HISTORY_SEASONS = 4          # completed seasons per league, plus the current one
 DAYS_BACK, DAYS_AHEAD = 3, 7
 QUOTE_LOOKBACK_DAYS = 12     # odds partitions read to rebuild the last stored price per key
+IDS_PER_CALL = 20            # API-Football /fixtures?ids= accepts at most 20 ids
+#: A non-terminal reason (PST, SUSP, INT, TBD) is re-asked at most once a day; a terminal one
+#: (CANC, ABD, AWD, WO) is final.
+RECHECK_HOURS = 24
+TERMINAL_REASON = {"CANC", "ABD", "AWD", "WO"}
 
 
 # ── store helpers ─────────────────────────────────────────────────────────────────────────────
@@ -93,15 +107,24 @@ def _store_specials(rows: list, dry: bool) -> None:
 
 
 def _results() -> pd.DataFrame:
+    """SERVED results (src/scout/truth.results): one per fixture, 90-minute goals, canonical names.
+    A result whose 90-minute score is not known has missing goals and is not fitted on."""
+    from src.scout import truth as T
     d = store.read("scout_results")
     if d.empty:
         return d
-    return d.sort_values("ingested_at").drop_duplicates("fixture_id", keep="last")
+    return T.results(d, store.read("scout_results_ft90"))
+
+
+def _stored_result_ids() -> set:
+    d = store.read("scout_results")
+    return set() if d.empty else set(d["fixture_id"].astype(int))
 
 
 # ── steps ─────────────────────────────────────────────────────────────────────────────────────
 def step_history(c: af.Client, watch: list[dict], budget: int, dry: bool) -> int:
     done = json.loads(HISTORY_DONE.read_text(encoding="utf-8")) if HISTORY_DONE.exists() else {}
+    have = _stored_result_ids()                  # one match, one row (Data Truth R6)
     body = c.get("/leagues", {}) or {}
     seasons = {}
     for x in body.get("response") or []:
@@ -120,7 +143,8 @@ def step_history(c: af.Client, watch: list[dict], budget: int, dry: bool) -> int
             resp = c.get_all_pages("/fixtures", {"league": lg["id"], "season": yr})
             used += 1
             fin = [r for r in parse.fixture_rows(resp) if r["status"] in parse.FINISHED]
-            rows.extend(fin)
+            rows.extend(r for r in fin if int(r["fixture_id"]) not in have)
+            have |= {int(r["fixture_id"]) for r in fin}
             # An empty answer may be a failed call; only a real payload marks the season done,
             # otherwise a transient error would silently cost a league a season of history.
             if resp:
@@ -147,12 +171,135 @@ def step_results(fx: pd.DataFrame, dry: bool) -> int:
     if fx.empty:
         return 0
     fin = fx[fx["status"].isin(parse.FINISHED)]
-    have = _results()
-    if not have.empty:
-        fin = fin[~fin["fixture_id"].isin(have["fixture_id"])]
+    fin = fin[~fin["fixture_id"].isin(_stored_result_ids())].drop_duplicates("fixture_id")
     n = _append("scout_results", fin, "res", dry)
     print(f"[scout] results: {n:,} newly finished match(es)")
     return n
+
+
+def _status_rows(rows: pd.DataFrame | list) -> pd.DataFrame:
+    d = rows if isinstance(rows, pd.DataFrame) else pd.DataFrame(rows)
+    if d.empty:
+        return d
+    keep = ["fixture_id", "league_id", "season", "kickoff_ts", "home_id", "away_id", "home_team",
+            "away_team", "status", "status_long"]
+    return d[[c for c in keep if c in d.columns]].assign(
+        reason_recorded=lambda x: x["status"].isin(parse.UNFINISHED_REASON))
+
+
+def step_status(fx: pd.DataFrame, dry: bool, tag: str = "status") -> int:
+    """Record the provider's reason for every past-kickoff fixture of the date window that did not
+    finish (Data Truth R3). Zero calls: these rows came with the /fixtures?date answers. A
+    (fixture, status) pair already recorded is not written again."""
+    if fx.empty or "status" not in fx.columns:
+        return 0
+    now = time.time()
+    st = fx[fx["status"].isin(parse.UNFINISHED_REASON)
+            & (pd.to_numeric(fx["kickoff_ts"], errors="coerce") < now)]
+    old = store.read("scout_fixture_status")
+    if not old.empty and len(st):
+        seen = set(zip(old["fixture_id"].astype(int), old["status"].astype(str)))
+        st = st[[(int(f), str(s)) not in seen for f, s in zip(st["fixture_id"], st["status"])]]
+    n = _append("scout_fixture_status", _status_rows(st.drop_duplicates("fixture_id")), tag, dry)
+    print(f"[scout] status: {n:,} unfinished past fixture(s) recorded with the provider's reason")
+    return n
+
+
+def _due_unresulted(now: float) -> list[int]:
+    """Priced or frozen fixtures past kickoff + grace with no stored result and no FINAL reason, and
+    whose non-final reason was not re-asked in the last RECHECK_HOURS."""
+    from src.scout import truth as T
+    o, m = store.read("scout_odds"), store.read("scout_model")
+    k = pd.concat([o[["fixture_id", "kickoff_ts"]] if not o.empty else pd.DataFrame(columns=["fixture_id", "kickoff_ts"]),
+                   m[["fixture_id", "kickoff_ts"]] if not m.empty else pd.DataFrame(columns=["fixture_id", "kickoff_ts"])])
+    if k.empty:
+        return []
+    stated = k.groupby("fixture_id")["kickoff_ts"].max().astype(float)
+    due = set(stated[stated + T.RESULT_GRACE_HOURS * 3600 < now].index.astype(int)) - _stored_result_ids()
+    st = store.read("scout_fixture_status")
+    if not st.empty and due:
+        st = st.sort_values("ingested_at").drop_duplicates("fixture_id", keep="last")
+        final = set(st[st["status"].isin(TERMINAL_REASON)]["fixture_id"].astype(int))
+        recent = pd.to_datetime(st["ingested_at"], utc=True, errors="coerce") > \
+            pd.Timestamp(now, unit="s", tz="UTC") - pd.Timedelta(hours=RECHECK_HOURS)
+        due -= final | set(st[recent]["fixture_id"].astype(int))
+    return sorted(due)
+
+
+def _ft90_needed() -> list[int]:
+    """Stored AET / PEN results whose row lacks the 90-minute score and that the correction table
+    does not have yet (Data Truth R4)."""
+    r = store.read("scout_results")
+    if r.empty or "status" not in r.columns:
+        return []
+    basis = r["goals_basis"] if "goals_basis" in r.columns else pd.Series(None, index=r.index, dtype=object)
+    need = set(r[r["status"].isin(parse.EXTRA_TIME) & (basis.astype(str) != "fulltime_90")]["fixture_id"].astype(int))
+    f = store.read("scout_results_ft90")
+    if not f.empty:
+        need -= set(f["fixture_id"].astype(int))
+    return sorted(need)
+
+
+def ft90_row(r: dict) -> dict:
+    """The correction row for one re-fetched AET / PEN fixture: the provider's `goals`, its
+    score.fulltime (90 minutes), extra time and penalties, and what they show about `goals`."""
+    g = (r.get("goals_home_api"), r.get("goals_away_api"))
+    ft = (r.get("home_goals"), r.get("away_goals")) if r.get("goals_basis") == "fulltime_90" else (None, None)
+    et = (r.get("et_home"), r.get("et_away"))
+    if None in ft:
+        check = "no_fulltime_score"
+    elif None in et:
+        check = "no_extratime_field"
+    elif g[0] == ft[0] + et[0] and g[1] == ft[1] + et[1]:
+        check = "goals_eq_ft90_plus_et"
+    else:
+        check = "goals_ne_ft90_plus_et"
+    return {"fixture_id": int(r["fixture_id"]), "league_id": r["league_id"], "season": r.get("season"),
+            "kickoff_ts": r.get("kickoff_ts"), "home_id": r.get("home_id"), "away_id": r.get("away_id"),
+            "status": r["status"], "goals_home_api": g[0], "goals_away_api": g[1],
+            "ft90_home": ft[0], "ft90_away": ft[1], "et_home": et[0], "et_away": et[1],
+            "pen_home": r.get("pen_home"), "pen_away": r.get("pen_away"), "et_check": check,
+            "goals_include_extra_time": (None if None in ft or None in g else bool(g != ft))}
+
+
+def step_backfill(c: af.Client, budget: int, dry: bool) -> int:
+    """Data Truth R3 + R4: re-fetch, by id, results that are due but missing and AET / PEN rows
+    without their 90-minute score. Returns the calls used (taken from the history budget)."""
+    now = time.time()
+    need90 = _ft90_needed()
+    missing = _due_unresulted(now)
+    ids = need90 + [i for i in missing if i not in set(need90)]
+    have = _stored_result_ids()
+    res_rows, ft_rows, st_rows, returned, used = [], [], [], set(), 0
+    for i in range(0, len(ids), IDS_PER_CALL):
+        if used >= budget:
+            break
+        chunk = ids[i:i + IDS_PER_CALL]
+        body = c.get("/fixtures", {"ids": "-".join(str(x) for x in chunk)}) or {}
+        used += 1
+        for r in parse.fixture_rows(body.get("response") or []):
+            fid = int(r["fixture_id"])
+            returned.add(fid)
+            if r["status"] in parse.FINISHED and fid not in have:
+                res_rows.append(r)
+                have.add(fid)
+            if fid in need90 and r["status"] in parse.EXTRA_TIME:
+                ft_rows.append(ft90_row(r))
+            if r["status"] not in parse.FINISHED:
+                st_rows.append(r)
+    asked = set(ids[: used * IDS_PER_CALL])
+    for fid in sorted((asked - returned) & set(missing)):
+        st_rows.append({"fixture_id": fid, "league_id": None, "status": "NOT_RETURNED",
+                        "status_long": "the provider returned nothing for this fixture id"})
+    n_r = _append("scout_results", res_rows, "backfill", dry)
+    n_f = _append("scout_results_ft90", ft_rows, "ft90", dry)
+    n_s = _append("scout_fixture_status", _status_rows(st_rows), "bfstatus", dry)
+    checks = pd.Series([x["et_check"] for x in ft_rows]).value_counts().to_dict() if ft_rows else {}
+    incl = sum(1 for x in ft_rows if x["goals_include_extra_time"])
+    print(f"[scout] backfill: {used} call(s); {len(missing)} due fixture(s) without a result, "
+          f"{len(need90)} AET/PEN without a 90-minute score -> {n_r} result(s), {n_s} status row(s), "
+          f"{n_f} 90-minute score(s); goals include extra time on {incl}/{len(ft_rows)}; checks {checks}")
+    return used
 
 
 def _last_polls(now: pd.Timestamp) -> tuple[dict, dict]:
@@ -191,7 +338,7 @@ def step_odds(c: af.Client, watch: list[dict], fx: pd.DataFrame, dry: bool,
     last, streak = _last_polls(now_ts)
     flags = pol.league_flags()
     guard = pol.Guard(now_ts)
-    rows, polled_ids, skipped = [], [], {"not_due": 0, "budget": 0}
+    rows, polled_ids, empty_ids, skipped = [], [], [], {"not_due": 0, "budget": 0}
     spec: list = []                                      # special-market quotes, same answers
     names = ({int(r.fixture_id): (r.home_team, r.away_team) for r in up.itertuples()}
              if not up.empty and {"home_team", "away_team"} <= set(up.columns) else {})
@@ -217,6 +364,8 @@ def step_odds(c: af.Client, watch: list[dict], fx: pd.DataFrame, dry: bool,
         rows.extend(parse.odds_rows(resp, snap, now))
         _specials(resp, "scout_sweep", names, leagues, spec)
         polled_ids.append(lid)
+        if not resp:
+            empty_ids.append(lid)                        # R15: the API offered nothing for it
     prev = _read_recent("scout_odds", QUOTE_LOOKBACK_DAYS)
     last_q = {}
     if not prev.empty:
@@ -224,13 +373,14 @@ def step_odds(c: af.Client, watch: list[dict], fx: pd.DataFrame, dry: bool,
         last_q = {(r.fixture_id, r.market, r.selection, r.bookmaker): r.odds
                   for r in prev.drop_duplicates(["fixture_id", "market", "selection", "bookmaker"],
                                                 keep="last").itertuples()}
-    keep = parse.changed(rows, last_q)
+    keep = parse.unique_odds(parse.changed(rows, last_q))
     n = _append("scout_odds", keep, "odds", dry)
     if spec:
         _store_specials(spec, dry)
     changed_by_lg = pd.Series([r["league_id"] for r in keep]).value_counts().to_dict() if keep else {}
     if summary is not None:
         summary["leagues_polled"] = {str(x): int(changed_by_lg.get(x, 0)) for x in polled_ids}
+        summary["leagues_empty"] = [str(x) for x in empty_ids]
         summary["leagues_skipped"] = skipped
         summary["league_seasons"] = {str(k): str(v) for k, v in active.items()}
         summary["budget_status"] = guard.b.get("status")
@@ -247,7 +397,8 @@ def step_freeze(quotes: pd.DataFrame, fx: pd.DataFrame, dry: bool) -> int:
         return 0
     frozen = store.read("scout_model")
     seen = set(frozen["fixture_id"]) if not frozen.empty else set()
-    todo = fx[fx["fixture_id"].isin(set(quotes["fixture_id"])) & ~fx["fixture_id"].isin(seen)]
+    todo = fx[fx["fixture_id"].isin(set(quotes["fixture_id"])) & ~fx["fixture_id"].isin(seen)
+              & pd.to_numeric(fx["kickoff_ts"], errors="coerce").notna()].drop_duplicates("fixture_id")
     if todo.empty:
         return 0
     res = _results()
@@ -265,9 +416,10 @@ def step_freeze(quotes: pd.DataFrame, fx: pd.DataFrame, dry: bool) -> int:
                         "away_team": r.away_team, "home_id": r.home_id, "away_id": r.away_id,
                         "model_version": model.VERSION, "frozen_ts": cfg.utc_now_iso(),
                         "minutes_to_kickoff": round((r.kickoff_ts - now) / 60, 1),
-                        # a team with under 5 matches in the window is rated mostly from the prior
-                        "quality_flags": ("FEATURE_DEGRADED"
-                                          if min(p["home_games"], p["away_games"]) < 5 else ""),
+                        # no prediction for a team the fit never saw (R9); a team with under 5
+                        # matches in the window is rated mostly from the prior and never scored
+                        "quality_flags": (model.UNKNOWN_TEAM if p.pop("unknown_team") else
+                                          "FEATURE_DEGRADED" if min(p["home_games"], p["away_games"]) < 5 else ""),
                         **p})
     n = _append("scout_model", out, "model", dry)
     print(f"[scout] model: {n:,} fixture(s) frozen, {skipped:,} waiting for league history")
@@ -383,7 +535,7 @@ def near_loop(c: af.Client, minutes: float, dry: bool) -> dict:
             last = {(r.fixture_id, r.market, r.selection, r.bookmaker): r.odds
                     for r in prev.drop_duplicates(["fixture_id", "market", "selection", "bookmaker"],
                                                   keep="last").itertuples()}
-        stored += _append("scout_odds", parse.changed(rows, last), f"near{passes}", dry)
+        stored += _append("scout_odds", parse.unique_odds(parse.changed(rows, last)), f"near{passes}", dry)
         if spec:
             _store_specials(spec, dry)
         passes += 1
@@ -456,7 +608,10 @@ def main() -> int:
         quotes = step_odds(c, watch, fx, a.dry_run, summary)  # first among the bounded steps: unrecoverable
         summary["quotes_seen"] = int(len(quotes))
         summary["model_frozen"] = step_freeze(quotes, fx, a.dry_run)
-        summary["history_rows"] = step_history(c, watch, a.history_budget, a.dry_run)
+        summary["status_rows"] = step_status(fx, a.dry_run)
+        used = step_backfill(c, a.history_budget, a.dry_run)
+        summary["backfill_calls"] = used
+        summary["history_rows"] = step_history(c, watch, max(0, a.history_budget - used), a.dry_run)
         summary["status"] = "ok"
     except af.QuotaFloor as e:
         summary["status"] = f"stopped at quota floor: {e}"
@@ -476,7 +631,7 @@ def _ledger(collector: str, summary: dict, c: af.Client, dry: bool) -> None:
     a ledger failure must not cost a run its prices."""
     try:
         from src.monitoring import collection_policy as pol
-        keep = ("leagues_polled", "leagues_skipped", "league_seasons", "budget_status",
+        keep = ("leagues_polled", "leagues_empty", "leagues_skipped", "league_seasons", "budget_status",
                 "max_priority_polled", "passes", "fixtures_watched", "league_calls",
                 "fixture_calls", "status")
         pol.record_run(collector, summary.get("started"), summary.get("finished"), c.calls,

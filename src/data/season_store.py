@@ -90,6 +90,10 @@ REQUIRED: dict[str, tuple[str, ...]] = {
                       "home_goals", "away_goals"),
     "scout_odds": ("fixture_id", "market", "selection", "bookmaker", "odds", "snapshot_ts"),
     "scout_model": ("fixture_id", "model_version", "frozen_ts"),
+    # Data Truth 2026-11-10: corrections and reasons stored beside the raw scout rows.
+    "scout_results_ft90": ("fixture_id", "status", "goals_home_api", "goals_away_api", "ft90_home",
+                           "ft90_away"),
+    "scout_fixture_status": ("fixture_id", "league_id", "status"),
 }
 
 

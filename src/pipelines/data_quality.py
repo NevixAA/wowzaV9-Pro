@@ -66,7 +66,9 @@ SCAN_TABLES = ("market_snapshots", "model_snapshots", "signals", "settlements", 
                # noticing, which is the only way this class of gap surfaces.
                "settlements_backfill",
                # League scout, monitored from the commit that creates it.
-               "scout_results", "scout_odds", "scout_model")
+               "scout_results", "scout_odds", "scout_model",
+               # Data Truth 2026-11-10: monitored from the commit that creates them.
+               "scout_results_ft90", "scout_fixture_status")
 
 _KEY_COLS = ("fixture_key", "fixture_id", "match", "snapshot_id")
 

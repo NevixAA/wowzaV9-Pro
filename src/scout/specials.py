@@ -131,12 +131,16 @@ def parse(resp: list, *, capture: str, captured_at, names: dict | None = None,
         lg = entry.get("league") or {}
         lid = _int(lg.get("id"))
         lname, country = leagues.get(lid, (lg.get("name"), lg.get("country")))
-        home, away = names.get(fid, (None, None))
+        home, away = (x.strip() if isinstance(x, str) else x for x in names.get(fid, (None, None)))
         upd = _utc(entry.get("update")) if entry.get("update") else None
         ko_iso, cap_iso = _iso(ko), _iso(cap)
         mins = (ko - cap).total_seconds() / 60.0
         band = ladder_band(mins)
-        fkey = f"{lname}|{ko_iso[:10]}|{home}|{away}" if (lname and home and away) else None
+        # Data Truth R14: 13 league names are shared across countries ("Premier League" x6), so the
+        # key carries the country and the API-Football league id. Rows written before 2026-11-10 keep
+        # the old "<league>|<date>|<home>|<away>" key; join on af_fixture_id, never on the key alone.
+        fkey = (f"{country} {lname} [{lid}]|{ko_iso[:10]}|{home}|{away}"
+                if (lname and home and away and lid is not None) else None)
         for bk in entry.get("bookmakers") or []:
             bid = _int(bk.get("id"))
             if bid is None:

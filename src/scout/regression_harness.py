@@ -22,6 +22,11 @@ HOW (fixed before any result, 2026-10-14):
     training; members averaged). Pro cannot import v9's src/model.py (both repos own a top-level
     `config`), so the replica is stated, not hidden; v9's LightGBM member and meta blend are omitted.
   * targets: over25 (the main market) and btts.
+  * missing features (Data Truth R12, 2026-11-10): a row with any missing feature is dropped and
+    counted in `rows_dropped_missing_features`; nothing is median- or zero-filled.
+  * the pooled fit and POOLED_MARGIN exist because v9's new-format model IS one pooled model; they
+    are a PRE-REGISTERED RESEARCH GATE on whether onboarding hurts existing leagues, never a bar
+    that bets (owner 2026-11-10).
 
 RULE:
   INSUFFICIENT_CANDIDATE_HISTORY  candidate has < 300 fixtures before the cut
@@ -89,8 +94,10 @@ def _fit_predict(Xtr: pd.DataFrame, ytr: np.ndarray, Xte: pd.DataFrame, seed: in
     from sklearn.linear_model import LogisticRegression
     from sklearn.pipeline import Pipeline
     from sklearn.preprocessing import StandardScaler
-    med = Xtr.median().fillna(0.0)
-    Xtr, Xte = Xtr.fillna(med), Xte.fillna(med)                     # train medians only
+    # Data Truth R12 (2026-11-10): no median / 0.0 stand-ins. run() drops every row with a missing
+    # feature before it gets here and records how many; a NaN reaching the fit is a bug.
+    if Xtr.isna().any().any() or Xte.isna().any().any():
+        raise ValueError("missing feature values reached the regression fit")
     cut = int(len(Xtr) * 0.85)
     preds = []
     for clf in (LogisticRegression(max_iter=2000, C=0.5, solver="lbfgs"),
@@ -123,6 +130,13 @@ def run(league_id: int, *, existing: pd.DataFrame | None = None) -> dict:
         return res
     allf = F.build(pd.concat([existing, cand], ignore_index=True))
     cols = F.feature_columns(allf, FAMILIES)
+    # Data Truth R12: a row with a missing feature is DROPPED (counted), never median-filled.
+    complete = allf[cols].notna().all(axis=1)
+    cand_mask = allf["league"].astype(str).str.startswith("scout:")
+    res["rows_dropped_missing_features"] = {"existing": int((~complete & ~cand_mask).sum()),
+                                            "candidate": int((~complete & cand_mask).sum()),
+                                            "kept": int(complete.sum())}
+    allf = allf[complete].reset_index(drop=True)
     is_cand = allf["league"].astype(str).str.startswith("scout:")
     train_a = allf[~is_cand & (allf["date"] < cut)]
     train_b = allf[allf["date"] < cut].sort_values("date", kind="mergesort")

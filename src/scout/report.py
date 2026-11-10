@@ -2,26 +2,32 @@
 
     python -m src.scout.report
 
-Writes output/scout/report.json and output/scout/REPORT.md. Read-only on the store.
+Writes output/scout/report.json, output/scout/REPORT.md, output/scout/league_status.json and
+output/scout/scout_health.json. Read-only on the store.
 
-FOR EACH LEAGUE x MARKET, on settled fixtures that had a pre-kickoff price:
+EVERY NUMBER HERE COMES FROM src/scout/truth.py (Data Truth, 2026-11-10): 90-minute results, the one
+genuine-close rule (<= 60 min before the ACTUAL kickoff; Pinnacle, else a median of >= 3 books),
+fixtures moved > 48 h void, model rows only with the result's league + team ids, frozen before the
+actual kickoff and with a real prediction.
 
-  market skill   Brier of the de-vigged CLOSING price against the result, compared with the
-                 league's own base rate. A sharp market sits well below the base rate; a market
-                 barely better than the base rate is pricing little beyond the league average.
+FOR EACH LEAGUE x MARKET, on settled fixtures with a genuine close:
+
+  market skill   Brier of the de-vigged GENUINE close against the result, compared with the league's
+                 base rate built ONLY from that league's results before each fixture's freeze (or
+                 kickoff, without a freeze) — no look-ahead.
   model vs market
-                 Brier of the frozen baseline model, and the RESIDUAL test: logistic regression
-                 of the result on logit(market) and logit(model). A model coefficient reliably
-                 above zero means the model knows something the closing price did not. This, not
-                 standalone accuracy, is the test that matters (CLAUDE.md, v11 residual test).
-  paper bets     where the frozen model beat Bet365's price at freeze time by more than 5 points:
-                 flat-stake ROI at that price, and closing-line value against the reference close.
+                 Brier of the frozen baseline model, and the RESIDUAL test: logistic regression of the
+                 result on logit(market) and logit(model).
+  paper bets     where the frozen model beat Bet365's price AT FREEZE TIME by more than EDGE_BAR:
+                 flat-stake ROI at that price. The price must have been observed at most
+                 close_max_minutes() before the freeze (the same age limit as a genuine close).
 
-REFERENCE PRICE: Pinnacle where it quotes the market; otherwise the cross-book median. Pinnacle
-does not offer BTTS through API-Football, so BTTS always uses the median.
+EDGE_BAR IS A PRE-REGISTERED RESEARCH GATE (owner 2026-11-10). It decides which paper cells are worth
+studying, never what to bet: no staking or betting code may read it (tests/test_scout_data_truth.py).
+A bar that bets is per league, like v9's.
 
 NOTHING HERE IS A VERDICT UNTIL A LEAGUE HAS VOLUME. Status per league x market:
-    COLLECTING  < 100 settled fixtures with a close
+    COLLECTING  < 100 settled fixtures with a genuine close
     EARLY       100 - 299
     READABLE    >= 300
 """
@@ -35,50 +41,32 @@ import pandas as pd
 from config import pro_config as cfg
 from src.data import season_store as store
 from src.scout import leagues as reg
+from src.scout import truth as T
 
 OUT = cfg.OUTPUT_DIR / "scout"
+#: Research gate only (see the module docstring). Never a staking bar.
 EDGE_BAR = 0.05
+RESEARCH_GATE_ONLY = True
 STATUS = ((300, "READABLE"), (100, "EARLY"), (0, "COLLECTING"))
-SIDE = {"ou15": ("over", "under"), "ou25": ("over", "under"), "ou35": ("over", "under"),
-        "btts": ("yes", "no")}
-MODEL_COL = {"ou15": "p_ou15_over", "ou25": "p_ou25_over", "ou35": "p_ou35_over",
-             "btts": "p_btts_yes"}
+SIDE = T.SIDE
+MODEL_COL = T.MODEL_COL
+outcome = T.outcome
+fair_prob = T.fair_prob
 
 
-def outcome(market: str, hg, ag):
-    tg = hg + ag
-    return {"ou15": tg > 1.5, "ou25": tg > 2.5, "ou35": tg > 3.5,
-            "btts": (hg > 0) & (ag > 0)}[market].astype(float)
-
-
-def fair_prob(q: pd.DataFrame) -> pd.DataFrame:
-    """Proportional de-vig of each (fixture, market, book) pair -> P(first side)."""
-    w = q.pivot_table(index=["fixture_id", "market", "bookmaker"], columns="selection",
-                      values="odds", aggfunc="last").reset_index()
-    rows = []
-    for m, (a, b) in SIDE.items():
-        s = w[w["market"] == m]
-        if s.empty or a not in s or b not in s:
-            continue
-        ia, ib = 1 / s[a], 1 / s[b]
-        rows.append(pd.DataFrame({"fixture_id": s["fixture_id"], "market": m,
-                                  "bookmaker": s["bookmaker"], "p": ia / (ia + ib),
-                                  "odds_first": s[a]}))
-    return pd.concat(rows, ignore_index=True) if rows else pd.DataFrame()
-
-
-def closing(odds: pd.DataFrame) -> pd.DataFrame:
-    """Last pre-kickoff observation per (fixture, market, selection, book). The table is a
-    change-log, so the last row IS the carried-forward price at kickoff."""
-    o = odds[odds["minutes_to_kickoff"] > 0].sort_values("snapshot_ts")
-    return o.drop_duplicates(["fixture_id", "market", "selection", "bookmaker"], keep="last")
-
-
-def asof(odds: pd.DataFrame, when: pd.DataFrame) -> pd.DataFrame:
-    """Price per key as it stood at each fixture's freeze time (carry-forward)."""
-    o = odds.merge(when[["fixture_id", "frozen_ts"]], on="fixture_id")
-    o = o[o["snapshot_ts"] <= o["frozen_ts"]].sort_values("snapshot_ts")
-    return o.drop_duplicates(["fixture_id", "market", "selection", "bookmaker"], keep="last")
+def asof(odds: pd.DataFrame, when: pd.DataFrame, max_age_min: float | None = None) -> pd.DataFrame:
+    """Price per key as it stood at each fixture's freeze time (carry-forward), from the cleaned
+    change-log. With `max_age_min`, a price observed longer than that before the freeze is not a
+    bet-time price and is dropped (missing, not carried)."""
+    o = T.clean_odds(odds).merge(when[["fixture_id", "frozen_ts"]], on="fixture_id")
+    if o.empty:
+        return o
+    o = o.assign(_s=T._epoch(o["snapshot_ts"]), _f=T._epoch(o["frozen_ts"]))
+    o = o[o["_s"] <= o["_f"]].sort_values("_s", kind="mergesort")
+    o = o.drop_duplicates(["fixture_id", "market", "selection", "bookmaker"], keep="last")
+    if max_age_min is not None:
+        o = o[(o["_f"] - o["_s"]) <= max_age_min * 60]
+    return o.drop(columns=["_s", "_f"])
 
 
 def residual(y, p_mkt, p_mod) -> dict:
@@ -112,13 +100,26 @@ def residual(y, p_mkt, p_mod) -> dict:
     return {"coef": round(float(beta[-1]), 4), "se": round(se, 4), "z": round(float(beta[-1]) / se, 2)}
 
 
-def build() -> dict:
-    res = store.read("scout_results")
-    odds = store.read("scout_odds")
-    mdl = store.read("scout_model")
+def _tables():
+    return (store.read("scout_results"), store.read("scout_odds"), store.read("scout_model"),
+            store.read("scout_results_ft90"), store.read("scout_fixture_status"))
+
+
+def _cutoff(s: pd.DataFrame) -> pd.Series:
+    """Freeze time where there is one, else the kickoff (epoch seconds) — the base-rate horizon."""
+    ep = T._epoch(s["frozen_ts"])
+    ep.index = s.index
+    return ep.where(ep.notna(), s["kickoff_ts"].astype(float))
+
+
+def build(tables: tuple | None = None) -> dict:
+    res, odds, mdl, ft90, _st = tables if tables is not None else _tables()
     names = {x["id"]: (x["country"], x["name"], x["priority"]) for x in reg.load()}
-    out = {"generated_at": cfg.utc_now_iso(), "status_rule": "COLLECTING <100, EARLY 100-299, "
-           "READABLE >=300 settled fixtures with a pre-kickoff close",
+    out = {"generated_at": cfg.utc_now_iso(),
+           "status_rule": "COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a GENUINE "
+                          "close (<= 60 min before the actual kickoff; Pinnacle, else median of >= 3 books)",
+           "data_truth": "src/scout/truth.py: 90-minute results, genuine close, >48h reschedules void, "
+                         "model rows matched on league + team ids, frozen before the actual kickoff",
            "totals": {"results": 0 if res.empty else int(res["fixture_id"].nunique()),
                       "odds_rows": int(len(odds)), "fixtures_priced": 0 if odds.empty else
                       int(odds["fixture_id"].nunique()),
@@ -126,75 +127,63 @@ def build() -> dict:
            "cells": []}
     if res.empty or odds.empty:
         return out
-    res = res.sort_values("ingested_at").drop_duplicates("fixture_id", keep="last")
-    res = res.dropna(subset=["home_goals", "away_goals"])
-    hist_rate = {}                                         # league base rates from history
-    for (lid), g in res.groupby("league_id"):
-        hg, ag = g["home_goals"].astype(float), g["away_goals"].astype(float)
-        hist_rate[lid] = {m: float(outcome(m, hg, ag).mean()) for m in SIDE}
-
-    close = fair_prob(closing(odds))
-    settled = res[res["fixture_id"].isin(close["fixture_id"])]
-    if mdl.empty:
-        mdl = pd.DataFrame(columns=["fixture_id", "frozen_ts"])
-    mdl = mdl.sort_values("frozen_ts").drop_duplicates("fixture_id", keep="first")
-
-    for m in SIDE:
-        c = close[close["market"] == m]
-        ref = c[c["bookmaker"] == "pinnacle"].set_index("fixture_id")["p"]
-        med = c[c["bookmaker"] == "median"].set_index("fixture_id")["p"]
-        ref = ref.combine_first(med)
-        s = settled.set_index("fixture_id")
-        s = s[s.index.isin(ref.index)]
-        if s.empty:
-            continue
-        s = s.assign(y=outcome(m, s["home_goals"].astype(float), s["away_goals"].astype(float)),
-                     p_ref=ref.reindex(s.index))
-        for lid, g in s.groupby("league_id"):
-            n = len(g)
-            base = hist_rate.get(lid, {}).get(m, float(g["y"].mean()))
-            cell = {"league_id": int(lid), "country": names.get(lid, ("?",))[0],
-                    "league": names.get(lid, ("", "?"))[1],
-                    "priority": names.get(lid, ("", "", 9))[2], "market": m, "n": n,
-                    "status": next(lab for lim, lab in STATUS if n >= lim),
-                    "rate": round(float(g["y"].mean()), 4),
-                    "brier_base_rate": round(float(((base - g["y"]) ** 2).mean()), 4),
-                    "brier_market_close": round(float(((g["p_ref"] - g["y"]) ** 2).mean()), 4),
-                    "reference": "pinnacle" if m != "btts" else "median"}
-            cell["market_skill_vs_base"] = (round(1 - cell["brier_market_close"] / cell["brier_base_rate"], 4)
-                                            if cell["brier_base_rate"] > 0 else None)
-            gm = g.join(mdl.set_index("fixture_id")[[MODEL_COL[m]]], how="inner")
-            if len(gm) >= 30:
-                cell["n_model"] = len(gm)
-                cell["brier_model"] = round(float(((gm[MODEL_COL[m]] - gm["y"]) ** 2).mean()), 4)
-                cell["residual"] = residual(gm["y"].to_numpy(), gm["p_ref"].to_numpy(),
-                                            gm[MODEL_COL[m]].to_numpy())
-            # paper bets on Bet365 at freeze time, both sides
-            if len(gm):
-                bets = gm.join(raw_two_sided(odds, m, gm.index, mdl), how="inner")
-                if len(bets):
-                    pm = bets[MODEL_COL[m]]
-                    take_first = (pm - 1 / bets["o_first"]) > EDGE_BAR
-                    take_second = (((1 - pm) - 1 / bets["o_second"]) > EDGE_BAR) & ~take_first
-                    ret = np.where(take_first, np.where(bets["y"] == 1, bets["o_first"] - 1, -1.0),
-                                   np.where(take_second,
-                                            np.where(bets["y"] == 0, bets["o_second"] - 1, -1.0),
-                                            np.nan))
-                    ret = pd.Series(ret).dropna()
-                    if len(ret):
-                        cell["paper_bets"] = int(len(ret))
-                        cell["paper_roi"] = round(float(ret.mean()), 4)
-                        # one-sidedness is the failure signature to watch for (v9's MLS: 100% UNDER)
-                        cell["paper_first_side_share"] = round(float(take_first.sum() / len(ret)), 3)
-            out["cells"].append(cell)
+    s = T.settled(res, odds, mdl if not mdl.empty else None, ft90)
+    out["excluded"] = s.attrs.get("excluded", {})
+    if s.empty:
+        return out
+    served = T.results(res, ft90).dropna(subset=["home_goals", "away_goals", "kickoff_ts"])
+    cutoff = _cutoff(s)
+    paper_cap = T.close_max_minutes()
+    for (lid, m), g in s.groupby(["league_id", "market"]):
+        n = len(g)
+        base = T.base_rate_before(served, lid, m, cutoff.loc[g.index])
+        hb = base.notna()
+        cell = {"league_id": int(lid), "country": names.get(lid, ("?",))[0],
+                "league": names.get(lid, ("", "?"))[1],
+                "priority": names.get(lid, ("", "", 9))[2], "market": m, "n": n,
+                "status": next(lab for lim, lab in STATUS if n >= lim),
+                "rate": round(float(g["y"].mean()), 4),
+                "n_base_rate": int(hb.sum()),
+                "brier_base_rate": round(float(((base[hb] - g["y"][hb]) ** 2).mean()), 4) if hb.any() else None,
+                "brier_market_close": round(float(((g["p_close"] - g["y"]) ** 2).mean()), 4),
+                "brier_market_close_on_base_rows": (round(float(((g["p_close"][hb] - g["y"][hb]) ** 2).mean()), 4)
+                                                    if hb.any() else None),
+                "reference": "pinnacle" if m != "btts" else "median"}
+        cell["market_skill_vs_base"] = (round(1 - cell["brier_market_close_on_base_rows"] / cell["brier_base_rate"], 4)
+                                        if cell["brier_base_rate"] else None)
+        gm = g[g["p_model"].notna()].set_index("fixture_id")
+        if len(gm) >= 30:
+            cell["n_model"] = len(gm)
+            cell["brier_model"] = round(float(((gm["p_model"] - gm["y"]) ** 2).mean()), 4)
+            cell["residual"] = residual(gm["y"].to_numpy(), gm["p_close"].to_numpy(), gm["p_model"].to_numpy())
+        if len(gm):
+            bets = gm.join(raw_two_sided(odds, m, gm, paper_cap), how="inner")
+            if len(bets):
+                pm = bets["p_model"]
+                take_first = (pm - 1 / bets["o_first"]) > EDGE_BAR
+                take_second = (((1 - pm) - 1 / bets["o_second"]) > EDGE_BAR) & ~take_first
+                ret = np.where(take_first, np.where(bets["y"] == 1, bets["o_first"] - 1, -1.0),
+                               np.where(take_second, np.where(bets["y"] == 0, bets["o_second"] - 1, -1.0),
+                                        np.nan))
+                ret = pd.Series(ret).dropna()
+                if len(ret):
+                    cell["paper_bets"] = int(len(ret))
+                    cell["paper_roi"] = round(float(ret.mean()), 4)
+                    # one-sidedness is the failure signature to watch for (v9's MLS: 100% UNDER)
+                    cell["paper_first_side_share"] = round(float(take_first.sum() / len(ret)), 3)
+        out["cells"].append(cell)
     out["cells"].sort(key=lambda r: (r["priority"], -r["n"]))
     return out
 
 
-def raw_two_sided(odds, m, fixtures, mdl) -> pd.DataFrame:
-    """Bet365's two prices at freeze time, as columns o_first / o_second."""
+def raw_two_sided(odds, m, gm: pd.DataFrame, max_age_min: float | None = None) -> pd.DataFrame:
+    """Bet365's two prices at freeze time, as columns o_first / o_second. gm: index fixture_id,
+    column frozen_ts."""
+    when = gm.reset_index()[["fixture_id", "frozen_ts"]]
     o = asof(odds[(odds["market"] == m) & (odds["bookmaker"] == "bet365")
-                  & odds["fixture_id"].isin(fixtures)], mdl)
+                  & odds["fixture_id"].isin(gm.index)], when, max_age_min)
+    if o.empty:
+        return pd.DataFrame(columns=["o_first", "o_second"])
     w = o.pivot_table(index="fixture_id", columns="selection", values="odds", aggfunc="last")
     a, b = SIDE[m]
     if a not in w or b not in w:
@@ -202,14 +191,17 @@ def raw_two_sided(odds, m, fixtures, mdl) -> pd.DataFrame:
     return w.rename(columns={a: "o_first", b: "o_second"})[["o_first", "o_second"]].dropna()
 
 
-def to_md(r: dict) -> str:
+def to_md(r: dict, health: dict | None = None) -> str:
     t = r["totals"]
     lines = [f"# League scout — {r['generated_at'][:16]} UTC", "",
              f"Results stored: {t['results']:,} · fixtures priced: {t['fixtures_priced']:,} · "
              f"model frozen: {t['fixtures_frozen']:,}", "", r["status_rule"], ""]
+    if r.get("excluded"):
+        lines += ["Left out by the Data Truth rules: " + ", ".join(f"{k} {v:,}" for k, v in r["excluded"].items()), ""]
+    if health:
+        lines += _health_md(health)
     if not r["cells"]:
-        lines.append("No settled fixtures with a captured close yet. The first ones settle within "
-                     "days of collection starting; verdicts need weeks.")
+        lines.append("No settled fixtures with a genuine close yet.")
         return "\n".join(lines)
     lines += ["| P | League | Market | n | Status | Market skill vs base rate | Model resid. z | Paper ROI (n) |",
               "|---|---|---|---|---|---|---|---|"]
@@ -222,25 +214,138 @@ def to_md(r: dict) -> str:
     return "\n".join(lines)
 
 
-def league_status(report: dict | None = None) -> dict:
-    """One row per WATCHED league — all 200, including ones with no data yet — for the dashboard.
+def _health_md(h: dict) -> list[str]:
+    L = ["## Coverage and staleness (Data Truth R15)", "",
+         f"Since {h.get('scout_start')}: {h['totals']['finished']:,} finished watched fixtures, "
+         f"{h['totals']['with_any_odds']:,} with any odds, {h['totals']['with_genuine_close']:,} with a genuine "
+         f"close. Stale in-season leagues: {len(h['stale_leagues'])}. No odds offered by the API: "
+         f"{len(h['no_odds_offered'])}. Unexplained missing results: "
+         f"{h['counts'].get('due_without_result_unexplained', 0)}.", "",
+         "| League | finished | odds coverage | genuine-close coverage | last price | flags |",
+         "|---|---|---|---|---|---|"]
+    for x in h["leagues"]:
+        if x["flags"]:
+            L.append(f"| {x['country']} {x['league']} ({x['league_id']}) | {x['finished']} | {x['odds_coverage']} | "
+                     f"{x['close_coverage']} | {x['last_price_seen'] or '–'} | {', '.join(x['flags'])} |")
+    return L + [""]
+
+
+def _ledger_odds_answers(runs: pd.DataFrame | None = None) -> tuple[dict, dict]:
+    """{league_id: polls recorded}, {league_id: polls whose /odds answer was empty} — from sweep
+    ledger records that carry `leagues_empty` (recorded from 2026-11-10)."""
+    if runs is None:
+        try:
+            from src.monitoring import collection_policy as pol
+            runs = pol.load_runs()
+        except Exception:                                              # noqa: BLE001
+            return {}, {}
+    polled, empty = {}, {}
+    if runs is None or runs.empty or "detail" not in runs.columns:
+        return polled, empty
+    for r in runs[runs["collector"] == "scout_sweep"].itertuples():
+        d = r.detail if isinstance(r.detail, dict) else {}
+        if "leagues_empty" not in d:
+            continue
+        for lid in (d.get("leagues_polled") or {}):
+            polled[int(lid)] = polled.get(int(lid), 0) + 1
+        for lid in d.get("leagues_empty") or []:
+            empty[int(lid)] = empty.get(int(lid), 0) + 1
+    return polled, empty
+
+
+def odds_offered(lid: int, last_price, polled: dict, empty: dict) -> str:
+    """NO_ODDS_OFFERED: every recorded poll of the league came back empty and no price was ever
+    stored. OFFERED: a price was stored. UNKNOWN: no recorded poll says either way."""
+    has_price = last_price is not None and pd.notna(last_price)
+    if has_price:
+        return "OFFERED"
+    if polled.get(lid, 0) and empty.get(lid, 0) == polled[lid]:
+        return "NO_ODDS_OFFERED"
+    return "UNKNOWN"
+
+
+def health(tables: tuple | None = None, now: pd.Timestamp | None = None,
+           runs: pd.DataFrame | None = None) -> dict:
+    """Per-league coverage and staleness line + every Data Truth count (output/scout/scout_health.json)."""
+    now = pd.Timestamp.now(tz="UTC") if now is None else pd.Timestamp(now)
+    res, odds, mdl, ft90, st = tables if tables is not None else _tables()
+    watch = reg.load()
+    served = T.results(res, ft90) if not res.empty else res
+    start = pd.to_datetime(odds["snapshot_ts"], utc=True, errors="coerce").min() if not odds.empty else None
+    s = (T.settled(res, odds, mdl if not mdl.empty else None, ft90)
+         if not (res.empty or odds.empty) else pd.DataFrame())
+    gfx = set(s["fixture_id"]) if len(s) else set()
+    priced = set(odds["fixture_id"]) if not odds.empty else set()
+    last_px = (pd.to_datetime(odds.groupby("league_id")["snapshot_ts"].max(), utc=True).to_dict()
+               if not odds.empty else {})
+    last_res = (served.dropna(subset=["kickoff_ts"]).groupby("league_id")["kickoff_ts"].max().to_dict()
+                if len(served) else {})
+    polled, empty = _ledger_odds_answers(runs)
+    stale_cut = now - pd.Timedelta(days=T.STALE_DAYS)
+    rows, tot = [], {"finished": 0, "with_any_odds": 0, "with_genuine_close": 0}
+    for lg in watch:
+        lid = lg["id"]
+        if start is not None and len(served):
+            f = set(served[(served["league_id"] == lid) & (served["kickoff_ts"] >= start.timestamp())]["fixture_id"])
+        else:
+            f = set()
+        n_odds, n_close = len(f & priced), len(f & gfx)
+        tot["finished"] += len(f)
+        tot["with_any_odds"] += n_odds
+        tot["with_genuine_close"] += n_close
+        lp, lr = last_px.get(lid), last_res.get(lid)
+        in_season = lr is not None and pd.notna(lr) and lr >= stale_cut.timestamp()
+        stale = bool(in_season and (lp is None or pd.isna(lp) or lp < stale_cut))
+        offered = odds_offered(lid, lp, polled, empty)
+        flags = []
+        if stale:
+            flags.append(f"STALE >{T.STALE_DAYS}d in season")
+        if offered == "NO_ODDS_OFFERED":
+            flags.append("NO_ODDS_OFFERED by the API")
+        if f and n_odds == 0:
+            flags.append("NO_ODDS_CAPTURED")
+        elif f and n_odds / len(f) < 0.5:
+            flags.append("ODDS_COVERAGE_UNDER_HALF")
+        rows.append({"league_id": lid, "country": lg["country"], "league": lg["name"], "finished": len(f),
+                     "with_any_odds": n_odds, "with_genuine_close": n_close,
+                     "odds_coverage": round(n_odds / len(f), 3) if f else None,
+                     "close_coverage": round(n_close / len(f), 3) if f else None,
+                     "last_price_seen": None if lp is None or pd.isna(lp) else lp.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                     "days_since_price": None if lp is None or pd.isna(lp) else round((now - lp).total_seconds() / 86400, 1),
+                     "last_result_kickoff": (None if lr is None or pd.isna(lr)
+                                             else pd.Timestamp(lr, unit="s", tz="UTC").strftime("%Y-%m-%d")),
+                     "in_season": bool(in_season), "stale": stale, "odds_offered": offered, "flags": flags})
+    counts = T.audit(res, odds, mdl, ft90, st, now) if not res.empty else {}
+    return {"generated_at": cfg.utc_now_iso(), "scout_start": None if start is None else start.strftime("%Y-%m-%d"),
+            "rules": {"stale_days": T.STALE_DAYS, "result_grace_hours": T.RESULT_GRACE_HOURS,
+                      "reschedule_void_hours": T.RESCHEDULE_VOID_HOURS,
+                      "genuine_close_max_minutes": T.close_max_minutes()},
+            "totals": tot, "counts": counts,
+            "stale_leagues": [x["league_id"] for x in rows if x["stale"]],
+            "no_odds_offered": [x["league_id"] for x in rows if x["odds_offered"] == "NO_ODDS_OFFERED"],
+            "leagues": rows}
+
+
+def league_status(report: dict | None = None, tables: tuple | None = None, hl: dict | None = None) -> dict:
+    """One row per WATCHED league — all of them, including ones with no data yet — for the dashboard.
 
     The dashboard is a viewer and must not read the season store's parquet partitions at render
     time (it has ~1 GB and has died from that twice), so every count it shows is computed here.
     """
     import json as _json
     watch = reg.load()
-    res, odds, mdl = store.read("scout_results"), store.read("scout_odds"), store.read("scout_model")
+    res, odds, mdl, ft90, _st = tables if tables is not None else _tables()
     done_f = OUT / "history_done.json"
     done = _json.loads(done_f.read_text(encoding="utf-8")) if done_f.exists() else {}
     now = pd.Timestamp.now(tz="UTC")
+    served = T.results(res, ft90) if not res.empty else res
 
     def per_league(df, col="fixture_id"):
-        if df.empty or "league_id" not in df.columns:
+        if df is None or df.empty or "league_id" not in df.columns:
             return {}
         return df.groupby("league_id")[col].nunique().to_dict()
 
-    n_res = per_league(res.drop_duplicates("fixture_id") if not res.empty else res)
+    n_res = per_league(served)
     n_px = per_league(odds)
     n_frozen = per_league(mdl)
     last_px = (odds.groupby("league_id")["snapshot_ts"].max().to_dict()
@@ -252,6 +357,7 @@ def league_status(report: dict | None = None) -> dict:
     cells = {}
     for c in (report or {}).get("cells", []):
         cells.setdefault(c["league_id"], []).append(c)
+    hrow = {x["league_id"]: x for x in (hl or {}).get("leagues", [])}
     rank = {"READABLE": 3, "EARLY": 2, "COLLECTING": 1}
     rows = []
     for lg in watch:
@@ -262,13 +368,17 @@ def league_status(report: dict | None = None) -> dict:
         status = (best["status"] if best else
                   "PRICING" if n_px.get(lid) else
                   "HISTORY_ONLY" if n_res.get(lid) else "NOT_STARTED")
+        h = hrow.get(lid, {})
         rows.append({
             "league_id": lid, "country": lg["country"], "league": lg["name"], "priority": lg["priority"],
             "status": status, "history_seasons": seasons, "results": int(n_res.get(lid, 0)),
             "fixtures_priced": int(n_px.get(lid, 0)), "upcoming_priced": int(upcoming.get(lid, 0)),
             "model_frozen": int(n_frozen.get(lid, 0)),
+            # genuine closes only (Data Truth R7): the report's cells count nothing else
             "settled_with_close": max((c["n"] for c in cs), default=0),
             "last_price_seen": last_px.get(lid),
+            "odds_coverage": h.get("odds_coverage"), "close_coverage": h.get("close_coverage"),
+            "stale": h.get("stale"), "odds_offered": h.get("odds_offered"), "coverage_flags": h.get("flags", []),
             "markets": {c["market"]: {k: c.get(k) for k in ("n", "status", "rate", "market_skill_vs_base",
                                                              "residual", "paper_bets", "paper_roi",
                                                              "paper_first_side_share")} for c in cs},
@@ -278,21 +388,26 @@ def league_status(report: dict | None = None) -> dict:
             "status_meaning": {
                 "NOT_STARTED": "nothing collected yet",
                 "HISTORY_ONLY": "past results stored; no current prices captured yet (off-season or no fixtures)",
-                "PRICING": "prices are being captured; no settled fixture with a captured close yet",
-                "COLLECTING": "fewer than 100 settled fixtures with a close — no verdict possible",
+                "PRICING": "prices are being captured; no settled fixture with a genuine close yet",
+                "COLLECTING": "fewer than 100 settled fixtures with a genuine close — no verdict possible",
                 "EARLY": "100-299 settled — a first, noisy read",
                 "READABLE": "300+ settled — the market-skill and residual tests can be read"},
             "leagues": rows}
 
 
 def main() -> int:
-    r = build()
+    tables = _tables()
+    r = build(tables)
+    hl = health(tables)
     OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "league_status.json").write_text(json.dumps(league_status(r), indent=1, default=str),
+    (OUT / "league_status.json").write_text(json.dumps(league_status(r, tables, hl), indent=1, default=str),
                                             encoding="utf-8")
     (OUT / "report.json").write_text(json.dumps(r, indent=1, default=str), encoding="utf-8")
-    (OUT / "REPORT.md").write_text(to_md(r), encoding="utf-8")
+    (OUT / "scout_health.json").write_text(json.dumps(hl, indent=1, default=str), encoding="utf-8")
+    (OUT / "REPORT.md").write_text(to_md(r, hl), encoding="utf-8")
     print(f"[scout report] {len(r['cells'])} league x market cell(s); totals {r['totals']}")
+    print(f"[scout health] {hl['totals']}; stale {hl['stale_leagues']}; no odds offered {hl['no_odds_offered']}")
+    print(f"[scout health] counts {hl['counts']}")
     return 0
 
 

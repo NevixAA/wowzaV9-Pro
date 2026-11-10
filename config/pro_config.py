@@ -177,6 +177,13 @@ TABLES = (
     "scout_odds",
     # Baseline model probabilities, frozen once per fixture at first sight of odds.
     "scout_model",
+    # Data Truth 2026-11-10 (R4): the provider's 90-minute score (score.fulltime) for stored AET / PEN
+    # results, written BESIDE the original rows, which are never rewritten. src/scout/truth.results
+    # serves it; an AET / PEN result without it has missing goals.
+    "scout_results_ft90",
+    # Data Truth 2026-11-10 (R3): the provider's status for fixtures past kickoff that did not finish
+    # (PST, CANC, ABD, AWD, WO, ...), so every missing result has a recorded reason.
+    "scout_fixture_status",
 )
 
 # Columns every row carries, added by the store itself — never by an importer.

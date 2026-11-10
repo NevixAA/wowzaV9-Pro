@@ -123,10 +123,15 @@ def test_calibration_in_the_large_matches_history():
     assert abs(P - rate) < 0.05
 
 
-def test_unknown_team_falls_back_to_average_not_an_extreme():
+def test_unknown_team_gets_no_prediction():
+    """Data Truth R9: a team the league fit never saw used to be rated 1.0 (the league average), a
+    typed stand-in. Now every probability is missing and the row is marked."""
     d, _ = _league()
     p = model.predict(model.fit(d, NOW), 999, 998)
-    assert p["home_games"] == 0 and 0.2 < p["p_ou25_over"] < 0.8
+    assert p["home_games"] == 0 and p["unknown_team"] is True
+    assert all(p[k] is None for k in model.P_COLS) and p["lambda_home"] is None
+    q = model.predict(model.fit(d, NOW), 0, 1)
+    assert q["unknown_team"] is False and 0 < q["p_ou25_over"] < 1
 
 
 # ── report, end to end on a scratch store ─────────────────────────────────────────────────────
@@ -145,25 +150,31 @@ def test_report_finds_a_model_the_market_ignores(scratch):
     n = 600
     true_p = rng.uniform(0.25, 0.75, n)
     y_tot = np.where(rng.random(n) < true_p, 3, 1)
-    res = pd.DataFrame({"fixture_id": range(n), "league_id": 7, "kickoff_ts": NOW + np.arange(n),
+    ko = NOW + np.arange(n) * 3600
+    res = pd.DataFrame({"fixture_id": range(n), "league_id": 7, "kickoff_ts": ko, "home_id": 1, "away_id": 2,
                         "home_team": "a", "away_team": "b", "home_goals": y_tot, "away_goals": 0,
-                        "quality_flags": ""})
+                        "status": "FT", "quality_flags": ""})
     fair = 0.5
     odds_rows = []
     for f in range(n):
         for sel, p in (("over", fair), ("under", 1 - fair)):
             odds_rows.append({"fixture_id": f, "market": "ou25", "selection": sel,
-                              "bookmaker": "pinnacle", "odds": round(1 / (p * 1.03), 3),
-                              "snapshot_ts": "2027-01-01T00:00:00Z", "minutes_to_kickoff": 120.0})
+                              "bookmaker": "pinnacle", "odds": round(1 / (p * 1.03), 3), "league_id": 7,
+                              "kickoff_ts": int(ko[f]),
+                              "snapshot_ts": pd.Timestamp(int(ko[f]) - 1800, unit="s", tz="UTC").isoformat(),
+                              "minutes_to_kickoff": 30.0})
             odds_rows.append({**odds_rows[-1], "bookmaker": "bet365",
                               "odds": round(1 / (p * 1.06), 3)})
-    mdl = pd.DataFrame({"fixture_id": range(n), "model_version": "t", "frozen_ts": "2027-01-01T00:00:00Z",
+    mdl = pd.DataFrame({"fixture_id": range(n), "model_version": "t", "league_id": 7, "home_id": 1, "away_id": 2,
+                        "kickoff_ts": ko, "home_games": 20, "away_games": 20, "quality_flags": "",
+                        "frozen_ts": [pd.Timestamp(int(k) - 1800, unit="s", tz="UTC").isoformat() for k in ko],
                         "p_ou25_over": true_p, "p_ou15_over": 0.9, "p_ou35_over": 0.1, "p_btts_yes": 0.5})
     for t, d in (("scout_results", res), ("scout_odds", pd.DataFrame(odds_rows)), ("scout_model", mdl)):
         store.append(t, d, source="test", rid=f"t-{t}", allow_local=True)
     r = report.build()
     cell = [c for c in r["cells"] if c["market"] == "ou25"][0]
     assert cell["n"] == n and cell["status"] == "READABLE"
+    assert cell["n_base_rate"] == n - 1                     # the first fixture has no earlier history (R11)
     assert abs(cell["market_skill_vs_base"]) < 0.02
     assert cell["residual"]["z"] > 4
     assert cell["paper_bets"] > 50 and cell["paper_roi"] > 0
