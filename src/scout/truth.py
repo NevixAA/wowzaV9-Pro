@@ -380,12 +380,17 @@ def audit(res_raw: pd.DataFrame, odds: pd.DataFrame, mdl: pd.DataFrame,
     due = stated[stated + RESULT_GRACE_HOURS * 3600 < now.timestamp()]
     have = set(raw["fixture_id"]) if len(raw) else set()
     nores = set(due.index) - have
-    reason = set()
+    reason, silent = set(), set()
     if status is not None and len(status):
-        reason = set(status["fixture_id"])
+        last = (status.sort_values("ingested_at", kind="mergesort") if "ingested_at" in status.columns
+                else status).drop_duplicates("fixture_id", keep="last")
+        ok = last["status"].isin(parse.UNFINISHED_REASON)
+        reason = set(last[ok]["fixture_id"])               # PST / CANC / ABD / AWD / WO / ...
+        silent = set(last[~ok]["fixture_id"])              # asked, but NS / NOT_RETURNED: no reason given
     out["due_fixtures"] = int(len(due))
     out["due_without_result"] = len(nores)
     out["due_without_result_explained"] = len(nores & reason)
+    out["due_without_result_provider_silent"] = len(nores & silent)
     out["due_without_result_unexplained"] = len(nores - reason)
     s = settled(raw, o, mdl, ft90) if len(raw) and len(o) else pd.DataFrame()
     exc = s.attrs.get("excluded", {}) if len(raw) and len(o) else {}

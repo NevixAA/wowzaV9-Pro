@@ -105,6 +105,8 @@ def test_unexplained_missing_results_fail_and_a_reason_explains_them():
     assert d["due_without_result_unexplained"] == 10 and any("no recorded reason" in c for c in d["critical"])
     st = pd.DataFrame({"fixture_id": gone, "league_id": LID, "status": "PST"})
     assert dq(cut, odds, mdl, status=st)["due_without_result_unexplained"] == 0
+    silent = st.assign(status="NOT_RETURNED")                          # asked, but no reason: still unexplained
+    assert dq(cut, odds, mdl, status=silent)["due_without_result_unexplained"] == 10
 
 
 def test_missing_90_minute_scores_fail():
