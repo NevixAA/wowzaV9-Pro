@@ -12,6 +12,9 @@ name: Pro Specials collect (research, runs the data-truth-100 code)
 #   * Pro main's fixture store (data/season_2026_27/fixtures): the live upcoming fixtures; the
 #     data-truth-100 copy stops when that branch was cut.
 #   * v9 main's two odds-history CSVs: the live Over/Under 1.5 captures (v9's odds capture commits to main).
+#   * v9 main's output/specials_quotes (correct score, O/U 0.5/4.5/5.5/6.5, team totals 3.5) and
+#     output/book_quotes (per-book O/U 1.5), kept by v9's live captures at zero extra calls (2026-11-10).
+#     src/specials/prices.py reads them FIRST and calls API-Football only for fixtures they do not cover.
 #
 # BUDGET: src/specials/prices.py reads /status first, never takes the shared API-Football key below
 # 25,000 remaining and makes at most 250 calls a run; every run's calls go to special_price_runs.csv.
@@ -78,6 +81,11 @@ jobs:
         run: |
           git -C _v9 fetch -q --depth 1 origin main
           git -C _v9 checkout FETCH_HEAD -- output/standard_sidemarket_odds_history.csv output/newformat_odds_history.csv
+          # special-market sidecar + per-book quotes (read-only). Missing on v9 main = the reader falls back
+          # to Pro's own calls; it never fails the run.
+          for p in output/specials_quotes output/book_quotes; do
+            git -C _v9 checkout FETCH_HEAD -- "$p" || echo "::warning::$p not on v9 main - own calls only"
+          done
 
       - uses: actions/setup-python@v5
         with:
