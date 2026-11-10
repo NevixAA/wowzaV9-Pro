@@ -68,7 +68,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           # one path per add: a multi-path add stages nothing if any one path is missing
-          for p in data/season_*/scout_odds output/scout/last_near_run.json output/budget/runs; do
+          for p in data/season_*/scout_odds data/season_*/scout_specials_quotes output/scout/last_near_run.json output/budget/runs; do
             [ -e "$p" ] && git add "$p"
           done
           git diff --staged --quiet && { echo "nothing new"; exit 0; }

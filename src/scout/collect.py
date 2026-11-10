@@ -68,6 +68,30 @@ def _append(table: str, rows: list[dict] | pd.DataFrame, tag: str, dry: bool) ->
     return len(df)
 
 
+def _specials(resp, capture: str, names: dict, leagues: dict, out: list) -> None:
+    """Keep the special-market quotes (src/scout/specials.py) of an /odds answer this sweep already
+    fetched. Zero calls, and never fatal: a failure here must not cost the scout its prices."""
+    try:
+        from src.scout import specials as SS
+        out.extend(SS.parse(resp, capture=capture, captured_at=cfg.utc_now_iso(), names=names,
+                            leagues=leagues))
+    except Exception as e:                                             # noqa: BLE001
+        print(f"  [scout specials] skipped an answer ({type(e).__name__}: {e})")
+
+
+def _store_specials(rows: list, dry: bool) -> None:
+    try:
+        from src.scout import specials as SS
+        n = SS.append(rows, dry=dry)
+        es = {r["af_fixture_id"] for r in rows if r["bet"] == SS.BET_EXACT}
+        print(f"[scout specials] +{n:,} row(s) from {len(rows):,} parsed; "
+              f"{len({r['af_fixture_id'] for r in rows})} fixture(s), {len(es)} with Exact Score, "
+              f"{len({r['league_id'] for r in rows if r['af_fixture_id'] in es})} league(s) with Exact Score, "
+              f"{len({r['bookmaker_id'] for r in rows})} bookmaker(s)")
+    except Exception as e:                                             # noqa: BLE001
+        print(f"[scout specials] not written ({type(e).__name__}: {e})")
+
+
 def _results() -> pd.DataFrame:
     d = store.read("scout_results")
     if d.empty:
@@ -168,6 +192,10 @@ def step_odds(c: af.Client, watch: list[dict], fx: pd.DataFrame, dry: bool,
     flags = pol.league_flags()
     guard = pol.Guard(now_ts)
     rows, polled_ids, skipped = [], [], {"not_due": 0, "budget": 0}
+    spec: list = []                                      # special-market quotes, same answers
+    names = ({int(r.fixture_id): (r.home_team, r.away_team) for r in up.itertuples()}
+             if not up.empty and {"home_team", "away_team"} <= set(up.columns) else {})
+    leagues = {int(x["id"]): (x.get("name"), x.get("country")) for x in watch if x.get("id") is not None}
     for lg in watch:                                     # registry order = priority order
         lid = lg["id"]
         if lid not in active:
@@ -187,6 +215,7 @@ def step_odds(c: af.Client, watch: list[dict], fx: pd.DataFrame, dry: bool,
         resp = c.get_all_pages("/odds", {"league": lid, "season": active[lid]})
         guard.spend(c.calls - before)
         rows.extend(parse.odds_rows(resp, snap, now))
+        _specials(resp, "scout_sweep", names, leagues, spec)
         polled_ids.append(lid)
     prev = _read_recent("scout_odds", QUOTE_LOOKBACK_DAYS)
     last_q = {}
@@ -197,6 +226,8 @@ def step_odds(c: af.Client, watch: list[dict], fx: pd.DataFrame, dry: bool,
                                                 keep="last").itertuples()}
     keep = parse.changed(rows, last_q)
     n = _append("scout_odds", keep, "odds", dry)
+    if spec:
+        _store_specials(spec, dry)
     changed_by_lg = pd.Series([r["league_id"] for r in keep]).value_counts().to_dict() if keep else {}
     if summary is not None:
         summary["leagues_polled"] = {str(x): int(changed_by_lg.get(x, 0)) for x in polled_ids}
@@ -318,6 +349,14 @@ def near_loop(c: af.Client, minutes: float, dry: bool) -> dict:
         snap = cfg.utc_now_iso()
         upcoming = o[o["kickoff_ts"] > now].drop_duplicates("fixture_id")
         rows = []
+        spec: list = []                                  # special-market quotes, same answers
+        try:
+            from src.scout import specials as SS
+            names = SS.known_names(due["fixture_id"])
+            leagues = SS.registry_leagues(reg.load())
+        except Exception as e:                                         # noqa: BLE001
+            print(f"  [scout specials] names unavailable ({type(e).__name__}: {e})")
+            names, leagues = {}, {}
         for kind, _id, _cost in pol.plan_near_calls(due, _same_day_counts(upcoming, due)):
             if kind == "league" and str(_id) in seasons:
                 days = sorted({datetime.fromtimestamp(int(k), timezone.utc).strftime("%Y-%m-%d")
@@ -326,6 +365,7 @@ def near_loop(c: af.Client, minutes: float, dry: bool) -> dict:
                     resp = c.get_all_pages("/odds", {"league": _id, "season": seasons[str(_id)],
                                                      "date": day})
                     rows.extend(parse.odds_rows(resp, snap, now))
+                    _specials(resp, "scout_near", names, leagues, spec)
                 league_calls += 1
                 seen |= set(due[due["league_id"] == _id]["fixture_id"].astype(int))
                 continue
@@ -334,6 +374,7 @@ def near_loop(c: af.Client, minutes: float, dry: bool) -> dict:
             for fid in fids:
                 body = c.get("/odds", {"fixture": fid}) or {}
                 rows.extend(parse.odds_rows(body.get("response") or [], snap, now))
+                _specials(body.get("response") or [], "scout_near", names, leagues, spec)
                 seen.add(fid)
                 fixture_calls += 1
         last = {}
@@ -343,6 +384,8 @@ def near_loop(c: af.Client, minutes: float, dry: bool) -> dict:
                     for r in prev.drop_duplicates(["fixture_id", "market", "selection", "bookmaker"],
                                                   keep="last").itertuples()}
         stored += _append("scout_odds", parse.changed(rows, last), f"near{passes}", dry)
+        if spec:
+            _store_specials(spec, dry)
         passes += 1
         print(f"[scout near] pass {passes}: {len(due)} fixture-band(s) due of {len(T)} watched, "
               f"{len(rows)} quote(s), {stored} stored so far")
