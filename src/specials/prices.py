@@ -19,6 +19,16 @@ canonical league (v9's league-id map and season resolver). It is linked to the P
 is the ONE provider fixture of that league on the same UTC date whose home AND away clubs v9's resolver
 places on the Pro fixture's clubs. Anything else is UNMAPPED and counted - never guessed.
 
+SOURCE ORDER (2026-11-10). v9's live odds captures keep these same bets, at ZERO extra calls, from the
+/odds answers they already make (v9 src/specials_quotes.py -> v9 output/specials_quotes/, every covered
+std / new-format league; open, change and near-kickoff heartbeat rows). A run first links Pro fixtures to
+the sidecar's provider fixtures (the same PROVEN rule, no call) and copies their quotes with Pro's identity
+(source "v9_sidecar:<capture>"). Under/Over 1.5, which the sidecar leaves to v9's book_quotes, is copied
+from v9 output/book_quotes (source "v9_book_quotes"; that file stores no provider update time, so it stays
+missing). Pro's own /fixtures + /odds calls are made ONLY for upcoming Pro fixtures the sidecar does not
+cover (source "pro_odds_call"); when the sidecar covers every fixture the run makes no call at all, not
+even /status.
+
 BUDGET. The key is shared with v9's predict loop and odds capture. Before any call /status is read
 (it does not count against the quota); a run never starts or continues below MIN_REMAINING (owner:
 25,000), and it plans no more than min(remaining - MIN_REMAINING, MAX_CALLS_PER_RUN) calls. Every run's calls are recorded.
@@ -38,11 +48,21 @@ RUNS_FILE = OUT_DIR / "special_price_runs.csv"
 
 MIN_REMAINING = 25_000            # owner rule: never draw the shared key below this
 MAX_CALLS_PER_RUN = 250          # owner 2026-11-09: about 100-200 calls a day; one daily run
+#: sidecar / book_quotes day files read per run: the tracker's look-ahead (tracker.HORIZON_DAYS, 3) plus
+#: the days v9's WIDE capture prices ahead of it (up to ~a week), so a fixture's opening quote is seen
+SIDECAR_LOOKBACK_DAYS = 10
 OU_LINES = ("0.5", "1.5", "4.5", "5.5", "6.5")
 TEAM_LINES = ("3.5",)
 BET_OU, BET_CS, BET_HOME, BET_AWAY = "Goals Over/Under", "Exact Score", "Total - Home", "Total - Away"
 PRICE_COLS = ["captured_at", "provider_update", "af_fixture_id", "fixture_key", "league", "kickoff_utc",
-              "home_team", "away_team", "bookmaker_id", "bookmaker", "bet", "selection", "odds"]
+              "home_team", "away_team", "bookmaker_id", "bookmaker", "bet", "selection", "odds", "source"]
+SOURCE_OWN = "pro_odds_call"
+SOURCE_BOOK_QUOTES = "v9_book_quotes"
+SIDECAR_DIR = Path("output") / "specials_quotes"          # under V9_LOCAL (v9 main's live sidecar)
+BOOK_QUOTES_DIR = Path("output") / "book_quotes"
+RUN_COLS = ["run_at", "calls_fixtures", "calls_odds", "remaining_before", "remaining_after", "leagues",
+            "af_fixtures", "linked", "unproven", "no_pro_fixture", "no_league_id", "quoted_fixtures", "rows",
+            "status", "sidecar_linked", "sidecar_rows", "book_quotes_rows", "own_call_fixtures"]
 
 
 def _keep(bet: str, value: str) -> bool:
@@ -78,7 +98,8 @@ def odds_rows(resp: list, link: dict, captured_at: str, now_epoch: int) -> list[
                         continue
                     rows.append({"captured_at": captured_at, "provider_update": fx.get("update"),
                                  "af_fixture_id": int(f["id"]), **link, "bookmaker_id": bk.get("id"),
-                                 "bookmaker": bk.get("name"), "bet": name, "selection": val, "odds": o})
+                                 "bookmaker": bk.get("name"), "bet": name, "selection": val, "odds": o,
+                                 "source": SOURCE_OWN})
     return rows
 
 
@@ -108,24 +129,122 @@ def link_fixtures(pro: pd.DataFrame, af: list[dict], tn) -> tuple[dict, dict]:
     return links, counts
 
 
+def load_sidecar(v9_root: Path | None, since: dt.datetime) -> pd.DataFrame:
+    """v9's special-market sidecar rows from day files on or after `since` (UTC day). Empty when absent."""
+    if v9_root is None:
+        return pd.DataFrame()
+    d = Path(v9_root) / SIDECAR_DIR
+    day = since.strftime("%Y-%m-%d")
+    files = sorted(f for f in d.glob("*/*.csv") if f.name[:10] >= day) if d.exists() else []
+    frames = [pd.read_csv(f, low_memory=False) for f in files]
+    frames = [f for f in frames if len(f)]
+    return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+
+
+def load_book_quotes_ou15(v9_root: Path | None, since: dt.datetime, fixture_ids) -> pd.DataFrame:
+    """v9 book_quotes full-match Under/Over 1.5 rows (every bookmaker) for `fixture_ids`, from day files on
+    or after `since`. The sidecar leaves this line to book_quotes, which v9 keeps from the same answers."""
+    cols = ["snapshot_ts", "fixture_id", "kickoff_utc", "bookmaker_id", "bookmaker", "market", "side",
+            "line", "odds"]
+    if v9_root is None or not fixture_ids:
+        return pd.DataFrame(columns=cols)
+    d = Path(v9_root) / BOOK_QUOTES_DIR
+    day = since.strftime("%Y-%m-%d")
+    files = sorted(f for f in d.glob("*.csv") if f.stem >= day) if d.exists() else []
+    ids = {int(x) for x in fixture_ids}
+    out = []
+    for f in files:
+        b = pd.read_csv(f, usecols=lambda c: c in cols, low_memory=False)
+        b = b[(b["market"] == "ou") & (pd.to_numeric(b["line"], errors="coerce") == 1.5)
+              & pd.to_numeric(b["fixture_id"], errors="coerce").isin(ids)]
+        if len(b):
+            out.append(b)
+    return pd.concat(out, ignore_index=True) if out else pd.DataFrame(columns=cols)
+
+
+def _sidecar_fixture_list(sc: pd.DataFrame, league: str, now: dt.datetime) -> list[dict]:
+    """The sidecar's provider fixtures of one canonical league kicking off after `now`, shaped for
+    link_fixtures."""
+    g = sc[sc["league"] == league].drop_duplicates("af_fixture_id")
+    if g.empty:
+        return []
+    ko = pd.to_datetime(g["kickoff_utc"], utc=True, errors="coerce")
+    g = g.assign(ko_ts=ko)[ko > pd.Timestamp(now)]
+    return [{"fixture_id": int(r.af_fixture_id), "kickoff_ts": int(r.ko_ts.timestamp()),
+             "home_team": r.home_team, "away_team": r.away_team} for r in g.itertuples(index=False)]
+
+
+def sidecar_rows(sc: pd.DataFrame, bq: pd.DataFrame, links: dict, now: dt.datetime) -> tuple[list, int, int]:
+    """PRICE_COLS rows from the sidecar and from book_quotes O/U 1.5 for linked provider fixtures; only quotes
+    captured at or before `now` and before kickoff. Returns (rows, sidecar rows, book_quotes rows)."""
+    rows: list[dict] = []
+    now_ts = pd.Timestamp(now)
+    if links and len(sc):
+        s = sc[sc["af_fixture_id"].astype("int64").isin(list(links))]
+        cap = pd.to_datetime(s["captured_at"], utc=True, errors="coerce")
+        ko = pd.to_datetime(s["kickoff_utc"], utc=True, errors="coerce")
+        for r in s[(cap <= now_ts) & (cap < ko)].itertuples(index=False):
+            upd = r.provider_update if isinstance(r.provider_update, str) and r.provider_update else None
+            rows.append({"captured_at": r.captured_at, "provider_update": upd,
+                         "af_fixture_id": int(r.af_fixture_id), **links[int(r.af_fixture_id)],
+                         "bookmaker_id": int(r.bookmaker_id), "bookmaker": r.bookmaker, "bet": r.bet,
+                         "selection": str(r.selection), "odds": float(r.odds),
+                         "source": f"v9_sidecar:{r.capture}"})
+    n_sc = len(rows)
+    if links and len(bq):
+        cap = pd.to_datetime(bq["snapshot_ts"], utc=True, errors="coerce")
+        ko = pd.to_datetime(bq["kickoff_utc"], utc=True, errors="coerce")
+        b = bq[(cap <= now_ts) & (cap < ko) & bq["side"].isin(["over", "under"])]
+        for r in b.itertuples(index=False):
+            rows.append({"captured_at": r.snapshot_ts, "provider_update": None,
+                         "af_fixture_id": int(r.fixture_id), **links[int(r.fixture_id)],
+                         "bookmaker_id": int(r.bookmaker_id), "bookmaker": r.bookmaker, "bet": BET_OU,
+                         "selection": f"{str(r.side).title()} 1.5", "odds": float(r.odds),
+                         "source": SOURCE_BOOK_QUOTES})
+    return rows, n_sc, len(rows) - n_sc
+
+
 def collect(now: dt.datetime, client, tn, canon, league_ids, api_season, fixtures: pd.DataFrame,
-            log=print) -> tuple[pd.DataFrame, dict]:
-    """One collection pass. Returns (price rows, run record)."""
+            log=print, v9_root: Path | None = None) -> tuple[pd.DataFrame, dict]:
+    """One collection pass. Returns (price rows, run record). v9's sidecar under `v9_root` first (no call);
+    Pro's own calls only for the fixtures it does not cover."""
     from src.scout import parse as P
     run = {"run_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"), "calls_fixtures": 0, "calls_odds": 0,
            "remaining_before": None, "remaining_after": None, "leagues": 0, "af_fixtures": 0, "linked": 0,
-           "unproven": 0, "no_pro_fixture": 0, "no_league_id": 0, "quoted_fixtures": 0, "rows": 0, "status": "OK"}
+           "unproven": 0, "no_pro_fixture": 0, "no_league_id": 0, "quoted_fixtures": 0, "rows": 0, "status": "OK",
+           "sidecar_linked": 0, "sidecar_rows": 0, "book_quotes_rows": 0, "own_call_fixtures": 0}
+    # 1) v9's sidecar: proven links and quotes, zero calls
+    since = now - dt.timedelta(days=SIDECAR_LOOKBACK_DAYS)
+    sc = load_sidecar(v9_root, since)
+    sc_links: dict = {}
+    if len(sc) and len(fixtures):
+        f0 = fixtures.assign(_lg=fixtures["league"].map(canon)).dropna(subset=["_lg"])
+        for lg, g in f0.groupby("_lg"):
+            lk, _c = link_fixtures(g, _sidecar_fixture_list(sc, lg, now), tn)
+            sc_links.update(lk)
+    bq = load_book_quotes_ou15(v9_root, since, list(sc_links))
+    sc_rows, run["sidecar_rows"], run["book_quotes_rows"] = sidecar_rows(sc, bq, sc_links, now)
+    run["sidecar_linked"] = len(sc_links)
+    run["quoted_fixtures"] = len({r["af_fixture_id"] for r in sc_rows})
+    covered = {v["fixture_key"] for v in sc_links.values()}
+    fixtures = fixtures[~fixtures["fixture_key"].isin(covered)] if len(fixtures) else fixtures
+    run["own_call_fixtures"] = int(len(fixtures))
+    run["rows"] = len(sc_rows)
+    if fixtures.empty:
+        log(f"[specials prices] {run}")
+        return pd.DataFrame(sc_rows, columns=PRICE_COLS), run
+    # 2) Pro's own calls, only for fixtures the sidecar does not cover
     status = client.get("/status", {})
     rem = (((status or {}).get("response") or {}).get("requests") or {})
     if rem.get("limit_day") is not None and rem.get("current") is not None:
         run["remaining_before"] = int(rem["limit_day"]) - int(rem["current"])
     if run["remaining_before"] is None:
         run["status"] = "STOPPED: quota unknown (/status gave no request counts)"
-        return pd.DataFrame(columns=PRICE_COLS), run
+        return pd.DataFrame(sc_rows, columns=PRICE_COLS), run
     budget = min(run["remaining_before"] - MIN_REMAINING, MAX_CALLS_PER_RUN)
     if budget <= 0:
         run["status"] = f"STOPPED: remaining {run['remaining_before']} at or below the floor {MIN_REMAINING}"
-        return pd.DataFrame(columns=PRICE_COLS), run
+        return pd.DataFrame(sc_rows, columns=PRICE_COLS), run
     fx = fixtures.copy()
     fx["_lg"] = fx["league"].map(canon)
     fx = fx.dropna(subset=["_lg"])
@@ -147,7 +266,7 @@ def collect(now: dt.datetime, client, tn, canon, league_ids, api_season, fixture
         run["leagues"] += 1
         af = P.fixture_rows((body or {}).get("response") or [])
         lk, c = link_fixtures(g, af, tn)
-        links.update(lk)
+        links.update({k: v for k, v in lk.items() if k not in sc_links})
         run["af_fixtures"] += c["af_fixtures"]
         run["linked"] += c["linked"]
         run["unproven"] += c["unproven"]
@@ -165,6 +284,7 @@ def collect(now: dt.datetime, client, tn, canon, league_ids, api_season, fixture
         if r:
             run["quoted_fixtures"] += 1
         rows.extend(r)
+    rows = sc_rows + rows
     run["rows"] = len(rows)
     run["remaining_after"] = client.remaining
     log(f"[specials prices] {run}")
@@ -236,14 +356,19 @@ def probe(now: dt.datetime, client, leagues: list[str], league_ids, api_season, 
 
 
 def append_prices(new: pd.DataFrame, path: Path = PRICES_FILE) -> int:
-    """Append quotes not stored yet (same fixture, bookmaker, bet, selection, provider update, odds)."""
+    """Append quotes not stored yet (same fixture, bookmaker, bet, selection, capture time, provider update,
+    odds and source). Re-reading the sidecar every day therefore adds only its new rows."""
     if new.empty:
         return 0
-    key = ["af_fixture_id", "bookmaker_id", "bet", "selection", "provider_update", "odds"]
+    key = ["af_fixture_id", "bookmaker_id", "bet", "selection", "captured_at", "provider_update", "odds",
+           "source"]
+    new = new.reindex(columns=PRICE_COLS)
     if path.exists():
+        _align_header(path, PRICE_COLS, {"source": SOURCE_OWN})
         old = pd.read_csv(path, usecols=key, low_memory=False)
         seen = set(map(tuple, old.astype(str).to_numpy()))
         new = new[[tuple(x) not in seen for x in new[key].astype(str).to_numpy()]]
+    new = new.drop_duplicates(key)
     if new.empty:
         return 0
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -251,9 +376,26 @@ def append_prices(new: pd.DataFrame, path: Path = PRICES_FILE) -> int:
     return int(len(new))
 
 
+def _align_header(path: Path, cols: list, known: dict | None = None) -> None:
+    """Rewrite a file written before columns were added, so appends stay aligned. Old rows keep their values;
+    a new column is filled only with what is KNOWN about the old rows (`known`: every special price stored
+    before 2026-11-10 came from Pro's own /odds call), otherwise it stays missing."""
+    head = list(pd.read_csv(path, nrows=0).columns)
+    if head == list(cols):
+        return
+    old = pd.read_csv(path, low_memory=False)
+    for c, v in (known or {}).items():
+        if c not in old.columns:
+            old[c] = v
+    old.reindex(columns=list(cols) + [c for c in old.columns if c not in cols]).to_csv(path, index=False)
+
+
 def append_run(run: dict, path: Path = RUNS_FILE) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame([run]).to_csv(path, mode="a" if path.exists() else "w", header=not path.exists(), index=False)
+    if path.exists():
+        _align_header(path, RUN_COLS)
+    pd.DataFrame([run]).reindex(columns=RUN_COLS).to_csv(path, mode="a" if path.exists() else "w",
+                                                        header=not path.exists(), index=False)
 
 
 def main(argv=None) -> int:
@@ -280,10 +422,11 @@ def main(argv=None) -> int:
     if fixtures.empty:
         print("[specials prices] no upcoming fixtures in the store")
         return 0
+    from config import pro_config as cfg
     rows, run = collect(now, Client(), v9_config.team_names(), v9_config.canonical_league,
-                        v9_config.league_ids(), v9_config.api_season, fixtures)
+                        v9_config.league_ids(), v9_config.api_season, fixtures, v9_root=cfg.V9_LOCAL)
     if not rows.empty:
-        print(rows.groupby(["bet"]).size().to_string())
+        print(rows.groupby(["source", "bet"]).size().to_string())
         print(f"[specials prices] bookmakers {rows['bookmaker'].nunique()}, fixtures {rows['af_fixture_id'].nunique()}")
     if not a.dry_run:
         print(f"[specials prices] stored {append_prices(rows)} new quote(s)")

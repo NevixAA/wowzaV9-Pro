@@ -333,3 +333,96 @@ def test_no_global_rate_constant_in_the_module_source():
     for mod in (O, ST, TR):
         src = inspect.getsource(mod).lower()
         assert "global_rate" not in src and "default_rate" not in src
+
+
+# ── v9 sidecar first (2026-11-10): zero calls where v9's live capture covers the fixture ──────────
+
+_NOW = dt.datetime(2030, 1, 1, 12, 0, tzinfo=dt.timezone.utc)
+_KO = pd.Timestamp("2030-01-02T15:00Z")
+
+
+def _write_sidecar(root, rows):
+    d = root / "output" / "specials_quotes" / "2030-01"
+    d.mkdir(parents=True, exist_ok=True)
+    base = {"provider_update": "2030-01-01T09:00:00Z", "league": "A", "match_date": "2030-01-02",
+            "kickoff_utc": "2030-01-02T15:00:00Z", "bookmaker_id": 8, "bookmaker": "Bet365", "bet_id": 10,
+            "capture": "std", "minutes_to_kickoff": 0, "ladder_band": "FAR", "obs_reason": "open"}
+    pd.DataFrame([{**base, **r} for r in rows]).to_csv(d / "2030-01-01_std.csv", index=False)
+
+
+def _write_book_quotes(root, rows):
+    d = root / "output" / "book_quotes"
+    d.mkdir(parents=True, exist_ok=True)
+    pd.DataFrame(rows).to_csv(d / "2030-01-01.csv", index=False)
+
+
+def _pro_fixtures():
+    return pd.DataFrame({"fixture_key": ["k1", "k2"], "league": ["A", "A"], "home_team": ["H", "X"],
+                         "away_team": ["W", "Y"], "_ko": pd.to_datetime([_KO, _KO], utc=True)})
+
+
+def test_sidecar_covered_fixtures_need_no_call(tmp_path):
+    from src.specials import prices as PR
+    sc = [{"captured_at": "2030-01-01T10:00:00Z", "af_fixture_id": 1, "home_team": "H", "away_team": "W",
+           "bet": "Exact Score", "selection": "0:0", "odds": 11.0},
+          {"captured_at": "2030-01-01T10:00:00Z", "af_fixture_id": 1, "home_team": "H", "away_team": "W",
+           "bet": "Goals Over/Under", "selection": "Over 5.5", "odds": 9.0},
+          {"captured_at": "2030-01-01T13:00:00Z", "af_fixture_id": 1, "home_team": "H", "away_team": "W",
+           "bet": "Exact Score", "selection": "0:0", "odds": 10.0},                    # after `now`: not used
+          {"captured_at": "2030-01-01T10:00:00Z", "af_fixture_id": 2, "home_team": "X", "away_team": "Y",
+           "bet": "Exact Score", "selection": "1:1", "odds": 6.5}]
+    _write_sidecar(tmp_path, sc)
+    _write_book_quotes(tmp_path, [
+        {"snapshot_ts": "2030-01-01T10:00:00Z", "fixture_id": 1, "kickoff_utc": "2030-01-02T15:00:00Z",
+         "bookmaker_id": 8, "bookmaker": "Bet365", "market": "ou", "side": "under", "line": 1.5, "odds": 3.4},
+        {"snapshot_ts": "2030-01-01T10:00:00Z", "fixture_id": 1, "kickoff_utc": "2030-01-02T15:00:00Z",
+         "bookmaker_id": 8, "bookmaker": "Bet365", "market": "ou", "side": "under", "line": 2.5, "odds": 1.9},
+        {"snapshot_ts": "2030-01-01T10:00:00Z", "fixture_id": 99, "kickoff_utc": "2030-01-02T15:00:00Z",
+         "bookmaker_id": 8, "bookmaker": "Bet365", "market": "ou", "side": "under", "line": 1.5, "odds": 3.0}])
+    c = _Client(remaining=70_000)
+    rows, run = PR.collect(_NOW, c, _TN, lambda x: x, {"A": 1}, lambda lg, d: "2029", _pro_fixtures(),
+                           log=lambda *a: None, v9_root=tmp_path)
+    assert c.calls == []                                             # not even /status
+    assert run["sidecar_linked"] == 2 and run["own_call_fixtures"] == 0 and run["calls_odds"] == 0
+    got = {(r.fixture_key, r.bet, r.selection, r.odds, r.source) for r in rows.itertuples()}
+    assert got == {("k1", "Exact Score", "0:0", 11.0, "v9_sidecar:std"),
+                   ("k1", "Goals Over/Under", "Over 5.5", 9.0, "v9_sidecar:std"),
+                   ("k2", "Exact Score", "1:1", 6.5, "v9_sidecar:std"),
+                   ("k1", "Goals Over/Under", "Under 1.5", 3.4, "v9_book_quotes")}
+    assert rows[rows["source"] == "v9_book_quotes"]["provider_update"].isna().all()   # never invented
+    assert list(rows.columns) == PR.PRICE_COLS
+
+
+def test_own_calls_only_for_fixtures_the_sidecar_misses(tmp_path):
+    from src.specials import prices as PR
+    _write_sidecar(tmp_path, [{"captured_at": "2030-01-01T10:00:00Z", "af_fixture_id": 1, "home_team": "H",
+                               "away_team": "W", "bet": "Exact Score", "selection": "0:0", "odds": 11.0}])
+    c = _Client(remaining=70_000)
+    rows, run = PR.collect(_NOW, c, _TN, lambda x: x, {"A": 1}, lambda lg, d: "2029", _pro_fixtures(),
+                           log=lambda *a: None, v9_root=tmp_path)
+    assert c.calls == ["/status", "/fixtures"]                        # k2 only; its league list is empty
+    assert run["sidecar_linked"] == 1 and run["own_call_fixtures"] == 1
+    assert set(rows["fixture_key"]) == {"k1"}
+
+
+def test_tracker_reads_the_as_of_state_of_change_only_quotes():
+    sp = pd.DataFrame({"fixture_key": "k1", "bookmaker": ["Bet365", "Bet365", "1xBet"],
+                       "bet": "Exact Score", "selection": "0:0", "odds": [11.0, 12.0, 10.5],
+                       "captured_at": ["2030-01-01T08:00:00Z", "2030-01-01T10:00:00Z", "2030-01-01T09:00:00Z"]})
+    sp["_cap"] = pd.to_datetime(sp["captured_at"], utc=True)
+    out = TR.special_price_cols(sp, "k1", _KO, pd.Timestamp(_NOW), None)
+    # Bet365 moved 11 -> 12 at 10:00; 1xBet's 10.5 from 09:00 is still its price: both books count
+    assert out["price_nil_nil_best"] == 12.0 and out["price_nil_nil_books"] == 2
+    assert out["special_price_ts"] == "2030-01-01T10:00:00Z"
+
+
+def test_runs_file_written_before_new_columns_stays_aligned(tmp_path):
+    from src.specials import prices as PR
+    p = tmp_path / "runs.csv"
+    old = {c: 0 for c in PR.RUN_COLS[:14]}
+    old.update(run_at="2026-11-09T12:24:49Z", status="OK")
+    pd.DataFrame([old]).to_csv(p, index=False)
+    PR.append_run({**{c: 1 for c in PR.RUN_COLS}, "run_at": "x", "status": "OK"}, p)
+    d = pd.read_csv(p)
+    assert list(d.columns) == PR.RUN_COLS and len(d) == 2
+    assert pd.isna(d.loc[0, "sidecar_linked"]) and d.loc[1, "sidecar_linked"] == 1

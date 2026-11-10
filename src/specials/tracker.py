@@ -171,9 +171,13 @@ def _special_price_cols(sp, fixture_key, ko, now, unusual_pick) -> dict:
     f = sp[(sp["fixture_key"] == fixture_key) & (sp["_cap"] <= now) & (sp["_cap"] < ko)]
     if f.empty:
         return {"special_price_status": "NOT_COLLECTED"}
-    f = f[f["_cap"] == f["_cap"].max()]
+    # AS-OF STATE, one quote per (bookmaker, bet, selection): its latest capture before log time and
+    # kickoff. v9's sidecar (prices.py, SOURCE ORDER) stores a quote only when it opens, moves or is
+    # re-observed near kickoff, so the newest capture time alone holds only the quotes that changed then,
+    # not the board. special_price_ts is the newest capture among the quotes used.
+    f = f.sort_values("_cap", kind="stable").drop_duplicates(["bookmaker", "bet", "selection"], keep="last")
     out = {"special_price_status": "COLLECTED",
-           "special_price_ts": f["_cap"].iloc[0].strftime("%Y-%m-%dT%H:%M:%SZ")}
+           "special_price_ts": f["_cap"].max().strftime("%Y-%m-%dT%H:%M:%SZ")}
     wanted = dict(SPECIAL_MARKETS)
     if isinstance(unusual_pick, str):
         i, j = unusual_pick[3:].split("_")

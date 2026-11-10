@@ -56,6 +56,13 @@ So the ranking is useful, but the probability levels need calibration before any
   - **Markets:** Goals Over/Under 0.5/1.5/4.5/5.5/6.5, Exact Score, and Total - Home/Away 3.5. Exact full-time bet names only; every bookmaker; both sides as offered; our capture time and the provider's update time.
   - **Proven link:** a provider fixture is used only when it is the one fixture of its canonical league on the same UTC date whose home and away clubs v9's resolver places on the Pro fixture. Otherwise it is counted as unproven or no_pro_fixture.
   - **Budget:** `/status` is read first. A run never draws the key below 25,000 and makes at most 250 calls; each run is recorded in `special_price_runs.csv`.
+- **v9's live capture is the first source (since 2026-11-10, owner: "start to collect correct score odds with the live collection for all the leagues we cover").**
+  - **What v9 stores:** v9's std and new-format odds captures already fetch every bookmaker for every covered fixture. `src/specials_quotes.py` (v9) keeps the same bets from those answers, at zero extra API calls, in `output/specials_quotes/<YYYY-MM>/<day>_<std|nf|prematch>.csv` on v9 main.
+  - **Which rows:** append-only. A row is written when a quote opens, when its price moves, and once at each of T-1h / T-30m / T-10m when it did not move. Pre-kickoff only.
+  - **What the Pro reader does:** `prices.py` first links Pro fixtures to the sidecar's provider fixtures (same proven-link rule, no call). It copies those quotes with Pro's identity (`source` = `v9_sidecar:<capture>`). Under/Over 1.5 comes from v9 `output/book_quotes` (`source` = `v9_book_quotes`). That file has no provider update time, so the field stays empty.
+  - **When Pro still calls:** Pro's own `/fixtures` + `/odds` calls (`source` = `pro_odds_call`) run only for Pro fixtures the sidecar does not cover. Each run records `sidecar_linked`, `sidecar_rows`, `book_quotes_rows` and `own_call_fixtures`.
+  - **Tracker change:** the tracker now reads the as-of state per (bookmaker, bet, selection). A change-only file's newest capture time holds only the quotes that moved at that time.
+  - **Collection workflow:** `pro_specials_collect.yml` reads `output/specials_quotes` and `output/book_quotes` from v9 main, read-only, like the O/U 1.5 histories.
 - **Dry runs (2026-11-09, CI, nothing written):**
   - **Linked run (run 42598820410):** the 3-day window during the international break held 3 provider fixtures in 2 leagues; 1 was linked and its odds call returned no quote yet. Calls: 2 `/fixtures` + 1 `/odds`.
   - **Availability probe (run 42599161057):** next 7 days of our leagues, 40 fixtures in 7 leagues, 60 calls by our counter (the provider's remaining-requests header moved 73,101 → 73,076). 34 of 40 were quoted:
@@ -97,9 +104,19 @@ Before and after, on 48,940 out-of-sample rows (Brier skill against the league b
 
 After calibration the model beats every league's own base rate on every special. That is the precondition for any later comparison with the real prices above.
 
+## Edge study against real prices: when it starts (not yet active)
+
+Owner, 2026-11-10: "later activate the research with real prices on correct score". Until then the tracker only **collects**. It logs prices beside each first-sight row and settles results. It computes no edge, ROI or verdict against a price.
+
+- **Data that counts:** only settled matches whose first-sight row carries a real pre-kickoff price for that special (`special_price_status = COLLECTED` and a non-missing `price_<special>_best`). The price is the as-of quote at log time (the bet-time price), never the close. A match without a price is left out, never filled.
+- **Unit:** per league and per special market (correct score 0-0 / the unusual pick, 5+/6+/7+ goals, 0-1 goals, a side scoring 4+). Each league has its own result; there is no global pool.
+- **Trigger and rule:** the project's existing PROVEN rule, as written by the owner on 2026-11-08 and coded in v9 `src/league_bars.py` (`MIN_HOLDOUT_BETS = 150`, `HOLM_ALPHA_ONE_SIDED = 0.025`). The study for a league and market starts once it has at least 150 settled, priced bets. It is PROVEN only when the ROI 95% confidence interval stays above 0 after Holm correction across every league and market tested. Otherwise it is UNPROVEN, and below 150 it is INSUFFICIENT_BETS. No other threshold is used.
+- **Holdout discipline:** price-based thresholds are chosen on earlier data and judged once on a later holdout, as in the league bars. Nothing is refit on the matches used for the verdict.
+- **Progress view:** `special_price_runs.csv` (sidecar vs own-call coverage per run) and the sidecar coverage report in v9 (`scripts/report_specials_coverage.py`) show how fast each league reaches 150 priced, settled matches.
+
 ## Go-live
 
-Set the repository variable `PRO_SPECIALS_ENABLED` to `true`; that is the only step. The daily job (07:53 UTC) then:
+Set the repository variable `PRO_SPECIALS_ENABLED` to `true`; that is the only step. The daily job (cron 07:53 UTC; GitHub may start it hours late or skip it under load, as on 2026-11-10, when no 07:53 run was created) then:
 1. collects prices;
 2. logs, settles and evaluates;
 3. on the 1st of each month, re-runs the study and the calibration;
