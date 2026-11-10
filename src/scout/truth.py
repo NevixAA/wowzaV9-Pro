@@ -114,16 +114,25 @@ def results(raw: pd.DataFrame, ft90: pd.DataFrame | None = None) -> pd.DataFrame
             r.loc[keep_api, "goals_home_api"] = r.loc[keep_api, "home_goals"]
             r.loc[keep_api, "goals_away_api"] = r.loc[keep_api, "away_goals"]
             fh = fa = pd.Series(dtype=float)
+            inconsistent: set = set()
             if ft90 is not None and not ft90.empty:
                 f = ft90.sort_values("ingested_at", kind="mergesort") if "ingested_at" in ft90.columns else ft90
                 f = f.dropna(subset=["ft90_home", "ft90_away"]).drop_duplicates("fixture_id", keep="last")
+                # extra time only ADDS goals: a 90-minute score above the provider's own 120-minute
+                # `goals` is inconsistent and is not served (missing, like v9 history_corrections)
+                gh = pd.to_numeric(f.get("goals_home_api", pd.Series(np.nan, index=f.index)), errors="coerce")
+                ga = pd.to_numeric(f.get("goals_away_api", pd.Series(np.nan, index=f.index)), errors="coerce")
+                bad = (gh.notna() & (f["ft90_home"] > gh)) | (ga.notna() & (f["ft90_away"] > ga))
+                inconsistent = set(f[bad]["fixture_id"])
+                f = f[~bad]
                 fh = f.set_index("fixture_id")["ft90_home"]
                 fa = f.set_index("fixture_id")["ft90_away"]
             r.loc[et, "home_goals"] = pd.to_numeric(r.loc[et, "fixture_id"].map(fh), errors="coerce")
             r.loc[et, "away_goals"] = pd.to_numeric(r.loc[et, "fixture_id"].map(fa), errors="coerce")
             r["goals_basis"] = basis
             r.loc[et, "goals_basis"] = np.where(r.loc[et, "home_goals"].notna(), "fulltime_90_corrected",
-                                                "missing_90")
+                                                np.where(r.loc[et, "fixture_id"].isin(inconsistent),
+                                                         "inconsistent_90", "missing_90"))
     names = canonical_names(raw)
     if names:
         for side in ("home", "away"):
@@ -239,7 +248,8 @@ def settled(res_raw: pd.DataFrame, odds: pd.DataFrame, mdl: pd.DataFrame | None,
     r = results(res_raw, ft90)
     if r is None or r.empty or odds is None or odds.empty:
         return out
-    exc = {"aet_pen_missing_90": int((r.get("goals_basis", pd.Series(dtype=object)) == "missing_90").sum())}
+    exc = {"aet_pen_missing_90": int(r.get("goals_basis", pd.Series(dtype=object))
+                                     .isin(["missing_90", "inconsistent_90"]).sum())}
     r = r.dropna(subset=["home_goals", "away_goals", "kickoff_ts"])
     if "league_id" in odds.columns:                         # a quote must belong to the result's league
         ol = odds.drop_duplicates("fixture_id").set_index("fixture_id")["league_id"]
@@ -356,7 +366,8 @@ def audit(res_raw: pd.DataFrame, odds: pd.DataFrame, mdl: pd.DataFrame,
         b = served.get("goals_basis", pd.Series(dtype=object))
         out["aet_pen_corrected_90"] = int(((b == "fulltime_90_corrected") | ((b == "fulltime_90")
                                           & served["status"].isin(parse.EXTRA_TIME))).sum()) if len(served) else 0
-        out["aet_pen_missing_90"] = int((b == "missing_90").sum()) if len(served) else 0
+        out["aet_pen_missing_90"] = int(b.isin(["missing_90", "inconsistent_90"]).sum()) if len(served) else 0
+        out["aet_pen_provider_inconsistent_90"] = int((b == "inconsistent_90").sum()) if len(served) else 0
         names = pd.concat([raw.get("home_team", pd.Series(dtype=object)), raw.get("away_team", pd.Series(dtype=object))]).dropna().astype(str)
         out["names_with_whitespace"] = int(names[names != names.str.strip()].nunique())
         t = pd.concat([raw[["home_id", "home_team"]].set_axis(["id", "name"], axis=1),

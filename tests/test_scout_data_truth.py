@@ -242,6 +242,8 @@ def test_extra_time_takes_the_90_minute_score_or_stays_missing():
     assert (r["goals_home_api"], r["goals_away_api"]) == (3, 2)
     m = parse.fixture_rows([_fx(1, "PEN", goals=(1, 1))])[0]            # no score.fulltime
     assert m["home_goals"] is None and m["goals_basis"] == "missing_90"
+    bad = parse.fixture_rows([_fx(1, "AET", goals=(1, 0), ft=(2, 0), et=(0, 1))])[0]   # provider error
+    assert bad["home_goals"] is None and bad["goals_basis"] == "inconsistent_90"
     ft = parse.fixture_rows([_fx(1, "FT", goals=(1, 0))])[0]
     assert (ft["home_goals"], ft["goals_basis"]) == (1, "goals")
 
@@ -260,6 +262,10 @@ def test_old_aet_rows_are_served_missing_without_a_correction():
                         "home_team": "A", "away_team": "B"})
     s = T.results(raw).set_index("fixture_id")
     assert pd.isna(s.loc[1, "home_goals"]) and s.loc[1, "goals_basis"] == "missing_90"
+    bad = pd.DataFrame({"fixture_id": [1], "ft90_home": [4], "ft90_away": [0], "goals_home_api": [3],
+                        "goals_away_api": [2], "status": ["AET"]})
+    s2 = T.results(raw, bad).set_index("fixture_id")                  # 90' above 120': not served
+    assert pd.isna(s2.loc[1, "home_goals"]) and s2.loc[1, "goals_basis"] == "inconsistent_90"
     assert s.loc[1, "goals_home_api"] == 3 and s.loc[2, "home_goals"] == 1
 
 

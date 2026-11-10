@@ -115,7 +115,13 @@ def fixture_rows(resp: list) -> list[dict]:
         if fin:
             basis = (("fulltime_90" if st in EXTRA_TIME else "goals")
                      if hg is not None and ag is not None else "missing_90")
-            if basis == "missing_90":
+            # extra time and a shoot-out only ever ADD goals: a 90-minute score above the provider's
+            # own 120-minute `goals` is a provider inconsistency (measured: 4 of 430 on 2026-11-10),
+            # so neither number is served (v9 history_corrections applies the same >= rule).
+            if (basis == "fulltime_90" and g.get("home") is not None and g.get("away") is not None
+                    and (hg > g["home"] or ag > g["away"])):
+                basis = "inconsistent_90"
+            if basis in ("missing_90", "inconsistent_90"):
                 hg = ag = None
         out.append({
             "fixture_id": int(f["id"]), "league_id": int(lg.get("id")), "season": str(lg.get("season")),
