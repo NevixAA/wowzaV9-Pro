@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-11-10T19:42:15Z",
+ "generated_at": "2026-11-10T19:43:11Z",
  "status_rule": "COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a GENUINE close (<= 60 min before the actual kickoff; Pinnacle, else median of >= 3 books)",
  "data_truth": "src/scout/truth.py: 90-minute results, genuine close, >48h reschedules void, model rows matched on league + team ids, frozen before the actual kickoff",
  "totals": {
-  "results": 244908,
-  "odds_rows": 561029,
-  "fixtures_priced": 5870,
-  "fixtures_frozen": 5792
+  "results": 244903,
+  "odds_rows": 560093,
+  "fixtures_priced": 5852,
+  "fixtures_frozen": 5774
  },
  "cells": [
   {
@@ -114,110 +114,6 @@
    "paper_first_side_share": 0.333
   },
   {
-   "league_id": 255,
-   "country": "USA",
-   "league": "USL Championship",
-   "priority": 1,
-   "market": "btts",
-   "n": 41,
-   "status": "COLLECTING",
-   "rate": 0.561,
-   "n_base_rate": 41,
-   "brier_base_rate": 0.2472,
-   "brier_market_close": 0.2449,
-   "brier_market_close_on_base_rows": 0.2449,
-   "reference": "median",
-   "market_skill_vs_base": 0.0093,
-   "n_model": 41,
-   "brier_model": 0.2635,
-   "residual": {
-    "coef": -1.7232,
-    "se": 1.3681,
-    "z": -1.26
-   },
-   "paper_bets": 1,
-   "paper_roi": 0.91,
-   "paper_first_side_share": 0.0
-  },
-  {
-   "league_id": 255,
-   "country": "USA",
-   "league": "USL Championship",
-   "priority": 1,
-   "market": "ou15",
-   "n": 41,
-   "status": "COLLECTING",
-   "rate": 0.6829,
-   "n_base_rate": 41,
-   "brier_base_rate": 0.2191,
-   "brier_market_close": 0.2146,
-   "brier_market_close_on_base_rows": 0.2146,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.0205,
-   "n_model": 41,
-   "brier_model": 0.2095,
-   "residual": {
-    "coef": 0.5784,
-    "se": 1.3997,
-    "z": 0.41
-   },
-   "paper_bets": 8,
-   "paper_roi": -0.1562,
-   "paper_first_side_share": 0.0
-  },
-  {
-   "league_id": 255,
-   "country": "USA",
-   "league": "USL Championship",
-   "priority": 1,
-   "market": "ou25",
-   "n": 41,
-   "status": "COLLECTING",
-   "rate": 0.4878,
-   "n_base_rate": 41,
-   "brier_base_rate": 0.2507,
-   "brier_market_close": 0.2552,
-   "brier_market_close_on_base_rows": 0.2552,
-   "reference": "pinnacle",
-   "market_skill_vs_base": -0.0179,
-   "n_model": 41,
-   "brier_model": 0.2705,
-   "residual": {
-    "coef": -1.1104,
-    "se": 1.2553,
-    "z": -0.88
-   },
-   "paper_bets": 11,
-   "paper_roi": -0.3455,
-   "paper_first_side_share": 0.091
-  },
-  {
-   "league_id": 255,
-   "country": "USA",
-   "league": "USL Championship",
-   "priority": 1,
-   "market": "ou35",
-   "n": 41,
-   "status": "COLLECTING",
-   "rate": 0.2439,
-   "n_base_rate": 41,
-   "brier_base_rate": 0.1881,
-   "brier_market_close": 0.1835,
-   "brier_market_close_on_base_rows": 0.1835,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.0245,
-   "n_model": 41,
-   "brier_model": 0.1844,
-   "residual": {
-    "coef": -0.1047,
-    "se": 1.3543,
-    "z": -0.08
-   },
-   "paper_bets": 4,
-   "paper_roi": -0.015,
-   "paper_first_side_share": 0.25
-  },
-  {
    "league_id": 80,
    "country": "Germany",
    "league": "3. Liga",
@@ -319,11 +215,11 @@
    "status": "COLLECTING",
    "rate": 0.6923,
    "n_base_rate": 39,
-   "brier_base_rate": 0.2281,
+   "brier_base_rate": 0.2284,
    "brier_market_close": 0.2264,
    "brier_market_close_on_base_rows": 0.2264,
    "reference": "median",
-   "market_skill_vs_base": 0.0075,
+   "market_skill_vs_base": 0.0088,
    "n_model": 39,
    "brier_model": 0.2315,
    "residual": {
@@ -371,11 +267,11 @@
    "status": "COLLECTING",
    "rate": 0.7692,
    "n_base_rate": 39,
-   "brier_base_rate": 0.2302,
+   "brier_base_rate": 0.2301,
    "brier_market_close": 0.2032,
    "brier_market_close_on_base_rows": 0.2032,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1173,
+   "market_skill_vs_base": 0.1169,
    "n_model": 39,
    "brier_model": 0.209,
    "residual": {
@@ -397,11 +293,11 @@
    "status": "COLLECTING",
    "rate": 0.4615,
    "n_base_rate": 39,
-   "brier_base_rate": 0.2696,
+   "brier_base_rate": 0.2699,
    "brier_market_close": 0.2413,
    "brier_market_close_on_base_rows": 0.2413,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.105,
+   "market_skill_vs_base": 0.106,
    "n_model": 39,
    "brier_model": 0.2482,
    "residual": {
@@ -412,6 +308,133 @@
    "paper_bets": 4,
    "paper_roi": 0.05,
    "paper_first_side_share": 0.0
+  },
+  {
+   "league_id": 255,
+   "country": "USA",
+   "league": "USL Championship",
+   "priority": 1,
+   "market": "btts",
+   "n": 37,
+   "status": "COLLECTING",
+   "rate": 0.5405,
+   "n_base_rate": 37,
+   "brier_base_rate": 0.2485,
+   "brier_market_close": 0.2491,
+   "brier_market_close_on_base_rows": 0.2491,
+   "reference": "median",
+   "market_skill_vs_base": -0.0024,
+   "n_model": 37,
+   "brier_model": 0.2693,
+   "residual": {
+    "coef": -1.9749,
+    "se": 1.4718,
+    "z": -1.34
+   },
+   "paper_bets": 1,
+   "paper_roi": 0.91,
+   "paper_first_side_share": 0.0
+  },
+  {
+   "league_id": 255,
+   "country": "USA",
+   "league": "USL Championship",
+   "priority": 1,
+   "market": "ou15",
+   "n": 37,
+   "status": "COLLECTING",
+   "rate": 0.6757,
+   "n_base_rate": 37,
+   "brier_base_rate": 0.2228,
+   "brier_market_close": 0.2216,
+   "brier_market_close_on_base_rows": 0.2216,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0054,
+   "n_model": 37,
+   "brier_model": 0.2161,
+   "residual": {
+    "coef": 0.8453,
+    "se": 1.476,
+    "z": 0.57
+   },
+   "paper_bets": 8,
+   "paper_roi": -0.1562,
+   "paper_first_side_share": 0.0
+  },
+  {
+   "league_id": 204,
+   "country": "Turkey",
+   "league": "1. Lig",
+   "priority": 1,
+   "market": "ou15",
+   "n": 35,
+   "status": "COLLECTING",
+   "rate": 0.8571,
+   "n_base_rate": 35,
+   "brier_base_rate": 0.1358,
+   "brier_market_close": 0.1358,
+   "brier_market_close_on_base_rows": 0.1358,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0,
+   "n_model": 35,
+   "brier_model": 0.1379,
+   "residual": {
+    "coef": 0.7117,
+    "se": 1.3266,
+    "z": 0.54
+   }
+  },
+  {
+   "league_id": 204,
+   "country": "Turkey",
+   "league": "1. Lig",
+   "priority": 1,
+   "market": "ou25",
+   "n": 37,
+   "status": "COLLECTING",
+   "rate": 0.5135,
+   "n_base_rate": 37,
+   "brier_base_rate": 0.2499,
+   "brier_market_close": 0.2563,
+   "brier_market_close_on_base_rows": 0.2563,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.0256,
+   "n_model": 37,
+   "brier_model": 0.2749,
+   "residual": {
+    "coef": -0.8476,
+    "se": 1.3339,
+    "z": -0.64
+   },
+   "paper_bets": 10,
+   "paper_roi": -0.28,
+   "paper_first_side_share": 0.1
+  },
+  {
+   "league_id": 255,
+   "country": "USA",
+   "league": "USL Championship",
+   "priority": 1,
+   "market": "ou35",
+   "n": 37,
+   "status": "COLLECTING",
+   "rate": 0.2432,
+   "n_base_rate": 37,
+   "brier_base_rate": 0.188,
+   "brier_market_close": 0.1835,
+   "brier_market_close_on_base_rows": 0.1835,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0239,
+   "n_model": 37,
+   "brier_model": 0.1849,
+   "residual": {
+    "coef": -0.2617,
+    "se": 1.4455,
+    "z": -0.18
+   },
+   "paper_bets": 4,
+   "paper_roi": -0.015,
+   "paper_first_side_share": 0.25
   },
   {
    "league_id": 204,
@@ -469,11 +492,11 @@
    "status": "COLLECTING",
    "rate": 0.6571,
    "n_base_rate": 35,
-   "brier_base_rate": 0.2548,
+   "brier_base_rate": 0.2544,
    "brier_market_close": 0.2411,
    "brier_market_close_on_base_rows": 0.2411,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0538,
+   "market_skill_vs_base": 0.0523,
    "n_model": 35,
    "brier_model": 0.2599,
    "residual": {
@@ -922,11 +945,11 @@
    "status": "COLLECTING",
    "rate": 0.6207,
    "n_base_rate": 29,
-   "brier_base_rate": 0.2365,
+   "brier_base_rate": 0.2366,
    "brier_market_close": 0.2343,
    "brier_market_close_on_base_rows": 0.2343,
    "reference": "median",
-   "market_skill_vs_base": 0.0093
+   "market_skill_vs_base": 0.0097
   },
   {
    "league_id": 89,
@@ -938,11 +961,11 @@
    "status": "COLLECTING",
    "rate": 0.8966,
    "n_base_rate": 29,
-   "brier_base_rate": 0.0995,
+   "brier_base_rate": 0.0996,
    "brier_market_close": 0.1003,
    "brier_market_close_on_base_rows": 0.1003,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.008
+   "market_skill_vs_base": -0.007
   },
   {
    "league_id": 89,
@@ -973,11 +996,11 @@
    "status": "COLLECTING",
    "rate": 0.2759,
    "n_base_rate": 29,
-   "brier_base_rate": 0.2114,
+   "brier_base_rate": 0.2115,
    "brier_market_close": 0.2499,
    "brier_market_close_on_base_rows": 0.2499,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.1821,
+   "market_skill_vs_base": -0.1816,
    "paper_bets": 1,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.0
@@ -1011,11 +1034,11 @@
    "status": "COLLECTING",
    "rate": 0.7037,
    "n_base_rate": 27,
-   "brier_base_rate": 0.2122,
+   "brier_base_rate": 0.2123,
    "brier_market_close": 0.216,
    "brier_market_close_on_base_rows": 0.216,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0179,
+   "market_skill_vs_base": -0.0174,
    "paper_bets": 1,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.0
@@ -1068,11 +1091,11 @@
    "status": "COLLECTING",
    "rate": 0.64,
    "n_base_rate": 25,
-   "brier_base_rate": 0.2312,
+   "brier_base_rate": 0.2313,
    "brier_market_close": 0.2388,
    "brier_market_close_on_base_rows": 0.2388,
    "reference": "median",
-   "market_skill_vs_base": -0.0329
+   "market_skill_vs_base": -0.0324
   },
   {
    "league_id": 104,
@@ -1116,11 +1139,11 @@
    "status": "COLLECTING",
    "rate": 0.56,
    "n_base_rate": 25,
-   "brier_base_rate": 0.2724,
+   "brier_base_rate": 0.2721,
    "brier_market_close": 0.2421,
    "brier_market_close_on_base_rows": 0.2421,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1112,
+   "market_skill_vs_base": 0.1103,
    "paper_bets": 1,
    "paper_roi": 0.73,
    "paper_first_side_share": 1.0
@@ -1284,11 +1307,11 @@
    "status": "COLLECTING",
    "rate": 0.619,
    "n_base_rate": 21,
-   "brier_base_rate": 0.2459,
+   "brier_base_rate": 0.2458,
    "brier_market_close": 0.2408,
    "brier_market_close_on_base_rows": 0.2408,
    "reference": "median",
-   "market_skill_vs_base": 0.0207,
+   "market_skill_vs_base": 0.0203,
    "paper_bets": 2,
    "paper_roi": -0.085,
    "paper_first_side_share": 0.0
@@ -1322,11 +1345,11 @@
    "status": "COLLECTING",
    "rate": 0.5714,
    "n_base_rate": 21,
-   "brier_base_rate": 0.2562,
+   "brier_base_rate": 0.2561,
    "brier_market_close": 0.241,
    "brier_market_close_on_base_rows": 0.241,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0593,
+   "market_skill_vs_base": 0.059,
    "paper_bets": 2,
    "paper_roi": -0.135,
    "paper_first_side_share": 0.0
@@ -1411,11 +1434,11 @@
    "status": "COLLECTING",
    "rate": 0.381,
    "n_base_rate": 21,
-   "brier_base_rate": 0.239,
+   "brier_base_rate": 0.2389,
    "brier_market_close": 0.2244,
    "brier_market_close_on_base_rows": 0.2244,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0611
+   "market_skill_vs_base": 0.0607
   },
   {
    "league_id": 138,
@@ -1503,11 +1526,11 @@
    "status": "COLLECTING",
    "rate": 0.6667,
    "n_base_rate": 21,
-   "brier_base_rate": 0.2403,
+   "brier_base_rate": 0.2401,
    "brier_market_close": 0.2286,
    "brier_market_close_on_base_rows": 0.2286,
    "reference": "median",
-   "market_skill_vs_base": 0.0487
+   "market_skill_vs_base": 0.0479
   },
   {
    "league_id": 263,
@@ -1519,11 +1542,11 @@
    "status": "COLLECTING",
    "rate": 0.9048,
    "n_base_rate": 21,
-   "brier_base_rate": 0.1072,
+   "brier_base_rate": 0.107,
    "brier_market_close": 0.0974,
    "brier_market_close_on_base_rows": 0.0974,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0914
+   "market_skill_vs_base": 0.0897
   },
   {
    "league_id": 263,
@@ -1535,11 +1558,11 @@
    "status": "COLLECTING",
    "rate": 0.5714,
    "n_base_rate": 21,
-   "brier_base_rate": 0.2489,
+   "brier_base_rate": 0.2488,
    "brier_market_close": 0.2432,
    "brier_market_close_on_base_rows": 0.2432,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0229,
+   "market_skill_vs_base": 0.0225,
    "paper_bets": 2,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.5
@@ -1554,11 +1577,11 @@
    "status": "COLLECTING",
    "rate": 0.1429,
    "n_base_rate": 21,
-   "brier_base_rate": 0.1495,
+   "brier_base_rate": 0.1499,
    "brier_market_close": 0.1983,
    "brier_market_close_on_base_rows": 0.1983,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.3264
+   "market_skill_vs_base": -0.3229
   },
   {
    "league_id": 183,
@@ -1589,11 +1612,11 @@
    "status": "COLLECTING",
    "rate": 0.85,
    "n_base_rate": 20,
-   "brier_base_rate": 0.131,
+   "brier_base_rate": 0.1309,
    "brier_market_close": 0.1328,
    "brier_market_close_on_base_rows": 0.1328,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0137
+   "market_skill_vs_base": -0.0145
   },
   {
    "league_id": 183,
@@ -1624,11 +1647,11 @@
    "status": "COLLECTING",
    "rate": 0.2,
    "n_base_rate": 20,
-   "brier_base_rate": 0.1771,
+   "brier_base_rate": 0.1772,
    "brier_market_close": 0.1652,
    "brier_market_close_on_base_rows": 0.1652,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0672,
+   "market_skill_vs_base": 0.0677,
    "paper_bets": 7,
    "paper_roi": 0.2543,
    "paper_first_side_share": 0.286
@@ -1719,11 +1742,11 @@
    "status": "COLLECTING",
    "rate": 0.3684,
    "n_base_rate": 19,
-   "brier_base_rate": 0.2488,
+   "brier_base_rate": 0.2485,
    "brier_market_close": 0.2524,
    "brier_market_close_on_base_rows": 0.2524,
    "reference": "median",
-   "market_skill_vs_base": -0.0145,
+   "market_skill_vs_base": -0.0157,
    "paper_bets": 2,
    "paper_roi": 0.79,
    "paper_first_side_share": 0.0
@@ -1738,11 +1761,11 @@
    "status": "COLLECTING",
    "rate": 0.7895,
    "n_base_rate": 19,
-   "brier_base_rate": 0.1695,
+   "brier_base_rate": 0.1696,
    "brier_market_close": 0.1824,
    "brier_market_close_on_base_rows": 0.1824,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0761,
+   "market_skill_vs_base": -0.0755,
    "paper_bets": 2,
    "paper_roi": 0.75,
    "paper_first_side_share": 0.0
@@ -1776,11 +1799,11 @@
    "status": "COLLECTING",
    "rate": 0.2105,
    "n_base_rate": 19,
-   "brier_base_rate": 0.1696,
+   "brier_base_rate": 0.1697,
    "brier_market_close": 0.1711,
    "brier_market_close_on_base_rows": 0.1711,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0088,
+   "market_skill_vs_base": -0.0082,
    "paper_bets": 8,
    "paper_roi": 0.0063,
    "paper_first_side_share": 0.0
@@ -2163,11 +2186,11 @@
    "status": "COLLECTING",
    "rate": 0.7333,
    "n_base_rate": 15,
-   "brier_base_rate": 0.2339,
+   "brier_base_rate": 0.2341,
    "brier_market_close": 0.2247,
    "brier_market_close_on_base_rows": 0.2247,
    "reference": "median",
-   "market_skill_vs_base": 0.0393,
+   "market_skill_vs_base": 0.0402,
    "paper_bets": 1,
    "paper_roi": -1.0,
    "paper_first_side_share": 1.0
@@ -2201,11 +2224,11 @@
    "status": "COLLECTING",
    "rate": 0.6667,
    "n_base_rate": 15,
-   "brier_base_rate": 0.2462,
+   "brier_base_rate": 0.246,
    "brier_market_close": 0.2434,
    "brier_market_close_on_base_rows": 0.2434,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0114,
+   "market_skill_vs_base": 0.0106,
    "paper_bets": 3,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.667
@@ -2370,11 +2393,11 @@
    "status": "COLLECTING",
    "rate": 0.3333,
    "n_base_rate": 9,
-   "brier_base_rate": 0.2642,
+   "brier_base_rate": 0.2641,
    "brier_market_close": 0.2846,
    "brier_market_close_on_base_rows": 0.2846,
    "reference": "median",
-   "market_skill_vs_base": -0.0772
+   "market_skill_vs_base": -0.0776
   },
   {
    "league_id": 358,
@@ -2402,11 +2425,11 @@
    "status": "COLLECTING",
    "rate": 0.3333,
    "n_base_rate": 9,
-   "brier_base_rate": 0.2663,
+   "brier_base_rate": 0.2666,
    "brier_market_close": 0.2868,
    "brier_market_close_on_base_rows": 0.2868,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.077
+   "market_skill_vs_base": -0.0758
   },
   {
    "league_id": 358,
@@ -2460,11 +2483,11 @@
    "status": "COLLECTING",
    "rate": 0.3922,
    "n_base_rate": 51,
-   "brier_base_rate": 0.246,
+   "brier_base_rate": 0.2461,
    "brier_market_close": 0.2324,
    "brier_market_close_on_base_rows": 0.2324,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0553,
+   "market_skill_vs_base": 0.0557,
    "n_model": 51,
    "brier_model": 0.2314,
    "residual": {
@@ -2538,11 +2561,11 @@
    "status": "COLLECTING",
    "rate": 0.58,
    "n_base_rate": 50,
-   "brier_base_rate": 0.2497,
+   "brier_base_rate": 0.2496,
    "brier_market_close": 0.2445,
    "brier_market_close_on_base_rows": 0.2445,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0208,
+   "market_skill_vs_base": 0.0204,
    "n_model": 47,
    "brier_model": 0.2774,
    "residual": {
@@ -2587,11 +2610,11 @@
    "status": "COLLECTING",
    "rate": 0.5532,
    "n_base_rate": 47,
-   "brier_base_rate": 0.2499,
+   "brier_base_rate": 0.25,
    "brier_market_close": 0.2427,
    "brier_market_close_on_base_rows": 0.2427,
    "reference": "median",
-   "market_skill_vs_base": 0.0288,
+   "market_skill_vs_base": 0.0292,
    "n_model": 45,
    "brier_model": 0.2609,
    "residual": {
@@ -2659,11 +2682,11 @@
    "status": "COLLECTING",
    "rate": 0.6429,
    "n_base_rate": 42,
-   "brier_base_rate": 0.2552,
+   "brier_base_rate": 0.2553,
    "brier_market_close": 0.2419,
    "brier_market_close_on_base_rows": 0.2419,
    "reference": "median",
-   "market_skill_vs_base": 0.0521,
+   "market_skill_vs_base": 0.0525,
    "n_model": 42,
    "brier_model": 0.2544,
    "residual": {
@@ -2682,11 +2705,11 @@
    "status": "COLLECTING",
    "rate": 0.6667,
    "n_base_rate": 42,
-   "brier_base_rate": 0.2533,
+   "brier_base_rate": 0.2532,
    "brier_market_close": 0.227,
    "brier_market_close_on_base_rows": 0.227,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1038,
+   "market_skill_vs_base": 0.1035,
    "n_model": 42,
    "brier_model": 0.2455,
    "residual": {
@@ -2743,32 +2766,6 @@
     "se": 0.9166,
     "z": -1.11
    }
-  },
-  {
-   "league_id": 187,
-   "country": "Algeria",
-   "league": "Ligue 2",
-   "priority": 2,
-   "market": "ou25",
-   "n": 39,
-   "status": "COLLECTING",
-   "rate": 0.4872,
-   "n_base_rate": 39,
-   "brier_base_rate": 0.2559,
-   "brier_market_close": 0.2523,
-   "brier_market_close_on_base_rows": 0.2523,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.0141,
-   "n_model": 33,
-   "brier_model": 0.2335,
-   "residual": {
-    "coef": 1.4433,
-    "se": 1.2045,
-    "z": 1.2
-   },
-   "paper_bets": 7,
-   "paper_roi": -0.3714,
-   "paper_first_side_share": 0.571
   },
   {
    "league_id": 205,
@@ -2887,6 +2884,32 @@
     "se": 1.2734,
     "z": -0.53
    }
+  },
+  {
+   "league_id": 187,
+   "country": "Algeria",
+   "league": "Ligue 2",
+   "priority": 2,
+   "market": "ou25",
+   "n": 36,
+   "status": "COLLECTING",
+   "rate": 0.4722,
+   "n_base_rate": 36,
+   "brier_base_rate": 0.2532,
+   "brier_market_close": 0.2509,
+   "brier_market_close_on_base_rows": 0.2509,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0091,
+   "n_model": 30,
+   "brier_model": 0.2332,
+   "residual": {
+    "coef": 1.1949,
+    "se": 1.1827,
+    "z": 1.01
+   },
+   "paper_bets": 7,
+   "paper_roi": -0.3714,
+   "paper_first_side_share": 0.571
   },
   {
    "league_id": 239,
@@ -3227,11 +3250,11 @@
    "status": "COLLECTING",
    "rate": 0.6562,
    "n_base_rate": 32,
-   "brier_base_rate": 0.2345,
+   "brier_base_rate": 0.2346,
    "brier_market_close": 0.2344,
    "brier_market_close_on_base_rows": 0.2344,
    "reference": "median",
-   "market_skill_vs_base": 0.0004,
+   "market_skill_vs_base": 0.0009,
    "n_model": 32,
    "brier_model": 0.2419,
    "residual": {
@@ -3262,22 +3285,6 @@
     "se": 1.6387,
     "z": 0.53
    }
-  },
-  {
-   "league_id": 187,
-   "country": "Algeria",
-   "league": "Ligue 2",
-   "priority": 2,
-   "market": "ou15",
-   "n": 30,
-   "status": "COLLECTING",
-   "rate": 0.6333,
-   "n_base_rate": 30,
-   "brier_base_rate": 0.2323,
-   "brier_market_close": 0.2307,
-   "brier_market_close_on_base_rows": 0.2307,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.0069
   },
   {
    "league_id": 284,
@@ -3361,11 +3368,11 @@
    "status": "COLLECTING",
    "rate": 0.3333,
    "n_base_rate": 30,
-   "brier_base_rate": 0.2293,
+   "brier_base_rate": 0.2292,
    "brier_market_close": 0.2219,
    "brier_market_close_on_base_rows": 0.2219,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0323,
+   "market_skill_vs_base": 0.0318,
    "n_model": 30,
    "brier_model": 0.2203,
    "residual": {
@@ -3462,11 +3469,11 @@
    "status": "COLLECTING",
    "rate": 0.6333,
    "n_base_rate": 30,
-   "brier_base_rate": 0.2527,
+   "brier_base_rate": 0.2526,
    "brier_market_close": 0.2264,
    "brier_market_close_on_base_rows": 0.2264,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1041,
+   "market_skill_vs_base": 0.1037,
    "n_model": 30,
    "brier_model": 0.2329,
    "residual": {
@@ -3503,38 +3510,6 @@
    "paper_bets": 8,
    "paper_roi": -0.275,
    "paper_first_side_share": 0.125
-  },
-  {
-   "league_id": 187,
-   "country": "Algeria",
-   "league": "Ligue 2",
-   "priority": 2,
-   "market": "btts",
-   "n": 29,
-   "status": "COLLECTING",
-   "rate": 0.4138,
-   "n_base_rate": 29,
-   "brier_base_rate": 0.2431,
-   "brier_market_close": 0.241,
-   "brier_market_close_on_base_rows": 0.241,
-   "reference": "median",
-   "market_skill_vs_base": 0.0086
-  },
-  {
-   "league_id": 187,
-   "country": "Algeria",
-   "league": "Ligue 2",
-   "priority": 2,
-   "market": "ou35",
-   "n": 29,
-   "status": "COLLECTING",
-   "rate": 0.1724,
-   "n_base_rate": 29,
-   "brier_base_rate": 0.1437,
-   "brier_market_close": 0.1318,
-   "brier_market_close_on_base_rows": 0.1318,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.0828
   },
   {
    "league_id": 374,
@@ -3600,11 +3575,11 @@
    "status": "COLLECTING",
    "rate": 0.7857,
    "n_base_rate": 28,
-   "brier_base_rate": 0.1971,
+   "brier_base_rate": 0.1969,
    "brier_market_close": 0.2006,
    "brier_market_close_on_base_rows": 0.2006,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0178,
+   "market_skill_vs_base": -0.0188,
    "paper_bets": 3,
    "paper_roi": 0.54,
    "paper_first_side_share": 1.0
@@ -3635,11 +3610,11 @@
    "status": "COLLECTING",
    "rate": 0.6786,
    "n_base_rate": 28,
-   "brier_base_rate": 0.2304,
+   "brier_base_rate": 0.2307,
    "brier_market_close": 0.2221,
    "brier_market_close_on_base_rows": 0.2221,
    "reference": "median",
-   "market_skill_vs_base": 0.036,
+   "market_skill_vs_base": 0.0373,
    "paper_bets": 2,
    "paper_roi": 0.05,
    "paper_first_side_share": 0.5
@@ -3673,11 +3648,11 @@
    "status": "COLLECTING",
    "rate": 0.6786,
    "n_base_rate": 28,
-   "brier_base_rate": 0.2382,
+   "brier_base_rate": 0.238,
    "brier_market_close": 0.224,
    "brier_market_close_on_base_rows": 0.224,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0596,
+   "market_skill_vs_base": 0.0588,
    "paper_bets": 5,
    "paper_roi": -0.246,
    "paper_first_side_share": 0.4
@@ -3692,11 +3667,11 @@
    "status": "COLLECTING",
    "rate": 0.2857,
    "n_base_rate": 28,
-   "brier_base_rate": 0.205,
+   "brier_base_rate": 0.2051,
    "brier_market_close": 0.2048,
    "brier_market_close_on_base_rows": 0.2048,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.001,
+   "market_skill_vs_base": 0.0015,
    "paper_bets": 4,
    "paper_roi": -0.28,
    "paper_first_side_share": 0.5
@@ -3749,11 +3724,11 @@
    "status": "COLLECTING",
    "rate": 0.5714,
    "n_base_rate": 28,
-   "brier_base_rate": 0.2461,
+   "brier_base_rate": 0.2462,
    "brier_market_close": 0.2278,
    "brier_market_close_on_base_rows": 0.2278,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0744,
+   "market_skill_vs_base": 0.0747,
    "paper_bets": 3,
    "paper_roi": 0.6067,
    "paper_first_side_share": 0.0
@@ -3768,11 +3743,11 @@
    "status": "COLLECTING",
    "rate": 0.4286,
    "n_base_rate": 28,
-   "brier_base_rate": 0.2532,
+   "brier_base_rate": 0.253,
    "brier_market_close": 0.2302,
    "brier_market_close_on_base_rows": 0.2302,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0908,
+   "market_skill_vs_base": 0.0901,
    "paper_bets": 9,
    "paper_roi": -0.2433,
    "paper_first_side_share": 0.222
@@ -3949,11 +3924,11 @@
    "status": "COLLECTING",
    "rate": 0.5,
    "n_base_rate": 28,
-   "brier_base_rate": 0.2531,
+   "brier_base_rate": 0.253,
    "brier_market_close": 0.2512,
    "brier_market_close_on_base_rows": 0.2512,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0075,
+   "market_skill_vs_base": 0.0071,
    "paper_bets": 10,
    "paper_roi": 0.056,
    "paper_first_side_share": 0.7
@@ -3984,11 +3959,11 @@
    "status": "COLLECTING",
    "rate": 0.6667,
    "n_base_rate": 27,
-   "brier_base_rate": 0.2305,
+   "brier_base_rate": 0.2306,
    "brier_market_close": 0.2251,
    "brier_market_close_on_base_rows": 0.2251,
    "reference": "median",
-   "market_skill_vs_base": 0.0234
+   "market_skill_vs_base": 0.0239
   },
   {
    "league_id": 88,
@@ -4016,11 +3991,11 @@
    "status": "COLLECTING",
    "rate": 0.6667,
    "n_base_rate": 27,
-   "brier_base_rate": 0.2262,
+   "brier_base_rate": 0.226,
    "brier_market_close": 0.2279,
    "brier_market_close_on_base_rows": 0.2279,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0075
+   "market_skill_vs_base": -0.0084
   },
   {
    "league_id": 88,
@@ -4032,11 +4007,11 @@
    "status": "COLLECTING",
    "rate": 0.6296,
    "n_base_rate": 27,
-   "brier_base_rate": 0.2868,
+   "brier_base_rate": 0.2862,
    "brier_market_close": 0.2624,
    "brier_market_close_on_base_rows": 0.2624,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0851
+   "market_skill_vs_base": 0.0832
   },
   {
    "league_id": 134,
@@ -4048,11 +4023,11 @@
    "status": "COLLECTING",
    "rate": 0.2963,
    "n_base_rate": 27,
-   "brier_base_rate": 0.2151,
+   "brier_base_rate": 0.2152,
    "brier_market_close": 0.2204,
    "brier_market_close_on_base_rows": 0.2204,
    "reference": "median",
-   "market_skill_vs_base": -0.0246,
+   "market_skill_vs_base": -0.0242,
    "paper_bets": 9,
    "paper_roi": -0.1344,
    "paper_first_side_share": 0.111
@@ -4067,11 +4042,11 @@
    "status": "COLLECTING",
    "rate": 0.5185,
    "n_base_rate": 27,
-   "brier_base_rate": 0.2557,
+   "brier_base_rate": 0.2559,
    "brier_market_close": 0.2608,
    "brier_market_close_on_base_rows": 0.2608,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0199,
+   "market_skill_vs_base": -0.0191,
    "paper_bets": 10,
    "paper_roi": 0.3,
    "paper_first_side_share": 0.0
@@ -4086,14 +4061,30 @@
    "status": "COLLECTING",
    "rate": 0.2593,
    "n_base_rate": 27,
-   "brier_base_rate": 0.1989,
+   "brier_base_rate": 0.199,
    "brier_market_close": 0.1917,
    "brier_market_close_on_base_rows": 0.1917,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0362,
+   "market_skill_vs_base": 0.0367,
    "paper_bets": 10,
    "paper_roi": 0.063,
    "paper_first_side_share": 0.0
+  },
+  {
+   "league_id": 187,
+   "country": "Algeria",
+   "league": "Ligue 2",
+   "priority": 2,
+   "market": "ou15",
+   "n": 27,
+   "status": "COLLECTING",
+   "rate": 0.6296,
+   "n_base_rate": 27,
+   "brier_base_rate": 0.2334,
+   "brier_market_close": 0.232,
+   "brier_market_close_on_base_rows": 0.232,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.006
   },
   {
    "league_id": 274,
@@ -4233,57 +4224,6 @@
    "market_skill_vs_base": 0.0604
   },
   {
-   "league_id": 489,
-   "country": "USA",
-   "league": "USL League One",
-   "priority": 2,
-   "market": "btts",
-   "n": 27,
-   "status": "COLLECTING",
-   "rate": 0.5556,
-   "n_base_rate": 27,
-   "brier_base_rate": 0.2486,
-   "brier_market_close": 0.2488,
-   "brier_market_close_on_base_rows": 0.2488,
-   "reference": "median",
-   "market_skill_vs_base": -0.0008
-  },
-  {
-   "league_id": 489,
-   "country": "USA",
-   "league": "USL League One",
-   "priority": 2,
-   "market": "ou25",
-   "n": 27,
-   "status": "COLLECTING",
-   "rate": 0.5926,
-   "n_base_rate": 27,
-   "brier_base_rate": 0.2424,
-   "brier_market_close": 0.2228,
-   "brier_market_close_on_base_rows": 0.2228,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.0809,
-   "paper_bets": 3,
-   "paper_roi": 0.8833,
-   "paper_first_side_share": 0.333
-  },
-  {
-   "league_id": 489,
-   "country": "USA",
-   "league": "USL League One",
-   "priority": 2,
-   "market": "ou35",
-   "n": 27,
-   "status": "COLLECTING",
-   "rate": 0.3704,
-   "n_base_rate": 27,
-   "brier_base_rate": 0.2349,
-   "brier_market_close": 0.2288,
-   "brier_market_close_on_base_rows": 0.2288,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.026
-  },
-  {
    "league_id": 563,
    "country": "Sweden",
    "league": "Ettan - Norra",
@@ -4339,6 +4279,38 @@
    "paper_bets": 3,
    "paper_roi": 0.7067,
    "paper_first_side_share": 0.333
+  },
+  {
+   "league_id": 187,
+   "country": "Algeria",
+   "league": "Ligue 2",
+   "priority": 2,
+   "market": "btts",
+   "n": 26,
+   "status": "COLLECTING",
+   "rate": 0.3846,
+   "n_base_rate": 26,
+   "brier_base_rate": 0.2394,
+   "brier_market_close": 0.2301,
+   "brier_market_close_on_base_rows": 0.2301,
+   "reference": "median",
+   "market_skill_vs_base": 0.0388
+  },
+  {
+   "league_id": 187,
+   "country": "Algeria",
+   "league": "Ligue 2",
+   "priority": 2,
+   "market": "ou35",
+   "n": 26,
+   "status": "COLLECTING",
+   "rate": 0.1923,
+   "n_base_rate": 26,
+   "brier_base_rate": 0.1556,
+   "brier_market_close": 0.14,
+   "brier_market_close_on_base_rows": 0.14,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.1003
   },
   {
    "league_id": 203,
@@ -4426,11 +4398,11 @@
    "status": "COLLECTING",
    "rate": 0.5769,
    "n_base_rate": 26,
-   "brier_base_rate": 0.2488,
+   "brier_base_rate": 0.2489,
    "brier_market_close": 0.2526,
    "brier_market_close_on_base_rows": 0.2526,
    "reference": "median",
-   "market_skill_vs_base": -0.0153,
+   "market_skill_vs_base": -0.0149,
    "paper_bets": 4,
    "paper_roi": 0.39,
    "paper_first_side_share": 1.0
@@ -4464,11 +4436,11 @@
    "status": "COLLECTING",
    "rate": 0.6538,
    "n_base_rate": 26,
-   "brier_base_rate": 0.2382,
+   "brier_base_rate": 0.2384,
    "brier_market_close": 0.2426,
    "brier_market_close_on_base_rows": 0.2426,
    "reference": "median",
-   "market_skill_vs_base": -0.0185
+   "market_skill_vs_base": -0.0176
   },
   {
    "league_id": 292,
@@ -4480,11 +4452,11 @@
    "status": "COLLECTING",
    "rate": 0.8077,
    "n_base_rate": 26,
-   "brier_base_rate": 0.1636,
+   "brier_base_rate": 0.1637,
    "brier_market_close": 0.1658,
    "brier_market_close_on_base_rows": 0.1658,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0134
+   "market_skill_vs_base": -0.0128
   },
   {
    "league_id": 292,
@@ -4496,11 +4468,11 @@
    "status": "COLLECTING",
    "rate": 0.5385,
    "n_base_rate": 26,
-   "brier_base_rate": 0.2532,
+   "brier_base_rate": 0.2533,
    "brier_market_close": 0.2435,
    "brier_market_close_on_base_rows": 0.2435,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0383
+   "market_skill_vs_base": 0.0387
   },
   {
    "league_id": 292,
@@ -4604,11 +4576,11 @@
    "status": "COLLECTING",
    "rate": 0.6923,
    "n_base_rate": 26,
-   "brier_base_rate": 0.2201,
+   "brier_base_rate": 0.22,
    "brier_market_close": 0.2266,
    "brier_market_close_on_base_rows": 0.2266,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0295
+   "market_skill_vs_base": -0.03
   },
   {
    "league_id": 345,
@@ -4636,27 +4608,11 @@
    "status": "COLLECTING",
    "rate": 0.3462,
    "n_base_rate": 26,
-   "brier_base_rate": 0.229,
+   "brier_base_rate": 0.2289,
    "brier_market_close": 0.2254,
    "brier_market_close_on_base_rows": 0.2254,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0157
-  },
-  {
-   "league_id": 489,
-   "country": "USA",
-   "league": "USL League One",
-   "priority": 2,
-   "market": "ou15",
-   "n": 26,
-   "status": "COLLECTING",
-   "rate": 0.7692,
-   "n_base_rate": 26,
-   "brier_base_rate": 0.1777,
-   "brier_market_close": 0.1688,
-   "brier_market_close_on_base_rows": 0.1688,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.0501
+   "market_skill_vs_base": 0.0153
   },
   {
    "league_id": 111,
@@ -4689,6 +4645,57 @@
    "brier_market_close_on_base_rows": 0.2404,
    "reference": "median",
    "market_skill_vs_base": 0.0326
+  },
+  {
+   "league_id": 489,
+   "country": "USA",
+   "league": "USL League One",
+   "priority": 2,
+   "market": "btts",
+   "n": 25,
+   "status": "COLLECTING",
+   "rate": 0.56,
+   "n_base_rate": 25,
+   "brier_base_rate": 0.248,
+   "brier_market_close": 0.2471,
+   "brier_market_close_on_base_rows": 0.2471,
+   "reference": "median",
+   "market_skill_vs_base": 0.0036
+  },
+  {
+   "league_id": 489,
+   "country": "USA",
+   "league": "USL League One",
+   "priority": 2,
+   "market": "ou25",
+   "n": 25,
+   "status": "COLLECTING",
+   "rate": 0.64,
+   "n_base_rate": 25,
+   "brier_base_rate": 0.2356,
+   "brier_market_close": 0.2135,
+   "brier_market_close_on_base_rows": 0.2135,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0938,
+   "paper_bets": 3,
+   "paper_roi": 0.8833,
+   "paper_first_side_share": 0.333
+  },
+  {
+   "league_id": 489,
+   "country": "USA",
+   "league": "USL League One",
+   "priority": 2,
+   "market": "ou35",
+   "n": 25,
+   "status": "COLLECTING",
+   "rate": 0.4,
+   "n_base_rate": 25,
+   "brier_base_rate": 0.2446,
+   "brier_market_close": 0.2359,
+   "brier_market_close_on_base_rows": 0.2359,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0356
   },
   {
    "league_id": 563,
@@ -4748,11 +4755,11 @@
    "status": "COLLECTING",
    "rate": 0.6667,
    "n_base_rate": 24,
-   "brier_base_rate": 0.2365,
+   "brier_base_rate": 0.2364,
    "brier_market_close": 0.2361,
    "brier_market_close_on_base_rows": 0.2361,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0017,
+   "market_skill_vs_base": 0.0013,
    "paper_bets": 4,
    "paper_roi": -0.6075,
    "paper_first_side_share": 1.0
@@ -4939,11 +4946,11 @@
    "status": "COLLECTING",
    "rate": 0.5,
    "n_base_rate": 24,
-   "brier_base_rate": 0.2523,
+   "brier_base_rate": 0.2522,
    "brier_market_close": 0.2358,
    "brier_market_close_on_base_rows": 0.2358,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0654,
+   "market_skill_vs_base": 0.065,
    "paper_bets": 7,
    "paper_roi": 0.0971,
    "paper_first_side_share": 0.571
@@ -4963,6 +4970,22 @@
    "brier_market_close_on_base_rows": 0.188,
    "reference": "median",
    "market_skill_vs_base": 0.1009
+  },
+  {
+   "league_id": 489,
+   "country": "USA",
+   "league": "USL League One",
+   "priority": 2,
+   "market": "ou15",
+   "n": 24,
+   "status": "COLLECTING",
+   "rate": 0.7917,
+   "n_base_rate": 24,
+   "brier_base_rate": 0.1653,
+   "brier_market_close": 0.1541,
+   "brier_market_close_on_base_rows": 0.1541,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0678
   },
   {
    "league_id": 564,
@@ -5038,63 +5061,6 @@
    "market_skill_vs_base": 0.0014
   },
   {
-   "league_id": 132,
-   "country": "Argentina",
-   "league": "Primera C",
-   "priority": 2,
-   "market": "btts",
-   "n": 23,
-   "status": "COLLECTING",
-   "rate": 0.4783,
-   "n_base_rate": 23,
-   "brier_base_rate": 0.2547,
-   "brier_market_close": 0.2441,
-   "brier_market_close_on_base_rows": 0.2441,
-   "reference": "median",
-   "market_skill_vs_base": 0.0416,
-   "paper_bets": 4,
-   "paper_roi": 0.125,
-   "paper_first_side_share": 0.0
-  },
-  {
-   "league_id": 132,
-   "country": "Argentina",
-   "league": "Primera C",
-   "priority": 2,
-   "market": "ou15",
-   "n": 23,
-   "status": "COLLECTING",
-   "rate": 0.5652,
-   "n_base_rate": 23,
-   "brier_base_rate": 0.2485,
-   "brier_market_close": 0.2378,
-   "brier_market_close_on_base_rows": 0.2378,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.0431,
-   "paper_bets": 4,
-   "paper_roi": 0.65,
-   "paper_first_side_share": 0.0
-  },
-  {
-   "league_id": 132,
-   "country": "Argentina",
-   "league": "Primera C",
-   "priority": 2,
-   "market": "ou25",
-   "n": 23,
-   "status": "COLLECTING",
-   "rate": 0.3478,
-   "n_base_rate": 23,
-   "brier_base_rate": 0.2269,
-   "brier_market_close": 0.2066,
-   "brier_market_close_on_base_rows": 0.2066,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.0895,
-   "paper_bets": 8,
-   "paper_roi": 0.0375,
-   "paper_first_side_share": 0.0
-  },
-  {
    "league_id": 240,
    "country": "Colombia",
    "league": "Primera B",
@@ -5120,11 +5086,11 @@
    "status": "COLLECTING",
    "rate": 0.2174,
    "n_base_rate": 23,
-   "brier_base_rate": 0.2018,
+   "brier_base_rate": 0.2017,
    "brier_market_close": 0.2072,
    "brier_market_close_on_base_rows": 0.2072,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0268,
+   "market_skill_vs_base": -0.0273,
    "paper_bets": 8,
    "paper_roi": 0.465,
    "paper_first_side_share": 0.125
@@ -5187,11 +5153,11 @@
    "status": "COLLECTING",
    "rate": 0.5217,
    "n_base_rate": 23,
-   "brier_base_rate": 0.2501,
+   "brier_base_rate": 0.25,
    "brier_market_close": 0.2476,
    "brier_market_close_on_base_rows": 0.2476,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.01
+   "market_skill_vs_base": 0.0096
   },
   {
    "league_id": 332,
@@ -5203,11 +5169,11 @@
    "status": "COLLECTING",
    "rate": 0.3913,
    "n_base_rate": 23,
-   "brier_base_rate": 0.2426,
+   "brier_base_rate": 0.2427,
    "brier_market_close": 0.2128,
    "brier_market_close_on_base_rows": 0.2128,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1228
+   "market_skill_vs_base": 0.1232
   },
   {
    "league_id": 339,
@@ -5219,11 +5185,11 @@
    "status": "COLLECTING",
    "rate": 0.6522,
    "n_base_rate": 23,
-   "brier_base_rate": 0.2643,
+   "brier_base_rate": 0.2641,
    "brier_market_close": 0.254,
    "brier_market_close_on_base_rows": 0.254,
    "reference": "median",
-   "market_skill_vs_base": 0.039
+   "market_skill_vs_base": 0.0382
   },
   {
    "league_id": 339,
@@ -5235,11 +5201,11 @@
    "status": "COLLECTING",
    "rate": 0.3043,
    "n_base_rate": 23,
-   "brier_base_rate": 0.2159,
+   "brier_base_rate": 0.2157,
    "brier_market_close": 0.2127,
    "brier_market_close_on_base_rows": 0.2127,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0148
+   "market_skill_vs_base": 0.0139
   },
   {
    "league_id": 361,
@@ -5286,11 +5252,11 @@
    "status": "COLLECTING",
    "rate": 0.6522,
    "n_base_rate": 23,
-   "brier_base_rate": 0.2595,
+   "brier_base_rate": 0.2596,
    "brier_market_close": 0.2176,
    "brier_market_close_on_base_rows": 0.2176,
    "reference": "median",
-   "market_skill_vs_base": 0.1615,
+   "market_skill_vs_base": 0.1618,
    "paper_bets": 1,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.0
@@ -5340,11 +5306,11 @@
    "status": "COLLECTING",
    "rate": 0.3478,
    "n_base_rate": 23,
-   "brier_base_rate": 0.2275,
+   "brier_base_rate": 0.2274,
    "brier_market_close": 0.2288,
    "brier_market_close_on_base_rows": 0.2288,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0057,
+   "market_skill_vs_base": -0.0062,
    "paper_bets": 1,
    "paper_roi": 0.44,
    "paper_first_side_share": 0.0
@@ -5410,11 +5376,11 @@
    "status": "COLLECTING",
    "rate": 0.7727,
    "n_base_rate": 22,
-   "brier_base_rate": 0.2353,
+   "brier_base_rate": 0.2349,
    "brier_market_close": 0.2381,
    "brier_market_close_on_base_rows": 0.2381,
    "reference": "median",
-   "market_skill_vs_base": -0.0119,
+   "market_skill_vs_base": -0.0136,
    "paper_bets": 3,
    "paper_roi": 0.9467,
    "paper_first_side_share": 1.0
@@ -5429,11 +5395,11 @@
    "status": "COLLECTING",
    "rate": 0.6818,
    "n_base_rate": 22,
-   "brier_base_rate": 0.2221,
+   "brier_base_rate": 0.222,
    "brier_market_close": 0.2308,
    "brier_market_close_on_base_rows": 0.2308,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0392,
+   "market_skill_vs_base": -0.0396,
    "paper_bets": 6,
    "paper_roi": -0.275,
    "paper_first_side_share": 0.0
@@ -5467,11 +5433,11 @@
    "status": "COLLECTING",
    "rate": 0.6818,
    "n_base_rate": 22,
-   "brier_base_rate": 0.2362,
+   "brier_base_rate": 0.2361,
    "brier_market_close": 0.2084,
    "brier_market_close_on_base_rows": 0.2084,
    "reference": "median",
-   "market_skill_vs_base": 0.1177,
+   "market_skill_vs_base": 0.1173,
    "paper_bets": 1,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.0
@@ -5486,11 +5452,11 @@
    "status": "COLLECTING",
    "rate": 0.9091,
    "n_base_rate": 22,
-   "brier_base_rate": 0.1001,
+   "brier_base_rate": 0.0999,
    "brier_market_close": 0.0927,
    "brier_market_close_on_base_rows": 0.0927,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0739,
+   "market_skill_vs_base": 0.0721,
    "paper_bets": 1,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.0
@@ -5505,11 +5471,11 @@
    "status": "COLLECTING",
    "rate": 0.7273,
    "n_base_rate": 22,
-   "brier_base_rate": 0.2322,
+   "brier_base_rate": 0.232,
    "brier_market_close": 0.211,
    "brier_market_close_on_base_rows": 0.211,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0913,
+   "market_skill_vs_base": 0.0905,
    "paper_bets": 1,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.0
@@ -5543,11 +5509,11 @@
    "status": "COLLECTING",
    "rate": 0.9545,
    "n_base_rate": 22,
-   "brier_base_rate": 0.0916,
+   "brier_base_rate": 0.0913,
    "brier_market_close": 0.0808,
    "brier_market_close_on_base_rows": 0.0808,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1179
+   "market_skill_vs_base": 0.115
   },
   {
    "league_id": 240,
@@ -5575,11 +5541,11 @@
    "status": "COLLECTING",
    "rate": 0.8182,
    "n_base_rate": 22,
-   "brier_base_rate": 0.1664,
+   "brier_base_rate": 0.1662,
    "brier_market_close": 0.1495,
    "brier_market_close_on_base_rows": 0.1495,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1016
+   "market_skill_vs_base": 0.1005
   },
   {
    "league_id": 361,
@@ -5607,11 +5573,11 @@
    "status": "COLLECTING",
    "rate": 0.5909,
    "n_base_rate": 22,
-   "brier_base_rate": 0.2515,
+   "brier_base_rate": 0.2517,
    "brier_market_close": 0.2305,
    "brier_market_close_on_base_rows": 0.2305,
    "reference": "median",
-   "market_skill_vs_base": 0.0835
+   "market_skill_vs_base": 0.0842
   },
   {
    "league_id": 369,
@@ -5652,25 +5618,6 @@
    "paper_first_side_share": 0.0
   },
   {
-   "league_id": 132,
-   "country": "Argentina",
-   "league": "Primera C",
-   "priority": 2,
-   "market": "ou35",
-   "n": 21,
-   "status": "COLLECTING",
-   "rate": 0.0476,
-   "n_base_rate": 21,
-   "brier_base_rate": 0.0591,
-   "brier_market_close": 0.0633,
-   "brier_market_close_on_base_rows": 0.0633,
-   "reference": "pinnacle",
-   "market_skill_vs_base": -0.0711,
-   "paper_bets": 3,
-   "paper_roi": 0.1267,
-   "paper_first_side_share": 0.0
-  },
-  {
    "league_id": 268,
    "country": "Uruguay",
    "league": "Primera Divisi\u00f3n",
@@ -5699,11 +5646,11 @@
    "status": "COLLECTING",
    "rate": 0.7143,
    "n_base_rate": 21,
-   "brier_base_rate": 0.2051,
+   "brier_base_rate": 0.205,
    "brier_market_close": 0.2084,
    "brier_market_close_on_base_rows": 0.2084,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0161,
+   "market_skill_vs_base": -0.0166,
    "paper_bets": 3,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.0
@@ -5775,11 +5722,11 @@
    "status": "COLLECTING",
    "rate": 0.7,
    "n_base_rate": 20,
-   "brier_base_rate": 0.2223,
+   "brier_base_rate": 0.2224,
    "brier_market_close": 0.2209,
    "brier_market_close_on_base_rows": 0.2209,
    "reference": "median",
-   "market_skill_vs_base": 0.0063
+   "market_skill_vs_base": 0.0067
   },
   {
    "league_id": 58,
@@ -5890,11 +5837,11 @@
    "status": "COLLECTING",
    "rate": 0.7,
    "n_base_rate": 20,
-   "brier_base_rate": 0.2108,
+   "brier_base_rate": 0.2109,
    "brier_market_close": 0.2154,
    "brier_market_close_on_base_rows": 0.2154,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0218,
+   "market_skill_vs_base": -0.0213,
    "paper_bets": 1,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.0
@@ -5909,11 +5856,11 @@
    "status": "COLLECTING",
    "rate": 0.4,
    "n_base_rate": 20,
-   "brier_base_rate": 0.2494,
+   "brier_base_rate": 0.2496,
    "brier_market_close": 0.2636,
    "brier_market_close_on_base_rows": 0.2636,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0569,
+   "market_skill_vs_base": -0.0561,
    "paper_bets": 4,
    "paper_roi": -0.05,
    "paper_first_side_share": 0.0
@@ -5947,11 +5894,11 @@
    "status": "COLLECTING",
    "rate": 0.65,
    "n_base_rate": 20,
-   "brier_base_rate": 0.2462,
+   "brier_base_rate": 0.2465,
    "brier_market_close": 0.2358,
    "brier_market_close_on_base_rows": 0.2358,
    "reference": "median",
-   "market_skill_vs_base": 0.0422,
+   "market_skill_vs_base": 0.0434,
    "paper_bets": 2,
    "paper_roi": 1.15,
    "paper_first_side_share": 0.0
@@ -5985,11 +5932,11 @@
    "status": "COLLECTING",
    "rate": 0.75,
    "n_base_rate": 20,
-   "brier_base_rate": 0.2244,
+   "brier_base_rate": 0.2247,
    "brier_market_close": 0.222,
    "brier_market_close_on_base_rows": 0.222,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0107,
+   "market_skill_vs_base": 0.012,
    "paper_bets": 1,
    "paper_roi": 1.38,
    "paper_first_side_share": 0.0
@@ -6004,13 +5951,70 @@
    "status": "COLLECTING",
    "rate": 0.5,
    "n_base_rate": 20,
-   "brier_base_rate": 0.2822,
+   "brier_base_rate": 0.2823,
    "brier_market_close": 0.2651,
    "brier_market_close_on_base_rows": 0.2651,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0606,
+   "market_skill_vs_base": 0.0609,
    "paper_bets": 2,
    "paper_roi": 0.515,
+   "paper_first_side_share": 0.0
+  },
+  {
+   "league_id": 132,
+   "country": "Argentina",
+   "league": "Primera C",
+   "priority": 2,
+   "market": "btts",
+   "n": 19,
+   "status": "COLLECTING",
+   "rate": 0.4737,
+   "n_base_rate": 19,
+   "brier_base_rate": 0.2539,
+   "brier_market_close": 0.2422,
+   "brier_market_close_on_base_rows": 0.2422,
+   "reference": "median",
+   "market_skill_vs_base": 0.0461,
+   "paper_bets": 4,
+   "paper_roi": 0.125,
+   "paper_first_side_share": 0.0
+  },
+  {
+   "league_id": 132,
+   "country": "Argentina",
+   "league": "Primera C",
+   "priority": 2,
+   "market": "ou15",
+   "n": 19,
+   "status": "COLLECTING",
+   "rate": 0.5789,
+   "n_base_rate": 19,
+   "brier_base_rate": 0.2454,
+   "brier_market_close": 0.2267,
+   "brier_market_close_on_base_rows": 0.2267,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0762,
+   "paper_bets": 4,
+   "paper_roi": 0.65,
+   "paper_first_side_share": 0.0
+  },
+  {
+   "league_id": 132,
+   "country": "Argentina",
+   "league": "Primera C",
+   "priority": 2,
+   "market": "ou25",
+   "n": 19,
+   "status": "COLLECTING",
+   "rate": 0.3684,
+   "n_base_rate": 19,
+   "brier_base_rate": 0.2331,
+   "brier_market_close": 0.2049,
+   "brier_market_close_on_base_rows": 0.2049,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.121,
+   "paper_bets": 6,
+   "paper_roi": -0.09,
    "paper_first_side_share": 0.0
   },
   {
@@ -6106,11 +6110,11 @@
    "status": "COLLECTING",
    "rate": 0.6842,
    "n_base_rate": 19,
-   "brier_base_rate": 0.2629,
+   "brier_base_rate": 0.2636,
    "brier_market_close": 0.2189,
    "brier_market_close_on_base_rows": 0.2189,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1674,
+   "market_skill_vs_base": 0.1696,
    "paper_bets": 6,
    "paper_roi": 0.2,
    "paper_first_side_share": 0.5
@@ -6217,11 +6221,11 @@
    "status": "COLLECTING",
    "rate": 0.1053,
    "n_base_rate": 19,
-   "brier_base_rate": 0.1102,
+   "brier_base_rate": 0.1104,
    "brier_market_close": 0.1392,
    "brier_market_close_on_base_rows": 0.1392,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.2632
+   "market_skill_vs_base": -0.2609
   },
   {
    "league_id": 396,
@@ -6233,11 +6237,11 @@
    "status": "COLLECTING",
    "rate": 0.6316,
    "n_base_rate": 19,
-   "brier_base_rate": 0.2422,
+   "brier_base_rate": 0.2415,
    "brier_market_close": 0.2283,
    "brier_market_close_on_base_rows": 0.2283,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0574,
+   "market_skill_vs_base": 0.0547,
    "paper_bets": 5,
    "paper_roi": -0.13,
    "paper_first_side_share": 0.0
@@ -6252,11 +6256,11 @@
    "status": "COLLECTING",
    "rate": 0.5789,
    "n_base_rate": 19,
-   "brier_base_rate": 0.2444,
+   "brier_base_rate": 0.2443,
    "brier_market_close": 0.2371,
    "brier_market_close_on_base_rows": 0.2371,
    "reference": "median",
-   "market_skill_vs_base": 0.0299
+   "market_skill_vs_base": 0.0295
   },
   {
    "league_id": 492,
@@ -6268,11 +6272,11 @@
    "status": "COLLECTING",
    "rate": 0.5263,
    "n_base_rate": 19,
-   "brier_base_rate": 0.2613,
+   "brier_base_rate": 0.2616,
    "brier_market_close": 0.2724,
    "brier_market_close_on_base_rows": 0.2724,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0425,
+   "market_skill_vs_base": -0.0413,
    "paper_bets": 5,
    "paper_roi": -0.156,
    "paper_first_side_share": 0.8
@@ -6287,11 +6291,11 @@
    "status": "COLLECTING",
    "rate": 0.2632,
    "n_base_rate": 19,
-   "brier_base_rate": 0.2163,
+   "brier_base_rate": 0.2169,
    "brier_market_close": 0.2343,
    "brier_market_close_on_base_rows": 0.2343,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0832
+   "market_skill_vs_base": -0.0802
   },
   {
    "league_id": 506,
@@ -6507,11 +6511,11 @@
    "status": "COLLECTING",
    "rate": 0.2778,
    "n_base_rate": 18,
-   "brier_base_rate": 0.2047,
+   "brier_base_rate": 0.2046,
    "brier_market_close": 0.2054,
    "brier_market_close_on_base_rows": 0.2054,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0034
+   "market_skill_vs_base": -0.0039
   },
   {
    "league_id": 200,
@@ -6599,11 +6603,11 @@
    "status": "COLLECTING",
    "rate": 0.6667,
    "n_base_rate": 18,
-   "brier_base_rate": 0.2511,
+   "brier_base_rate": 0.2505,
    "brier_market_close": 0.245,
    "brier_market_close_on_base_rows": 0.245,
    "reference": "median",
-   "market_skill_vs_base": 0.0243
+   "market_skill_vs_base": 0.022
   },
   {
    "league_id": 370,
@@ -6615,11 +6619,11 @@
    "status": "COLLECTING",
    "rate": 0.7778,
    "n_base_rate": 18,
-   "brier_base_rate": 0.1776,
+   "brier_base_rate": 0.1771,
    "brier_market_close": 0.1701,
    "brier_market_close_on_base_rows": 0.1701,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0422
+   "market_skill_vs_base": 0.0395
   },
   {
    "league_id": 370,
@@ -6631,11 +6635,11 @@
    "status": "COLLECTING",
    "rate": 0.5,
    "n_base_rate": 18,
-   "brier_base_rate": 0.2521,
+   "brier_base_rate": 0.2518,
    "brier_market_close": 0.2456,
    "brier_market_close_on_base_rows": 0.2456,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0258,
+   "market_skill_vs_base": 0.0246,
    "paper_bets": 3,
    "paper_roi": 0.35,
    "paper_first_side_share": 0.0
@@ -6650,11 +6654,11 @@
    "status": "COLLECTING",
    "rate": 0.3889,
    "n_base_rate": 18,
-   "brier_base_rate": 0.254,
+   "brier_base_rate": 0.2535,
    "brier_market_close": 0.2302,
    "brier_market_close_on_base_rows": 0.2302,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0937
+   "market_skill_vs_base": 0.0919
   },
   {
    "league_id": 396,
@@ -6666,11 +6670,11 @@
    "status": "COLLECTING",
    "rate": 0.7778,
    "n_base_rate": 18,
-   "brier_base_rate": 0.2435,
+   "brier_base_rate": 0.244,
    "brier_market_close": 0.2279,
    "brier_market_close_on_base_rows": 0.2279,
    "reference": "median",
-   "market_skill_vs_base": 0.0641
+   "market_skill_vs_base": 0.066
   },
   {
    "league_id": 426,
@@ -6819,11 +6823,11 @@
    "status": "COLLECTING",
    "rate": 0.4118,
    "n_base_rate": 17,
-   "brier_base_rate": 0.2479,
+   "brier_base_rate": 0.2478,
    "brier_market_close": 0.2425,
    "brier_market_close_on_base_rows": 0.2425,
    "reference": "median",
-   "market_skill_vs_base": 0.0218,
+   "market_skill_vs_base": 0.0214,
    "paper_bets": 1,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.0
@@ -6886,6 +6890,25 @@
    "paper_first_side_share": 0.0
   },
   {
+   "league_id": 132,
+   "country": "Argentina",
+   "league": "Primera C",
+   "priority": 2,
+   "market": "ou35",
+   "n": 17,
+   "status": "COLLECTING",
+   "rate": 0.0588,
+   "n_base_rate": 17,
+   "brier_base_rate": 0.0666,
+   "brier_market_close": 0.0687,
+   "brier_market_close_on_base_rows": 0.0687,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.0315,
+   "paper_bets": 3,
+   "paper_roi": 0.1267,
+   "paper_first_side_share": 0.0
+  },
+  {
    "league_id": 269,
    "country": "Uruguay",
    "league": "Segunda Divisi\u00f3n",
@@ -6895,11 +6918,11 @@
    "status": "COLLECTING",
    "rate": 0.5294,
    "n_base_rate": 17,
-   "brier_base_rate": 0.2549,
+   "brier_base_rate": 0.255,
    "brier_market_close": 0.2478,
    "brier_market_close_on_base_rows": 0.2478,
    "reference": "median",
-   "market_skill_vs_base": 0.0279
+   "market_skill_vs_base": 0.0282
   },
   {
    "league_id": 269,
@@ -6911,11 +6934,11 @@
    "status": "COLLECTING",
    "rate": 0.8235,
    "n_base_rate": 17,
-   "brier_base_rate": 0.1733,
+   "brier_base_rate": 0.1734,
    "brier_market_close": 0.175,
    "brier_market_close_on_base_rows": 0.175,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0098
+   "market_skill_vs_base": -0.0092
   },
   {
    "league_id": 269,
@@ -6927,11 +6950,11 @@
    "status": "COLLECTING",
    "rate": 0.4706,
    "n_base_rate": 17,
-   "brier_base_rate": 0.2585,
+   "brier_base_rate": 0.2584,
    "brier_market_close": 0.2611,
    "brier_market_close_on_base_rows": 0.2611,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0101,
+   "market_skill_vs_base": -0.0104,
    "paper_bets": 1,
    "paper_roi": 0.65,
    "paper_first_side_share": 0.0
@@ -7105,11 +7128,11 @@
    "status": "COLLECTING",
    "rate": 0.5294,
    "n_base_rate": 17,
-   "brier_base_rate": 0.2954,
+   "brier_base_rate": 0.2939,
    "brier_market_close": 0.2449,
    "brier_market_close_on_base_rows": 0.2449,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.171
+   "market_skill_vs_base": 0.1667
   },
   {
    "league_id": 426,
@@ -7338,11 +7361,11 @@
    "status": "COLLECTING",
    "rate": 0.625,
    "n_base_rate": 16,
-   "brier_base_rate": 0.2393,
+   "brier_base_rate": 0.2394,
    "brier_market_close": 0.2364,
    "brier_market_close_on_base_rows": 0.2364,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0121
+   "market_skill_vs_base": 0.0125
   },
   {
    "league_id": 322,
@@ -7370,11 +7393,11 @@
    "status": "COLLECTING",
    "rate": 0.5,
    "n_base_rate": 16,
-   "brier_base_rate": 0.286,
+   "brier_base_rate": 0.2861,
    "brier_market_close": 0.2882,
    "brier_market_close_on_base_rows": 0.2882,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0077
+   "market_skill_vs_base": -0.0073
   },
   {
    "league_id": 407,
@@ -7405,11 +7428,11 @@
    "status": "COLLECTING",
    "rate": 0.4375,
    "n_base_rate": 16,
-   "brier_base_rate": 0.2786,
+   "brier_base_rate": 0.2788,
    "brier_market_close": 0.2551,
    "brier_market_close_on_base_rows": 0.2551,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0844,
+   "market_skill_vs_base": 0.085,
    "paper_bets": 4,
    "paper_roi": 0.4375,
    "paper_first_side_share": 0.5
@@ -7424,11 +7447,11 @@
    "status": "COLLECTING",
    "rate": 0.25,
    "n_base_rate": 16,
-   "brier_base_rate": 0.2092,
+   "brier_base_rate": 0.2094,
    "brier_market_close": 0.1948,
    "brier_market_close_on_base_rows": 0.1948,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0688,
+   "market_skill_vs_base": 0.0697,
    "paper_bets": 2,
    "paper_roi": 0.05,
    "paper_first_side_share": 1.0
@@ -7494,11 +7517,11 @@
    "status": "COLLECTING",
    "rate": 0.5,
    "n_base_rate": 16,
-   "brier_base_rate": 0.2586,
+   "brier_base_rate": 0.2587,
    "brier_market_close": 0.2616,
    "brier_market_close_on_base_rows": 0.2616,
    "reference": "median",
-   "market_skill_vs_base": -0.0116
+   "market_skill_vs_base": -0.0112
   },
   {
    "league_id": 110,
@@ -7510,11 +7533,11 @@
    "status": "COLLECTING",
    "rate": 0.3333,
    "n_base_rate": 15,
-   "brier_base_rate": 0.2588,
+   "brier_base_rate": 0.2591,
    "brier_market_close": 0.2381,
    "brier_market_close_on_base_rows": 0.2381,
    "reference": "median",
-   "market_skill_vs_base": 0.08,
+   "market_skill_vs_base": 0.081,
    "paper_bets": 2,
    "paper_roi": 1.19,
    "paper_first_side_share": 0.0
@@ -7529,11 +7552,11 @@
    "status": "COLLECTING",
    "rate": 0.5333,
    "n_base_rate": 15,
-   "brier_base_rate": 0.2815,
+   "brier_base_rate": 0.2808,
    "brier_market_close": 0.2468,
    "brier_market_close_on_base_rows": 0.2468,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1233,
+   "market_skill_vs_base": 0.1211,
    "paper_bets": 3,
    "paper_roi": 0.04,
    "paper_first_side_share": 0.333
@@ -7564,11 +7587,11 @@
    "status": "COLLECTING",
    "rate": 0.2667,
    "n_base_rate": 15,
-   "brier_base_rate": 0.2227,
+   "brier_base_rate": 0.2225,
    "brier_market_close": 0.2277,
    "brier_market_close_on_base_rows": 0.2277,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0225,
+   "market_skill_vs_base": -0.0234,
    "paper_bets": 1,
    "paper_roi": 0.9,
    "paper_first_side_share": 0.0
@@ -7583,11 +7606,11 @@
    "status": "COLLECTING",
    "rate": 0.6667,
    "n_base_rate": 15,
-   "brier_base_rate": 0.2712,
+   "brier_base_rate": 0.271,
    "brier_market_close": 0.2746,
    "brier_market_close_on_base_rows": 0.2746,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0125
+   "market_skill_vs_base": -0.0133
   },
   {
    "league_id": 711,
@@ -7599,11 +7622,11 @@
    "status": "COLLECTING",
    "rate": 0.7333,
    "n_base_rate": 15,
-   "brier_base_rate": 0.2378,
+   "brier_base_rate": 0.2375,
    "brier_market_close": 0.2523,
    "brier_market_close_on_base_rows": 0.2523,
    "reference": "median",
-   "market_skill_vs_base": -0.061
+   "market_skill_vs_base": -0.0623
   },
   {
    "league_id": 711,
@@ -7615,11 +7638,11 @@
    "status": "COLLECTING",
    "rate": 0.7333,
    "n_base_rate": 15,
-   "brier_base_rate": 0.1972,
+   "brier_base_rate": 0.1971,
    "brier_market_close": 0.2066,
    "brier_market_close_on_base_rows": 0.2066,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0477
+   "market_skill_vs_base": -0.0482
   },
   {
    "league_id": 711,
@@ -7631,11 +7654,11 @@
    "status": "COLLECTING",
    "rate": 0.7333,
    "n_base_rate": 15,
-   "brier_base_rate": 0.2659,
+   "brier_base_rate": 0.2656,
    "brier_market_close": 0.2859,
    "brier_market_close_on_base_rows": 0.2859,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0752,
+   "market_skill_vs_base": -0.0764,
    "paper_bets": 7,
    "paper_roi": -0.5043,
    "paper_first_side_share": 0.143
@@ -7835,11 +7858,11 @@
    "status": "COLLECTING",
    "rate": 0.8571,
    "n_base_rate": 14,
-   "brier_base_rate": 0.1287,
+   "brier_base_rate": 0.1284,
    "brier_market_close": 0.1244,
    "brier_market_close_on_base_rows": 0.1244,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0334
+   "market_skill_vs_base": 0.0312
   },
   {
    "league_id": 110,
@@ -7851,11 +7874,11 @@
    "status": "COLLECTING",
    "rate": 0.6429,
    "n_base_rate": 14,
-   "brier_base_rate": 0.2347,
+   "brier_base_rate": 0.2343,
    "brier_market_close": 0.2279,
    "brier_market_close_on_base_rows": 0.2279,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.029,
+   "market_skill_vs_base": 0.0273,
    "paper_bets": 2,
    "paper_roi": 1.4,
    "paper_first_side_share": 0.0
@@ -8068,11 +8091,11 @@
    "status": "COLLECTING",
    "rate": 0.6154,
    "n_base_rate": 13,
-   "brier_base_rate": 0.2532,
+   "brier_base_rate": 0.2537,
    "brier_market_close": 0.2492,
    "brier_market_close_on_base_rows": 0.2492,
    "reference": "median",
-   "market_skill_vs_base": 0.0158
+   "market_skill_vs_base": 0.0177
   },
   {
    "league_id": 275,
@@ -8084,11 +8107,11 @@
    "status": "COLLECTING",
    "rate": 0.3846,
    "n_base_rate": 13,
-   "brier_base_rate": 0.2533,
+   "brier_base_rate": 0.2536,
    "brier_market_close": 0.2383,
    "brier_market_close_on_base_rows": 0.2383,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0592
+   "market_skill_vs_base": 0.0603
   },
   {
    "league_id": 373,
@@ -8205,11 +8228,11 @@
    "status": "COLLECTING",
    "rate": 0.2308,
    "n_base_rate": 13,
-   "brier_base_rate": 0.2093,
+   "brier_base_rate": 0.2094,
    "brier_market_close": 0.2157,
    "brier_market_close_on_base_rows": 0.2157,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0306,
+   "market_skill_vs_base": -0.0301,
    "paper_bets": 2,
    "paper_roi": 0.515,
    "paper_first_side_share": 0.0
@@ -8323,11 +8346,11 @@
    "status": "COLLECTING",
    "rate": 0.6667,
    "n_base_rate": 12,
-   "brier_base_rate": 0.2279,
+   "brier_base_rate": 0.2278,
    "brier_market_close": 0.2366,
    "brier_market_close_on_base_rows": 0.2366,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0382,
+   "market_skill_vs_base": -0.0386,
    "paper_bets": 1,
    "paper_roi": 0.48,
    "paper_first_side_share": 1.0
@@ -8393,11 +8416,11 @@
    "status": "COLLECTING",
    "rate": 0.8333,
    "n_base_rate": 12,
-   "brier_base_rate": 0.1591,
+   "brier_base_rate": 0.1593,
    "brier_market_close": 0.1552,
    "brier_market_close_on_base_rows": 0.1552,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0245
+   "market_skill_vs_base": 0.0257
   },
   {
    "league_id": 346,
@@ -8501,11 +8524,11 @@
    "status": "COLLECTING",
    "rate": 0.4167,
    "n_base_rate": 12,
-   "brier_base_rate": 0.2435,
+   "brier_base_rate": 0.2436,
    "brier_market_close": 0.2584,
    "brier_market_close_on_base_rows": 0.2584,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0612
+   "market_skill_vs_base": -0.0608
   },
   {
    "league_id": 542,
@@ -8517,11 +8540,11 @@
    "status": "COLLECTING",
    "rate": 0.25,
    "n_base_rate": 12,
-   "brier_base_rate": 0.2355,
+   "brier_base_rate": 0.2356,
    "brier_market_close": 0.2389,
    "brier_market_close_on_base_rows": 0.2389,
    "reference": "median",
-   "market_skill_vs_base": -0.0144
+   "market_skill_vs_base": -0.014
   },
   {
    "league_id": 172,
@@ -8590,11 +8613,11 @@
    "status": "COLLECTING",
    "rate": 0.2727,
    "n_base_rate": 11,
-   "brier_base_rate": 0.2008,
+   "brier_base_rate": 0.2007,
    "brier_market_close": 0.1975,
    "brier_market_close_on_base_rows": 0.1975,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0164,
+   "market_skill_vs_base": 0.0159,
    "paper_bets": 1,
    "paper_roi": 0.18,
    "paper_first_side_share": 0.0
@@ -8676,11 +8699,11 @@
    "status": "COLLECTING",
    "rate": 0.3636,
    "n_base_rate": 11,
-   "brier_base_rate": 0.2497,
+   "brier_base_rate": 0.2496,
    "brier_market_close": 0.2428,
    "brier_market_close_on_base_rows": 0.2428,
    "reference": "median",
-   "market_skill_vs_base": 0.0276,
+   "market_skill_vs_base": 0.0272,
    "paper_bets": 1,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.0
@@ -8695,11 +8718,11 @@
    "status": "COLLECTING",
    "rate": 0.8182,
    "n_base_rate": 11,
-   "brier_base_rate": 0.1613,
+   "brier_base_rate": 0.1614,
    "brier_market_close": 0.1644,
    "brier_market_close_on_base_rows": 0.1644,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0192,
+   "market_skill_vs_base": -0.0186,
    "paper_bets": 2,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.0
@@ -8733,11 +8756,11 @@
    "status": "COLLECTING",
    "rate": 0.2727,
    "n_base_rate": 11,
-   "brier_base_rate": 0.1995,
+   "brier_base_rate": 0.1994,
    "brier_market_close": 0.2066,
    "brier_market_close_on_base_rows": 0.2066,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0356,
+   "market_skill_vs_base": -0.0361,
    "paper_bets": 2,
    "paper_roi": -0.375,
    "paper_first_side_share": 0.0
@@ -8800,11 +8823,11 @@
    "status": "COLLECTING",
    "rate": 0.5455,
    "n_base_rate": 11,
-   "brier_base_rate": 0.276,
+   "brier_base_rate": 0.2758,
    "brier_market_close": 0.2792,
    "brier_market_close_on_base_rows": 0.2792,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0116
+   "market_skill_vs_base": -0.0123
   },
   {
    "league_id": 266,
@@ -8816,11 +8839,11 @@
    "status": "COLLECTING",
    "rate": 0.5455,
    "n_base_rate": 11,
-   "brier_base_rate": 0.2534,
+   "brier_base_rate": 0.2536,
    "brier_market_close": 0.2374,
    "brier_market_close_on_base_rows": 0.2374,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0631,
+   "market_skill_vs_base": 0.0639,
    "paper_bets": 2,
    "paper_roi": 0.025,
    "paper_first_side_share": 0.0
@@ -8835,11 +8858,11 @@
    "status": "COLLECTING",
    "rate": 0.3636,
    "n_base_rate": 11,
-   "brier_base_rate": 0.2496,
+   "brier_base_rate": 0.25,
    "brier_market_close": 0.2216,
    "brier_market_close_on_base_rows": 0.2216,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1122
+   "market_skill_vs_base": 0.1136
   },
   {
    "league_id": 287,
@@ -9201,11 +9224,11 @@
    "status": "COLLECTING",
    "rate": 1.0,
    "n_base_rate": 10,
-   "brier_base_rate": 0.0588,
+   "brier_base_rate": 0.0585,
    "brier_market_close": 0.0534,
    "brier_market_close_on_base_rows": 0.0534,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0918
+   "market_skill_vs_base": 0.0872
   },
   {
    "league_id": 400,
@@ -9265,11 +9288,11 @@
    "status": "COLLECTING",
    "rate": 0.5,
    "n_base_rate": 10,
-   "brier_base_rate": 0.2514,
+   "brier_base_rate": 0.2515,
    "brier_market_close": 0.2316,
    "brier_market_close_on_base_rows": 0.2316,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0788
+   "market_skill_vs_base": 0.0791
   },
   {
    "league_id": 434,
@@ -9281,11 +9304,11 @@
    "status": "COLLECTING",
    "rate": 0.6,
    "n_base_rate": 10,
-   "brier_base_rate": 0.2606,
+   "brier_base_rate": 0.2605,
    "brier_market_close": 0.2221,
    "brier_market_close_on_base_rows": 0.2221,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1477,
+   "market_skill_vs_base": 0.1474,
    "paper_bets": 1,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.0
@@ -9373,11 +9396,11 @@
    "status": "COLLECTING",
    "rate": 0.5,
    "n_base_rate": 10,
-   "brier_base_rate": 0.2759,
+   "brier_base_rate": 0.2761,
    "brier_market_close": 0.2722,
    "brier_market_close_on_base_rows": 0.2722,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0134
+   "market_skill_vs_base": 0.0141
   },
   {
    "league_id": 596,
@@ -9453,11 +9476,11 @@
    "status": "COLLECTING",
    "rate": 0.4444,
    "n_base_rate": 9,
-   "brier_base_rate": 0.25,
+   "brier_base_rate": 0.2499,
    "brier_market_close": 0.2669,
    "brier_market_close_on_base_rows": 0.2669,
    "reference": "median",
-   "market_skill_vs_base": -0.0676
+   "market_skill_vs_base": -0.068
   },
   {
    "league_id": 427,
@@ -9469,11 +9492,11 @@
    "status": "COLLECTING",
    "rate": 1.0,
    "n_base_rate": 9,
-   "brier_base_rate": 0.0863,
+   "brier_base_rate": 0.0865,
    "brier_market_close": 0.0838,
    "brier_market_close_on_base_rows": 0.0838,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.029
+   "market_skill_vs_base": 0.0312
   },
   {
    "league_id": 429,
@@ -9485,11 +9508,11 @@
    "status": "COLLECTING",
    "rate": 0.8889,
    "n_base_rate": 9,
-   "brier_base_rate": 0.1343,
+   "brier_base_rate": 0.1342,
    "brier_market_close": 0.1375,
    "brier_market_close_on_base_rows": 0.1375,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0238
+   "market_skill_vs_base": -0.0246
   },
   {
    "league_id": 430,
@@ -9517,11 +9540,11 @@
    "status": "COLLECTING",
    "rate": 0.7778,
    "n_base_rate": 9,
-   "brier_base_rate": 0.1808,
+   "brier_base_rate": 0.1807,
    "brier_market_close": 0.1943,
    "brier_market_close_on_base_rows": 0.1943,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0747
+   "market_skill_vs_base": -0.0753
   },
   {
    "league_id": 431,
@@ -9552,11 +9575,11 @@
    "status": "COLLECTING",
    "rate": 0.875,
    "n_base_rate": 8,
-   "brier_base_rate": 0.1874,
+   "brier_base_rate": 0.1876,
    "brier_market_close": 0.1356,
    "brier_market_close_on_base_rows": 0.1356,
    "reference": "median",
-   "market_skill_vs_base": 0.2764
+   "market_skill_vs_base": 0.2772
   },
   {
    "league_id": 245,
@@ -9568,11 +9591,11 @@
    "status": "COLLECTING",
    "rate": 0.625,
    "n_base_rate": 8,
-   "brier_base_rate": 0.2728,
+   "brier_base_rate": 0.273,
    "brier_market_close": 0.2355,
    "brier_market_close_on_base_rows": 0.2355,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1367
+   "market_skill_vs_base": 0.1374
   },
   {
    "league_id": 304,
@@ -9584,11 +9607,11 @@
    "status": "COLLECTING",
    "rate": 0.625,
    "n_base_rate": 8,
-   "brier_base_rate": 0.2541,
+   "brier_base_rate": 0.2554,
    "brier_market_close": 0.2536,
    "brier_market_close_on_base_rows": 0.2536,
    "reference": "median",
-   "market_skill_vs_base": 0.002
+   "market_skill_vs_base": 0.007
   },
   {
    "league_id": 304,
@@ -9600,11 +9623,11 @@
    "status": "COLLECTING",
    "rate": 1.0,
    "n_base_rate": 8,
-   "brier_base_rate": 0.1054,
+   "brier_base_rate": 0.1071,
    "brier_market_close": 0.0809,
    "brier_market_close_on_base_rows": 0.0809,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.2324
+   "market_skill_vs_base": 0.2446
   },
   {
    "league_id": 304,
@@ -9616,11 +9639,11 @@
    "status": "COLLECTING",
    "rate": 0.75,
    "n_base_rate": 8,
-   "brier_base_rate": 0.2894,
+   "brier_base_rate": 0.2877,
    "brier_market_close": 0.2248,
    "brier_market_close_on_base_rows": 0.2248,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.2232,
+   "market_skill_vs_base": 0.2186,
    "paper_bets": 1,
    "paper_roi": 0.67,
    "paper_first_side_share": 0.0
@@ -9635,11 +9658,11 @@
    "status": "COLLECTING",
    "rate": 0.625,
    "n_base_rate": 8,
-   "brier_base_rate": 0.3843,
+   "brier_base_rate": 0.3838,
    "brier_market_close": 0.3219,
    "brier_market_close_on_base_rows": 0.3219,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1624
+   "market_skill_vs_base": 0.1613
   },
   {
    "league_id": 427,
@@ -9651,11 +9674,11 @@
    "status": "COLLECTING",
    "rate": 0.375,
    "n_base_rate": 8,
-   "brier_base_rate": 0.2533,
+   "brier_base_rate": 0.2534,
    "brier_market_close": 0.2599,
    "brier_market_close_on_base_rows": 0.2599,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0261
+   "market_skill_vs_base": -0.0257
   },
   {
    "league_id": 430,
@@ -9667,11 +9690,11 @@
    "status": "COLLECTING",
    "rate": 0.125,
    "n_base_rate": 8,
-   "brier_base_rate": 0.1205,
+   "brier_base_rate": 0.1206,
    "brier_market_close": 0.1322,
    "brier_market_close_on_base_rows": 0.1322,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0971
+   "market_skill_vs_base": -0.0962
   },
   {
    "league_id": 434,
@@ -9919,11 +9942,11 @@
    "status": "COLLECTING",
    "rate": 0.7143,
    "n_base_rate": 7,
-   "brier_base_rate": 0.249,
+   "brier_base_rate": 0.2493,
    "brier_market_close": 0.261,
    "brier_market_close_on_base_rows": 0.261,
    "reference": "median",
-   "market_skill_vs_base": -0.0482
+   "market_skill_vs_base": -0.0469
   },
   {
    "league_id": 428,
@@ -9935,11 +9958,11 @@
    "status": "COLLECTING",
    "rate": 0.8571,
    "n_base_rate": 7,
-   "brier_base_rate": 0.1468,
+   "brier_base_rate": 0.1469,
    "brier_market_close": 0.1358,
    "brier_market_close_on_base_rows": 0.1358,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0749
+   "market_skill_vs_base": 0.0756
   },
   {
    "league_id": 428,
@@ -9951,11 +9974,11 @@
    "status": "COLLECTING",
    "rate": 0.2857,
    "n_base_rate": 7,
-   "brier_base_rate": 0.2077,
+   "brier_base_rate": 0.2078,
    "brier_market_close": 0.179,
    "brier_market_close_on_base_rows": 0.179,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1382
+   "market_skill_vs_base": 0.1386
   },
   {
    "league_id": 456,
@@ -10091,11 +10114,11 @@
    "status": "COLLECTING",
    "rate": 0.5714,
    "n_base_rate": 7,
-   "brier_base_rate": 0.3189,
+   "brier_base_rate": 0.3185,
    "brier_market_close": 0.3264,
    "brier_market_close_on_base_rows": 0.3264,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0235
+   "market_skill_vs_base": -0.0248
   },
   {
    "league_id": 595,
@@ -10155,11 +10178,11 @@
    "status": "COLLECTING",
    "rate": 0.7143,
    "n_base_rate": 7,
-   "brier_base_rate": 0.242,
+   "brier_base_rate": 0.251,
    "brier_market_close": 0.1578,
    "brier_market_close_on_base_rows": 0.1578,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.3479,
+   "market_skill_vs_base": 0.3713,
    "paper_bets": 2,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.0
@@ -10273,11 +10296,11 @@
    "status": "COLLECTING",
    "rate": 0.8333,
    "n_base_rate": 6,
-   "brier_base_rate": 0.1748,
+   "brier_base_rate": 0.175,
    "brier_market_close": 0.1243,
    "brier_market_close_on_base_rows": 0.1243,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.2889,
+   "market_skill_vs_base": 0.2897,
    "paper_bets": 2,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.0
@@ -10292,11 +10315,11 @@
    "status": "COLLECTING",
    "rate": 0.8333,
    "n_base_rate": 6,
-   "brier_base_rate": 0.2558,
+   "brier_base_rate": 0.2554,
    "brier_market_close": 0.2484,
    "brier_market_close_on_base_rows": 0.2484,
    "reference": "median",
-   "market_skill_vs_base": 0.0289
+   "market_skill_vs_base": 0.0274
   },
   {
    "league_id": 282,
@@ -10461,11 +10484,11 @@
    "status": "COLLECTING",
    "rate": 0.6667,
    "n_base_rate": 6,
-   "brier_base_rate": 0.2597,
+   "brier_base_rate": 0.26,
    "brier_market_close": 0.2506,
    "brier_market_close_on_base_rows": 0.2506,
    "reference": "median",
-   "market_skill_vs_base": 0.035
+   "market_skill_vs_base": 0.0362
   },
   {
    "league_id": 440,
@@ -10477,11 +10500,11 @@
    "status": "COLLECTING",
    "rate": 0.6667,
    "n_base_rate": 6,
-   "brier_base_rate": 0.2711,
+   "brier_base_rate": 0.271,
    "brier_market_close": 0.2702,
    "brier_market_close_on_base_rows": 0.2702,
    "reference": "median",
-   "market_skill_vs_base": 0.0033
+   "market_skill_vs_base": 0.003
   },
   {
    "league_id": 440,
@@ -10493,11 +10516,11 @@
    "status": "COLLECTING",
    "rate": 0.6667,
    "n_base_rate": 6,
-   "brier_base_rate": 0.2235,
+   "brier_base_rate": 0.2236,
    "brier_market_close": 0.2067,
    "brier_market_close_on_base_rows": 0.2067,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0752
+   "market_skill_vs_base": 0.0756
   },
   {
    "league_id": 440,
@@ -10509,11 +10532,11 @@
    "status": "COLLECTING",
    "rate": 0.3333,
    "n_base_rate": 6,
-   "brier_base_rate": 0.2386,
+   "brier_base_rate": 0.2387,
    "brier_market_close": 0.2119,
    "brier_market_close_on_base_rows": 0.2119,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1119,
+   "market_skill_vs_base": 0.1123,
    "paper_bets": 2,
    "paper_roi": 0.675,
    "paper_first_side_share": 0.0
@@ -10560,11 +10583,11 @@
    "status": "COLLECTING",
    "rate": 0.8333,
    "n_base_rate": 6,
-   "brier_base_rate": 0.1491,
+   "brier_base_rate": 0.149,
    "brier_market_close": 0.1644,
    "brier_market_close_on_base_rows": 0.1644,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.1026
+   "market_skill_vs_base": -0.1034
   },
   {
    "league_id": 441,
@@ -10576,11 +10599,11 @@
    "status": "COLLECTING",
    "rate": 0.6667,
    "n_base_rate": 6,
-   "brier_base_rate": 0.2571,
+   "brier_base_rate": 0.2568,
    "brier_market_close": 0.2872,
    "brier_market_close_on_base_rows": 0.2872,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.1171,
+   "market_skill_vs_base": -0.1184,
    "paper_bets": 4,
    "paper_roi": -0.5125,
    "paper_first_side_share": 0.25
@@ -10777,11 +10800,11 @@
    "status": "COLLECTING",
    "rate": 1.0,
    "n_base_rate": 5,
-   "brier_base_rate": 0.109,
+   "brier_base_rate": 0.1093,
    "brier_market_close": 0.0866,
    "brier_market_close_on_base_rows": 0.0866,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.2055
+   "market_skill_vs_base": 0.2077
   },
   {
    "league_id": 431,
@@ -10809,11 +10832,11 @@
    "status": "COLLECTING",
    "rate": 0.4,
    "n_base_rate": 5,
-   "brier_base_rate": 0.2546,
+   "brier_base_rate": 0.2545,
    "brier_market_close": 0.257,
    "brier_market_close_on_base_rows": 0.257,
    "reference": "median",
-   "market_skill_vs_base": -0.0094
+   "market_skill_vs_base": -0.0098
   },
   {
    "league_id": 432,
@@ -10825,11 +10848,11 @@
    "status": "COLLECTING",
    "rate": 1.0,
    "n_base_rate": 5,
-   "brier_base_rate": 0.0761,
+   "brier_base_rate": 0.0763,
    "brier_market_close": 0.0686,
    "brier_market_close_on_base_rows": 0.0686,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0986
+   "market_skill_vs_base": 0.1009
   },
   {
    "league_id": 432,
@@ -10857,11 +10880,11 @@
    "status": "COLLECTING",
    "rate": 0.4,
    "n_base_rate": 5,
-   "brier_base_rate": 0.2472,
+   "brier_base_rate": 0.2471,
    "brier_market_close": 0.2525,
    "brier_market_close_on_base_rows": 0.2525,
    "reference": "median",
-   "market_skill_vs_base": -0.0214
+   "market_skill_vs_base": -0.0219
   },
   {
    "league_id": 439,
@@ -10873,11 +10896,11 @@
    "status": "COLLECTING",
    "rate": 0.8,
    "n_base_rate": 5,
-   "brier_base_rate": 0.1733,
+   "brier_base_rate": 0.1735,
    "brier_market_close": 0.1985,
    "brier_market_close_on_base_rows": 0.1985,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.1454
+   "market_skill_vs_base": -0.1441
   },
   {
    "league_id": 439,
@@ -10889,11 +10912,11 @@
    "status": "COLLECTING",
    "rate": 0.6,
    "n_base_rate": 5,
-   "brier_base_rate": 0.2712,
+   "brier_base_rate": 0.2715,
    "brier_market_close": 0.294,
    "brier_market_close_on_base_rows": 0.294,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0841,
+   "market_skill_vs_base": -0.0829,
    "paper_bets": 3,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.333
@@ -10924,11 +10947,11 @@
    "status": "COLLECTING",
    "rate": 0.2,
    "n_base_rate": 5,
-   "brier_base_rate": 0.1645,
+   "brier_base_rate": 0.1646,
    "brier_market_close": 0.1904,
    "brier_market_close_on_base_rows": 0.1904,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.1574
+   "market_skill_vs_base": -0.1567
   },
   {
    "league_id": 443,
@@ -10940,11 +10963,11 @@
    "status": "COLLECTING",
    "rate": 0.4,
    "n_base_rate": 5,
-   "brier_base_rate": 0.248,
+   "brier_base_rate": 0.2481,
    "brier_market_close": 0.2673,
    "brier_market_close_on_base_rows": 0.2673,
    "reference": "median",
-   "market_skill_vs_base": -0.0778
+   "market_skill_vs_base": -0.0774
   },
   {
    "league_id": 443,
@@ -10972,11 +10995,11 @@
    "status": "COLLECTING",
    "rate": 0.2,
    "n_base_rate": 5,
-   "brier_base_rate": 0.225,
+   "brier_base_rate": 0.2248,
    "brier_market_close": 0.2389,
    "brier_market_close_on_base_rows": 0.2389,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0618,
+   "market_skill_vs_base": -0.0627,
    "paper_bets": 2,
    "paper_roi": -0.215,
    "paper_first_side_share": 0.5
@@ -10991,11 +11014,11 @@
    "status": "COLLECTING",
    "rate": 0.2,
    "n_base_rate": 5,
-   "brier_base_rate": 0.1619,
+   "brier_base_rate": 0.1618,
    "brier_market_close": 0.1673,
    "brier_market_close_on_base_rows": 0.1673,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0334
+   "market_skill_vs_base": -0.034
   },
   {
    "league_id": 479,
@@ -11007,11 +11030,11 @@
    "status": "COLLECTING",
    "rate": 0.4,
    "n_base_rate": 5,
-   "brier_base_rate": 0.2646,
+   "brier_base_rate": 0.2642,
    "brier_market_close": 0.317,
    "brier_market_close_on_base_rows": 0.317,
    "reference": "median",
-   "market_skill_vs_base": -0.198,
+   "market_skill_vs_base": -0.1998,
    "paper_bets": 1,
    "paper_roi": -1.0,
    "paper_first_side_share": 1.0
@@ -11045,11 +11068,11 @@
    "status": "COLLECTING",
    "rate": 0.8,
    "n_base_rate": 5,
-   "brier_base_rate": 0.236,
+   "brier_base_rate": 0.234,
    "brier_market_close": 0.1943,
    "brier_market_close_on_base_rows": 0.1943,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1767,
+   "market_skill_vs_base": 0.1697,
    "paper_bets": 2,
    "paper_roi": -0.3,
    "paper_first_side_share": 0.5
@@ -11064,11 +11087,11 @@
    "status": "COLLECTING",
    "rate": 0.4,
    "n_base_rate": 5,
-   "brier_base_rate": 0.2544,
+   "brier_base_rate": 0.2539,
    "brier_market_close": 0.2664,
    "brier_market_close_on_base_rows": 0.2664,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0472,
+   "market_skill_vs_base": -0.0492,
    "paper_bets": 2,
    "paper_roi": -0.25,
    "paper_first_side_share": 0.5
@@ -11083,11 +11106,11 @@
    "status": "COLLECTING",
    "rate": 0.4,
    "n_base_rate": 5,
-   "brier_base_rate": 0.2925,
+   "brier_base_rate": 0.2927,
    "brier_market_close": 0.2758,
    "brier_market_close_on_base_rows": 0.2758,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0571
+   "market_skill_vs_base": 0.0577
   },
   {
    "league_id": 862,
@@ -11313,11 +11336,11 @@
    "status": "COLLECTING",
    "rate": 0.5,
    "n_base_rate": 4,
-   "brier_base_rate": 0.2511,
+   "brier_base_rate": 0.2512,
    "brier_market_close": 0.2561,
    "brier_market_close_on_base_rows": 0.2561,
    "reference": "median",
-   "market_skill_vs_base": -0.0199
+   "market_skill_vs_base": -0.0195
   },
   {
    "league_id": 445,
@@ -11329,11 +11352,11 @@
    "status": "COLLECTING",
    "rate": 1.0,
    "n_base_rate": 4,
-   "brier_base_rate": 0.0794,
+   "brier_base_rate": 0.0791,
    "brier_market_close": 0.0664,
    "brier_market_close_on_base_rows": 0.0664,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1637
+   "market_skill_vs_base": 0.1606
   },
   {
    "league_id": 445,
@@ -11345,11 +11368,11 @@
    "status": "COLLECTING",
    "rate": 0.75,
    "n_base_rate": 4,
-   "brier_base_rate": 0.2535,
+   "brier_base_rate": 0.2533,
    "brier_market_close": 0.2686,
    "brier_market_close_on_base_rows": 0.2686,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.0596
+   "market_skill_vs_base": -0.0604
   },
   {
    "league_id": 445,
@@ -11361,11 +11384,11 @@
    "status": "COLLECTING",
    "rate": 0.5,
    "n_base_rate": 4,
-   "brier_base_rate": 0.292,
+   "brier_base_rate": 0.2919,
    "brier_market_close": 0.2828,
    "brier_market_close_on_base_rows": 0.2828,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0315
+   "market_skill_vs_base": 0.0312
   },
   {
    "league_id": 510,
@@ -11444,11 +11467,11 @@
    "status": "COLLECTING",
    "rate": 0.0,
    "n_base_rate": 4,
-   "brier_base_rate": 0.2382,
+   "brier_base_rate": 0.2146,
    "brier_market_close": 0.2865,
    "brier_market_close_on_base_rows": 0.2865,
    "reference": "median",
-   "market_skill_vs_base": -0.2028
+   "market_skill_vs_base": -0.335
   },
   {
    "league_id": 722,
@@ -11460,11 +11483,11 @@
    "status": "COLLECTING",
    "rate": 0.25,
    "n_base_rate": 4,
-   "brier_base_rate": 0.1919,
+   "brier_base_rate": 0.1891,
    "brier_market_close": 0.1385,
    "brier_market_close_on_base_rows": 0.1385,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.2783
+   "market_skill_vs_base": 0.2676
   },
   {
    "league_id": 759,
@@ -11476,11 +11499,11 @@
    "status": "COLLECTING",
    "rate": 0.5,
    "n_base_rate": 4,
-   "brier_base_rate": 0.2505,
+   "brier_base_rate": 0.2506,
    "brier_market_close": 0.2661,
    "brier_market_close_on_base_rows": 0.2661,
    "reference": "median",
-   "market_skill_vs_base": -0.0623
+   "market_skill_vs_base": -0.0619
   },
   {
    "league_id": 759,
@@ -11492,11 +11515,11 @@
    "status": "COLLECTING",
    "rate": 0.5,
    "n_base_rate": 4,
-   "brier_base_rate": 0.2919,
+   "brier_base_rate": 0.2911,
    "brier_market_close": 0.2992,
    "brier_market_close_on_base_rows": 0.2992,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.025
+   "market_skill_vs_base": -0.0278
   },
   {
    "league_id": 759,
@@ -11508,11 +11531,11 @@
    "status": "COLLECTING",
    "rate": 0.25,
    "n_base_rate": 4,
-   "brier_base_rate": 0.2518,
+   "brier_base_rate": 0.2503,
    "brier_market_close": 0.2283,
    "brier_market_close_on_base_rows": 0.2283,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0933,
+   "market_skill_vs_base": 0.0879,
    "paper_bets": 2,
    "paper_roi": 0.9,
    "paper_first_side_share": 0.0
@@ -11527,11 +11550,11 @@
    "status": "COLLECTING",
    "rate": 0.25,
    "n_base_rate": 4,
-   "brier_base_rate": 0.1888,
+   "brier_base_rate": 0.1887,
    "brier_market_close": 0.1774,
    "brier_market_close_on_base_rows": 0.1774,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0604
+   "market_skill_vs_base": 0.0599
   },
   {
    "league_id": 775,
@@ -11629,11 +11652,11 @@
    "status": "COLLECTING",
    "rate": 0.6667,
    "n_base_rate": 3,
-   "brier_base_rate": 0.2262,
+   "brier_base_rate": 0.2263,
    "brier_market_close": 0.2213,
    "brier_market_close_on_base_rows": 0.2213,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0217
+   "market_skill_vs_base": 0.0221
   },
   {
    "league_id": 334,
@@ -11709,11 +11732,11 @@
    "status": "COLLECTING",
    "rate": 0.3333,
    "n_base_rate": 3,
-   "brier_base_rate": 0.2356,
+   "brier_base_rate": 0.2357,
    "brier_market_close": 0.2331,
    "brier_market_close_on_base_rows": 0.2331,
    "reference": "median",
-   "market_skill_vs_base": 0.0106
+   "market_skill_vs_base": 0.011
   },
   {
    "league_id": 447,
@@ -11725,11 +11748,11 @@
    "status": "COLLECTING",
    "rate": 0.3333,
    "n_base_rate": 3,
-   "brier_base_rate": 0.3486,
+   "brier_base_rate": 0.349,
    "brier_market_close": 0.3395,
    "brier_market_close_on_base_rows": 0.3395,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0261
+   "market_skill_vs_base": 0.0272
   },
   {
    "league_id": 447,
@@ -11760,11 +11783,11 @@
    "status": "COLLECTING",
    "rate": 0.3333,
    "n_base_rate": 3,
-   "brier_base_rate": 0.2334,
+   "brier_base_rate": 0.2333,
    "brier_market_close": 0.2157,
    "brier_market_close_on_base_rows": 0.2157,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0758
+   "market_skill_vs_base": 0.0754
   },
   {
    "league_id": 449,
@@ -12095,11 +12118,11 @@
    "status": "COLLECTING",
    "rate": 1.0,
    "n_base_rate": 3,
-   "brier_base_rate": 0.1706,
+   "brier_base_rate": 0.171,
    "brier_market_close": 0.1605,
    "brier_market_close_on_base_rows": 0.1605,
    "reference": "median",
-   "market_skill_vs_base": 0.0592
+   "market_skill_vs_base": 0.0614
   },
   {
    "league_id": 593,
@@ -12111,11 +12134,11 @@
    "status": "COLLECTING",
    "rate": 1.0,
    "n_base_rate": 3,
-   "brier_base_rate": 0.1178,
+   "brier_base_rate": 0.1181,
    "brier_market_close": 0.0842,
    "brier_market_close_on_base_rows": 0.0842,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.2852
+   "market_skill_vs_base": 0.287
   },
   {
    "league_id": 593,
@@ -12127,11 +12150,11 @@
    "status": "COLLECTING",
    "rate": 1.0,
    "n_base_rate": 3,
-   "brier_base_rate": 0.3105,
+   "brier_base_rate": 0.3099,
    "brier_market_close": 0.2228,
    "brier_market_close_on_base_rows": 0.2228,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.2824
+   "market_skill_vs_base": 0.2811
   },
   {
    "league_id": 645,
@@ -12350,11 +12373,11 @@
    "status": "COLLECTING",
    "rate": 1.0,
    "n_base_rate": 2,
-   "brier_base_rate": 0.0244,
+   "brier_base_rate": 0.0245,
    "brier_market_close": 0.0138,
    "brier_market_close_on_base_rows": 0.0138,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.4344
+   "market_skill_vs_base": 0.4367
   },
   {
    "league_id": 282,
@@ -12366,11 +12389,11 @@
    "status": "COLLECTING",
    "rate": 0.5,
    "n_base_rate": 2,
-   "brier_base_rate": 0.2983,
+   "brier_base_rate": 0.2982,
    "brier_market_close": 0.294,
    "brier_market_close_on_base_rows": 0.294,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0144
+   "market_skill_vs_base": 0.0141
   },
   {
    "league_id": 316,
@@ -12414,11 +12437,11 @@
    "status": "COLLECTING",
    "rate": 0.5,
    "n_base_rate": 2,
-   "brier_base_rate": 0.2506,
+   "brier_base_rate": 0.2505,
    "brier_market_close": 0.242,
    "brier_market_close_on_base_rows": 0.242,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0343
+   "market_skill_vs_base": 0.0339
   },
   {
    "league_id": 398,
@@ -12839,11 +12862,11 @@
    "status": "COLLECTING",
    "rate": 0.5,
    "n_base_rate": 2,
-   "brier_base_rate": 0.3132,
+   "brier_base_rate": 0.3072,
    "brier_market_close": 0.2763,
    "brier_market_close_on_base_rows": 0.2763,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1178
+   "market_skill_vs_base": 0.1006
   },
   {
    "league_id": 764,
@@ -12941,11 +12964,11 @@
    "status": "COLLECTING",
    "rate": 1.0,
    "n_base_rate": 1,
-   "brier_base_rate": 0.1872,
+   "brier_base_rate": 0.1875,
    "brier_market_close": 0.1423,
    "brier_market_close_on_base_rows": 0.1423,
    "reference": "median",
-   "market_skill_vs_base": 0.2399
+   "market_skill_vs_base": 0.2411
   },
   {
    "league_id": 148,
@@ -12957,11 +12980,11 @@
    "status": "COLLECTING",
    "rate": 1.0,
    "n_base_rate": 1,
-   "brier_base_rate": 0.0439,
+   "brier_base_rate": 0.044,
    "brier_market_close": 0.0403,
    "brier_market_close_on_base_rows": 0.0403,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.082
+   "market_skill_vs_base": 0.0841
   },
   {
    "league_id": 148,
@@ -12973,11 +12996,11 @@
    "status": "COLLECTING",
    "rate": 0.0,
    "n_base_rate": 1,
-   "brier_base_rate": 0.321,
+   "brier_base_rate": 0.3206,
    "brier_market_close": 0.3556,
    "brier_market_close_on_base_rows": 0.3556,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.1078
+   "market_skill_vs_base": -0.1092
   },
   {
    "league_id": 148,
@@ -12989,11 +13012,11 @@
    "status": "COLLECTING",
    "rate": 0.0,
    "n_base_rate": 1,
-   "brier_base_rate": 0.1269,
+   "brier_base_rate": 0.1266,
    "brier_market_close": 0.1534,
    "brier_market_close_on_base_rows": 0.1534,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.2088
+   "market_skill_vs_base": -0.2117
   },
   {
    "league_id": 221,
@@ -13069,11 +13092,11 @@
    "status": "COLLECTING",
    "rate": 0.0,
    "n_base_rate": 1,
-   "brier_base_rate": 0.0597,
+   "brier_base_rate": 0.0598,
    "brier_market_close": 0.1111,
    "brier_market_close_on_base_rows": 0.1111,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.861
+   "market_skill_vs_base": -0.8579
   },
   {
    "league_id": 398,
@@ -13181,11 +13204,11 @@
    "status": "COLLECTING",
    "rate": 1.0,
    "n_base_rate": 1,
-   "brier_base_rate": 0.0778,
+   "brier_base_rate": 0.0781,
    "brier_market_close": 0.0761,
    "brier_market_close_on_base_rows": 0.0761,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0219
+   "market_skill_vs_base": 0.0256
   },
   {
    "league_id": 442,
@@ -13216,11 +13239,11 @@
    "status": "COLLECTING",
    "rate": 1.0,
    "n_base_rate": 1,
-   "brier_base_rate": 0.5709,
+   "brier_base_rate": 0.5703,
    "brier_market_close": 0.507,
    "brier_market_close_on_base_rows": 0.507,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.1119
+   "market_skill_vs_base": 0.111
   },
   {
    "league_id": 552,
@@ -13344,11 +13367,11 @@
    "status": "COLLECTING",
    "rate": 0.0,
    "n_base_rate": 1,
-   "brier_base_rate": 0.238,
+   "brier_base_rate": 0.2177,
    "brier_market_close": 0.3431,
    "brier_market_close_on_base_rows": 0.3431,
    "reference": "median",
-   "market_skill_vs_base": -0.4416
+   "market_skill_vs_base": -0.576
   },
   {
    "league_id": 872,
@@ -13360,11 +13383,11 @@
    "status": "COLLECTING",
    "rate": 0.0,
    "n_base_rate": 1,
-   "brier_base_rate": 0.2896,
+   "brier_base_rate": 0.2745,
    "brier_market_close": 0.3326,
    "brier_market_close_on_base_rows": 0.3326,
    "reference": "pinnacle",
-   "market_skill_vs_base": -0.1485
+   "market_skill_vs_base": -0.2117
   },
   {
    "league_id": 62,
@@ -13433,23 +13456,23 @@
    "status": "COLLECTING",
    "rate": 0.3214,
    "n_base_rate": 28,
-   "brier_base_rate": 0.2226,
+   "brier_base_rate": 0.2227,
    "brier_market_close": 0.2188,
    "brier_market_close_on_base_rows": 0.2188,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0171,
+   "market_skill_vs_base": 0.0175,
    "paper_bets": 3,
    "paper_roi": -0.5567,
    "paper_first_side_share": 0.333
   }
  ],
  "excluded": {
-  "aet_pen_missing_90": 0,
+  "aet_pen_missing_90": 430,
   "odds_league_mismatch": 0,
-  "rescheduled_void": 36,
-  "settled_priced": 5559,
-  "settled_genuine_close": 3230,
-  "settled_stale_or_thin_close": 2329,
+  "rescheduled_void": 35,
+  "settled_priced": 5543,
+  "settled_genuine_close": 3217,
+  "settled_stale_or_thin_close": 2326,
   "model_identity_mismatch": 2,
   "model_frozen_after_actual_kickoff": 0,
   "model_not_eligible": 43
