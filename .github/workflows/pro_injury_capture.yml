@@ -4,9 +4,18 @@ name: Pro injury list capture (leak check)
 # API-Football keeps an injury list per fixture. Whether those lists are revised AFTER the match
 # cannot be told from history, so this captures the live list for every not-yet-played fixture in the
 # covered bet leagues, stamped with capture time; forward_check compares it with the final list.
-# ~6 calls per run. Read-only against v9 (only v9's config.py is read, for league ids).
-# Timing does not need to be punctual: lists appear a day or more ahead, and any pre-kickoff capture
-# is a valid "before" observation.
+# Per run: one /leagues (injury coverage) + one /fixtures (72h back .. 96h ahead) per league, then
+# /injuries?ids= for those fixtures, 20 per call - ~12-16 calls. Metered: one ledger record per run
+# (output/budget/runs, collector injury_capture) and the collection_policy guard sheds it (P3) when
+# Pro's API-Football budget is RED or the day cap is spent. Read-only against v9 (league ids, seasons).
+# Timing does not need to be punctual: lists appear 2-3 days ahead, and any pre-kickoff capture is a
+# valid "before" observation.
+#
+# LOUD FAILURE (fix 2026-11-11). The capture used to read /injuries?league&season, whose answer froze
+# on 2026-11-04 (10,691 rows, nothing after 11-06 23:00Z); from 11-06 19:32Z every run wrote 0
+# pre-kickoff rows and was green. Now a run reports NO_FIXTURES_DUE when nothing kicks off within
+# 48h in a league with injury coverage, and FAILS (red job) when fixtures are due and no list comes
+# back. The snapshot and ledger record are still committed on a failed run.
 
 on:
   schedule:
@@ -25,9 +34,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      # Scheduled runs and main dispatches run main. A dispatch from a fix branch runs THAT
+      # branch's code against main's data and commits nothing (see the last two steps): the way to
+      # test a capture fix with one real run before it is merged.
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.ref }}
       - name: Check out v9 (read-only, for league ids)
         uses: actions/checkout@v4
         with:
@@ -45,18 +57,34 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install -r requirements.txt
-      - name: Capture and check
+      - name: Capture
+        id: capture
         env:
           APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
           V9_LOCAL: ${{ github.workspace }}/_v9
-        run: |
-          python -m src.studies.ou_info_inputs forward
-          python -m src.studies.ou_info_inputs forward_check
+        run: python -m src.studies.ou_info_inputs forward
+      - name: Check
+        if: ${{ !cancelled() }}
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: python -m src.studies.ou_info_inputs forward_check
+      - name: Keep branch-test output (not committed)
+        if: ${{ !cancelled() && github.ref != 'refs/heads/main' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: injury-capture-branch-test
+          path: |
+            output/studies/injury_snapshots.parquet
+            output/studies/ou_info_inputs_forward_check.json
+            output/budget/runs
       - name: Commit
+        # also after a FAILED capture: what was captured and the calls spent are real records.
+        # The job stays red because the Capture step failed. Only main commits.
+        if: ${{ !cancelled() && github.ref == 'refs/heads/main' }}
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          for f in output/studies/injury_snapshots.parquet output/studies/ou_info_inputs_forward_check.json; do
+          for f in output/studies/injury_snapshots.parquet output/studies/ou_info_inputs_forward_check.json output/budget/runs; do
             [ -e "$f" ] && git add -f "$f"
           done
           git diff --staged --quiet && exit 0

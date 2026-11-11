@@ -496,45 +496,215 @@ FORWARD_LEAGUES = ("Championship", "Denmark Superliga", "Norway Eliteserien", "S
                    "Brazil Serie A", "League One")
 
 
-def forward() -> dict:
-    """Capture API-Football's CURRENT injury list for every not-yet-played fixture in the covered
-    bet leagues, stamped with capture time. One live call per league; never cached. Comparing these
-    pre-kickoff lists with the same fixtures' lists after full time is the only way to know whether
-    the historical lists were revised with hindsight — history alone cannot tell."""
-    import requests
+#: Window of fixtures asked about each run. Back: fixtures that kicked off in the last 72h, whose
+#: latest post-kickoff list is the "final" list forward_check compares with. Ahead: 96h, because a
+#: list appears 57-70h before kickoff (median ~58h, measured on injury_snapshots 2026-10-19..11-06).
+LOOKBACK_H = 72
+LOOKAHEAD_H = 96
+#: A fixture is DUE when it has not started and kicks off within 48h: by then its list exists
+#: (first pre-kickoff sighting is <= 48h ahead for under 25% of fixtures in every league).
+DUE_H = 48
+#: A league with injury coverage and at least this many due fixtures but no pre-kickoff list fails
+#: the run on its own. ~12% of fixtures genuinely have an empty list, so one or two empty is normal.
+LEAGUE_FAIL_MIN_DUE = 3
+IDS_PER_CALL = 20                       # API-Football /injuries?ids= takes at most 20 fixture ids
+NOT_STARTED = {"NS", "TBD"}
+COLLECTOR = "injury_capture"
+PRIORITY = 3                            # collection_policy REGISTERED_EXPERIMENT
+SNAP_COLS = ["captured_at", "league", "af_fixture_id", "fixture_ts", "team_id", "player_id", "type",
+             "pre_kickoff"]
+
+
+class CaptureFailure(RuntimeError):
+    """Fixtures were due and the provider was asked, but no pre-kickoff list came back."""
+
+
+class _Api:
+    """Live API-Football calls for the capture: never cached, counted for the budget ledger. An
+    `errors` payload, a non-200 answer or a paged answer raises - an error body must never read as
+    "no rows"."""
+
+    def __init__(self, session=None):
+        import requests
+        self.s = session or requests.Session()
+        self.calls = 0
+        self.quota_remaining = None
+        self.recorded = False
+
+    def get(self, endpoint: str, params: dict) -> list:
+        r = self.s.get(f"{AF}/{endpoint}", headers={"x-apisports-key": common._af_key()},
+                       params=params, timeout=90)
+        self.calls += 1
+        q = (getattr(r, "headers", None) or {}).get("x-ratelimit-requests-remaining")
+        if q is not None:
+            self.quota_remaining = q
+        if r.status_code != 200:
+            raise RuntimeError(f"API-Football {endpoint} {params}: HTTP {r.status_code}")
+        body = r.json()
+        if body.get("errors"):
+            raise RuntimeError(f"API-Football {endpoint} {params}: {body['errors']}")
+        if not isinstance(body.get("response"), list):
+            raise RuntimeError(f"API-Football {endpoint} {params}: no 'response' list in answer")
+        paging = body.get("paging") or {}
+        if int(paging.get("total") or 1) > 1:
+            raise RuntimeError(f"API-Football {endpoint} {params}: paged answer {paging} - "
+                               "only page 1 would be read")
+        time.sleep(0.2)
+        return body["response"]
+
+
+def forward(dry_run: bool = False, now: pd.Timestamp | None = None, session=None) -> dict:
+    """Capture API-Football's CURRENT injury list for the fixtures around now in the covered bet
+    leagues, stamped with capture time. Comparing pre-kickoff lists with the same fixtures' lists
+    after full time is the only way to know whether the historical lists were revised with
+    hindsight - history alone cannot tell.
+
+    WHY NOT /injuries?league&season (the first version). That aggregate answer froze: from
+    2026-11-04 19:53Z to 2026-11-11 06:46Z it returned the same 10,691 rows, none for a fixture
+    after 2026-11-06 23:00Z, although Championship, Superliga, Eliteserien and Allsvenskan played
+    fixtures on 11-07..11-09. Every run since 11-06 19:32Z wrote 0 pre-kickoff rows and reported
+    success. Now the fixtures come from /fixtures (league, its own season, a date window) and their
+    lists from /injuries?ids= (20 per call), so a run knows which fixtures were DUE and tells
+    "nothing due" from "due, provider silent".
+
+    Statuses: NO_FIXTURES_DUE (nothing kicks off within DUE_H in a league with injury coverage -
+    normal in a break), OK, SHED_BUDGET (collection_policy guard refused P3 spend; no call made).
+    FAIL raises CaptureFailure AFTER the snapshot and the ledger record are written, so the job
+    goes red without losing what was captured.
+    """
+    from src.monitoring import collection_policy as pol
+
+    now = pd.Timestamp.now(tz="UTC") if now is None else pd.Timestamp(now)
+    started = now.isoformat()
+    guard = pol.Guard(now)
+    if not guard.allowed(PRIORITY):
+        res = {"status": "SHED_BUDGET", "budget": guard.b.get("status"),
+               "note": "collection_policy guard sheds P3 (REGISTERED_EXPERIMENT); no calls made"}
+        print(json.dumps(res, indent=2, default=str))
+        return res
+
     ids = _league_ids()
-    now = pd.Timestamp.now(tz="UTC")
-    rows = []
+    missing = [lg for lg in FORWARD_LEAGUES if lg not in ids]
+    if missing:      # a league dropped from v9's map must not turn into a quiet zero
+        raise CaptureFailure(f"no API-Football id in v9's live config for {missing}")
+    api = _Api(session)
+    try:
+        return _capture(api, ids, now, started, dry_run)
+    except Exception as e:                      # the calls spent count, whatever went wrong
+        if not api.recorded:
+            pol.record_run(COLLECTOR, started, pd.Timestamp.now(tz="UTC").isoformat(), api.calls,
+                           quota_remaining=api.quota_remaining,
+                           detail={"status": "ERROR", "error": str(e)[:300]}, dry=dry_run)
+        raise
+
+
+def _capture(api: "_Api", ids: dict, now: pd.Timestamp, started: str, dry_run: bool) -> dict:
+    from src.data import v9_config
+    from src.monitoring import collection_policy as pol
+
+    lo, hi = now - pd.Timedelta(hours=LOOKBACK_H), now + pd.Timedelta(hours=LOOKAHEAD_H)
+    due_hi = now + pd.Timedelta(hours=DUE_H)
+    today = now.tz_localize(None).strftime("%Y-%m-%d")
+    fx: dict[int, dict] = {}
+    per: dict[str, dict] = {}
     for lg in FORWARD_LEAGUES:
-        lid = ids.get(lg)
-        if lid is None:
-            continue
-        season = 2026
-        body = requests.get(f"{AF}/injuries", headers={"x-apisports-key": common._af_key()},
-                            params={"league": lid, "season": season}, timeout=90).json()
-        for x in body.get("response", []):
-            ts = pd.to_datetime((x.get("fixture") or {}).get("date"), utc=True, errors="coerce")
-            rows.append({"captured_at": now, "league": lg, "af_fixture_id": (x.get("fixture") or {}).get("id"),
-                         "fixture_ts": ts, "team_id": (x.get("team") or {}).get("id"),
+        lid = ids[lg]
+        season = v9_config.api_season(lg, today)
+        if not season:
+            raise CaptureFailure(f"{lg}: v9 cannot resolve its API-Football season for {today}")
+        cov = None
+        for x in api.get("leagues", {"id": lid, "season": season}):
+            for se in x.get("seasons") or []:
+                if str(se.get("year")) == str(season):
+                    cov = bool((se.get("coverage") or {}).get("injuries"))
+        if cov is None:
+            raise CaptureFailure(f"{lg}: /leagues has no season {season} for league {lid}")
+        n_win = n_due = 0
+        for x in api.get("fixtures", {"league": lid, "season": season,
+                                      "from": lo.strftime("%Y-%m-%d"), "to": hi.strftime("%Y-%m-%d")}):
+            f = x.get("fixture") or {}
+            ko = pd.to_datetime(f.get("date"), utc=True, errors="coerce")
+            if f.get("id") is None or pd.isna(ko) or not (lo <= ko <= hi):
+                continue
+            st = (f.get("status") or {}).get("short")
+            due = bool(st in NOT_STARTED and now < ko <= due_hi)
+            fx[int(f["id"])] = {"league": lg, "ko": ko, "status": st, "due": due}
+            n_win += 1
+            n_due += due
+        per[lg] = {"league_id": lid, "season": season, "injury_coverage": cov,
+                   "fixtures_in_window": n_win, "due_48h": n_due}
+
+    rows = []
+    fids = sorted(fx)
+    for i in range(0, len(fids), IDS_PER_CALL):
+        chunk = fids[i:i + IDS_PER_CALL]
+        for x in api.get("injuries", {"ids": "-".join(map(str, chunk))}):
+            fid = (x.get("fixture") or {}).get("id")
+            if fid is None or int(fid) not in fx:
+                raise RuntimeError(f"/injuries?ids returned fixture {fid}, which was not asked for")
+            m = fx[int(fid)]
+            rows.append({"captured_at": now, "league": m["league"], "af_fixture_id": int(fid),
+                         "fixture_ts": m["ko"], "team_id": (x.get("team") or {}).get("id"),
                          "player_id": (x.get("player") or {}).get("id"),
                          "type": (x.get("player") or {}).get("type"),
-                         "pre_kickoff": bool(pd.notna(ts) and ts > now)})
-        time.sleep(0.2)
-    new = pd.DataFrame(rows)
-    old = pd.read_parquet(SNAP) if SNAP.exists() else pd.DataFrame()
-    allr = pd.concat([old, new], ignore_index=True) if len(old) else new
-    # keep: every pre-kickoff observation + the LATEST post-kickoff one per fixture (the "final" list)
-    pre = allr[allr["pre_kickoff"]]
-    post = allr[~allr["pre_kickoff"]]
-    if len(post):
-        last = post.groupby("af_fixture_id")["captured_at"].transform("max")
-        post = post[post["captured_at"] == last]
-    keep = pd.concat([pre, post], ignore_index=True).drop_duplicates(
-        ["captured_at", "af_fixture_id", "player_id", "type"])
-    OUT.mkdir(parents=True, exist_ok=True)
-    keep.to_parquet(SNAP, index=False)
-    return {"captured": len(new), "pre_kickoff_rows": int(new["pre_kickoff"].sum()) if len(new) else 0,
-            "snapshot_rows": len(keep)}
+                         "pre_kickoff": bool(m["ko"] > now)})
+    new = pd.DataFrame(rows, columns=SNAP_COLS)
+    new["pre_kickoff"] = new["pre_kickoff"].astype(bool)      # an empty frame is object-typed
+    due_ids = {k for k, v in fx.items() if v["due"]}
+    for lg, d in per.items():
+        g = new[new["league"] == lg]
+        pre = g[g["pre_kickoff"]]
+        d["pre_kickoff_rows"] = int(len(pre))
+        d["pre_kickoff_fixtures_with_list"] = int(pre["af_fixture_id"].nunique())
+        d["due_fixtures_with_list"] = int(pre[pre["af_fixture_id"].isin(due_ids)]["af_fixture_id"].nunique())
+        d["post_kickoff_rows"] = int(len(g) - len(pre))
+        d["all_pre_kickoff_rows_before_kickoff"] = bool((pre["fixture_ts"] > pre["captured_at"]).all())
+
+    covered = [lg for lg, d in per.items() if d["injury_coverage"]]
+    due_cov = sum(per[lg]["due_48h"] for lg in covered)
+    due_with_list = sum(per[lg]["due_fixtures_with_list"] for lg in covered)
+    problems = []
+    if due_cov and due_with_list == 0:
+        problems.append(f"{due_cov} fixture(s) due within {DUE_H}h in leagues with injury coverage; "
+                        "the provider returned a pre-kickoff list for none of them")
+    for lg in covered:
+        d = per[lg]
+        if d["due_48h"] >= LEAGUE_FAIL_MIN_DUE and d["due_fixtures_with_list"] == 0:
+            problems.append(f"{lg}: {d['due_48h']} fixtures due within {DUE_H}h, 0 with a list")
+    status = "FAIL" if problems else ("NO_FIXTURES_DUE" if due_cov == 0 else "OK")
+
+    snapshot_rows = None
+    if not dry_run and len(new):
+        old = pd.read_parquet(SNAP) if SNAP.exists() else pd.DataFrame()
+        allr = pd.concat([old, new], ignore_index=True) if len(old) else new
+        # keep: every pre-kickoff observation + the LATEST post-kickoff one per fixture (the "final" list)
+        pre = allr[allr["pre_kickoff"]]
+        post = allr[~allr["pre_kickoff"]]
+        if len(post):
+            last = post.groupby("af_fixture_id")["captured_at"].transform("max")
+            post = post[post["captured_at"] == last]
+        keep = pd.concat([pre, post], ignore_index=True).drop_duplicates(
+            ["captured_at", "af_fixture_id", "player_id", "type"])
+        OUT.mkdir(parents=True, exist_ok=True)
+        keep.to_parquet(SNAP, index=False)
+        snapshot_rows = len(keep)
+
+    res = {"status": status, "captured_at": started, "dry_run": dry_run,
+           "window": [lo.isoformat(), hi.isoformat()], "due_hours": DUE_H,
+           "fixtures_in_window": len(fx), "fixtures_due_48h_covered": due_cov,
+           "due_fixtures_with_list": due_with_list,
+           "captured": len(new), "pre_kickoff_rows": int(new["pre_kickoff"].sum()),
+           "snapshot_rows": snapshot_rows, "api_calls": api.calls, "per_league": per,
+           "problems": problems}
+    pol.record_run(COLLECTOR, started, pd.Timestamp.now(tz="UTC").isoformat(), api.calls,
+                   quota_remaining=api.quota_remaining,
+                   detail={k: res[k] for k in ("status", "fixtures_due_48h_covered", "pre_kickoff_rows")},
+                   dry=dry_run)
+    api.recorded = True
+    print(json.dumps(res, indent=2, default=str))
+    if status == "FAIL":
+        raise CaptureFailure("; ".join(problems))
+    return res
 
 
 def forward_check() -> dict:
@@ -550,7 +720,12 @@ def forward_check() -> dict:
     added = sum(len(post[k] - last_pre[k]) for k in both)
     removed = sum(len(last_pre[k] - post[k]) for k in both)
     total_post = sum(len(post[k]) for k in both)
-    res = {"fixtures_compared": len(both), "post_listings": total_post,
+    pre_rows = s[s["pre_kickoff"]]
+    # Freshness, so a frozen verdict is visible as frozen: the share below only moves when new
+    # pre-kickoff lists arrive.
+    res = {"last_pre_kickoff_capture": str(pre_rows["captured_at"].max()) if len(pre_rows) else None,
+           "latest_fixture_with_pre_kickoff_list": str(pre_rows["fixture_ts"].max()) if len(pre_rows) else None,
+           "fixtures_compared": len(both), "post_listings": total_post,
            "added_after_kickoff": added, "removed_after_kickoff": removed,
            "share_of_final_list_added_after_kickoff": round(added / total_post, 3) if total_post else None,
            "verdict": ("INSUFFICIENT (< 50 fixtures)" if len(both) < 50 else
@@ -562,6 +737,9 @@ def forward_check() -> dict:
 
 if __name__ == "__main__":
     step = sys.argv[1] if len(sys.argv) > 1 else "fetch"
+    if step == "forward":           # prints its own summary; raises CaptureFailure on FAIL
+        forward(dry_run="--dry-run" in sys.argv[2:])
+        sys.exit(0)
     fn = {"fetch": fetch, "features": features, "audit": audit, "report": report,
           "forward": forward, "forward_check": forward_check, "fetch_lineups": fetch_lineups,
           "movement": movement_features}[step]
