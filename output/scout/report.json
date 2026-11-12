@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-11-12T10:24:10Z",
+ "generated_at": "2026-11-12T18:38:45Z",
  "status_rule": "COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a GENUINE close (<= 60 min before the actual kickoff; Pinnacle, else median of >= 3 books)",
  "data_truth": "src/scout/truth.py: 90-minute results, genuine close, >48h reschedules void, model rows matched on league + team ids, frozen before the actual kickoff",
  "totals": {
-  "results": 244988,
-  "odds_rows": 567777,
-  "fixtures_priced": 6050,
-  "fixtures_frozen": 5972
+  "results": 244994,
+  "odds_rows": 569691,
+  "fixtures_priced": 6095,
+  "fixtures_frozen": 6017
  },
  "cells": [
   {
@@ -2961,6 +2961,32 @@
    "paper_first_side_share": 0.571
   },
   {
+   "league_id": 887,
+   "country": "Egypt",
+   "league": "Second League",
+   "priority": 2,
+   "market": "ou25",
+   "n": 39,
+   "status": "COLLECTING",
+   "rate": 0.4615,
+   "n_base_rate": 39,
+   "brier_base_rate": 0.2563,
+   "brier_market_close": 0.2558,
+   "brier_market_close_on_base_rows": 0.2558,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.002,
+   "n_model": 35,
+   "brier_model": 0.2793,
+   "residual": {
+    "coef": -0.7471,
+    "se": 0.7419,
+    "z": -1.01
+   },
+   "paper_bets": 17,
+   "paper_roi": 0.0518,
+   "paper_first_side_share": 0.588
+  },
+  {
    "league_id": 205,
    "country": "Turkey",
    "league": "2. Lig",
@@ -2981,6 +3007,52 @@
     "coef": -0.2706,
     "se": 0.8018,
     "z": -0.34
+   }
+  },
+  {
+   "league_id": 887,
+   "country": "Egypt",
+   "league": "Second League",
+   "priority": 2,
+   "market": "btts",
+   "n": 38,
+   "status": "COLLECTING",
+   "rate": 0.5263,
+   "n_base_rate": 38,
+   "brier_base_rate": 0.2558,
+   "brier_market_close": 0.2589,
+   "brier_market_close_on_base_rows": 0.2589,
+   "reference": "median",
+   "market_skill_vs_base": -0.0121,
+   "n_model": 34,
+   "brier_model": 0.2811,
+   "residual": {
+    "coef": -1.7691,
+    "se": 1.0933,
+    "z": -1.62
+   }
+  },
+  {
+   "league_id": 887,
+   "country": "Egypt",
+   "league": "Second League",
+   "priority": 2,
+   "market": "ou15",
+   "n": 38,
+   "status": "COLLECTING",
+   "rate": 0.6053,
+   "n_base_rate": 38,
+   "brier_base_rate": 0.2397,
+   "brier_market_close": 0.2338,
+   "brier_market_close_on_base_rows": 0.2338,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0246,
+   "n_model": 34,
+   "brier_model": 0.2657,
+   "residual": {
+    "coef": -0.9044,
+    "se": 0.8255,
+    "z": -1.1
    }
   },
   {
@@ -3111,32 +3183,6 @@
    "paper_first_side_share": 0.0
   },
   {
-   "league_id": 887,
-   "country": "Egypt",
-   "league": "Second League",
-   "priority": 2,
-   "market": "ou25",
-   "n": 34,
-   "status": "COLLECTING",
-   "rate": 0.5294,
-   "n_base_rate": 34,
-   "brier_base_rate": 0.2731,
-   "brier_market_close": 0.2706,
-   "brier_market_close_on_base_rows": 0.2706,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.0092,
-   "n_model": 30,
-   "brier_model": 0.2912,
-   "residual": {
-    "coef": -0.7577,
-    "se": 0.7776,
-    "z": -0.97
-   },
-   "paper_bets": 16,
-   "paper_roi": 0.0131,
-   "paper_first_side_share": 0.625
-  },
-  {
    "league_id": 100,
    "country": "Japan",
    "league": "J3 League",
@@ -3207,38 +3253,6 @@
     "se": 0.6944,
     "z": 0.2
    }
-  },
-  {
-   "league_id": 887,
-   "country": "Egypt",
-   "league": "Second League",
-   "priority": 2,
-   "market": "btts",
-   "n": 33,
-   "status": "COLLECTING",
-   "rate": 0.6061,
-   "n_base_rate": 33,
-   "brier_base_rate": 0.2639,
-   "brier_market_close": 0.2654,
-   "brier_market_close_on_base_rows": 0.2654,
-   "reference": "median",
-   "market_skill_vs_base": -0.0057
-  },
-  {
-   "league_id": 887,
-   "country": "Egypt",
-   "league": "Second League",
-   "priority": 2,
-   "market": "ou15",
-   "n": 33,
-   "status": "COLLECTING",
-   "rate": 0.6667,
-   "n_base_rate": 33,
-   "brier_base_rate": 0.2236,
-   "brier_market_close": 0.2145,
-   "brier_market_close_on_base_rows": 0.2145,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.0407
   },
   {
    "league_id": 58,
@@ -4031,6 +4045,22 @@
    "brier_market_close_on_base_rows": 0.2469,
    "reference": "pinnacle",
    "market_skill_vs_base": 0.0415
+  },
+  {
+   "league_id": 887,
+   "country": "Egypt",
+   "league": "Second League",
+   "priority": 2,
+   "market": "ou35",
+   "n": 28,
+   "status": "COLLECTING",
+   "rate": 0.2857,
+   "n_base_rate": 28,
+   "brier_base_rate": 0.2196,
+   "brier_market_close": 0.2146,
+   "brier_market_close_on_base_rows": 0.2146,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0228
   },
   {
    "league_id": 946,
@@ -5489,22 +5519,6 @@
    "brier_market_close_on_base_rows": 0.2464,
    "reference": "median",
    "market_skill_vs_base": -0.0004
-  },
-  {
-   "league_id": 887,
-   "country": "Egypt",
-   "league": "Second League",
-   "priority": 2,
-   "market": "ou35",
-   "n": 23,
-   "status": "COLLECTING",
-   "rate": 0.3478,
-   "n_base_rate": 23,
-   "brier_base_rate": 0.2612,
-   "brier_market_close": 0.2512,
-   "brier_market_close_on_base_rows": 0.2512,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.0383
   },
   {
    "league_id": 44,
@@ -13521,8 +13535,8 @@
   "aet_pen_missing_90": 4,
   "odds_league_mismatch": 0,
   "rescheduled_void": 42,
-  "settled_priced": 5610,
-  "settled_genuine_close": 3279,
+  "settled_priced": 5615,
+  "settled_genuine_close": 3284,
   "settled_stale_or_thin_close": 2331,
   "model_identity_mismatch": 2,
   "model_frozen_after_actual_kickoff": 0,
