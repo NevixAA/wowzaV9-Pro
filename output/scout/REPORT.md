@@ -1,73 +1,73 @@
-# League scout — 2026-11-13T07:25 UTC
+# League scout — 2026-11-13T16:49 UTC
 
-Results stored: 245,006 · fixtures priced: 6,246 · model frozen: 6,148
+Results stored: 245,016 · fixtures priced: 6,315 · model frozen: 6,217
 
 COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a GENUINE close (<= 60 min before the actual kickoff; Pinnacle, else median of >= 3 books)
 
-Left out by the Data Truth rules: aet_pen_missing_90 4, odds_league_mismatch 0, rescheduled_void 42, settled_priced 5,627, settled_genuine_close 3,292, settled_stale_or_thin_close 2,335, model_identity_mismatch 2, model_frozen_after_actual_kickoff 0, model_not_eligible 43
+Left out by the Data Truth rules: aet_pen_missing_90 4, odds_league_mismatch 0, rescheduled_void 42, settled_priced 5,637, settled_genuine_close 3,299, settled_stale_or_thin_close 2,338, model_identity_mismatch 2, model_frozen_after_actual_kickoff 0, model_not_eligible 43
 
 ## Coverage and staleness (Data Truth R15)
 
-Since 2026-10-08: 7,929 finished watched fixtures, 5,623 with any odds, 3,264 with a genuine close. Stale in-season leagues: 4. No odds offered by the API: 0. Unexplained missing results: 37.
+Since 2026-10-08: 7,939 finished watched fixtures, 5,633 with any odds, 3,271 with a genuine close. Stale in-season leagues: 3. No odds offered by the API: 0. Unexplained missing results: 37.
 
 | League | finished | odds coverage | genuine-close coverage | last price | flags |
 |---|---|---|---|---|---|
-| Ukraine Druha Liga (336) | 39 | 0.154 | 0.0 | 2026-11-12T10:23:07Z | ODDS_COVERAGE_UNDER_HALF |
+| Ukraine Druha Liga (336) | 41 | 0.195 | 0.0 | 2026-11-13T11:29:55Z | ODDS_COVERAGE_UNDER_HALF |
 | Turkey 3. Lig - Group 1 (552) | 54 | 0.222 | 0.13 | 2026-11-11T11:51:35Z | ODDS_COVERAGE_UNDER_HALF |
 | Turkey 3. Lig - Group 2 (553) | 54 | 0.148 | 0.111 | 2026-11-11T12:21:45Z | ODDS_COVERAGE_UNDER_HALF |
 | Turkey 3. Lig - Group 3 (554) | 48 | 0.125 | 0.104 | 2026-11-11T15:52:50Z | ODDS_COVERAGE_UNDER_HALF |
 | Ghana Premier League (570) | 45 | 0.311 | 0.044 | 2026-11-08T13:55:30Z | ODDS_COVERAGE_UNDER_HALF |
 | Austria Regionalliga - West (223) | 40 | 0.25 | 0.175 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
 | Zambia Super League (400) | 50 | 0.38 | 0.22 | 2026-11-05T12:47:41Z | ODDS_COVERAGE_UNDER_HALF |
-| Bosnia 1st League - RS (317) | 42 | 0.31 | 0.167 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
-| Bosnia 1st League - FBiH (316) | 40 | 0.225 | 0.05 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
-| Peru Segunda División (282) | 30 | 0.4 | 0.2 | 2026-10-31T20:14:58Z | ODDS_COVERAGE_UNDER_HALF |
+| Bosnia 1st League - RS (317) | 42 | 0.31 | 0.167 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Bosnia 1st League - FBiH (316) | 40 | 0.225 | 0.05 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Peru Segunda División (282) | 30 | 0.4 | 0.2 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
 | Bangladesh Premier League (398) | 17 | 0.118 | 0.118 | 2026-10-23T07:58:24Z | ODDS_COVERAGE_UNDER_HALF |
 | Switzerland 1. Liga Promotion (510) | 44 | 0.25 | 0.136 | 2026-11-08T12:50:35Z | ODDS_COVERAGE_UNDER_HALF |
-| Morocco Botola 2 (201) | 40 | 0.2 | 0.075 | 2026-11-08T15:02:29Z | ODDS_COVERAGE_UNDER_HALF |
-| Belgium Second Amateur Division - ACFF (148) | 45 | 0.067 | 0.022 | 2026-11-08T13:21:20Z | ODDS_COVERAGE_UNDER_HALF |
+| Morocco Botola 2 (201) | 40 | 0.2 | 0.075 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Belgium Second Amateur Division - ACFF (148) | 45 | 0.067 | 0.022 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
 | Burkina-Faso Ligue 1 (423) | 40 | 0.1 | 0.025 | 2026-11-01T09:47:58Z | STALE >10d in season, ODDS_COVERAGE_UNDER_HALF |
 | Czech-Republic 4. liga - Divizie A (350) | 35 | 0.114 | 0.0 | 2026-11-07T11:02:34Z | ODDS_COVERAGE_UNDER_HALF |
-| Czech-Republic 4. liga - Divizie C (352) | 40 | 0.25 | 0.175 | 2026-11-07T11:02:34Z | ODDS_COVERAGE_UNDER_HALF |
+| Czech-Republic 4. liga - Divizie C (352) | 40 | 0.25 | 0.175 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
 | Czech-Republic 4. liga - Divizie E (354) | 40 | 0.275 | 0.15 | 2026-11-08T12:50:35Z | ODDS_COVERAGE_UNDER_HALF |
-| Spain Tercera División RFEF - Group 1 (439) | 45 | 0.2 | 0.111 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
-| Spain Tercera División RFEF - Group 2 (440) | 45 | 0.222 | 0.133 | 2026-11-08T15:32:51Z | ODDS_COVERAGE_UNDER_HALF |
-| Spain Tercera División RFEF - Group 3 (441) | 45 | 0.178 | 0.133 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
-| Spain Tercera División RFEF - Group 4 (442) | 45 | 0.044 | 0.022 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
-| Spain Tercera División RFEF - Group 5 (443) | 51 | 0.157 | 0.098 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
-| Spain Tercera División RFEF - Group 6 (444) | 41 | 0.171 | 0.122 | 2026-11-11T18:08:34Z | ODDS_COVERAGE_UNDER_HALF |
-| Spain Tercera División RFEF - Group 7 (445) | 45 | 0.178 | 0.089 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
-| Spain Tercera División RFEF - Group 8 (446) | 45 | 0.0 | 0.0 | 2026-11-13T07:24:39Z | NO_ODDS_CAPTURED |
-| Spain Tercera División RFEF - Group 9 (447) | 45 | 0.089 | 0.067 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
-| Spain Tercera División RFEF - Group 11 (449) | 43 | 0.116 | 0.093 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
-| Spain Tercera División RFEF - Group 13 (451) | 37 | 0.081 | 0.054 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
-| Spain Tercera División RFEF - Group 15 (453) | 45 | 0.178 | 0.133 | 2026-11-08T17:53:12Z | ODDS_COVERAGE_UNDER_HALF |
+| Spain Tercera División RFEF - Group 1 (439) | 45 | 0.2 | 0.111 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Spain Tercera División RFEF - Group 2 (440) | 45 | 0.222 | 0.133 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Spain Tercera División RFEF - Group 3 (441) | 45 | 0.178 | 0.133 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Spain Tercera División RFEF - Group 4 (442) | 45 | 0.044 | 0.022 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Spain Tercera División RFEF - Group 5 (443) | 51 | 0.157 | 0.098 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Spain Tercera División RFEF - Group 6 (444) | 41 | 0.171 | 0.122 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Spain Tercera División RFEF - Group 7 (445) | 45 | 0.178 | 0.089 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Spain Tercera División RFEF - Group 8 (446) | 45 | 0.0 | 0.0 | 2026-11-13T16:47:27Z | NO_ODDS_CAPTURED |
+| Spain Tercera División RFEF - Group 9 (447) | 45 | 0.089 | 0.067 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Spain Tercera División RFEF - Group 11 (449) | 43 | 0.116 | 0.093 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Spain Tercera División RFEF - Group 13 (451) | 37 | 0.081 | 0.054 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Spain Tercera División RFEF - Group 15 (453) | 45 | 0.178 | 0.133 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
 | Spain Tercera División RFEF - Group 16 (454) | 45 | 0.111 | 0.067 | 2026-11-08T10:59:05Z | ODDS_COVERAGE_UNDER_HALF |
 | Spain Tercera División RFEF - Group 17 (455) | 45 | 0.111 | 0.067 | 2026-11-08T15:22:45Z | ODDS_COVERAGE_UNDER_HALF |
 | Spain Tercera División RFEF - Group 18 (456) | 45 | 0.311 | 0.156 | 2026-11-08T13:55:30Z | ODDS_COVERAGE_UNDER_HALF |
 | Hungary NB III - Northwest (635) | 40 | 0.225 | 0.1 | 2026-11-06T09:56:34Z | ODDS_COVERAGE_UNDER_HALF |
-| Mongolia Premier League (764) | 32 | 0.25 | 0.062 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
-| Italy Serie D - Girone I (434) | 45 | 0.356 | 0.222 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
-| Tunisia Ligue 2 (828) | 69 | 0.391 | 0.275 | 2026-11-08T13:21:20Z | ODDS_COVERAGE_UNDER_HALF |
-| Slovakia 3. liga - West (644) | 37 | 0.135 | 0.054 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
+| Mongolia Premier League (764) | 33 | 0.273 | 0.091 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
+| Italy Serie D - Girone I (434) | 45 | 0.356 | 0.222 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Tunisia Ligue 2 (828) | 69 | 0.391 | 0.275 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Slovakia 3. liga - West (644) | 37 | 0.135 | 0.054 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
 | Slovakia 3. liga - East (645) | 28 | 0.214 | 0.107 | 2026-10-25T00:35:04Z | ODDS_COVERAGE_UNDER_HALF |
 | Czech-Republic 4. liga - Divizie F (686) | 40 | 0.125 | 0.025 | 2026-11-07T09:06:40Z | ODDS_COVERAGE_UNDER_HALF |
-| Mexico Liga Premier Serie A (722) | 49 | 0.265 | 0.143 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
+| Mexico Liga Premier Serie A (722) | 49 | 0.265 | 0.143 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
 | Dominican-Republic Liga Mayor (759) | 20 | 0.25 | 0.2 | 2026-10-23T19:38:46Z | STALE >10d in season, ODDS_COVERAGE_UNDER_HALF |
 | Norway 3. Division - Girone 1 (774) | 29 | 0.414 | 0.241 | 2026-11-01T10:59:31Z | ODDS_COVERAGE_UNDER_HALF |
 | Ivory-Coast Ligue 1 (386) | 26 | 0.154 | 0.0 | 2026-11-08T17:53:12Z | ODDS_COVERAGE_UNDER_HALF |
 | Philippines PFL (765) | 15 | 0.333 | 0.133 | 2026-11-08T12:20:10Z | ODDS_COVERAGE_UNDER_HALF |
 | Mexico Liga Premier Serie B (872) | 16 | 0.062 | 0.062 | 2026-10-16T21:56:14Z | STALE >10d in season, ODDS_COVERAGE_UNDER_HALF |
 | Montenegro Second League (356) | 30 | 0.133 | 0.067 | 2026-11-08T11:59:51Z | ODDS_COVERAGE_UNDER_HALF |
-| Czech-Republic 4. liga - Divizie D (353) | 40 | 0.2 | 0.1 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
+| Czech-Republic 4. liga - Divizie D (353) | 40 | 0.2 | 0.1 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
 | Norway 3. Division - Girone 2 (775) | 29 | 0.414 | 0.138 | 2026-11-01T09:47:58Z | ODDS_COVERAGE_UNDER_HALF |
-| New-Zealand National League - National (955) | 25 | 0.16 | 0.12 | 2026-10-24T23:21:58Z | STALE >10d in season, ODDS_COVERAGE_UNDER_HALF |
-| Italy Serie D - Girone F (431) | 45 | 0.289 | 0.2 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
-| Netherlands Derde Divisie (92) | 73 | 0.315 | 0.219 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
-| Italy Serie D - Girone B (427) | 47 | 0.383 | 0.277 | 2026-11-08T13:21:20Z | ODDS_COVERAGE_UNDER_HALF |
-| Italy Serie D - Girone C (428) | 45 | 0.444 | 0.333 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
-| Italy Serie D - Girone G (432) | 45 | 0.289 | 0.222 | 2026-11-08T13:55:30Z | ODDS_COVERAGE_UNDER_HALF |
-| Italy Serie D - Girone E (430) | 45 | 0.378 | 0.267 | 2026-11-13T07:24:39Z | ODDS_COVERAGE_UNDER_HALF |
+| New-Zealand National League - National (955) | 25 | 0.16 | 0.12 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Italy Serie D - Girone F (431) | 45 | 0.289 | 0.2 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Netherlands Derde Divisie (92) | 73 | 0.315 | 0.219 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Italy Serie D - Girone B (427) | 47 | 0.383 | 0.277 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Italy Serie D - Girone C (428) | 45 | 0.444 | 0.333 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Italy Serie D - Girone G (432) | 45 | 0.289 | 0.222 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
+| Italy Serie D - Girone E (430) | 45 | 0.378 | 0.267 | 2026-11-13T16:47:27Z | ODDS_COVERAGE_UNDER_HALF |
 
 | P | League | Market | n | Status | Market skill vs base rate | Model resid. z | Paper ROI (n) |
 |---|---|---|---|---|---|---|---|
@@ -119,6 +119,10 @@ Since 2026-10-08: 7,929 finished watched fixtures, 5,623 with any odds, 3,264 wi
 | 1 | Norway 1. Division | ou15 | 25 | COLLECTING | -0.007 | – | – |
 | 1 | Norway 1. Division | ou25 | 25 | COLLECTING | -0.001 | – | – |
 | 1 | Norway 1. Division | ou35 | 25 | COLLECTING | +0.111 | – | +73.0% (1) |
+| 1 | Mexico Liga de Expansión MX | btts | 23 | COLLECTING | +0.060 | – | – |
+| 1 | Mexico Liga de Expansión MX | ou15 | 23 | COLLECTING | +0.094 | – | – |
+| 1 | Mexico Liga de Expansión MX | ou25 | 23 | COLLECTING | +0.012 | – | -100.0% (2) |
+| 1 | Mexico Liga de Expansión MX | ou35 | 23 | COLLECTING | -0.320 | – | – |
 | 1 | Spain Primera División RFEF - Group 1 | btts | 23 | COLLECTING | +0.047 | – | +34.0% (4) |
 | 1 | Spain Primera División RFEF - Group 1 | ou15 | 23 | COLLECTING | +0.048 | – | -57.0% (6) |
 | 1 | Spain Primera División RFEF - Group 1 | ou25 | 23 | COLLECTING | +0.086 | – | +26.6% (11) |
@@ -127,10 +131,6 @@ Since 2026-10-08: 7,929 finished watched fixtures, 5,623 with any odds, 3,264 wi
 | 1 | Japan J2 League | ou15 | 22 | COLLECTING | +0.004 | – | -100.0% (1) |
 | 1 | Japan J2 League | ou25 | 22 | COLLECTING | +0.086 | – | -10.0% (2) |
 | 1 | Japan J2 League | ou35 | 22 | COLLECTING | -0.009 | – | -36.0% (2) |
-| 1 | Mexico Liga de Expansión MX | btts | 22 | COLLECTING | +0.055 | – | – |
-| 1 | Mexico Liga de Expansión MX | ou15 | 22 | COLLECTING | +0.095 | – | – |
-| 1 | Mexico Liga de Expansión MX | ou25 | 22 | COLLECTING | +0.006 | – | -100.0% (2) |
-| 1 | Mexico Liga de Expansión MX | ou35 | 22 | COLLECTING | -0.334 | – | – |
 | 1 | Portugal Segunda Liga | btts | 21 | COLLECTING | +0.020 | – | -8.5% (2) |
 | 1 | Portugal Segunda Liga | ou15 | 21 | COLLECTING | +0.034 | – | +62.5% (2) |
 | 1 | Portugal Segunda Liga | ou25 | 21 | COLLECTING | +0.059 | – | -13.5% (2) |
@@ -207,16 +207,16 @@ Since 2026-10-08: 7,929 finished watched fixtures, 5,623 with any odds, 3,264 wi
 | 2 | Belgium First Amateur Division | btts | 43 | COLLECTING | -0.015 | 0.08 | – |
 | 2 | Turkey 2. Lig | btts | 42 | COLLECTING | +0.052 | -0.99 | – |
 | 2 | Turkey 2. Lig | ou25 | 42 | COLLECTING | +0.104 | -0.77 | -26.6% (16) |
+| 2 | Egypt Second League | ou25 | 42 | COLLECTING | -0.007 | -1.03 | -0.7% (18) |
+| 2 | Egypt Second League | btts | 41 | COLLECTING | -0.013 | -1.55 | – |
+| 2 | Egypt Second League | ou15 | 41 | COLLECTING | +0.018 | -1.05 | – |
 | 2 | England Non League Premier - Southern Central | ou25 | 41 | COLLECTING | -0.046 | -0.71 | -54.1% (8) |
 | 2 | England Non League Premier - Southern Central | ou35 | 41 | COLLECTING | +0.027 | -2.19 | – |
 | 2 | Israel Liga Alef | ou15 | 40 | COLLECTING | -0.004 | -1.11 | – |
 | 2 | England Non League Premier - Southern Central | btts | 40 | COLLECTING | +0.014 | -0.83 | – |
 | 2 | England Non League Premier - Southern Central | ou15 | 40 | COLLECTING | -0.024 | 0.02 | – |
 | 2 | Algeria Ligue 2 | ou25 | 39 | COLLECTING | +0.014 | 1.2 | -37.1% (7) |
-| 2 | Egypt Second League | ou25 | 39 | COLLECTING | +0.002 | -1.01 | +5.2% (17) |
 | 2 | Turkey 2. Lig | ou35 | 38 | COLLECTING | +0.095 | -0.34 | – |
-| 2 | Egypt Second League | btts | 38 | COLLECTING | -0.012 | -1.62 | – |
-| 2 | Egypt Second League | ou15 | 38 | COLLECTING | +0.025 | -1.1 | – |
 | 2 | Colombia Primera A | btts | 37 | COLLECTING | +0.005 | 0.29 | +12.5% (2) |
 | 2 | Colombia Primera A | ou15 | 37 | COLLECTING | +0.018 | 0.64 | -100.0% (1) |
 | 2 | Colombia Primera A | ou25 | 37 | COLLECTING | +0.031 | 0.41 | -38.3% (3) |
@@ -232,6 +232,7 @@ Since 2026-10-08: 7,929 finished watched fixtures, 5,623 with any odds, 3,264 wi
 | 2 | England Non League Premier - Northern | ou15 | 31 | COLLECTING | -0.011 | -0.6 | – |
 | 2 | England Non League Premier - Northern | ou25 | 31 | COLLECTING | +0.025 | -1.66 | -14.4% (8) |
 | 2 | England Non League Premier - Northern | ou35 | 31 | COLLECTING | +0.037 | -0.6 | – |
+| 2 | Egypt Second League | ou35 | 31 | COLLECTING | +0.020 | – | – |
 | 2 | Algeria Ligue 2 | ou15 | 30 | COLLECTING | +0.007 | – | – |
 | 2 | Romania Liga II | btts | 30 | COLLECTING | -0.029 | -0.29 | – |
 | 2 | Romania Liga II | ou15 | 30 | COLLECTING | +0.036 | 0.66 | – |
@@ -263,7 +264,6 @@ Since 2026-10-08: 7,929 finished watched fixtures, 5,623 with any odds, 3,264 wi
 | 2 | Czech-Republic 3. liga - CFL A | ou25 | 28 | COLLECTING | +0.053 | – | -5.6% (9) |
 | 2 | Czech-Republic 3. liga - CFL A | ou35 | 28 | COLLECTING | +0.033 | – | – |
 | 2 | Czech-Republic 3. liga - CFL B | ou35 | 28 | COLLECTING | +0.042 | – | – |
-| 2 | Egypt Second League | ou35 | 28 | COLLECTING | +0.023 | – | – |
 | 2 | Croatia Second NL | btts | 28 | COLLECTING | +0.040 | – | – |
 | 2 | Croatia Second NL | ou25 | 28 | COLLECTING | +0.007 | – | +5.6% (10) |
 | 2 | Croatia Second NL | ou35 | 28 | COLLECTING | +0.049 | – | – |
@@ -386,6 +386,8 @@ Since 2026-10-08: 7,929 finished watched fixtures, 5,623 with any odds, 3,264 wi
 | 2 | Uruguay Segunda División | ou15 | 20 | COLLECTING | -0.032 | – | – |
 | 2 | Uruguay Segunda División | ou25 | 20 | COLLECTING | -0.038 | – | +75.0% (2) |
 | 2 | Uruguay Segunda División | ou35 | 20 | COLLECTING | -0.103 | – | – |
+| 2 | Poland III Liga - Group 3 | ou25 | 20 | COLLECTING | -0.056 | – | -39.0% (5) |
+| 2 | Poland III Liga - Group 3 | ou35 | 20 | COLLECTING | -0.016 | – | – |
 | 2 | Argentina Torneo Federal A | ou35 | 19 | COLLECTING | +0.092 | – | -6.4% (5) |
 | 2 | Greece Super League 1 | btts | 19 | COLLECTING | +0.030 | – | – |
 | 2 | Greece Super League 1 | ou15 | 19 | COLLECTING | +0.011 | – | – |
@@ -405,8 +407,6 @@ Since 2026-10-08: 7,929 finished watched fixtures, 5,623 with any odds, 3,264 wi
 | 2 | Slovakia 2. liga | btts | 19 | COLLECTING | +0.083 | – | – |
 | 2 | Slovakia 2. liga | ou25 | 19 | COLLECTING | +0.057 | – | -8.0% (5) |
 | 2 | Slovakia 2. liga | ou35 | 19 | COLLECTING | +0.042 | – | – |
-| 2 | Poland III Liga - Group 3 | ou25 | 19 | COLLECTING | -0.045 | – | -39.0% (5) |
-| 2 | Poland III Liga - Group 3 | ou35 | 19 | COLLECTING | -0.019 | – | – |
 | 2 | Spain Segunda División RFEF - Group 2 | btts | 19 | COLLECTING | +0.063 | – | – |
 | 2 | Spain Segunda División RFEF - Group 2 | ou15 | 19 | COLLECTING | -0.038 | – | – |
 | 2 | Spain Segunda División RFEF - Group 2 | ou25 | 19 | COLLECTING | +0.011 | – | +84.0% (5) |
@@ -421,10 +421,14 @@ Since 2026-10-08: 7,929 finished watched fixtures, 5,623 with any odds, 3,264 wi
 | 2 | Morocco Botola Pro | ou15 | 18 | COLLECTING | +0.029 | – | +25.0% (4) |
 | 2 | Morocco Botola Pro | ou25 | 18 | COLLECTING | +0.084 | – | -29.6% (5) |
 | 2 | Morocco Botola Pro | ou35 | 18 | COLLECTING | +0.021 | – | +25.0% (3) |
+| 2 | Czech-Republic 3. liga - MSFL | btts | 18 | COLLECTING | +0.003 | – | – |
+| 2 | Czech-Republic 3. liga - MSFL | ou25 | 18 | COLLECTING | -0.045 | – | -6.0% (5) |
+| 2 | Czech-Republic 3. liga - MSFL | ou35 | 18 | COLLECTING | +0.080 | – | – |
 | 2 | Nicaragua Primera Division | btts | 18 | COLLECTING | +0.064 | – | – |
 | 2 | Italy Serie D - Girone A | btts | 18 | COLLECTING | +0.036 | – | – |
 | 2 | Uganda Premier League | ou25 | 18 | COLLECTING | +0.083 | – | -5.3% (7) |
 | 2 | Czech-Republic 3. liga - CFL B | ou15 | 18 | COLLECTING | +0.032 | – | – |
+| 2 | Poland III Liga - Group 3 | btts | 18 | COLLECTING | +0.053 | – | – |
 | 2 | Tunisia Ligue 2 | ou25 | 18 | COLLECTING | -0.005 | – | -42.5% (4) |
 | 2 | Spain Segunda División RFEF - Group 4 | ou15 | 18 | COLLECTING | +0.034 | – | – |
 | 2 | Spain Segunda División RFEF - Group 4 | ou35 | 18 | COLLECTING | +0.173 | – | – |
@@ -437,13 +441,9 @@ Since 2026-10-08: 7,929 finished watched fixtures, 5,623 with any odds, 3,264 wi
 | 2 | Hungary NB I | ou25 | 17 | COLLECTING | -0.082 | – | +105.0% (1) |
 | 2 | Hungary NB I | ou35 | 17 | COLLECTING | -0.128 | – | +40.0% (1) |
 | 2 | Jamaica Premier League | ou25 | 17 | COLLECTING | +0.082 | – | +28.9% (9) |
-| 2 | Czech-Republic 3. liga - MSFL | btts | 17 | COLLECTING | -0.012 | – | – |
-| 2 | Czech-Republic 3. liga - MSFL | ou25 | 17 | COLLECTING | -0.053 | – | -6.0% (5) |
-| 2 | Czech-Republic 3. liga - MSFL | ou35 | 17 | COLLECTING | +0.066 | – | – |
 | 2 | Nicaragua Primera Division | ou35 | 17 | COLLECTING | +0.171 | – | – |
 | 2 | Italy Serie D - Girone A | ou15 | 17 | COLLECTING | +0.013 | – | – |
 | 2 | Uganda Premier League | btts | 17 | COLLECTING | +0.033 | – | – |
-| 2 | Poland III Liga - Group 3 | btts | 17 | COLLECTING | +0.057 | – | – |
 | 2 | Poland III Liga - Group 4 | ou35 | 17 | COLLECTING | +0.015 | – | – |
 | 2 | Tunisia Ligue 2 | ou15 | 17 | COLLECTING | -0.043 | – | – |
 | 2 | Spain Segunda División RFEF - Group 5 | btts | 17 | COLLECTING | +0.140 | – | – |
@@ -524,6 +524,7 @@ Since 2026-10-08: 7,929 finished watched fixtures, 5,623 with any odds, 3,264 wi
 | 2 | Italy Serie D - Girone D | btts | 12 | COLLECTING | +0.043 | – | – |
 | 2 | Italy Serie D - Girone E | ou25 | 12 | COLLECTING | -0.061 | – | – |
 | 2 | Iraq Iraqi League | btts | 12 | COLLECTING | -0.014 | – | – |
+| 2 | Poland III Liga - Group 3 | ou15 | 12 | COLLECTING | -0.046 | – | – |
 | 2 | Bulgaria First League | btts | 11 | COLLECTING | +0.078 | – | -100.0% (1) |
 | 2 | Bulgaria First League | ou15 | 11 | COLLECTING | -0.100 | – | -100.0% (1) |
 | 2 | Bulgaria First League | ou25 | 11 | COLLECTING | -0.093 | – | -100.0% (1) |
@@ -552,7 +553,6 @@ Since 2026-10-08: 7,929 finished watched fixtures, 5,623 with any odds, 3,264 wi
 | 2 | Jordan League | ou25 | 11 | COLLECTING | -0.100 | – | +35.5% (4) |
 | 2 | Jordan League | ou35 | 11 | COLLECTING | -0.023 | – | -100.0% (3) |
 | 2 | Zambia Super League | ou25 | 11 | COLLECTING | +0.004 | – | +38.0% (4) |
-| 2 | Poland III Liga - Group 3 | ou15 | 11 | COLLECTING | -0.037 | – | – |
 | 2 | Ecuador Liga Pro Serie B | ou15 | 10 | COLLECTING | +0.098 | – | – |
 | 2 | Chile Primera División | btts | 10 | COLLECTING | +0.067 | – | – |
 | 2 | Chile Primera División | ou15 | 10 | COLLECTING | +0.034 | – | – |
@@ -745,6 +745,8 @@ Since 2026-10-08: 7,929 finished watched fixtures, 5,623 with any odds, 3,264 wi
 | 2 | Sweden Division 2 - Norra Svealand | ou25 | 3 | COLLECTING | +0.285 | – | – |
 | 2 | Sweden Division 2 - Norra Svealand | ou35 | 3 | COLLECTING | +0.282 | – | – |
 | 2 | Slovakia 3. liga - East | ou25 | 3 | COLLECTING | -0.212 | – | -19.0% (2) |
+| 2 | Mongolia Premier League | btts | 3 | COLLECTING | -0.125 | – | – |
+| 2 | Mongolia Premier League | ou25 | 3 | COLLECTING | +0.064 | – | +75.0% (2) |
 | 2 | Norway 3. Division - Girone 2 | ou35 | 3 | COLLECTING | +0.197 | – | – |
 | 2 | Norway 3. Division - Girone 4 | ou25 | 3 | COLLECTING | -0.017 | – | – |
 | 2 | New-Zealand National League - National | btts | 3 | COLLECTING | -0.097 | – | – |
@@ -786,8 +788,7 @@ Since 2026-10-08: 7,929 finished watched fixtures, 5,623 with any odds, 3,264 wi
 | 2 | Slovakia 3. liga - East | btts | 2 | COLLECTING | +0.002 | – | – |
 | 2 | Slovakia 3. liga - East | ou35 | 2 | COLLECTING | -0.092 | – | – |
 | 2 | Mexico Liga Premier Serie A | ou15 | 2 | COLLECTING | +0.118 | – | – |
-| 2 | Mongolia Premier League | btts | 2 | COLLECTING | -0.339 | – | – |
-| 2 | Mongolia Premier League | ou25 | 2 | COLLECTING | +0.052 | – | +250.0% (1) |
+| 2 | Mongolia Premier League | ou35 | 2 | COLLECTING | +0.056 | – | – |
 | 2 | Philippines PFL | btts | 2 | COLLECTING | +0.488 | – | – |
 | 2 | Philippines PFL | ou25 | 2 | COLLECTING | +0.284 | – | -37.5% (2) |
 | 2 | Philippines PFL | ou35 | 2 | COLLECTING | +0.226 | – | – |
@@ -799,6 +800,7 @@ Since 2026-10-08: 7,929 finished watched fixtures, 5,623 with any odds, 3,264 wi
 | 2 | Bosnia 1st League - FBiH | btts | 1 | COLLECTING | -0.013 | – | – |
 | 2 | Bosnia 1st League - FBiH | ou15 | 1 | COLLECTING | -0.157 | – | – |
 | 2 | Ukraine Persha Liga | ou35 | 1 | COLLECTING | -0.453 | – | – |
+| 2 | Czech-Republic 3. liga - MSFL | ou15 | 1 | COLLECTING | +0.294 | – | – |
 | 2 | Montenegro Second League | ou35 | 1 | COLLECTING | -0.861 | – | – |
 | 2 | Bangladesh Premier League | ou15 | 1 | COLLECTING | -0.047 | – | – |
 | 2 | Burkina-Faso Ligue 1 | btts | 1 | COLLECTING | -0.838 | – | – |
@@ -812,7 +814,6 @@ Since 2026-10-08: 7,929 finished watched fixtures, 5,623 with any odds, 3,264 wi
 | 2 | Czech-Republic 4. liga - Divizie F | btts | 1 | COLLECTING | +0.134 | – | – |
 | 2 | Czech-Republic 4. liga - Divizie F | ou25 | 1 | COLLECTING | +0.179 | – | – |
 | 2 | Czech-Republic 4. liga - Divizie F | ou35 | 1 | COLLECTING | +0.086 | – | – |
-| 2 | Mongolia Premier League | ou35 | 1 | COLLECTING | +0.091 | – | – |
 | 2 | Mexico Liga Premier Serie B | btts | 1 | COLLECTING | -0.442 | – | – |
 | 2 | Mexico Liga Premier Serie B | ou25 | 1 | COLLECTING | -0.148 | – | – |
 | 9 | ? ? | btts | 28 | COLLECTING | +0.018 | – | +78.5% (2) |
