@@ -16,7 +16,7 @@ Research only. Nothing here changes v9, a threshold or a stake.
 
 ## 2. The UNDER problem
 
-- 1808 O/U 2.5 fixtures, every priced one (not only tips).
+- 1809 O/U 2.5 fixtures, every priced one (not only tips).
 - The model's P(over) barely moves: it sits around 52% in every band while the market ranges 41–67%. Disagreement therefore comes from the MARKET moving, not the model knowing.
 
 | Model leans | n | Realised over | Model | Market | Model error | Market error |
@@ -26,10 +26,10 @@ Research only. Nothing here changes v9, a threshold or a stake.
 | UNDER 2-5pp | 246 | 57% | 52% | 55% | -5.1 | -1.6 |
 | agrees (±2pp) | 390 | 52% | 52% | 52% | +0.5 | +0.5 |
 | OVER 2-5pp | 220 | 46% | 52% | 48% | +5.4 | +1.9 |
-| OVER 5-10pp | 177 | 46% | 53% | 46% | +7.0 | -0.1 |
+| OVER 5-10pp | 178 | 46% | 53% | 46% | +6.6 | -0.4 |
 | model OVER by >10pp | 64 | 44% | 55% | 42% | +10.9 | -1.6 |
 
-- Share of the model's lean that showed up in results: leaning UNDER -0.045, leaning OVER -0.112 (1 = all of it, 0 = none; negative = the result moved the other way).
+- Share of the model's lean that showed up in results: leaning UNDER -0.045, leaning OVER -0.091 (1 = all of it, 0 = none; negative = the result moved the other way).
 
 **Reading.** UNDER tips come from matches the market rates high-scoring while the model stays near 52%. The market is right. The fix is in the probability: anchor on the market and add the model only as a small, fitted residual — whose fitted weight is currently about zero.
 
@@ -37,17 +37,17 @@ Research only. Nothing here changes v9, a threshold or a stake.
 
 | Market | Track | n | Brier market | Brier model | Out-of-sample Δ log-loss | 90% CI | Verdict |
 |---|---|---|---|---|---|---|---|
-| OU25 | all | 1808 | 0.24132 | 0.24909 | +0.00056 | [-0.0010, +0.0022] | NO_DETECTABLE_GAIN |
-| OU25 | new_format | 994 | 0.23757 | 0.24781 | +0.00497 | [+0.0011, +0.0093] | MODEL_HURTS |
-| OU25 | standard | 814 | 0.2459 | 0.25064 | +0.00305 | [-0.0014, +0.0082] | NO_DETECTABLE_GAIN |
-| OU15 | all | 225 | 0.19708 | 0.19703 | +0.00260 | [-0.0115, +0.0128] | NO_DETECTABLE_GAIN |
-| OU15 | new_format | 150 | 0.19571 | 0.1962 | -0.00357 | [-0.0078, +0.0007] | NO_DETECTABLE_GAIN |
-| OU35 | all | 645 | 0.22681 | 0.23889 | +0.07795 | [+0.0312, +0.1338] | MODEL_HURTS |
-| OU35 | new_format | 456 | 0.22806 | 0.24538 | +0.04621 | [+0.0188, +0.0806] | MODEL_HURTS |
-| OU35 | standard | 189 | 0.22379 | 0.22322 | -0.00391 | [-0.0178, +0.0144] | NO_DETECTABLE_GAIN |
-| BTTS | all | 1810 | 0.24189 | 0.24474 | +0.00093 | [-0.0006, +0.0026] | NO_DETECTABLE_GAIN |
-| BTTS | new_format | 1005 | 0.24014 | 0.24297 | +0.00937 | [+0.0035, +0.0159] | MODEL_HURTS |
-| BTTS | standard | 805 | 0.24407 | 0.24696 | +0.00132 | [-0.0034, +0.0067] | NO_DETECTABLE_GAIN |
+| OU25 | all | 1809 | 0.24138 | 0.2491 | +0.00056 | [-0.0010, +0.0023] | NO_DETECTABLE_GAIN |
+| OU25 | new_format | 994 | 0.23757 | 0.24781 | +0.00497 | [+0.0010, +0.0094] | MODEL_HURTS |
+| OU25 | standard | 815 | 0.24602 | 0.25068 | +0.00300 | [-0.0015, +0.0081] | NO_DETECTABLE_GAIN |
+| OU15 | all | 226 | 0.19663 | 0.1965 | +0.00094 | [-0.0104, +0.0096] | NO_DETECTABLE_GAIN |
+| OU15 | new_format | 150 | 0.19571 | 0.1962 | -0.00357 | [-0.0078, +0.0008] | NO_DETECTABLE_GAIN |
+| OU35 | all | 646 | 0.22746 | 0.2394 | +0.07779 | [+0.0320, +0.1334] | MODEL_HURTS |
+| OU35 | new_format | 456 | 0.22806 | 0.24538 | +0.04621 | [+0.0181, +0.0813] | MODEL_HURTS |
+| OU35 | standard | 190 | 0.22603 | 0.22503 | -0.00205 | [-0.0172, +0.0148] | NO_DETECTABLE_GAIN |
+| BTTS | all | 1811 | 0.2419 | 0.24473 | +0.00061 | [-0.0009, +0.0022] | NO_DETECTABLE_GAIN |
+| BTTS | new_format | 1005 | 0.24014 | 0.24297 | +0.00937 | [+0.0034, +0.0160] | MODEL_HURTS |
+| BTTS | standard | 806 | 0.24409 | 0.24694 | +0.00108 | [-0.0040, +0.0066] | NO_DETECTABLE_GAIN |
 
 Negative Δ = adding the model improved the forecast. No market × track shows an improvement; several are made worse. O/U stays PAPER regardless of short ROI windows.
 
@@ -82,13 +82,13 @@ Negative Δ = adding the model improved the forecast. No market × track shows a
 
 ## 5. Market-anchored O/U 2.5 challenger
 
-`logit p = a + b·logit(market) + c·logit(v9)`, refitted weekly, c ≥ 0. Decision-time market only (never the close). 1515 out-of-sample fixtures.
+`logit p = a + b·logit(market) + c·logit(v9)`, refitted weekly, c ≥ 0. Decision-time market only (never the close). 1516 out-of-sample fixtures.
 
 | | Log loss | Brier | Tips at 5% edge | UNDER share | Units | ROI | Mean CLV (pp) |
 |---|---|---|---|---|---|---|---|
-| Market | 0.68056 | 0.24384 | – | – | – | – | – |
-| v9 | 0.69514 | 0.25097 | 456 | 0.842 | -49.77 | -11% | -3.97 |
-| Challenger | 0.68134 | 0.24419 | 0 | – | – | – | – |
+| Market | 0.68067 | 0.24389 | – | – | – | – | – |
+| v9 | 0.69518 | 0.25098 | 456 | 0.842 | -49.77 | -11% | -3.97 |
+| Challenger | 0.68141 | 0.24422 | 0 | – | – | – | – |
 
 Current weights: c (model) = 0.0 — unconstrained fit -0.404, i.e. given the market, v9's lean points the WRONG way, so it gets no say. Forward record: `output/studies/ou_challenger_forward.csv` (first sight, never revised).
 
