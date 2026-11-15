@@ -47,7 +47,8 @@ def odds_rows(resp: list, snapshot_ts: str, now_epoch: int,
         if not ko or int(ko) <= now_epoch or f.get("id") is None:
             continue
         fid = int(f["id"])
-        meta.setdefault(fid, (f, (fx.get("league") or {}).get("id"), ko))
+        lg = (fx.get("league") or {}).get("id")          # the 1X2 league filter below reads it
+        meta.setdefault(fid, (f, lg, ko))
         q = quotes.setdefault(fid, {})
         for bk in fx.get("bookmakers") or []:
             name = bk.get("name")

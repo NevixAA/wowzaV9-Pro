@@ -128,7 +128,10 @@ def test_scout_unrated_team_has_no_prediction():
     from src.scout import model
     m = {"teams": {1: 0}, "A": [1.1], "D": [0.9], "mu_h": 1.4, "mu_a": 1.1, "games": [10],
          "offset": {}, "n_matches": 10}
-    assert model.predict(m, 1, 2) is None and model.predict(m, 2, 1) is None
+    # main's scout Data Truth R9 (merged at go-live): the row is kept and marked UNKNOWN_TEAM, every probability
+    # missing - never a league-average rating
+    for p in (model.predict(m, 1, 2), model.predict(m, 2, 1)):
+        assert p["unknown_team"] is True and all(p[k] is None for k in model.P_COLS)
 
 
 # ── live collector: a failed call is an error, not "nothing live" ────────────────────────────

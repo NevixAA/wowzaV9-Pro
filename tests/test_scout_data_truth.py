@@ -362,7 +362,10 @@ def test_research_gates_are_marked_and_unread_by_betting_code():
         if rel.startswith("src/scout/"):
             continue
         txt = f.read_text(encoding="utf-8", errors="ignore")
-        if re.search(r"(from|import)\s+src\.scout\b|src\.scout\.(report|hypotheses|promotion)", txt):
+        # the research GATES (report / hypotheses / promotion) stay inside the scout. Its data helpers (parse, the
+        # af client) may be reused by research code (src/specials, data-truth-100), never by staking code (below).
+        if re.search(r"from\s+src\.scout\s+import\s+[^\n]*\b(report|hypotheses|promotion)\b|"
+                     r"src\.scout\.(report|hypotheses|promotion)", txt):
             bad.append(rel)
         if rel.startswith(("src/bankroll/", "src/betting/", "src/price_trader/")) and \
                 re.search(r"\b(EDGE_BAR|MAX_DEFECT_SHARE|POOLED_MARGIN)\b|scout", txt):
