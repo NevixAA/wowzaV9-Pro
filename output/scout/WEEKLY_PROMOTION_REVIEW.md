@@ -11,11 +11,11 @@ Failed: 0
 Awaiting multiple-testing confirmation: 0
 
 Closest to the candidate gate:
-  England National League - South: needs {'settled_with_close': 249, 'results': 0, 'history_seasons': 0}
-  Argentina Primera Nacional: needs {'settled_with_close': 250, 'results': 0, 'history_seasons': 0}
-  Israel Liga Alef: needs {'settled_with_close': 250, 'results': 0, 'history_seasons': 0}
-  Belgium First Amateur Division: needs {'settled_with_close': 257, 'results': 0, 'history_seasons': 0}
-  Turkey 2. Lig: needs {'settled_with_close': 258, 'results': 0, 'history_seasons': 0}
+  Turkey 2. Lig: needs {'settled_with_close': 245, 'results': 0, 'history_seasons': 0}
+  Argentina Primera Nacional: needs {'settled_with_close': 246, 'results': 0, 'history_seasons': 0}
+  England National League - South: needs {'settled_with_close': 247, 'results': 0, 'history_seasons': 0}
+  Belgium First Amateur Division: needs {'settled_with_close': 249, 'results': 0, 'history_seasons': 0}
+  England National League: needs {'settled_with_close': 250, 'results': 0, 'history_seasons': 0}
 
 EXISTING_PRODUCTION_SELECTION_CHANGED = NO
 EXISTING_LEAGUE_MODELS_RETRAINED = NO
