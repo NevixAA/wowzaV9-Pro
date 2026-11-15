@@ -1,9 +1,21 @@
 """Per-track tier rule (2026-10-22): equal tiers where the edge does not rank outcomes, ladder where it does."""
 import numpy as np
 import pandas as pd
+import pytest
 
 from src.bankroll import allocator as A
 from src.bankroll.data import staked, tier_multiplier
+
+
+# Data Truth 2026-11-01: league names, paper leagues, model types and the club resolver are read
+# from v9's league registry, so these tests need a v9 checkout (CI sets V9_LOCAL).
+def _v9_present() -> bool:
+    from config import pro_config as _cfg
+    return (_cfg.V9_LOCAL / "config.py").exists()
+
+
+needs_v9 = pytest.mark.skipif(not _v9_present(), reason="needs a v9 checkout (V9_LOCAL)")
+
 
 POLICY = {"tier_multipliers": {"SNIPER": 1.1, "MARKSMAN": 0.9},
           "tracks": {"nf|OU25": {"state": "ACTIVE_LOW"}, "nf|BTTS": {"state": "ACTIVE"}, "std|BTTS": {"state": "PAPER"}}}
@@ -42,6 +54,7 @@ def test_staked_follows_the_override_and_the_ladder():
     assert (s[s.track == "nf|OU25"].signal_tier == "VALUABLE").any()
 
 
+@needs_v9
 def test_validate_bounds_track_overrides():
     pol = {"portfolio": {"single_bet_cap": 0.02, "fixture_cap": 0.02, "daily_cap": 0.06, "league_daily_cap": 0.03,
                          "league_market_daily_cap": 0.03},

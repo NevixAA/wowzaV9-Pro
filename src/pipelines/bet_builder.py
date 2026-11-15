@@ -60,6 +60,7 @@ from src.combo import v9_direction as v9gate
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "output"
 CAND_FILE = OUT / "bet_builder_candidates.csv"
+CAND_META_FILE = OUT / "bet_builder_candidates_meta.json"
 SETTLED_FILE = OUT / "bet_builder_settled.csv"
 
 CALC_VERSION = "1.0.0"
@@ -76,7 +77,8 @@ def _read(table: str) -> pd.DataFrame:
     from src.data import season_store as store
     try:
         return store.read(table)
-    except Exception:                                          # noqa: BLE001
+    except Exception as e:                                     # noqa: BLE001
+        print(f"[builder] could not read warehouse table {table}: {type(e).__name__}: {e}")
         return pd.DataFrame()
 
 
@@ -93,21 +95,43 @@ def _latest_model_probs(snaps: pd.DataFrame) -> pd.DataFrame:
 
 
 def _dependency() -> dict:
-    """Measured player x goal-market dependence, or {} if it has not been built yet.
+    """Measured player/card x goal-market dependence, or {} if it is missing or unreadable.
 
-    An empty dict is NOT a failure: `_joint` falls back to a ratio of 1.0, which is plain
-    independence. It is worth knowing that happened, so the caller reports it.
+    {} means NO player or card leg can be combined: `_joint` refuses every pair without a
+    measured cell (it used to price them at a ratio of 1.0, i.e. assumed independence). The
+    caller says so out loud.
     """
     f = OUT / "player_combo_dependency.csv"
     if not f.exists():
+        print(f"[builder] {f.name} is missing")
         return {}
     try:
         return pdep.joint_lookup(pd.read_csv(f))
-    except Exception:                                          # noqa: BLE001
+    except Exception as e:                                     # noqa: BLE001
+        print(f"[builder] could not read {f.name}: {type(e).__name__}: {e}")
         return {}
 
 
-def _card_rates() -> pd.DataFrame:
+def _player_history() -> pd.DataFrame:
+    """v9's player_history.parquet (outcomes per player-match), or empty with a printed reason."""
+    import os
+    roots = [os.getenv("V9_LOCAL", ""), str(ROOT.parent / "v9"), str(ROOT.parent / "_v9")]
+    for r in roots:
+        if not r:
+            continue
+        p = Path(r) / "player_history.parquet"
+        if not p.exists():
+            continue
+        try:
+            return pd.read_parquet(p)
+        except Exception as e:                                 # noqa: BLE001
+            print(f"[builder] could not read {p}: {type(e).__name__}: {e}")
+    print("[builder] NO player_history.parquet found — team-card and score-or-assist legs will "
+          "NOT be built. Check out v9 alongside Pro, or set V9_LOCAL.")
+    return pd.DataFrame()
+
+
+def _card_rates(h: pd.DataFrame | None = None) -> pd.DataFrame:
     """Per team-match card totals, for the team-card legs.
 
     Cards were MISSING ENTIRELY from the first live tips — `build()` takes a `cards=` argument
@@ -118,25 +142,12 @@ def _card_rates() -> pd.DataFrame:
     borrowing pro_weekly_audit already does. Pro still writes nothing to v9.
     """
     from src.combo import team_markets as tm
-    import os
-    roots = [os.getenv("V9_LOCAL", ""), str(ROOT.parent / "v9"), str(ROOT.parent / "_v9")]
-    for r in roots:
-        if not r:
-            continue
-        p = Path(r) / "player_history.parquet"
-        if not p.exists():
-            continue
-        try:
-            h = pd.read_parquet(p)
-            rates = tm.team_card_rates(h)
-            print(f"[builder] card rates from {p.name}: {len(rates):,} team-matches")
-            return rates
-        except Exception as e:                                 # noqa: BLE001
-            print(f"[builder] could not read {p}: {type(e).__name__}: {e}")
-    # Said out loud. Silently producing zero card legs is what happened the first time.
-    print("[builder] NO player_history.parquet found — team-card legs will NOT be built. "
-          "Check out v9 alongside Pro, or set V9_LOCAL.")
-    return pd.DataFrame()
+    h = _player_history() if h is None else h
+    if h.empty:
+        return pd.DataFrame()
+    rates = tm.team_card_rates(h)
+    print(f"[builder] card rates from player_history: {len(rates):,} team-matches")
+    return rates
 
 
 def generate(days: int = DEFAULT_DAYS, *, now: dt.datetime | None = None) -> pd.DataFrame:
@@ -148,7 +159,12 @@ def generate(days: int = DEFAULT_DAYS, *, now: dt.datetime | None = None) -> pd.
 
     fx = fixtures.copy()
     fx["_ko"] = pd.to_datetime(fx.get("kickoff_utc"), errors="coerce", utc=True)
-    fx = fx.dropna(subset=["_ko"]).drop_duplicates(subset=["fixture_key"], keep="last")
+    # fixture_key v2 is None for a league outside the registry or an unparseable date: no
+    # identity to build a combo id on, so skipped and counted (never keyed as the string 'None').
+    nokey = fx["fixture_key"].isna()
+    if nokey.any():
+        print(f"[builder] {int(nokey.sum())} fixture row(s) without a fixture_key - skipped")
+    fx = fx[~nokey].dropna(subset=["_ko"]).drop_duplicates(subset=["fixture_key"], keep="last")
     horizon = now + dt.timedelta(days=days)
     started = int((fx["_ko"] <= now).sum())
     fx = fx[(fx["_ko"] > now) & (fx["_ko"] <= horizon)]
@@ -159,10 +175,16 @@ def generate(days: int = DEFAULT_DAYS, *, now: dt.datetime | None = None) -> pd.
 
     probs = _latest_model_probs(snaps)
     dep = _dependency()
-    cards = _card_rates()
+    hist = _player_history()
+    cards = _card_rates(hist)
+    from src.combo import team_markets as tm
+    # Score-or-assist overlap measured per league from player_history (was one pooled constant).
+    overlap = (tm.score_assist_overlap(hist, min_minutes=pdep.MIN_MINUTES, min_rows=pdep.MIN_CELL_N)
+               if not hist.empty else {})
     if not dep:
-        print("[builder] no measured player dependence available — player legs fall back to "
-              "independence (ratio 1.0), which is recorded per row as a flag")
+        print("[builder] no measured player/card dependence available — player and card legs "
+              "will NOT be combined (no independence is assumed)")
+    from src.data import v9_config
 
     stamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
     out, no_probs, bad_mono, no_fit = [], 0, 0, 0
@@ -201,10 +223,16 @@ def generate(days: int = DEFAULT_DAYS, *, now: dt.datetime | None = None) -> pd.
         # a week, forever. Nothing consumes that depth: notify sends at most 6, the dashboard
         # shows 200. Twelve of each leg count keeps the interesting tail of every length while
         # the file stays a few hundred KB.
-        cand = mp.build(fit["matrix"], props=fp if fp is not None and len(fp) else None,
-                        cards=cards if len(cards) else None,
+        lg = v9_config.canonical_league(f.get("league"))
+        if lg is None:
+            print(f"[builder] {f.get('league')!r} is not a registry league — card and "
+                  f"score-or-assist legs skipped for {f.get('home_team')} v {f.get('away_team')}")
+        cand = mp.build(fit["matrix"], targets_used=fit["targets_used"], league=lg,
+                        props=fp if fp is not None and len(fp) else None,
+                        cards=cards if len(cards) and lg is not None else None,
                         home=str(f.get("home_team", "")), away=str(f.get("away_team", "")),
-                        dep=dep, top_n=CANDIDATES_PER_LEG_COUNT)
+                        dep=dep, overlap_rate=overlap.get(lg) if lg is not None else None,
+                        top_n=CANDIDATES_PER_LEG_COUNT)
         if cand.empty:
             continue
         cand.insert(0, "generated_at", stamp)
@@ -343,8 +371,15 @@ def settle_finished() -> pd.DataFrame:
               "Reporting that rather than grading everything UNKNOWN.")
         return pd.DataFrame()
     res = pd.concat(parts, ignore_index=True)
+    # KICKOFF GUARD (result_guard): a full-time score observed before its own kickoff is a provider
+    # error and never grades a combo (3 such rows in team_match_stats at origin/data-truth-100).
+    from src.data import result_guard as rg
+    res = rg.drop_unplayed(res, "bet_builder scorelines")
     if "fixture_key" in res.columns:
-        res = res.drop_duplicates(subset=["fixture_key"], keep="last")
+        # Rows without a key are never collapsed into one another on a null key.
+        nk = res["fixture_key"].isna()
+        res = pd.concat([res[~nk].drop_duplicates(subset=["fixture_key"], keep="last"), res[nk]],
+                        ignore_index=True)
     players = _read("player_props")
 
     fresh = cs.settle(cand, res, players if not players.empty else pd.DataFrame())
@@ -429,9 +464,49 @@ def settle_finished() -> pd.DataFrame:
         fresh = merged
         print(f"[builder] merged with {len(old):,} existing row(s) "
               f"-> {len(fresh):,} (graded {was} -> {now_})")
+    # Audit columns BESIDE the record (model_validity, frechet_violation, void_legs,
+    # scoreboard_result, audit_note): combo_result and every original column stay as written.
+    from src.combo import record_audit as ra
+    fresh = ra.annotate(fresh)
     perf = cs.performance(fresh)
     print(f"[builder] settled record: {perf}")
     return fresh
+
+
+# Header used when a run builds nothing and there is no earlier file to take the header from.
+_EMPTY_CANDIDATE_COLUMNS = ["generated_at", "fixture_key", "league", "match_date", "kickoff_utc",
+                            "match", "combo_id"]
+
+
+def write_candidates(d: pd.DataFrame | None, *, now: dt.datetime | None = None) -> int:
+    """Write this run's candidate file and its stamp. A run that builds NOTHING writes an EMPTY file.
+
+    Data Truth round 5 (owner decision): the candidate file used to be rewritten only when generate
+    built something, so a run that built nothing left the previous run's candidates on disk and
+    notify / the daily album could re-send them (2026-11-02's album listed five 2026-11-01 matches
+    from a file generated 2026-11-01T16:01Z). Now every generate run replaces the file: with the new
+    rows, or with a header-only file. A header-only CSV cannot carry a time, so the run's stamp is
+    written beside it in bet_builder_candidates_meta.json (generated_at, rows) on EVERY run.
+    """
+    now = now or dt.datetime.now(dt.timezone.utc)
+    stamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+    OUT.mkdir(parents=True, exist_ok=True)
+    if d is None or d.empty:
+        cols = list(d.columns) if d is not None and len(d.columns) else []
+        if not cols and CAND_FILE.exists():
+            try:
+                cols = list(pd.read_csv(CAND_FILE, nrows=0).columns)
+            except Exception:                                      # noqa: BLE001
+                cols = []
+        d = pd.DataFrame(columns=cols or _EMPTY_CANDIDATE_COLUMNS)
+        print(f"[builder] built nothing - wrote an EMPTY {CAND_FILE.name} so no earlier "
+              f"candidate can be re-sent")
+    else:
+        print(f"[builder] wrote {CAND_FILE.name} ({len(d):,} rows)")
+    d.to_csv(CAND_FILE, index=False, encoding="utf-8")
+    CAND_META_FILE.write_text(json.dumps({"generated_at": stamp, "rows": int(len(d)),
+                                          "file": CAND_FILE.name}, indent=2), encoding="utf-8")
+    return int(len(d))
 
 
 def main() -> int:
@@ -450,11 +525,7 @@ def main() -> int:
     canon: dict[str, int] = {}
 
     if args.mode in ("generate", "all"):
-        d = generate(args.days)
-        if not d.empty:
-            OUT.mkdir(exist_ok=True)
-            d.to_csv(CAND_FILE, index=False, encoding="utf-8")
-            print(f"[builder] wrote {CAND_FILE.name} ({len(d):,} rows)")
+        write_candidates(generate(args.days))
 
     if args.mode in ("notify", "all"):
         cand = pd.read_csv(CAND_FILE, low_memory=False) if CAND_FILE.exists() else pd.DataFrame()

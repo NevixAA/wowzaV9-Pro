@@ -9,23 +9,47 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.studies import common as C  # noqa: E402
 from src.studies import evidence as E  # noqa: E402
 
 
+# Data Truth 2026-11-01: league names, paper leagues, model types and the club resolver are read
+# from v9's league registry, so these tests need a v9 checkout (CI sets V9_LOCAL).
+def _v9_present() -> bool:
+    from config import pro_config as _cfg
+    return (_cfg.V9_LOCAL / "config.py").exists()
+
+
+needs_v9 = pytest.mark.skipif(not _v9_present(), reason="needs a v9 checkout (V9_LOCAL)")
+
+
+
+@needs_v9
 def test_matcher_accepts_abbreviations_and_refuses_ambiguity():
+    """Matching is v9's league-scoped result resolver on a CANONICAL league (Data Truth)."""
     assert C.same_club("Atl. Tucuman", "Atletico Tucuman")
     assert C.same_club("Dep. Riestra", "Deportivo Riestra")
     assert not C.same_club("Real Madrid", "Real Sociedad")
-    left = pd.DataFrame([{"league": "L", "match_date": "2026-09-01", "home_team": "Gimnasia", "away_team": "Boca"}])
+    lg = "Argentina Primera Division"
+    left = pd.DataFrame([{"league": lg, "match_date": "2026-09-01", "home_team": "Gimnasia La Plata",
+                          "away_team": "Boca Juniors"}])
     right = pd.DataFrame([
-        {"league": "L", "match_date": "2026-09-02", "home_team": "Gimnasia L.P.", "away_team": "Boca Juniors"},
-        {"league": "L", "match_date": "2026-09-01", "home_team": "Gimnasia Mendoza", "away_team": "Boca Juniors"}])
-    assert pd.isna(C.match_frames(left, right).iloc[0]), "two candidates must be refused, not guessed"
-    right = right.iloc[:1]
+        {"league": lg, "match_date": "2026-09-02", "home_team": "Gimnasia L.P.", "away_team": "Boca Juniors"},
+        {"league": lg, "match_date": "2026-09-01", "home_team": "Gimnasia Mendoza", "away_team": "Boca Juniors"}])
+    # the alias store proves Gimnasia La Plata = Gimnasia L.P.; Gimnasia Mendoza is another club
     assert C.match_frames(left, right).iloc[0] == 0, "a UTC date one day later still matches"
+    two = pd.concat([right.iloc[:1], right.iloc[:1].assign(match_date="2026-09-01")], ignore_index=True)
+    assert pd.isna(C.match_frames(left, two).iloc[0]), "two candidates must be refused, not guessed"
+    # Owner rule 2026-11-02 (v9 team_names, proven club identity only): a bare 'Gimnasia' / 'Boca'
+    # is not provably either club, so it matches nothing - never the nearest spelling.
+    bare = left.assign(home_team="Gimnasia", away_team="Boca")
+    assert pd.isna(C.match_frames(bare, right).iloc[0]) and pd.isna(C.match_frames(bare, right.iloc[:1]).iloc[0])
+    # A league the registry does not know never matches - no raw-string league join.
+    assert pd.isna(C.match_frames(left.assign(league="Not A League"),
+                                  right.assign(league="Not A League")).iloc[0])
 
 
 def test_confidence_sequence_covers_the_true_mean():

@@ -8,7 +8,7 @@ name: Pro League Scout
 # pages across 197 leagues with fixtures), ~90 seconds, ~40 KB of parquet for a full snapshot and
 # far less once the change-log has a baseline. History adds up to --history-budget calls per run
 # until ~1,000 league-seasons are in (about 4-7 runs), then nothing. At 12 firings a day that is
-# ~3,300 calls/day against ~60,000/day of headroom. The collector stops at SCOUT_MIN_QUOTA (20,000
+# ~3,300 calls/day against ~60,000/day of headroom. The collector stops at SCOUT_MIN_QUOTA (25,000
 # remaining) so it can never starve v9's predict loop, which shares the key.
 #
 # CADENCE. API-Football refreshes pre-match odds about every 3 hours, so sampling faster buys

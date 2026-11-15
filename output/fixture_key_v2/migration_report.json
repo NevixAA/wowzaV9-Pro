@@ -1,0 +1,325 @@
+{
+ "key_version": "fk2",
+ "vocab_version": "fk2-clubs/1.0",
+ "vocab_sha256": "34d0b3c6bcdd42c235b72fdca7923d6136c10112c67cad9eff9ce3c8d9782ac9",
+ "season": "season_2026_27",
+ "dry_run": false,
+ "resolver": {
+  "v9_commit": "0704142d93f2",
+  "src/team_names.py": "26a5d808c7830928240cce153e02754644ccc3fca4efee5322c74e3958e71379",
+  "config/leagues.json": "be475a0bf235f18ac4892e2848d1e61f16a857555cb8123bb5556341485ff752",
+  "src/league_registry.py": "a9f57e40a9d757a07184119c5cdd883708798db28db5c258e529ed6afe81b414"
+ },
+ "v9_named_sources": {
+  "output/bets_ledger.csv": 1747,
+  "output/side_bets_ledger.csv": 542,
+  "output/player_ledger.csv": 2347,
+  "output/live_signals_history.csv": 268,
+  "output/fd_history.parquet": 65940,
+  "output/af_history.parquet": 91656
+ },
+ "v1_recomputed_differs_from_stored": {
+  "fixtures": 0,
+  "book_odds_snapshots": 0,
+  "market_snapshots": 243248,
+  "team_match_stats": 116,
+  "team_news": 0,
+  "settlements_backfill": 0,
+  "combo_candidates": 0,
+  "combo_settlements": 1887
+ },
+ "v1_keys_in_map": 89563,
+ "v1_keys_ambiguous": 6,
+ "clv_recovery": {
+  "source_rows": 8251,
+  "keys": 8251,
+  "ambiguous_keys": 0,
+  "with_league_and_date": 8130
+ },
+ "tables": {
+  "fixtures": {
+   "rows_before": 78421,
+   "status:RESOLVED": 76817,
+   "status:CLUB_UNRESOLVED": 1604,
+   "exact_copies_dropped": 0,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 0,
+   "rows_after": 78421
+  },
+  "book_odds_snapshots": {
+   "rows_before": 381972,
+   "status:RESOLVED": 373415,
+   "status:CLUB_UNRESOLVED": 8557,
+   "kickoff_normalised": 381972,
+   "kickoff_unparseable": 0,
+   "kickoff_blank_or_nan_to_none": 0,
+   "minutes_to_kickoff_recomputed": 0,
+   "exact_copies_dropped": 0,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 0,
+   "rows_after": 381972
+  },
+  "market_snapshots": {
+   "rows_before": 401270,
+   "status:RESOLVED": 394601,
+   "status:CLUB_UNRESOLVED": 6669,
+   "exact_copies_dropped": 0,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 0,
+   "rows_after": 401270
+  },
+  "team_match_stats": {
+   "rows_before": 6044,
+   "status:RESOLVED": 6018,
+   "team_ids_attached": 2159,
+   "exact_copies_dropped": 0,
+   "status:CLUB_UNRESOLVED": 25,
+   "status:CLUB_COLLISION": 1,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 0,
+   "rows_after": 6044
+  },
+  "team_news": {
+   "rows_before": 564,
+   "status:RESOLVED": 558,
+   "exact_copies_dropped": 0,
+   "status:CLUB_UNRESOLVED": 6,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 0,
+   "rows_after": 564
+  },
+  "settlements_backfill": {
+   "rows_before": 778,
+   "status:RESOLVED": 773,
+   "kickoff_normalised": 415,
+   "kickoff_unparseable": 0,
+   "kickoff_blank_or_nan_to_none": 363,
+   "exact_copies_dropped": 0,
+   "status:CLUB_UNRESOLVED": 5,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 0,
+   "rows_after": 778
+  },
+  "combo_candidates": {
+   "rows_before": 78727,
+   "status:RESOLVED": 78087,
+   "combo_ids_reprefixed": 78727,
+   "combo_ids_kept": 0,
+   "exact_copies_dropped": 0,
+   "status:CLUB_UNRESOLVED": 640,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 0,
+   "rows_after": 78727
+  },
+  "combo_settlements": {
+   "rows_before": 44233,
+   "status:RESOLVED": 43916,
+   "status:CLUB_UNRESOLVED": 317,
+   "combo_ids_reprefixed": 41782,
+   "combo_ids_kept": 2451,
+   "exact_copies_dropped": 0,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 0,
+   "rows_after": 44233
+  },
+  "model_snapshots": {
+   "rows_before": 380618,
+   "status:RESOLVED": 373250,
+   "status:CLUB_UNRESOLVED": 7368,
+   "exact_copies_dropped": 0,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 0,
+   "rows_after": 380618
+  },
+  "feature_snapshots": {
+   "rows_before": 78421,
+   "status:RESOLVED": 76817,
+   "status:CLUB_UNRESOLVED": 1604,
+   "exact_copies_dropped": 0,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 0,
+   "rows_after": 78421
+  },
+  "signals": {
+   "rows_before": 78421,
+   "status:RESOLVED": 76817,
+   "status:CLUB_UNRESOLVED": 1604,
+   "exact_copies_dropped": 0,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 0,
+   "rows_after": 78421
+  },
+  "settlements": {
+   "rows_before": 444594,
+   "status:RESOLVED": 439369,
+   "status:CLUB_UNRESOLVED": 5225,
+   "exact_copies_dropped": 0,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 42710,
+   "rows_after": 444594
+  },
+  "live_signals": {
+   "rows_before": 8038,
+   "status:RESOLVED": 8000,
+   "exact_copies_dropped": 0,
+   "status:CLUB_UNRESOLVED": 38,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 0,
+   "rows_after": 8038
+  },
+  "player_props": {
+   "rows_before": 954421,
+   "status:RESOLVED": 944043,
+   "status:CLUB_UNRESOLVED": 10378,
+   "exact_copies_dropped": 0,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 6536,
+   "rows_after": 954421
+  },
+  "combo_legs": {
+   "rows_before": 215255,
+   "status:RESOLVED": 213542,
+   "combo_ids_reprefixed": 215255,
+   "combo_ids_kept": 0,
+   "exact_copies_dropped": 0,
+   "status:CLUB_UNRESOLVED": 1713,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 0,
+   "rows_after": 215255
+  },
+  "clv": {
+   "rows_before": 220317,
+   "clv_rows_recovered": 216249,
+   "clv_rows_not_recovered": 4068,
+   "status:RESOLVED": 214967,
+   "status:LEAGUE_UNKNOWN": 4068,
+   "exact_copies_dropped": 0,
+   "status:CLUB_UNRESOLVED": 1282,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 0,
+   "rows_after": 220317
+  },
+  "scout_odds": {
+   "rows_before": 473790,
+   "exact_copies_dropped": 0,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 58,
+   "rows_after": 473790
+  },
+  "scout_results": {
+   "rows_before": 242976,
+   "exact_copies_dropped": 0,
+   "canonical_copies_dropped": 0,
+   "grain_conflicting_rows": 0,
+   "rows_after": 242976
+  }
+ },
+ "scout_results_name_duplicates": [
+  {
+   "match_date": "2023-04-16",
+   "home_team": "La Solana",
+   "away_team": "Taranc\u00f3n",
+   "fixture_ids": [
+    "1023738",
+    "958268"
+   ],
+   "league_ids": [
+    "456"
+   ]
+  },
+  {
+   "match_date": "2025-01-14",
+   "home_team": "Aubagne",
+   "away_team": "Nancy",
+   "fixture_ids": [
+    "1252231",
+    "1334986"
+   ],
+   "league_ids": [
+    "63"
+   ]
+  },
+  {
+   "match_date": "2025-08-20",
+   "home_team": "Breitenrain",
+   "away_team": "Lugano II",
+   "fixture_ids": [
+    "1418465",
+    "1418474"
+   ],
+   "league_ids": [
+    "510"
+   ]
+  },
+  {
+   "match_date": "2025-08-22",
+   "home_team": "Rekord Bielsko-Bia\u0142a",
+   "away_team": "Warta Pozna\u0144",
+   "fixture_ids": [
+    "1395855",
+    "1396000"
+   ],
+   "league_ids": [
+    "109"
+   ]
+  },
+  {
+   "match_date": "2025-08-23",
+   "home_team": "Liptovsk\u00fd Mikul\u00e1\u0161",
+   "away_team": "Sl\u00e1via TU Ko\u0161ice",
+   "fixture_ids": [
+    "1394778",
+    "1394891"
+   ],
+   "league_ids": [
+    "506"
+   ]
+  },
+  {
+   "match_date": "2025-08-23",
+   "home_team": "UCV Moquegua",
+   "away_team": "Bent\u00edn Tacna Heroica",
+   "fixture_ids": [
+    "1436802",
+    "1446023"
+   ],
+   "league_ids": [
+    "282"
+   ]
+  }
+ ],
+ "records": {
+  "bet_builder_candidates.csv": {
+   "rows": 917,
+   "status:RESOLVED": 881,
+   "status:CLUB_UNRESOLVED": 36,
+   "combo_ids_reprefixed": 917,
+   "combo_ids_kept": 0
+  },
+  "bet_builder_daily.csv": {
+   "rows": 17,
+   "status:RESOLVED": 16,
+   "status:CLUB_UNRESOLVED": 1,
+   "combo_ids_reprefixed": 17,
+   "combo_ids_kept": 0
+  },
+  "bet_builder_settled.csv": {
+   "rows": 27942,
+   "status:RESOLVED": 27620,
+   "status:CLUB_UNRESOLVED": 322,
+   "combo_ids_reprefixed": 25410,
+   "combo_ids_kept": 0
+  },
+  "studies/ou_challenger_forward.csv": {
+   "rows": 932,
+   "status:RESOLVED": 913,
+   "status:CLUB_UNRESOLVED": 19
+  },
+  "paper_1x2.csv": {
+   "rows": 352,
+   "status:RESOLVED": 352,
+   "row_ids_rekeyed": 352
+  }
+ },
+ "unresolved_club_names": 16
+}

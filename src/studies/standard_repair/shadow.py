@@ -36,7 +36,10 @@ import numpy as np
 import pandas as pd
 
 from config import pro_config as cfg
-from src.data.entities import fixture_key
+# The FROZEN forward-shadow registration (registry/standard_repair/forward_shadow_v1.json) keys its
+# rows on the v1 fixture key; the warehouse moved to v2 on 2026-11-02, but this study's row ids
+# must not move, so it keeps v1 by name.
+from src.data.entities import fixture_key_v1 as fixture_key
 from src.studies.standard_repair import shadow_market as MK
 from src.studies.standard_repair import shadow_models as SM
 from src.studies.standard_repair import shadow_registry as R

@@ -29,7 +29,18 @@ PRO = Path(__file__).resolve().parents[2]          # mixed/v10
 ROOT = PRO.parent                                   # mixed/
 CONTRACT = PRO / "registry" / "WOWZA_SYSTEM_CONTRACT.json"
 SCHEMA = PRO / "registry" / "WOWZA_SYSTEM_CONTRACT.schema.json"
-REPO_PATHS = {"v9": ROOT / "v9", "pro": PRO, "v11": ROOT / "wowza-v11"}
+
+
+def repo_paths() -> dict:
+    """Where v9 / Pro / v11 are checked out: config.pro_config's V9_LOCAL / V11_LOCAL (env
+    overridable, sibling spelling resolved there), never a path typed here. It was hardcoded to
+    `<parent>/wowza-v11`; the repository and the CI checkouts are `wowza_v11`, so v11 always read
+    as "not a git repo here" and its staleness was never checked (Data Truth round 3)."""
+    from config import pro_config as cfg
+    return {"v9": Path(cfg.V9_LOCAL), "pro": PRO, "v11": Path(cfg.V11_LOCAL)}
+
+
+REPO_PATHS = repo_paths()
 
 
 def _head(path: Path) -> str | None:

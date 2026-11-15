@@ -25,6 +25,8 @@
 !/data/
 !/models/
 !/output/
+# owner-facing research reports (reports/R_*.md)
+!/reports/
 
 # ── Secrets: never, by any path ───────────────────────────────────────────────
 # v10's .env carries live API-Football, Google and GitHub credentials. They must reach CI as
@@ -77,6 +79,13 @@ output/**
 !output/bet_builder_settled.csv
 !output/bet_builder_candidates.csv
 !output/bet_builder_daily.csv
+# fixture_key v2 migration evidence (src/pipelines/migrate_fixture_key_v2.py): what was re-keyed,
+# what could not be, and why. Small, written once per migration run.
+!output/fixture_key_v2/
+!output/fixture_key_v2/migration_report.json
+!output/fixture_key_v2/unresolved_clubs.csv
+!output/fixture_key_v2/unmapped_v1_keys.csv
+!output/fixture_key_v2/grain_conflicts.csv
 # The notify dedup state. It MUST persist between runs or every run re-sends the whole board as
 # NEW — the same failure shape as v9's duplicate-tip flood.
 !output/combo_notified.json
@@ -548,3 +557,26 @@ experiments/standard_repair_2026_10/rebuild/
 !output/studies/r2_repaired_challengers/*.json
 !output/studies/r2_repaired_challengers/raw/
 !output/studies/r2_repaired_challengers/raw/*
+
+# Data Truth round 3 (2026-11-02): corrections written BESIDE committed records (never over them),
+# and the reproducibility manifest of the untracked VALUABLE prematch snapshot parquet.
+!output/corrections/
+!output/corrections/*.csv
+!output/corrections/*.md
+!output/corrections/*.json
+!experiments/valuable_2026_10/prematch_snapshots_manifest.json
+
+# Specials research tracker (owner 2026-11-09; src/specials, .github/workflows/pro_specials.yml).
+# The forward record MUST be committed: it is evidence of what the model believed before kickoff,
+# and v9's dashboard reads it over a sibling checkout. Named file by file, never a glob.
+!output/specials/
+!output/specials/specials_log.csv
+!output/specials/specials_settled.csv
+!output/specials/specials_eval.json
+!output/specials/cutoffs.json
+!output/specials/study_summary.json
+!output/specials/study_calibration_grid.csv
+!output/specials/study_calibration_bands.csv
+!output/specials/calibration.json
+!output/specials/special_prices.csv
+!output/specials/special_price_runs.csv

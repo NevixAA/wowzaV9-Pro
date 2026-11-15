@@ -21,6 +21,17 @@ from src.studies.standard_repair import provenance as PV
 from src.studies.standard_repair import trusted as TR
 from src.studies.standard_repair import v9r_registry as VR
 
+
+# Data Truth 2026-11-01: league names, paper leagues, model types and the club resolver are read
+# from v9's league registry, so these tests need a v9 checkout (CI sets V9_LOCAL).
+def _v9_present() -> bool:
+    from config import pro_config as _cfg
+    return (_cfg.V9_LOCAL / "config.py").exists()
+
+
+needs_v9 = pytest.mark.skipif(not _v9_present(), reason="needs a v9 checkout (V9_LOCAL)")
+
+
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -235,6 +246,7 @@ def test_fingerprint_stale_on_v9_data_or_code_change():
     assert FP.compare(None, stamped)["status"] == "STALE"
 
 
+@needs_v9
 def test_failed_core_workflow_returns_failed(tmp_path, monkeypatch):
     """Brief test 16: scientific steps carry no `|| echo` / `|| true`; a missing benchmark raises
     (non-zero exit); a failed job marks everything STALE."""
