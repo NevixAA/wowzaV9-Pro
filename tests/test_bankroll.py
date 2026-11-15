@@ -28,7 +28,20 @@ def R():
 
 @pytest.fixture(scope="module")
 def pol(R):
-    return R.load_policy(cfg.V9_LOCAL / "config" / "bankroll_policy.json")
+    """v9's policy with per-cell staking OFF: these tests exercise the reader's TRACK rules (caps, throttle,
+    bounds, positions). With cell staking on (v9 clean rebuild, 2026-11-11) only owner cells stake, which
+    tests/test_bankroll_cells.py-style checks cover on the v9 side."""
+    p = copy.deepcopy(R.load_policy(cfg.V9_LOCAL / "config" / "bankroll_policy.json"))
+    if isinstance(p.get("cell_staking"), dict):
+        p["cell_staking"]["enabled"] = False
+    return p
+
+
+def tier_factor(R, pol, tier: str) -> float:
+    """The multiplier v9 applies for a tier: 1.0 everywhere since the clean rebuild (tiers retired, flat per
+    cell); the policy's tier_multipliers before it."""
+    r = R.size_day(pd.DataFrame([sel(signal_tier=tier)]), pol, 100, 100)
+    return float(r.loc[0, "tier_multiplier"])
 
 
 def sel(**kw):
@@ -45,9 +58,9 @@ def _nf_ou25_over() -> str:
 
 def test_balanced_base_and_tier(R, pol):
     r = R.size_day(pd.DataFrame([sel()]), pol, 100, 100)
-    assert r.loc[0, "final_fraction"] == pytest.approx(0.0125 * 1.10)
+    assert r.loc[0, "final_fraction"] == pytest.approx(0.0125 * tier_factor(R, pol, "SNIPER"))
     r = R.size_day(pd.DataFrame([sel(signal_tier="MARKSMAN")]), pol, 100, 100)
-    assert r.loc[0, "final_fraction"] == pytest.approx(0.0125 * 0.90)
+    assert r.loc[0, "final_fraction"] == pytest.approx(0.0125 * tier_factor(R, pol, "MARKSMAN"))
 
 
 def test_blocked_paper_and_odds(R, pol):
@@ -95,7 +108,7 @@ def test_daily_cap_scales_everything_proportionally(R, pol):
     rows = pd.DataFrame([sel(fixture=f"F{i}", league=f"L{i}") for i in range(10)])   # 10 x 1.375%
     r = R.size_day(rows, pol, 100, 100)
     assert r["final_fraction"].sum() == pytest.approx(0.06)
-    assert r["daily_scale"].iloc[0] == pytest.approx(0.06 / (10 * 0.01375))
+    assert r["daily_scale"].iloc[0] == pytest.approx(0.06 / (10 * 0.0125 * tier_factor(R, pol, "SNIPER")))
 
 
 def test_league_cap(R, pol):
@@ -106,8 +119,9 @@ def test_league_cap(R, pol):
 
 def test_drawdown_throttle_and_stop(R, pol):
     one = pd.DataFrame([sel()])
-    assert R.size_day(one, pol, 91, 100).loc[0, "final_fraction"] == pytest.approx(0.01375 * 0.75, abs=1e-6)
-    assert R.size_day(one, pol, 87, 100).loc[0, "final_fraction"] == pytest.approx(0.01375 * 0.50, abs=1e-6)
+    f = 0.0125 * tier_factor(R, pol, "SNIPER")           # 1.375% before the clean rebuild, 1.25% flat after
+    assert R.size_day(one, pol, 91, 100).loc[0, "final_fraction"] == pytest.approx(f * 0.75, abs=1e-6)
+    assert R.size_day(one, pol, 87, 100).loc[0, "final_fraction"] == pytest.approx(f * 0.50, abs=1e-6)
     r = R.size_day(one, pol, 80, 100)
     assert r.loc[0, "final_fraction"] == 0 and "PAPER_REVIEW" in r.loc[0, "reason"]
 

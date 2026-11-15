@@ -33,7 +33,13 @@ SIDES = ("new_format|OU25_OVER", "new_format|OU25_UNDER")
 
 @pytest.fixture(scope="module")
 def pol():
-    return R.load_policy(cfg.V9_LOCAL / "config" / "bankroll_policy.json")
+    """v9's policy with per-cell staking OFF, so the TRACK routing by side is what is exercised (with cell staking
+    on - v9 clean rebuild 2026-11-11 - only owner cells stake and these synthetic leagues have none)."""
+    import copy
+    p = copy.deepcopy(R.load_policy(cfg.V9_LOCAL / "config" / "bankroll_policy.json"))
+    if isinstance(p.get("cell_staking"), dict):
+        p["cell_staking"]["enabled"] = False
+    return p
 
 
 def _bets(n_days=90, over_bias=0.15, under_bias=-0.30, seed=0):
