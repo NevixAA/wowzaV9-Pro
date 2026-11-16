@@ -55,6 +55,17 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install -r requirements.txt
+      # CORNERS/CARDS ODDS (owner 2026-11-16, audit gap G1). The scout keeps the corners and cards bets
+      # of the /odds answers it already fetches (0 extra calls) and writes them ONLY to the PRIVATE store
+      # NevixAA/wowza-exec@af-side-odds: API-Football grants no licence to publish its data and this repo
+      # is public. OFF SWITCH: repo variable SIDE_ODDS_ENABLED != 'true' -> this step and the push step
+      # are skipped, SIDE_ODDS_DIR stays unset and the scout keeps nothing.
+      - name: Open the private corners/cards odds store
+        if: vars.SIDE_ODDS_ENABLED == 'true'
+        env:
+          SIDE_ODDS_STORE_KEY: ${{ secrets.SIDE_ODDS_STORE_KEY }}
+        run: bash .github/scripts/side_odds_store.sh open
+
       - name: Sample closing prices
         env:
           APIFOOTBALL_KEY: ${{ secrets.APIFOOTBALL_KEY }}
@@ -82,6 +93,12 @@ jobs:
           done
           echo "::error title=scout near push failed::closing prices were sampled but not persisted."
           exit 1
+      # After the public commit, so it can never affect it. Fails the job when the store was requested
+      # but not opened or pushed, so a lost day is visible.
+      - name: Push corners/cards odds to the private store
+        if: always() && vars.SIDE_ODDS_ENABLED == 'true'
+        run: bash .github/scripts/side_odds_store.sh push near
+
       - name: Summary
         if: always()
         run: |
