@@ -148,7 +148,9 @@ def _v9_stage1(v9: Path):
     """Extract _AFFIX_RE, _norm_club and _canonicalise_clubs from v9's data_loader.py verbatim."""
     src = (v9 / "src" / "data_loader.py").read_text(encoding="utf-8")
     tree = ast.parse(src)
-    want = {"_AFFIX_RE", "_norm_club", "_canonicalise_clubs"}
+    # SOURCE_PRIORITY*: the duplicate tie-break constants _canonicalise_clubs reads (v9, 2026-11-16);
+    # absent from older v9 checkouts, harmless when the frame carries no priority column.
+    want = {"_AFFIX_RE", "_norm_club", "_canonicalise_clubs", "SOURCE_PRIORITY_COL", "SOURCE_PRIORITY"}
     parts = []
     for node in tree.body:
         name = (node.name if isinstance(node, ast.FunctionDef) else
