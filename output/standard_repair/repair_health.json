@@ -1,20 +1,15 @@
 {
  "STANDARD_REPAIR_BENCHMARK": "STALE",
- "run_status": "failure",
- "DATA_QUALITY": "STALE",
- "generated_at": "2026-11-16T17:32:01.051412+00:00",
+ "run_status": "success",
+ "DATA_QUALITY": "CURRENT",
+ "generated_at": "2026-11-16T18:52:52.088703+00:00",
  "artifacts": {
   "data_quality.json": {
-   "status": "STALE",
-   "reason": "critical input changed since this output was computed",
-   "mismatched": [
-    "frame_hash_at_cutoff",
-    "raw_fd_finished_hash",
-    "team_canon_version",
-    "price_source_version"
-   ],
-   "generated_at": "2026-11-09T17:53:35.389985+00:00",
-   "data_cutoff": "2026-11-08",
+   "status": "CURRENT",
+   "reason": "all critical fingerprints match",
+   "mismatched": [],
+   "generated_at": "2026-11-16T18:52:20.288405+00:00",
+   "data_cutoff": "2026-11-15",
    "output_status": "PASS"
   },
   "repaired_benchmark.json": {
@@ -38,23 +33,27 @@
  },
  "current_fingerprint": {
   "schema": "standard_repair_fingerprint/1",
-  "generated_at": "2026-11-16T17:31:58.591965+00:00",
+  "generated_at": "2026-11-16T18:52:49.675192+00:00",
   "data_cutoff": "2026-11-15",
-  "v9_commit": "cfe308869c2e576ada57a727832cae1587929733",
-  "pro_commit": "01c09bf44de0e1aae7873874089df2ff9d5021be",
-  "frame_hash_at_cutoff": "a8a41a4522bca499",
+  "v9_commit": "41c496d1c8a4fdd481422b1771665d87a184c82a",
+  "pro_commit": "b99e8cff702c32df4be98e3421b2cb8c763eba13",
+  "frame_hash_at_cutoff": "ccbedaf8d1066742",
   "frame_rows_after_cutoff": 0,
   "raw_fd_finished_hash": "2b228f2e4f50ffa0",
   "raw_fd_current_hash": "09810e357a0470a0",
   "archive_hash": "6dfce00b0242e107",
   "feature_schema_version": "c5b8b138acb7ad58",
-  "team_canon_version": "3d7bc69c51a23df3",
+  "team_canon_version": "b23c722444e32ce6",
   "imputer_version": "v9_batch_median@c51be4f0c509",
   "price_source_version": "3ea6bd0d60baddda",
   "model_recipe_version": "legacy_v9@c51be4f0c509",
-  "research_code_hash": "4483a399f5b8eec7",
+  "research_code_hash": "564b34e87393b757",
   "frame_build_version": "frame_build/1.0",
   "frame_build_mode": "fd_dir"
+ },
+ "not_fittable_slices": {
+  "count": 0,
+  "slices": {}
  },
  "pre_repair_outputs": "FROZEN (see output/standard_repair/pre_repair/MANIFEST.json)",
  "rule": "STALE or MISSING must never be shown as current; the dashboard shows the status verbatim"
