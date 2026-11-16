@@ -1,4 +1,4 @@
-# League scout — 2026-11-16T18:58 UTC
+# League scout — 2026-11-16T20:25 UTC
 
 Results stored: 245,863 · fixtures priced: 6,686 · model frozen: 6,622
 
@@ -8,7 +8,7 @@ Left out by the Data Truth rules: aet_pen_missing_90 4, odds_league_mismatch 0, 
 
 ## Coverage and staleness (Data Truth R15)
 
-Since 2026-10-08: 8,786 finished watched fixtures, 6,239 with any odds, 3,688 with a genuine close. Stale in-season leagues: 7. No odds offered by the API: 0. Unexplained missing results: 42.
+Since 2026-10-08: 8,786 finished watched fixtures, 6,239 with any odds, 3,688 with a genuine close. Stale in-season leagues: 6. No odds offered by the API: 0. Unexplained missing results: 42.
 
 | League | finished | odds coverage | genuine-close coverage | last price | flags |
 |---|---|---|---|---|---|
@@ -18,7 +18,6 @@ Since 2026-10-08: 8,786 finished watched fixtures, 6,239 with any odds, 3,688 wi
 | Turkey 3. Lig - Group 3 (554) | 55 | 0.109 | 0.091 | 2026-11-11T15:52:50Z | ODDS_COVERAGE_UNDER_HALF |
 | Ghana Premier League (570) | 54 | 0.352 | 0.056 | 2026-11-15T02:11:40Z | ODDS_COVERAGE_UNDER_HALF |
 | Austria Regionalliga - West (223) | 48 | 0.271 | 0.208 | 2026-11-15T11:31:39Z | ODDS_COVERAGE_UNDER_HALF |
-| Wales Premier League (110) | 31 | 1.0 | 0.484 | 2026-11-06T09:56:34Z | STALE >10d in season |
 | Zambia Super League (400) | 52 | 0.365 | 0.212 | 2026-11-05T12:47:41Z | STALE >10d in season, ODDS_COVERAGE_UNDER_HALF |
 | Uganda Premier League (585) | 48 | 0.625 | 0.375 | 2026-11-05T12:47:41Z | STALE >10d in season |
 | Bosnia 1st League - RS (317) | 49 | 0.327 | 0.204 | 2026-11-14T11:50:32Z | ODDS_COVERAGE_UNDER_HALF |
