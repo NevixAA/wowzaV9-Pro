@@ -1,14 +1,14 @@
-# League scout — 2026-11-16T16:39 UTC
+# League scout — 2026-11-16T18:58 UTC
 
-Results stored: 245,862 · fixtures priced: 6,676 · model frozen: 6,612
+Results stored: 245,863 · fixtures priced: 6,686 · model frozen: 6,622
 
 COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a GENUINE close (<= 60 min before the actual kickoff; Pinnacle, else median of >= 3 books)
 
-Left out by the Data Truth rules: aet_pen_missing_90 4, odds_league_mismatch 0, rescheduled_void 47, settled_priced 6,237, settled_genuine_close 3,715, settled_stale_or_thin_close 2,522, model_identity_mismatch 3, model_frozen_after_actual_kickoff 0, model_not_eligible 44
+Left out by the Data Truth rules: aet_pen_missing_90 4, odds_league_mismatch 0, rescheduled_void 47, settled_priced 6,238, settled_genuine_close 3,716, settled_stale_or_thin_close 2,522, model_identity_mismatch 3, model_frozen_after_actual_kickoff 0, model_not_eligible 44
 
 ## Coverage and staleness (Data Truth R15)
 
-Since 2026-10-08: 8,785 finished watched fixtures, 6,238 with any odds, 3,687 with a genuine close. Stale in-season leagues: 7. No odds offered by the API: 0. Unexplained missing results: 41.
+Since 2026-10-08: 8,786 finished watched fixtures, 6,239 with any odds, 3,688 with a genuine close. Stale in-season leagues: 7. No odds offered by the API: 0. Unexplained missing results: 42.
 
 | League | finished | odds coverage | genuine-close coverage | last price | flags |
 |---|---|---|---|---|---|
@@ -322,6 +322,9 @@ Since 2026-10-08: 8,785 finished watched fixtures, 6,238 with any odds, 3,687 wi
 | 2 | Netherlands Tweede Divisie | btts | 27 | COLLECTING | +0.034 | – | – |
 | 2 | Netherlands Tweede Divisie | ou25 | 27 | COLLECTING | -0.016 | – | -8.3% (6) |
 | 2 | Netherlands Tweede Divisie | ou35 | 27 | COLLECTING | -0.064 | – | – |
+| 2 | Slovakia 2. liga | btts | 27 | COLLECTING | +0.044 | – | – |
+| 2 | Slovakia 2. liga | ou25 | 27 | COLLECTING | +0.046 | – | -23.3% (6) |
+| 2 | Slovakia 2. liga | ou35 | 27 | COLLECTING | +0.034 | – | – |
 | 2 | Sweden Ettan - Norra | btts | 27 | COLLECTING | -0.029 | – | -100.0% (2) |
 | 2 | Sweden Ettan - Norra | ou25 | 27 | COLLECTING | -0.009 | – | -52.0% (6) |
 | 2 | Sweden Ettan - Norra | ou35 | 27 | COLLECTING | +0.019 | – | +70.7% (3) |
@@ -346,9 +349,6 @@ Since 2026-10-08: 8,785 finished watched fixtures, 6,238 with any odds, 3,687 wi
 | 2 | Czech-Republic 3. liga - MSFL | btts | 26 | COLLECTING | +0.004 | – | – |
 | 2 | Czech-Republic 3. liga - MSFL | ou25 | 26 | COLLECTING | -0.025 | – | -32.9% (7) |
 | 2 | Czech-Republic 3. liga - MSFL | ou35 | 26 | COLLECTING | +0.060 | – | – |
-| 2 | Slovakia 2. liga | btts | 26 | COLLECTING | +0.046 | – | – |
-| 2 | Slovakia 2. liga | ou25 | 26 | COLLECTING | +0.052 | – | -23.3% (6) |
-| 2 | Slovakia 2. liga | ou35 | 26 | COLLECTING | +0.039 | – | – |
 | 2 | Poland III Liga - Group 3 | ou25 | 26 | COLLECTING | -0.020 | – | +0.4% (9) |
 | 2 | Poland III Liga - Group 3 | ou35 | 26 | COLLECTING | +0.004 | – | – |
 | 2 | Poland III Liga - Group 4 | ou35 | 26 | COLLECTING | -0.011 | – | – |
@@ -459,6 +459,7 @@ Since 2026-10-08: 8,785 finished watched fixtures, 6,238 with any odds, 3,687 wi
 | 2 | Morocco Botola Pro | ou35 | 18 | COLLECTING | +0.021 | – | +25.0% (3) |
 | 2 | Nicaragua Primera Division | btts | 18 | COLLECTING | +0.064 | – | – |
 | 2 | Italy Serie D - Girone A | btts | 18 | COLLECTING | +0.036 | – | – |
+| 2 | Slovakia 2. liga | ou15 | 18 | COLLECTING | +0.026 | – | – |
 | 2 | Uganda Premier League | ou25 | 18 | COLLECTING | +0.083 | – | -5.3% (7) |
 | 2 | Spain Segunda División RFEF - Group 1 | ou15 | 18 | COLLECTING | +0.021 | – | – |
 | 2 | Spain Segunda División RFEF - Group 1 | ou35 | 18 | COLLECTING | +0.068 | – | – |
@@ -486,7 +487,6 @@ Since 2026-10-08: 8,785 finished watched fixtures, 6,238 with any odds, 3,687 wi
 | 2 | Nicaragua Primera Division | ou35 | 17 | COLLECTING | +0.171 | – | – |
 | 2 | Northern-Ireland Championship | ou15 | 17 | COLLECTING | +0.035 | – | +125.0% (2) |
 | 2 | Italy Serie D - Girone A | ou15 | 17 | COLLECTING | +0.013 | – | – |
-| 2 | Slovakia 2. liga | ou15 | 17 | COLLECTING | +0.043 | – | – |
 | 2 | Uganda Premier League | btts | 17 | COLLECTING | +0.033 | – | – |
 | 2 | Wales FAW Championship | btts | 16 | COLLECTING | +0.052 | – | – |
 | 2 | Austria Regionalliga - Ost | ou25 | 16 | COLLECTING | -0.001 | – | +7.0% (5) |
