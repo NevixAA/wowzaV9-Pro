@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-11-16T12:57:35Z",
+ "generated_at": "2026-11-16T15:53:22Z",
  "status_rule": "COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a GENUINE close (<= 60 min before the actual kickoff; Pinnacle, else median of >= 3 books)",
  "data_truth": "src/scout/truth.py: 90-minute results, genuine close, >48h reschedules void, model rows matched on league + team ids, frozen before the actual kickoff",
  "totals": {
-  "results": 245855,
-  "odds_rows": 620609,
-  "fixtures_priced": 6597,
-  "fixtures_frozen": 6526
+  "results": 245862,
+  "odds_rows": 622554,
+  "fixtures_priced": 6676,
+  "fixtures_frozen": 6612
  },
  "cells": [
   {
@@ -3506,6 +3506,32 @@
    }
   },
   {
+   "league_id": 287,
+   "country": "Serbia",
+   "league": "Prva Liga",
+   "priority": 2,
+   "market": "ou25",
+   "n": 36,
+   "status": "COLLECTING",
+   "rate": 0.3889,
+   "n_base_rate": 36,
+   "brier_base_rate": 0.2378,
+   "brier_market_close": 0.2316,
+   "brier_market_close_on_base_rows": 0.2316,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0261,
+   "n_model": 36,
+   "brier_model": 0.1969,
+   "residual": {
+    "coef": 2.5175,
+    "se": 1.1407,
+    "z": 2.21
+   },
+   "paper_bets": 10,
+   "paper_roi": 0.661,
+   "paper_first_side_share": 0.4
+  },
+  {
    "league_id": 109,
    "country": "Poland",
    "league": "II Liga - East",
@@ -3608,32 +3634,6 @@
    "paper_bets": 4,
    "paper_roi": -0.28,
    "paper_first_side_share": 0.5
-  },
-  {
-   "league_id": 287,
-   "country": "Serbia",
-   "league": "Prva Liga",
-   "priority": 2,
-   "market": "ou25",
-   "n": 34,
-   "status": "COLLECTING",
-   "rate": 0.4118,
-   "n_base_rate": 34,
-   "brier_base_rate": 0.2424,
-   "brier_market_close": 0.2301,
-   "brier_market_close_on_base_rows": 0.2301,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.0507,
-   "n_model": 34,
-   "brier_model": 0.1995,
-   "residual": {
-    "coef": 2.2406,
-    "se": 1.1776,
-    "z": 1.9
-   },
-   "paper_bets": 9,
-   "paper_roi": 0.6067,
-   "paper_first_side_share": 0.444
   },
   {
    "league_id": 374,
@@ -8569,6 +8569,22 @@
    "market_skill_vs_base": 0.0592
   },
   {
+   "league_id": 287,
+   "country": "Serbia",
+   "league": "Prva Liga",
+   "priority": 2,
+   "market": "ou35",
+   "n": 13,
+   "status": "COLLECTING",
+   "rate": 0.3077,
+   "n_base_rate": 13,
+   "brier_base_rate": 0.2228,
+   "brier_market_close": 0.2109,
+   "brier_market_close_on_base_rows": 0.2109,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0534
+  },
+  {
    "league_id": 304,
    "country": "Panama",
    "league": "Liga Paname\u00f1a de F\u00fatbol",
@@ -8895,22 +8911,6 @@
    "brier_market_close_on_base_rows": 0.1552,
    "reference": "pinnacle",
    "market_skill_vs_base": 0.0245
-  },
-  {
-   "league_id": 287,
-   "country": "Serbia",
-   "league": "Prva Liga",
-   "priority": 2,
-   "market": "ou35",
-   "n": 12,
-   "status": "COLLECTING",
-   "rate": 0.3333,
-   "n_base_rate": 12,
-   "brier_base_rate": 0.2377,
-   "brier_market_close": 0.2194,
-   "brier_market_close_on_base_rows": 0.2194,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.077
   },
   {
    "league_id": 346,
@@ -10528,6 +10528,22 @@
    "market_skill_vs_base": 0.1367
   },
   {
+   "league_id": 334,
+   "country": "Ukraine",
+   "league": "Persha Liga",
+   "priority": 2,
+   "market": "ou25",
+   "n": 8,
+   "status": "COLLECTING",
+   "rate": 0.5,
+   "n_base_rate": 8,
+   "brier_base_rate": 0.2534,
+   "brier_market_close": 0.2664,
+   "brier_market_close_on_base_rows": 0.2664,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.0513
+  },
+  {
    "league_id": 352,
    "country": "Czech-Republic",
    "league": "4. liga - Divizie C",
@@ -11017,16 +11033,16 @@
    "country": "Ukraine",
    "league": "Persha Liga",
    "priority": 2,
-   "market": "ou25",
+   "market": "btts",
    "n": 7,
    "status": "COLLECTING",
-   "rate": 0.5714,
+   "rate": 0.4286,
    "n_base_rate": 7,
-   "brier_base_rate": 0.2619,
-   "brier_market_close": 0.2606,
-   "brier_market_close_on_base_rows": 0.2606,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.005
+   "brier_base_rate": 0.2448,
+   "brier_market_close": 0.242,
+   "brier_market_close_on_base_rows": 0.242,
+   "reference": "median",
+   "market_skill_vs_base": 0.0114
   },
   {
    "league_id": 361,
@@ -11437,22 +11453,6 @@
    "paper_first_side_share": 0.0
   },
   {
-   "league_id": 334,
-   "country": "Ukraine",
-   "league": "Persha Liga",
-   "priority": 2,
-   "market": "btts",
-   "n": 6,
-   "status": "COLLECTING",
-   "rate": 0.3333,
-   "n_base_rate": 6,
-   "brier_base_rate": 0.2356,
-   "brier_market_close": 0.2564,
-   "brier_market_close_on_base_rows": 0.2564,
-   "reference": "median",
-   "market_skill_vs_base": -0.0883
-  },
-  {
    "league_id": 354,
    "country": "Czech-Republic",
    "league": "4. liga - Divizie E",
@@ -11780,6 +11780,22 @@
    "paper_bets": 2,
    "paper_roi": -1.0,
    "paper_first_side_share": 0.0
+  },
+  {
+   "league_id": 334,
+   "country": "Ukraine",
+   "league": "Persha Liga",
+   "priority": 2,
+   "market": "ou15",
+   "n": 5,
+   "status": "COLLECTING",
+   "rate": 0.8,
+   "n_base_rate": 5,
+   "brier_base_rate": 0.1699,
+   "brier_market_close": 0.1605,
+   "brier_market_close_on_base_rows": 0.1605,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0553
   },
   {
    "league_id": 353,
@@ -12118,22 +12134,6 @@
    "brier_market_close_on_base_rows": 0.2832,
    "reference": "pinnacle",
    "market_skill_vs_base": 0.0653
-  },
-  {
-   "league_id": 334,
-   "country": "Ukraine",
-   "league": "Persha Liga",
-   "priority": 2,
-   "market": "ou15",
-   "n": 4,
-   "status": "COLLECTING",
-   "rate": 0.75,
-   "n_base_rate": 4,
-   "brier_base_rate": 0.1904,
-   "brier_market_close": 0.1895,
-   "brier_market_close_on_base_rows": 0.1895,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.0047
   },
   {
    "league_id": 353,
@@ -13090,6 +13090,22 @@
    "market_skill_vs_base": 0.4344
   },
   {
+   "league_id": 334,
+   "country": "Ukraine",
+   "league": "Persha Liga",
+   "priority": 2,
+   "market": "ou35",
+   "n": 2,
+   "status": "COLLECTING",
+   "rate": 0.0,
+   "n_base_rate": 2,
+   "brier_base_rate": 0.0443,
+   "brier_market_close": 0.088,
+   "brier_market_close_on_base_rows": 0.088,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.9865
+  },
+  {
    "league_id": 349,
    "country": "Czech-Republic",
    "league": "3. liga - MSFL",
@@ -13592,22 +13608,6 @@
    "market_skill_vs_base": -0.1573
   },
   {
-   "league_id": 334,
-   "country": "Ukraine",
-   "league": "Persha Liga",
-   "priority": 2,
-   "market": "ou35",
-   "n": 1,
-   "status": "COLLECTING",
-   "rate": 0.0,
-   "n_base_rate": 1,
-   "brier_base_rate": 0.0439,
-   "brier_market_close": 0.0638,
-   "brier_market_close_on_base_rows": 0.0638,
-   "reference": "pinnacle",
-   "market_skill_vs_base": -0.4533
-  },
-  {
    "league_id": 356,
    "country": "Montenegro",
    "league": "Second League",
@@ -13880,9 +13880,9 @@
   "aet_pen_missing_90": 4,
   "odds_league_mismatch": 0,
   "rescheduled_void": 47,
-  "settled_priced": 6231,
-  "settled_genuine_close": 3712,
-  "settled_stale_or_thin_close": 2519,
+  "settled_priced": 6237,
+  "settled_genuine_close": 3715,
+  "settled_stale_or_thin_close": 2522,
   "model_identity_mismatch": 3,
   "model_frozen_after_actual_kickoff": 0,
   "model_not_eligible": 44
