@@ -352,6 +352,17 @@ def audit(strict: bool = True) -> dict:
 
 
 # ── health ──────────────────────────────────────────────────────────────────────────────────────
+def _not_fittable_slices() -> dict:
+    """Diagnostic model slices the audit skipped as not fittable (e.g. one class), counted and named
+    from data_quality.json so the health file never hides a skipped test."""
+    try:
+        sp = json.loads(DQ.read_text(encoding="utf-8")).get("provenance", {}).get("source_predictability", {})
+    except (OSError, ValueError):
+        return {"count": None, "reason": "data_quality.json unreadable"}
+    nf = sp.get("not_fittable") or {}
+    return {"count": len(nf), "slices": {k: v.get("reason") for k, v in nf.items()}}
+
+
 def write_health(now: dict | None = None) -> dict:
     """repair_health.json: freshness of every Standard repair output vs the current fingerprint."""
     if now is None:
@@ -396,6 +407,7 @@ def write_health(now: dict | None = None) -> dict:
          "DATA_QUALITY": arts.get("data_quality.json", {}).get("status"),
          "generated_at": pd.Timestamp.now(tz="UTC").isoformat(),
          "artifacts": arts, "current_fingerprint": now,
+         "not_fittable_slices": _not_fittable_slices(),
          "pre_repair_outputs": "FROZEN (see output/standard_repair/pre_repair/MANIFEST.json)" if pre.exists() else "NOT_FROZEN",
          "rule": "STALE or MISSING must never be shown as current; the dashboard shows the status verbatim"}
     OUT.mkdir(parents=True, exist_ok=True)

@@ -127,6 +127,55 @@ def test_source_predictable_from_missingness():
     assert PV.source_predictability(d, ["f1"])["verdict"] == "SOURCE_NOT_DETECTABLE"
 
 
+def _two_regimes(n=400, seed=1):
+    rng = np.random.default_rng(seed)
+    return pd.DataFrame({"row_source": ["BACKTEST_ARCHIVE"] * n + ["FOOTBALL_DATA_ARCHIVE"] * n,
+                         "season": ["2022/23"] * n + ["2024/25"] * n, "league": "L",
+                         "f1": rng.normal(size=2 * n), "ht_home_goals": [np.nan] * n + list(rng.integers(0, 3, n))})
+
+
+def test_overlap_slice_with_one_archive_row_is_reported_not_fittable_not_crashed():
+    # run 43917999786 (2026-11-16): ONE BACKTEST_ARCHIVE row (Antwerp v Beerschot VA) in football-data's
+    # 2024/25 -> a CV training fold with one class -> sklearn ValueError killed the whole audit
+    d = _two_regimes()
+    d.loc[0, "season"] = "2024/25"
+    r = PV.source_predictability(d, ["f1"])
+    assert r["overlap_seasons"] == ["2024/25"] and r["archive_rows_in_overlap_seasons"] == 1
+    assert r["auc_missingness_all_inputs_overlap_seasons"] is None              # no invented AUC
+    nf = r["not_fittable"]["auc_missingness_all_inputs_overlap_seasons"]
+    assert nf["reason"].startswith("not fittable: one class") and nf["archive_rows"] == 1
+    assert r["not_fittable_slices"] == 1
+    # the fittable slices still ran
+    assert r["auc_missingness_all_inputs"] > 0.95 and r["verdict"] == "SOURCE_REGIME_DETECTABLE"
+
+
+def test_minority_below_fold_count_is_not_fittable_and_verdict_never_defaults():
+    d = _two_regimes()
+    d = pd.concat([d[d["row_source"] != "BACKTEST_ARCHIVE"], d[d["row_source"] == "BACKTEST_ARCHIVE"].head(3)])
+    r = PV.source_predictability(d, ["f1"])
+    assert r["auc_missingness_all_inputs"] is None
+    assert "fewer than the 5 folds" in r["not_fittable"]["auc_missingness_all_inputs"]["reason"]
+    assert r["verdict"] == "NOT_TESTABLE"                                         # not "NOT_DETECTABLE"
+
+
+def test_empty_overlap_is_not_a_slice():
+    r = PV.source_predictability(_two_regimes(), ["f1"])
+    assert r["overlap_rows"] == 0 and r["not_fittable"] == {} and r["not_fittable_slices"] == 0
+
+
+def test_health_counts_not_fittable_slices(tmp_path, monkeypatch):
+    from src.studies.standard_repair import forensic as F
+    dq = tmp_path / "data_quality.json"
+    dq.write_text(json.dumps({"provenance": {"source_predictability": {"not_fittable": {
+        "auc_missingness_all_inputs_overlap_seasons": {"reason": "not fittable: one class in a CV training fold"}}}}}),
+        encoding="utf-8")
+    monkeypatch.setattr(F, "DQ", dq)
+    h = F._not_fittable_slices()
+    assert h["count"] == 1 and "auc_missingness_all_inputs_overlap_seasons" in h["slices"]
+    monkeypatch.setattr(F, "DQ", tmp_path / "missing.json")
+    assert F._not_fittable_slices()["count"] is None
+
+
 # ── prices ──────────────────────────────────────────────────────────────────────────────────────
 def _fd(**kw):
     base = {"league": "L", "date": pd.Timestamp("2025-02-01"), "home_team": "A", "away_team": "B", "file": "x"}
