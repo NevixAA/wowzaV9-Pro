@@ -1,4 +1,4 @@
-# Tip ranker — which 5 should a person take? (2026-11-16 16:00 UTC)
+# Tip ranker — which 5 should a person take? (2026-11-16 18:30 UTC)
 
 2,164 settled tips; 57 match days with >= 10 tips scored walk-forward (ranker fitted on earlier days only).
 
