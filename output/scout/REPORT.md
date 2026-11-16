@@ -1,4 +1,4 @@
-# League scout — 2026-11-16T07:23 UTC
+# League scout — 2026-11-16T12:57 UTC
 
 Results stored: 245,855 · fixtures priced: 6,597 · model frozen: 6,526
 
@@ -8,7 +8,7 @@ Left out by the Data Truth rules: aet_pen_missing_90 4, odds_league_mismatch 0, 
 
 ## Coverage and staleness (Data Truth R15)
 
-Since 2026-10-08: 8,778 finished watched fixtures, 6,232 with any odds, 3,684 with a genuine close. Stale in-season leagues: 4. No odds offered by the API: 0. Unexplained missing results: 41.
+Since 2026-10-08: 8,778 finished watched fixtures, 6,232 with any odds, 3,684 with a genuine close. Stale in-season leagues: 7. No odds offered by the API: 0. Unexplained missing results: 42.
 
 | League | finished | odds coverage | genuine-close coverage | last price | flags |
 |---|---|---|---|---|---|
@@ -18,13 +18,16 @@ Since 2026-10-08: 8,778 finished watched fixtures, 6,232 with any odds, 3,684 wi
 | Turkey 3. Lig - Group 3 (554) | 55 | 0.109 | 0.091 | 2026-11-11T15:52:50Z | ODDS_COVERAGE_UNDER_HALF |
 | Ghana Premier League (570) | 54 | 0.352 | 0.056 | 2026-11-15T02:11:40Z | ODDS_COVERAGE_UNDER_HALF |
 | Austria Regionalliga - West (223) | 48 | 0.271 | 0.208 | 2026-11-15T11:31:39Z | ODDS_COVERAGE_UNDER_HALF |
+| Wales Premier League (110) | 31 | 1.0 | 0.484 | 2026-11-06T09:56:34Z | STALE >10d in season |
 | Zambia Super League (400) | 52 | 0.365 | 0.212 | 2026-11-05T12:47:41Z | STALE >10d in season, ODDS_COVERAGE_UNDER_HALF |
 | Uganda Premier League (585) | 48 | 0.625 | 0.375 | 2026-11-05T12:47:41Z | STALE >10d in season |
 | Bosnia 1st League - RS (317) | 49 | 0.327 | 0.204 | 2026-11-14T11:50:32Z | ODDS_COVERAGE_UNDER_HALF |
 | Bosnia 1st League - FBiH (316) | 48 | 0.271 | 0.104 | 2026-11-15T11:31:39Z | ODDS_COVERAGE_UNDER_HALF |
+| South-Korea K3 League (295) | 21 | 1.0 | 0.333 | 2026-11-06T09:56:34Z | STALE >10d in season |
 | Peru Segunda División (282) | 32 | 0.406 | 0.219 | 2026-11-14T20:21:06Z | ODDS_COVERAGE_UNDER_HALF |
 | Bangladesh Premier League (398) | 17 | 0.118 | 0.118 | 2026-10-23T07:58:24Z | ODDS_COVERAGE_UNDER_HALF |
 | Switzerland 1. Liga Promotion (510) | 53 | 0.208 | 0.113 | 2026-11-08T12:50:35Z | ODDS_COVERAGE_UNDER_HALF |
+| Israel Liga Alef (496) | 87 | 0.931 | 0.575 | 2026-11-06T11:22:40Z | STALE >10d in season |
 | Morocco Botola 2 (201) | 48 | 0.333 | 0.167 | 2026-11-15T16:50:09Z | ODDS_COVERAGE_UNDER_HALF |
 | Belgium Second Amateur Division - ACFF (148) | 54 | 0.13 | 0.019 | 2026-11-15T11:31:39Z | ODDS_COVERAGE_UNDER_HALF |
 | Burkina-Faso Ligue 1 (423) | 48 | 0.229 | 0.125 | 2026-11-15T09:58:40Z | ODDS_COVERAGE_UNDER_HALF |

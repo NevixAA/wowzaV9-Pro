@@ -1,6 +1,6 @@
 WOWZA WEEKLY LEAGUE SCOUT REVIEW
 
-Week: 2026-W46
+Week: 2026-W47
 
 199 leagues monitored
 New promotion candidates: 0
@@ -11,8 +11,8 @@ Failed: 0
 Awaiting multiple-testing confirmation: 0
 
 Closest to the candidate gate:
+  Argentina Primera Nacional: needs {'settled_with_close': 243, 'results': 0, 'history_seasons': 0}
   Turkey 2. Lig: needs {'settled_with_close': 245, 'results': 0, 'history_seasons': 0}
-  Argentina Primera Nacional: needs {'settled_with_close': 246, 'results': 0, 'history_seasons': 0}
   England National League - South: needs {'settled_with_close': 247, 'results': 0, 'history_seasons': 0}
   Belgium First Amateur Division: needs {'settled_with_close': 249, 'results': 0, 'history_seasons': 0}
   England National League: needs {'settled_with_close': 250, 'results': 0, 'history_seasons': 0}
