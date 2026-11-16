@@ -67,8 +67,8 @@ TABLE = "team_match_stats"
 _BASE = "https://v3.football.api-sports.io"
 MIN_QUOTA = int(os.getenv("MIN_QUOTA", "5000"))
 
-# API stat name -> our column stem. Only the ones a model can use; cards/offsides are available
-# but nothing consumes them, and an unused column is a maintenance cost with no benefit.
+# API stat name -> our column stem. Offsides are available but not kept; cards are kept since
+# 2026-11-16 (CARD_MAP below, owner-approved for the side-market research).
 STAT_MAP = {
     "expected_goals": "xg",
     "Shots insidebox": "insidebox",
@@ -83,6 +83,33 @@ STAT_MAP = {
     "goals_prevented": "goals_prevented",
     "Passes %": "pass_pct",
 }
+
+# TEAM CARDS (owner 2026-11-16, audit gap G6a). They arrive in the SAME /fixtures/statistics answer
+# (0 extra calls) and were dropped. Read under the owner's team-count null rule of 2026-11-04 (v9
+# src/af_team_stats.py, identical rule): in a team block the provider ANSWERED (at least one non-null
+# value), a listed count with value null is 0; a type the block does not list is missing; a block with
+# no non-null value, or no block, means every value is missing. A sent value is kept as sent;
+# unparseable -> missing, never 0. Only these two columns use the rule: the columns above keep their
+# existing reading (null -> missing), unchanged.
+CARD_MAP = {"Yellow Cards": "yellow", "Red Cards": "red"}
+
+
+def _answered(stats: list) -> bool:
+    return any(s.get("value") is not None and str(s.get("value")).strip().lower() not in ("", "none", "null")
+               for s in (stats or []))
+
+
+def _card(stats: list, api_name: str) -> float:
+    """One team's card count under the owner's null rule (NaN = missing)."""
+    if not _answered(stats):
+        return float("nan")
+    for s in stats:
+        if s.get("type") == api_name:
+            v = s.get("value")
+            if v is None or str(v).strip().lower() in ("", "none", "null"):
+                return 0.0
+            return _num(v)
+    return float("nan")
 
 
 def _headers() -> dict:
@@ -243,8 +270,9 @@ def _already_collected() -> set:
     return set()
 
 
-def _parse_stats(fx: dict, teams: list, league: str) -> dict | None:
-    """One fixture's row. response[0] is HOME for /fixtures/statistics."""
+def _parse_stats(fx: dict, teams: list, league: str, fetched_at: str | None = None) -> dict | None:
+    """One fixture's row. response[0] is HOME for /fixtures/statistics.
+    `fetched_at`: UTC time of the API answer; None (missing) when it was read from the disk cache."""
     if len(teams) < 2:
         return None
     pick = {}
@@ -252,6 +280,8 @@ def _parse_stats(fx: dict, teams: list, league: str) -> dict | None:
         got = {s.get("type"): s.get("value") for s in blk.get("statistics", [])}
         for api_name, stem in STAT_MAP.items():
             pick[f"{side}_{stem}"] = _num(got.get(api_name))
+        for api_name, stem in CARD_MAP.items():
+            pick[f"{side}_{stem}"] = _card(blk.get("statistics") or [], api_name)
     return {
         "fixture_id": str(fx["fixture"]["id"]),
         "league": league,
@@ -263,6 +293,7 @@ def _parse_stats(fx: dict, teams: list, league: str) -> dict | None:
         "home_goals": fx["goals"]["home"],
         "away_goals": fx["goals"]["away"],
         "stats_source": "api_football/fixtures/statistics",
+        "fetched_at": fetched_at,
         **pick,
     }
 
@@ -327,7 +358,8 @@ def collect(seasons=("current",), limit: int | None = None, dry_run: bool = Fals
             else:
                 calls += 1
                 time.sleep(sleep_s)
-            row = _parse_stats(fx, (st or {}).get("response") or [], league)
+            row = _parse_stats(fx, (st or {}).get("response") or [], league,
+                               None if wc else pd.Timestamp.now(tz="UTC").strftime("%Y-%m-%dT%H:%M:%SZ"))
             if row:
                 rows.append(row)
                 already.add(row["fixture_id"])
@@ -362,7 +394,7 @@ def collect(seasons=("current",), limit: int | None = None, dry_run: bool = Fals
         return d
     print(f"\n[team_stats] {len(d):,} fixture(s) | {calls:,} API call(s), {cached:,} cached")
     for c in ("home_xg", "home_insidebox", "home_possession", "home_shots", "home_sot",
-              "home_goals_prevented", "home_pass_pct"):
+              "home_goals_prevented", "home_pass_pct", "home_yellow", "home_red"):
         if c in d.columns:
             v = pd.to_numeric(d[c], errors="coerce")
             print(f"    {c:24} {v.notna().sum():>6}/{len(d)} = {v.notna().mean():5.1%}")

@@ -106,6 +106,38 @@ def _store_specials(rows: list, dry: bool) -> None:
         print(f"[scout specials] not written ({type(e).__name__}: {e})")
 
 
+def _side_on() -> bool:
+    """Corners/cards quotes are kept only when the PRIVATE store is configured (SIDE_ODDS_DIR, set by
+    .github/scripts/side_odds_store.sh open; owner 2026-11-16, audit G1). API-Football grants no licence
+    to publish its data and this repo is public, so there is no public fallback."""
+    import os
+    return bool(os.environ.get("SIDE_ODDS_DIR"))
+
+
+def _side(resp, capture: str, names: dict, leagues: dict, out: list) -> None:
+    """Keep the corners/cards quotes (src/scout/side_odds.py) of an /odds answer already fetched.
+    Zero calls, and never fatal."""
+    if not _side_on():
+        return
+    try:
+        from src.scout import side_odds as SO
+        out.extend(SO.parse(resp, capture=capture, captured_at=cfg.utc_now_iso(), names=names,
+                            leagues=leagues))
+    except Exception as e:                                             # noqa: BLE001
+        print(f"  [side_odds] skipped an answer ({type(e).__name__})")
+
+
+def _store_side(rows: list, dry: bool, calls: int) -> None:
+    """Append to the private store. Logs counts only, never a price."""
+    if not _side_on():
+        return
+    try:
+        from src.scout import side_odds as SO
+        print(SO.summary(rows, SO.append(rows, dry=dry)) + f" (API calls so far this run: {calls})")
+    except Exception as e:                                             # noqa: BLE001
+        print(f"[side_odds] not written ({type(e).__name__})")
+
+
 def _results() -> pd.DataFrame:
     """SERVED results (src/scout/truth.results): one per fixture, 90-minute goals, canonical names.
     A result whose 90-minute score is not known has missing goals and is not fitted on."""
@@ -340,6 +372,7 @@ def step_odds(c: af.Client, watch: list[dict], fx: pd.DataFrame, dry: bool,
     guard = pol.Guard(now_ts)
     rows, polled_ids, empty_ids, skipped = [], [], [], {"not_due": 0, "budget": 0}
     spec: list = []                                      # special-market quotes, same answers
+    side: list = []                                      # corners/cards quotes, same answers (private)
     names = ({int(r.fixture_id): (r.home_team, r.away_team) for r in up.itertuples()}
              if not up.empty and {"home_team", "away_team"} <= set(up.columns) else {})
     leagues = {int(x["id"]): (x.get("name"), x.get("country")) for x in watch if x.get("id") is not None}
@@ -363,6 +396,7 @@ def step_odds(c: af.Client, watch: list[dict], fx: pd.DataFrame, dry: bool,
         guard.spend(c.calls - before)
         rows.extend(parse.odds_rows(resp, snap, now))
         _specials(resp, "scout_sweep", names, leagues, spec)
+        _side(resp, "scout_sweep", names, leagues, side)
         polled_ids.append(lid)
         if not resp:
             empty_ids.append(lid)                        # R15: the API offered nothing for it
@@ -377,6 +411,8 @@ def step_odds(c: af.Client, watch: list[dict], fx: pd.DataFrame, dry: bool,
     n = _append("scout_odds", keep, "odds", dry)
     if spec:
         _store_specials(spec, dry)
+    if side:
+        _store_side(side, dry, c.calls)
     changed_by_lg = pd.Series([r["league_id"] for r in keep]).value_counts().to_dict() if keep else {}
     if summary is not None:
         summary["leagues_polled"] = {str(x): int(changed_by_lg.get(x, 0)) for x in polled_ids}
@@ -502,6 +538,7 @@ def near_loop(c: af.Client, minutes: float, dry: bool) -> dict:
         upcoming = o[o["kickoff_ts"] > now].drop_duplicates("fixture_id")
         rows = []
         spec: list = []                                  # special-market quotes, same answers
+        side: list = []                                  # corners/cards quotes, same answers (private)
         try:
             from src.scout import specials as SS
             names = SS.known_names(due["fixture_id"])
@@ -518,6 +555,7 @@ def near_loop(c: af.Client, minutes: float, dry: bool) -> dict:
                                                      "date": day})
                     rows.extend(parse.odds_rows(resp, snap, now))
                     _specials(resp, "scout_near", names, leagues, spec)
+                    _side(resp, "scout_near", names, leagues, side)
                 league_calls += 1
                 seen |= set(due[due["league_id"] == _id]["fixture_id"].astype(int))
                 continue
@@ -527,6 +565,7 @@ def near_loop(c: af.Client, minutes: float, dry: bool) -> dict:
                 body = c.get("/odds", {"fixture": fid}) or {}
                 rows.extend(parse.odds_rows(body.get("response") or [], snap, now))
                 _specials(body.get("response") or [], "scout_near", names, leagues, spec)
+                _side(body.get("response") or [], "scout_near", names, leagues, side)
                 seen.add(fid)
                 fixture_calls += 1
         last = {}
@@ -538,6 +577,8 @@ def near_loop(c: af.Client, minutes: float, dry: bool) -> dict:
         stored += _append("scout_odds", parse.unique_odds(parse.changed(rows, last)), f"near{passes}", dry)
         if spec:
             _store_specials(spec, dry)
+        if side:
+            _store_side(side, dry, c.calls - calls0)
         passes += 1
         print(f"[scout near] pass {passes}: {len(due)} fixture-band(s) due of {len(T)} watched, "
               f"{len(rows)} quote(s), {stored} stored so far")
