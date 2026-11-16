@@ -10,7 +10,7 @@ goals. The question is whether one adds information **after** the other is known
 models' opinions genuinely improves out-of-sample prediction on all three Over markets, 
 and the gain survives a paired bootstrap. But essentially all of it comes from the 
 **other Over lines**. Telling the Over 2.5 model what the BTTS model thinks moves its 
-log loss by +0.00025 — a difference whose 
+log loss by +0.00019 — a difference whose 
 90% confidence interval straddles zero. Telling it what the Over 3.5 model thinks is 
 worth about sixty times more and is significant at p=0.003.
 
@@ -37,20 +37,20 @@ How alike the four opinions are (Pearson on the probabilities):
 
 | model | p_btts | p_over15 | p_over25 | p_over35 | data_version | identity_version | season_calendar_version |
 |---|---|---|---|---|---|---|---|
-| p_btts | 1.0 | 0.6179 | 0.6238 | 0.5788 | lab-data/2.0 | pro-identity-1.0+identity/1.0 | season-calendar/1.0 |
-| p_over15 | 0.6179 | 1.0 | 0.8036 | 0.7446 | lab-data/2.0 | pro-identity-1.0+identity/1.0 | season-calendar/1.0 |
-| p_over25 | 0.6238 | 0.8036 | 1.0 | 0.8046 | lab-data/2.0 | pro-identity-1.0+identity/1.0 | season-calendar/1.0 |
-| p_over35 | 0.5788 | 0.7446 | 0.8046 | 1.0 | lab-data/2.0 | pro-identity-1.0+identity/1.0 | season-calendar/1.0 |
+| p_btts | 1.0 | 0.5962 | 0.5863 | 0.544 | lab-data/2.0 | pro-identity-1.0+identity/1.0 | season-calendar/1.0 |
+| p_over15 | 0.5962 | 1.0 | 0.7903 | 0.7383 | lab-data/2.0 | pro-identity-1.0+identity/1.0 | season-calendar/1.0 |
+| p_over25 | 0.5863 | 0.7903 | 1.0 | 0.7851 | lab-data/2.0 | pro-identity-1.0+identity/1.0 | season-calendar/1.0 |
+| p_over35 | 0.544 | 0.7383 | 0.7851 | 1.0 | lab-data/2.0 | pro-identity-1.0+identity/1.0 | season-calendar/1.0 |
 
 
 ## Cross-market matrix — signal model vs actual outcome (AUC)
 
 | signal_model | btts | over15 | over25 | over35 |
 |---|---|---|---|---|
-| btts | 0.5522 | 0.5614 | 0.5583 | 0.5633 |
-| over15 | 0.5457 | 0.5791 | 0.5774 | 0.5859 |
-| over25 | 0.5482 | 0.5816 | 0.579 | 0.5917 |
-| over35 | 0.5474 | 0.5808 | 0.5793 | 0.5886 |
+| btts | 0.554 | 0.5602 | 0.5555 | 0.5618 |
+| over15 | 0.5459 | 0.5809 | 0.5775 | 0.5842 |
+| over25 | 0.5503 | 0.5838 | 0.5813 | 0.5929 |
+| over35 | 0.547 | 0.5807 | 0.5799 | 0.589 |
 
 
 The three Over models are nearly interchangeable; each predicts the others' markets 
@@ -61,13 +61,13 @@ worse at the Over markets than they are at each other's.
 
 | bucket | n | mean_p | actual_btts | actual_over15 | actual_over25 | actual_over35 | avg_goals | interpretable |
 |---|---|---|---|---|---|---|---|---|
-| 0.00-0.45 | 1767 | 0.4187 | 0.4522 | 0.6582 | 0.412 | 0.2151 | 2.316 | True |
-| 0.45-0.50 | 4718 | 0.4788 | 0.4871 | 0.7009 | 0.4559 | 0.2376 | 2.461 | True |
-| 0.50-0.55 | 8324 | 0.5257 | 0.5211 | 0.7389 | 0.4974 | 0.2707 | 2.629 | True |
-| 0.55-0.60 | 6682 | 0.5726 | 0.562 | 0.7722 | 0.5397 | 0.3084 | 2.823 | True |
-| 0.60-0.65 | 2405 | 0.6194 | 0.6029 | 0.8033 | 0.5946 | 0.3688 | 3.046 | True |
-| 0.65-0.70 | 483 | 0.6676 | 0.6418 | 0.8302 | 0.6294 | 0.3934 | 3.19 | True |
-| 0.70-1.01 | 46 | 0.7124 | 0.6739 | 0.8261 | 0.6304 | 0.3913 | 3.239 | False |
+| 0.00-0.45 | 1790 | 0.4219 | 0.438 | 0.6659 | 0.419 | 0.2128 | 2.332 | True |
+| 0.45-0.50 | 4731 | 0.4786 | 0.4807 | 0.6946 | 0.4549 | 0.2405 | 2.464 | True |
+| 0.50-0.55 | 8158 | 0.5257 | 0.5282 | 0.7418 | 0.5013 | 0.27 | 2.634 | True |
+| 0.55-0.60 | 6621 | 0.5726 | 0.5659 | 0.7759 | 0.5389 | 0.3123 | 2.834 | True |
+| 0.60-0.65 | 2607 | 0.6197 | 0.5926 | 0.7932 | 0.5792 | 0.3498 | 2.969 | True |
+| 0.65-0.70 | 563 | 0.668 | 0.6323 | 0.8224 | 0.6181 | 0.3979 | 3.19 | True |
+| 0.70-1.01 | 57 | 0.7125 | 0.6842 | 0.8421 | 0.614 | 0.4211 | 3.211 | False |
 
 
 Monotone and strong — and, on its own, not evidence of anything beyond the 
@@ -80,12 +80,12 @@ change how often Over 2.5 actually happened?
 
 | own_p_range | n_low_other | n_high_other | actual_over25_low_other | actual_over25_high_other | diff_pp | z | p_value |
 |---|---|---|---|---|---|---|---|
-| 0.230-0.432 | 1357 | 1357 | 0.3766 | 0.4259 | 4.94 | 2.624 | 0.0087 |
-| 0.432-0.473 | 1357 | 1357 | 0.4517 | 0.4827 | 3.1 | 1.616 | 0.1061 |
-| 0.473-0.507 | 1357 | 1357 | 0.4547 | 0.5158 | 6.12 | 3.188 | 0.0014 |
-| 0.507-0.541 | 1357 | 1357 | 0.4989 | 0.507 | 0.81 | 0.422 | 0.6728 |
-| 0.541-0.582 | 1357 | 1357 | 0.5475 | 0.5409 | -0.66 | -0.347 | 0.7287 |
-| 0.582-0.868 | 1357 | 1357 | 0.605 | 0.636 | 3.1 | 1.661 | 0.0966 |
+| 0.208-0.430 | 1363 | 1363 | 0.3654 | 0.427 | 6.16 | 3.289 | 0.001 |
+| 0.430-0.472 | 1363 | 1363 | 0.4417 | 0.4688 | 2.71 | 1.423 | 0.1547 |
+| 0.472-0.507 | 1363 | 1363 | 0.4497 | 0.5084 | 5.87 | 3.067 | 0.0022 |
+| 0.507-0.541 | 1363 | 1363 | 0.526 | 0.5106 | -1.54 | -0.805 | 0.4208 |
+| 0.541-0.582 | 1363 | 1363 | 0.5488 | 0.5598 | 1.1 | 0.578 | 0.5633 |
+| 0.582-0.881 | 1363 | 1363 | 0.609 | 0.6405 | 3.15 | 1.701 | 0.089 |
 
 
 This looks like a clear yes. **It is mostly an artefact of how coarse the strata 
@@ -103,16 +103,16 @@ unchanged' is the trivial solution and anything better is genuinely extra.
 
 | spec | btts | over15 | over25 | over35 |
 |---|---|---|---|---|
-| own_only | 0.68735 | 0.56005 | 0.68249 | 0.5841 |
-| own_plus_all_markets | 0.68589 | 0.55824 | 0.68134 | 0.58244 |
-| own_plus_all_plus_sides | 0.68575 | 0.5584 | 0.6815 | 0.58263 |
-| own_plus_btts |  | 0.56012 | 0.68273 | 0.58389 |
-| own_plus_over15 | 0.68678 |  | 0.68183 | 0.58333 |
-| own_plus_over25 | 0.68624 | 0.5586 |  | 0.58236 |
-| own_plus_over35 | 0.68604 | 0.5585 | 0.68136 |  |
+| own_only | 0.68751 | 0.56009 | 0.68287 | 0.58512 |
+| own_plus_all_markets | 0.68612 | 0.5583 | 0.68153 | 0.58351 |
+| own_plus_all_plus_sides | 0.68609 | 0.5584 | 0.68159 | 0.5835 |
+| own_plus_btts |  | 0.56026 | 0.68306 | 0.58498 |
+| own_plus_over15 | 0.6869 |  | 0.68221 | 0.58441 |
+| own_plus_over25 | 0.68625 | 0.55856 |  | 0.5835 |
+| own_plus_over35 | 0.68624 | 0.55851 | 0.68153 |  |
 
 
-**CROSS_MARKET_META_MODEL_BEATS_SINGLE_MODELS = YES**. Best relationship: `over15 <- own_plus_all_markets` at -0.00181 log loss on 10,959 fixtures.
+**CROSS_MARKET_META_MODEL_BEATS_SINGLE_MODELS = YES**. Best relationship: `over15 <- own_plus_all_markets` at -0.00178 log loss on 11,038 fixtures.
 
 A linear meta-model beats a gradient-boosted one on every target here. That is 
 informative in itself: the relationship between these probabilities is essentially 
@@ -127,26 +127,26 @@ excludes zero.
 
 | target | spec | log_loss | d_log_loss | paired_diff | paired_ci_lo | paired_ci_hi | paired_p | beats_own_model |
 |---|---|---|---|---|---|---|---|---|
-| btts | own_plus_over15 | 0.686782 | -0.000572 | 0.000572 | 0.000258 | 0.000889 | 0.0035 | True |
-| btts | own_plus_over25 | 0.686235 | -0.001119 | 0.001119 | 0.000671 | 0.00161 | 0.0 | True |
-| btts | own_plus_over35 | 0.686036 | -0.001318 | 0.001318 | 0.000861 | 0.001798 | 0.0 | True |
-| btts | own_plus_all_markets | 0.685889 | -0.001465 | 0.001465 | 0.000976 | 0.001994 | 0.0 | True |
-| btts | own_plus_all_plus_sides | 0.685746 | -0.001608 | 0.001608 | 0.000888 | 0.002332 | 0.0 | True |
-| over15 | own_plus_btts | 0.560117 | 6.5e-05 | -6.5e-05 | -0.000513 | 0.000432 | 0.8245 | False |
-| over15 | own_plus_over25 | 0.558598 | -0.001454 | 0.001454 | 0.000688 | 0.002271 | 0.0015 | True |
-| over15 | own_plus_over35 | 0.558502 | -0.00155 | 0.00155 | 0.00069 | 0.002441 | 0.0045 | True |
-| over15 | own_plus_all_markets | 0.558244 | -0.001808 | 0.001808 | 0.000829 | 0.00279 | 0.003 | True |
-| over15 | own_plus_all_plus_sides | 0.5584 | -0.001652 | 0.001652 | 0.000594 | 0.002764 | 0.0085 | True |
-| over25 | own_plus_btts | 0.682735 | 0.000249 | -0.000249 | -0.000665 | 0.000158 | 0.321 | False |
-| over25 | own_plus_over15 | 0.681831 | -0.000654 | 0.000654 | 8.5e-05 | 0.00119 | 0.0495 | True |
-| over25 | own_plus_over35 | 0.681359 | -0.001126 | 0.001126 | 0.000347 | 0.001909 | 0.0165 | True |
-| over25 | own_plus_all_markets | 0.681337 | -0.001149 | 0.001149 | 0.000254 | 0.002009 | 0.0325 | True |
-| over25 | own_plus_all_plus_sides | 0.681502 | -0.000983 | 0.000983 | -3.4e-05 | 0.001925 | 0.0965 | False |
-| over35 | own_plus_btts | 0.583894 | -0.000202 | 0.000202 | -0.000114 | 0.000536 | 0.319 | False |
-| over35 | own_plus_over15 | 0.583325 | -0.000771 | 0.000771 | 0.000102 | 0.001438 | 0.059 | True |
-| over35 | own_plus_over25 | 0.582363 | -0.001733 | 0.001733 | 0.000864 | 0.002624 | 0.0 | True |
-| over35 | own_plus_all_markets | 0.582436 | -0.00166 | 0.00166 | 0.000755 | 0.002578 | 0.0025 | True |
-| over35 | own_plus_all_plus_sides | 0.582627 | -0.001469 | 0.001469 | 0.000371 | 0.002617 | 0.0325 | True |
+| btts | own_plus_over15 | 0.686902 | -0.000605 | 0.000605 | 0.000278 | 0.000929 | 0.0005 | True |
+| btts | own_plus_over25 | 0.686254 | -0.001253 | 0.001253 | 0.000695 | 0.001813 | 0.0 | True |
+| btts | own_plus_over35 | 0.686236 | -0.001271 | 0.001271 | 0.000862 | 0.00168 | 0.0 | True |
+| btts | own_plus_all_markets | 0.686123 | -0.001384 | 0.001384 | 0.000818 | 0.00194 | 0.0 | True |
+| btts | own_plus_all_plus_sides | 0.686085 | -0.001422 | 0.001422 | 0.000819 | 0.002049 | 0.0 | True |
+| over15 | own_plus_btts | 0.560265 | 0.000179 | -0.000179 | -0.000642 | 0.000279 | 0.5165 | False |
+| over15 | own_plus_over25 | 0.558564 | -0.001522 | 0.001522 | 0.000648 | 0.002455 | 0.0055 | True |
+| over15 | own_plus_over35 | 0.558514 | -0.001571 | 0.001571 | 0.000908 | 0.002246 | 0.0 | True |
+| over15 | own_plus_all_markets | 0.558301 | -0.001785 | 0.001785 | 0.000824 | 0.002759 | 0.0025 | True |
+| over15 | own_plus_all_plus_sides | 0.558404 | -0.001681 | 0.001681 | 0.000682 | 0.002743 | 0.007 | True |
+| over25 | own_plus_btts | 0.683059 | 0.000192 | -0.000192 | -0.000491 | 0.000113 | 0.295 | False |
+| over25 | own_plus_over15 | 0.68221 | -0.000657 | 0.000657 | 0.000164 | 0.001166 | 0.031 | True |
+| over25 | own_plus_over35 | 0.681535 | -0.001332 | 0.001332 | 0.000683 | 0.001972 | 0.0005 | True |
+| over25 | own_plus_all_markets | 0.681529 | -0.001338 | 0.001338 | 0.000629 | 0.00206 | 0.0025 | True |
+| over25 | own_plus_all_plus_sides | 0.681587 | -0.00128 | 0.00128 | 0.00053 | 0.002072 | 0.0065 | True |
+| over35 | own_plus_btts | 0.584976 | -0.000149 | 0.000149 | -0.000274 | 0.000575 | 0.5475 | False |
+| over35 | own_plus_over15 | 0.584406 | -0.000719 | 0.000719 | 2.6e-05 | 0.001482 | 0.109 | True |
+| over35 | own_plus_over25 | 0.583501 | -0.001624 | 0.001624 | 0.000567 | 0.002745 | 0.014 | True |
+| over35 | own_plus_all_markets | 0.583506 | -0.001618 | 0.001618 | 0.000502 | 0.002847 | 0.015 | True |
+| over35 | own_plus_all_plus_sides | 0.5835 | -0.001625 | 0.001625 | 0.000468 | 0.002889 | 0.0225 | True |
 
 
 **Every `own_plus_btts` row fails.** Every row built on another Over line passes. 
@@ -159,36 +159,36 @@ piece of evidence dressed as two.
 
 | model_a | model_b | err_rate_a | err_rate_b | both_wrong | both_wrong_if_independent | excess_pp | phi |
 |---|---|---|---|---|---|---|---|
-| btts | over15 | 0.4566 | 0.2569 | 0.1744 | 0.1173 | 5.71 | 0.2623 |
-| btts | over25 | 0.4566 | 0.4456 | 0.2601 | 0.2035 | 5.66 | 0.2286 |
-| btts | over35 | 0.4566 | 0.2809 | 0.0809 | 0.1283 | -4.74 | -0.2118 |
-| over15 | over25 | 0.2569 | 0.4456 | 0.1155 | 0.1145 | 0.1 | 0.0048 |
-| over15 | over35 | 0.2569 | 0.2809 | 0.0007 | 0.0722 | -7.15 | -0.3639 |
-| over25 | over35 | 0.4456 | 0.2809 | 0.1085 | 0.1252 | -1.67 | -0.0745 |
+| btts | over15 | 0.4513 | 0.2561 | 0.1729 | 0.1156 | 5.73 | 0.264 |
+| btts | over25 | 0.4513 | 0.4423 | 0.2518 | 0.1996 | 5.23 | 0.2114 |
+| btts | over35 | 0.4513 | 0.2821 | 0.0818 | 0.1273 | -4.55 | -0.203 |
+| over15 | over25 | 0.2561 | 0.4423 | 0.1133 | 0.1133 | 0.0 | 0.0001 |
+| over15 | over35 | 0.2561 | 0.2821 | 0.0011 | 0.0723 | -7.12 | -0.3624 |
+| over25 | over35 | 0.4423 | 0.2821 | 0.109 | 0.1248 | -1.58 | -0.0706 |
 
 
-Most correlated errors: btts/over15 +5.71pp over independence.
+Most correlated errors: btts/over15 +5.73pp over independence.
 
 ## Disagreement — is 'BTTS high, Over 2.5 low' really a 1-1 machine?
 
 | state | n | avg_goals | goals_0 | goals_1 | goals_2 | goals_3 | goals_4 | goals_5plus | interpretable |
 |---|---|---|---|---|---|---|---|---|---|
-| btts_high_ou25_high | 1144 | 3.3 | 0.0367 | 0.1171 | 0.1949 | 0.2203 | 0.1976 | 0.2334 | True |
-| btts_high_ou25_low | 39 | 2.872 | 0.0513 | 0.1026 | 0.2564 | 0.2821 | 0.2308 | 0.0769 | False |
-| btts_low_ou25_high | 55 | 3.636 | 0.0182 | 0.0545 | 0.2182 | 0.2364 | 0.1636 | 0.3091 | False |
-| btts_low_ou25_low | 1282 | 2.195 | 0.1178 | 0.2488 | 0.2543 | 0.1919 | 0.1131 | 0.0741 | True |
-| all | 24425 | 2.68 | 0.0759 | 0.181 | 0.236 | 0.2243 | 0.1458 | 0.1371 | True |
+| btts_high_ou25_high | 1160 | 3.316 | 0.0448 | 0.1112 | 0.1853 | 0.2284 | 0.1922 | 0.2379 | True |
+| btts_high_ou25_low | 60 | 2.417 | 0.1 | 0.1833 | 0.2 | 0.3167 | 0.1333 | 0.0667 | False |
+| btts_low_ou25_high | 64 | 3.484 | 0.0312 | 0.0312 | 0.1875 | 0.2812 | 0.25 | 0.2188 | False |
+| btts_low_ou25_low | 1204 | 2.162 | 0.1279 | 0.2442 | 0.2566 | 0.1877 | 0.1088 | 0.0748 | True |
+| all | 24527 | 2.683 | 0.0756 | 0.1805 | 0.2362 | 0.2244 | 0.1457 | 0.1376 | True |
 
 
 Scorelines:
 
 | state | n | top_scores |
 |---|---|---|
-| btts_high_ou25_high | 1144 | 2-1 0.094; 1-1 0.091; 1-2 0.080; 2-2 0.079; 1-0 0.068 |
-| btts_high_ou25_low | 39 | 1-1 0.205; 2-1 0.154; 1-2 0.077; 1-3 0.077; 1-0 0.051 |
-| btts_low_ou25_high | 55 | 2-1 0.145; 2-0 0.145; 3-0 0.091; 4-1 0.073; 3-1 0.073 |
-| btts_low_ou25_low | 1282 | 1-0 0.139; 1-1 0.133; 0-0 0.118; 0-1 0.110; 2-1 0.090 |
-| all | 24425 | 1-1 0.121; 1-0 0.105; 2-1 0.091; 0-1 0.076; 0-0 0.076 |
+| btts_high_ou25_high | 1160 | 1-2 0.091; 2-1 0.085; 1-1 0.084; 2-2 0.078; 1-0 0.065 |
+| btts_high_ou25_low | 60 | 1-1 0.133; 1-2 0.100; 1-0 0.100; 0-0 0.100; 2-1 0.083 |
+| btts_low_ou25_high | 64 | 3-0 0.234; 4-0 0.188; 2-0 0.125; 4-1 0.062; 3-2 0.047 |
+| btts_low_ou25_low | 1204 | 1-0 0.142; 1-1 0.131; 0-0 0.128; 0-1 0.102; 2-1 0.077 |
+| all | 24527 | 1-1 0.121; 1-0 0.104; 2-1 0.091; 0-1 0.076; 0-0 0.076 |
 
 
 The hypothesis points the right way — 'BTTS high, Over 2.5 low' produces 1-1 at 
@@ -205,9 +205,9 @@ period and re-measured on the later one, with Benjamini-Hochberg control.
 
 | status | conditions |
 |---|---|
-| REPLICATED | 502 |
-| UNTESTED | 78 |
-| DISCOVERY_ONLY | 26 |
+| REPLICATED | 564 |
+| DISCOVERY_ONLY | 24 |
+| UNTESTED | 18 |
 
 
 **These replication rates should not be read as edges.** Most of the searched 
@@ -228,14 +228,14 @@ OVER25_ADDS_INFO_TO_BTTS=YES
 OVER35_ADDS_INFO_TO_BTTS=YES
 CROSS_MARKET_META_MODEL_BEATS_SINGLE_MODELS=YES
 BEST_VALIDATED_CROSS_MARKET_RELATIONSHIP=over15 <- own_plus_all_markets
-OOS_SAMPLE_SIZE=10959
-OOS_IMPROVEMENT=-0.00181 log loss
-MODEL_AGREEMENT_IMPROVES_ACCURACY=NO
+OOS_SAMPLE_SIZE=11038
+OOS_IMPROVEMENT=-0.00178 log loss
+MODEL_AGREEMENT_IMPROVES_ACCURACY=MIXED
 MODEL_DISAGREEMENT_IS_INFORMATIVE=UNCLEAR
 ANY_CROSS_MARKET_PATTERN_SURVIVES_MULTIPLE_TESTING=YES
 ANY_CROSS_MARKET_PATTERN_REPLICATED_CHRONOLOGICALLY=YES
-PLAYER_SCORER_ADDS_INFO_TO_BTTS=YES
-PLAYER_SCORER_ADDS_INFO_TO_OVER25=YES
+PLAYER_SCORER_ADDS_INFO_TO_BTTS=NO
+PLAYER_SCORER_ADDS_INFO_TO_OVER25=NO
 MATCH_MODELS_IMPROVE_PLAYER_SCORER=YES
 BTTS_EDGE_PREDICTS_OVER25=NOT_TESTED
 BTTS_PROBABILITY_PREDICTS_OVER25_BETTER_THAN_EDGE=NOT_TESTED
