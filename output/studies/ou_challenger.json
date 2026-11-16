@@ -1,8 +1,8 @@
 {
  "window_from": "2026-08-10",
- "decision_fixtures": 2196,
- "settled_matched": 1828,
- "oos_fixtures": 1536,
+ "decision_fixtures": 2229,
+ "settled_matched": 1832,
+ "oos_fixtures": 1540,
  "weekly_coefficients": [
   {
    "week": "2026-08-31/2026-09-06",
@@ -95,23 +95,23 @@
  ],
  "probabilistic_oos": {
   "market": {
-   "logloss": 0.68058,
-   "brier": 0.24385
+   "logloss": 0.68053,
+   "brier": 0.24382
   },
   "v9": {
-   "logloss": 0.69486,
-   "brier": 0.25083
+   "logloss": 0.69483,
+   "brier": 0.25081
   },
   "challenger": {
-   "logloss": 0.68138,
-   "brier": 0.24421
+   "logloss": 0.68142,
+   "brier": 0.24423
   }
  },
  "challenger_minus_v9_logloss": {
-  "mean": -0.01348,
+  "mean": -0.01342,
   "ci90": [
-   -0.02,
-   -0.007
+   -0.0198,
+   -0.0071
   ]
  },
  "tips_at_5pct_edge": {
@@ -121,8 +121,8 @@
    "units": -50.55,
    "roi": -0.1101,
    "roi_ci90": [
-    -0.1975,
-    -0.0243
+    -0.1965,
+    -0.0274
    ],
    "mean_clv_pp": -3.98,
    "avg_odds_taken": 2.463
@@ -139,8 +139,8 @@
     "units": -22.32,
     "roi": -0.0677,
     "roi_ci90": [
-     -0.1613,
-     0.0296
+     -0.1618,
+     0.0299
     ],
     "mean_clv_pp": -3.98,
     "avg_odds_taken": 2.509
@@ -156,8 +156,8 @@
     "units": -28.23,
     "roi": -0.2188,
     "roi_ci90": [
-     -0.3932,
-     -0.0353
+     -0.3911,
+     -0.0408
     ],
     "mean_clv_pp": -3.99,
     "avg_odds_taken": 2.346
@@ -168,11 +168,11 @@
   }
  },
  "current_weights": {
-  "a": 0.054,
-  "b_market": 0.783,
+  "a": 0.048,
+  "b_market": 0.791,
   "c_model": 0.0,
-  "c_model_unconstrained": -0.387,
-  "n_train": 1828
+  "c_model_unconstrained": -0.388,
+  "n_train": 1832
  },
- "forward_logged_this_run": 69
+ "forward_logged_this_run": 33
 }
