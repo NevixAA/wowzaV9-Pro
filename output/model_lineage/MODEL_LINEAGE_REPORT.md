@@ -1,6 +1,6 @@
 # Model lineage — champion high-water mark
 
-Generated 2026-11-09 14:18:09 UTC. Read-only against v9.
+Generated 2026-11-16 13:59:25 UTC. Read-only against v9.
 
 Weekly realised results swing with football. What must not regress is the validated quality of the model in production. One week never demotes a champion (`WEEKLY_RESULT_VARIANCE_HIGH`).
 
@@ -15,7 +15,7 @@ Weekly realised results swing with football. What must not regress is the valida
 | over15 | over15_20261018T080423Z_da4743a2 | 2026-10-18T08:04:23Z | KEEP_CHAMPION | DEGRADED | owner review: champion health DEGRADED |
 | over35 | over35_20261005T101905Z_f546ce72 | 2026-10-05T10:19:05Z | KEEP_CHAMPION | DEGRADED | owner review: champion health DEGRADED |
 | standard | standard_20261018T080423Z_64313878 | 2026-10-18T08:04:23Z | SHADOW_MORE | HEALTHY | shadow: collect graded head-to-head fixtures |
-| standard_repaired | standard_repaired_20261028T123040Z_1f5805e6 | 2026-10-28T12:37:37Z |  | HEALTHY | first CHAMPION_GATE retrain pending (next Sunday) |
+| standard_repaired | standard_repaired_20261028T123040Z_1f5805e6 | 2026-10-28T12:37:37Z |  | WATCH | first CHAMPION_GATE retrain pending (next Sunday) |
 
 ## Retrain decisions
 
@@ -63,24 +63,24 @@ Weekly realised results swing with football. What must not regress is the valida
 | 2026-W44 | 2026-11-01 15:39 | standard | standard_20261101T153917Z_a47c133e | SHADOW_MORE | SHADOW | -0.0007 | 0 |  |  |  |  | standard_20261018T080423Z_64313878 | CLOSED |
 | 2026-W44 | 2026-11-01 16:34 | standard | standard_20261101T163453Z_9e71c179 | SHADOW_MORE | SHADOW | -0.0006 | 0 |  |  |  |  | standard_20261018T080423Z_64313878 | CLOSED |
 | 2026-W44 | 2026-11-01 16:44 | standard | standard_20261101T164419Z_9eab496f | SHADOW_MORE | SHADOW | -0.0017 | 1 | 1.0 | 0.732 | 1.25 | 0.0465 | standard_20261018T080423Z_64313878 | CLOSED |
-| 2026-W44 | 2026-11-01 17:08 | standard | standard_20261101T170844Z_279e2947 | SHADOW_MORE | SHADOW | -0.0016 | 5 | 0.0 | 0.6775 | -1.0 | 0.0419 | standard_20261018T080423Z_64313878 | OPEN |
+| 2026-W44 | 2026-11-01 17:08 | standard | standard_20261101T170844Z_279e2947 | SHADOW_MORE | SHADOW | -0.0016 | 16 | 0.1875 | 0.663 | -0.5825 | 0.0178 | standard_20261018T080423Z_64313878 | OPEN |
 
 ## Bet attribution
 
-{"RECONSTRUCTED_BY_TIME": 1472, "UNKNOWN_LEGACY": 442, "RECORDED": 423, "AMBIGUOUS_BOUNDARY": 1}
+{"RECONSTRUCTED_BY_TIME": 1472, "RECORDED": 449, "UNKNOWN_LEGACY": 442, "AMBIGUOUS_BOUNDARY": 1}
 
 Legacy rows are attributed by timestamp to git-reconstructed champion eras. Rows within 60 minutes after an era started are AMBIGUOUS_BOUNDARY and excluded.
 
 ## Head-to-head shadow
 
-4610 logged rows, 3542 graded. The log started 2026-10-18.
+5502 logged rows, 3702 graded. The log started 2026-10-18.
 
 | model_type | challenger_version | champion_version | fixtures_logged | graded_n | ll_champion | ll_challenger | delta_logloss | delta_ci_lo | delta_ci_hi | delta_brier | calib_gap_champion | calib_gap_challenger | delta_roi_sim | verdict_so_far |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| btts | btts_20261101T112201Z_bf9b956c | btts_20261005T101905Z_238e3419 | 267 | 205 | 0.69164 | 0.6929 | 0.00126 | -0.00507 | 0.00517 | 0.00064 | 0.00016 | 0.00388 | NOT_AVAILABLE: h2h rows carry no price | UNRESOLVED |
-| newformat | newformat_20261025T082056Z_cfa68e5c | newformat_20261018T080423Z_9eb6b4b4 | 271 | 248 | 0.69054 | 0.67113 | -0.01941 | -0.03429 | -0.00576 | -0.00946 | -0.0976 | -0.05415 | NOT_AVAILABLE: h2h rows carry no price | CHALLENGER_AHEAD |
-| newformat | pro_hgb_newformat_20261022T110238Z_8e11e6cf | newformat_20261018T080423Z_9eb6b4b4 | 344 | 316 | 0.69156 | 0.67372 | -0.01784 | -0.03331 | -0.0048 | -0.00873 | -0.08907 | -0.04294 | NOT_AVAILABLE: h2h rows carry no price | CHALLENGER_AHEAD |
+| btts | btts_20261101T112201Z_bf9b956c | btts_20261005T101905Z_238e3419 | 415 | 237 | 0.69506 | 0.69503 | -3e-05 | -0.00645 | 0.00473 | 1e-05 | 0.01342 | 0.01629 | NOT_AVAILABLE: h2h rows carry no price | UNRESOLVED |
+| newformat | newformat_20261025T082056Z_cfa68e5c | newformat_20261018T080423Z_9eb6b4b4 | 343 | 252 | 0.69037 | 0.67249 | -0.01788 | -0.03216 | -0.00344 | -0.00871 | -0.08828 | -0.04497 | NOT_AVAILABLE: h2h rows carry no price | CHALLENGER_AHEAD |
+| newformat | pro_hgb_newformat_20261022T110238Z_8e11e6cf | newformat_20261018T080423Z_9eb6b4b4 | 416 | 320 | 0.69141 | 0.67472 | -0.01669 | -0.03172 | -0.00371 | -0.00817 | -0.08184 | -0.03591 | NOT_AVAILABLE: h2h rows carry no price | CHALLENGER_AHEAD |
 | over15 | over15_20261101T112303Z_e3e5d0aa | over15_20261018T080423Z_da4743a2 | 171 | 154 | 0.54847 | 0.54647 | -0.00199 | -0.00869 | 0.00307 | -0.00061 | -0.00886 | -0.00584 | NOT_AVAILABLE: h2h rows carry no price | UNRESOLVED |
-| over15 | over15_20261101T154342Z_bcbad302 | over15_20261018T080423Z_da4743a2 | 249 | 188 | 0.52654 | 0.52717 | 0.00062 | -0.00483 | 0.00563 | -2e-05 | -0.01895 | -0.01966 | NOT_AVAILABLE: h2h rows carry no price | UNRESOLVED |
-| standard | pro_hgb_standard_20261022T110238Z_e4191ad5 | standard_20261018T080423Z_64313878 | 269 | 217 | 0.69161 | 0.70554 | 0.01393 | 0.00766 | 0.01946 | 0.00688 | -0.00829 | -0.02027 | NOT_AVAILABLE: h2h rows carry no price | CHAMPION_AHEAD |
+| over15 | over15_20261101T154342Z_bcbad302 | over15_20261018T080423Z_da4743a2 | 397 | 220 | 0.54741 | 0.54778 | 0.00037 | -0.00391 | 0.00502 | -8e-05 | -0.00583 | -0.00645 | NOT_AVAILABLE: h2h rows carry no price | UNRESOLVED |
+| standard | pro_hgb_standard_20261022T110238Z_e4191ad5 | standard_20261018T080423Z_64313878 | 345 | 245 | 0.69326 | 0.70351 | 0.01025 | 0.00269 | 0.0161 | 0.00506 | 8e-05 | -0.01075 | NOT_AVAILABLE: h2h rows carry no price | CHAMPION_AHEAD |
 | standard | standard_20261025T082022Z_3a405c51 | standard_20261018T080423Z_64313878 | 115 | 110 | 0.687 | 0.69307 | 0.00606 | -0.00538 | 0.01085 | 0.00298 | -0.04135 | -0.02769 | NOT_AVAILABLE: h2h rows carry no price | UNRESOLVED |
