@@ -35,6 +35,25 @@ def pol():
     return R.load_policy(cfg.V9_LOCAL / "config" / "bankroll_policy.json")
 
 
+@pytest.fixture(scope="module")
+def staked_pol(pol):
+    """The live policy with new_format|OU25_UNDER in the STAKED state it held before the owner made NF
+    Unders paper-only (2026-11-02). Taken from the policy's own `previous_state` record, never invented:
+    the per-side review is only observable on a side that has money to reduce. On the live policy a
+    PAPER side is KEEP_PAPER by rule (test_live_paper_under_side_is_never_staked_or_raised)."""
+    import copy
+    t = pol["tracks"]["new_format|OU25_UNDER"]
+    if t.get("state") != "PAPER":
+        return pol
+    prev = t.get("previous_state")
+    if not prev or float(prev.get("base_fraction", 0) or 0) <= 0:
+        pytest.skip("NF O/U Under is PAPER with no staked previous_state recorded in the v9 policy")
+    p = copy.deepcopy(pol)
+    p["tracks"]["new_format|OU25_UNDER"] = {k: v for k, v in t.items()
+                                            if k not in ("previous_state", "paper_reason")} | dict(prev)
+    return p
+
+
 def _bets(n_days=90, over_bias=0.15, under_bias=-0.30, seed=0):
     """NF O/U 2.5 record: OVER wins often, UNDER loses heavily - the two sides diverge."""
     from src.bankroll.data import track_key_fn
@@ -68,7 +87,8 @@ def test_policy_has_both_sides_and_no_parent(pol):
     assert "new_format|OU25" not in pol["tracks"] and "standard|OU25" not in pol["tracks"]
 
 
-def test_allocator_reviews_each_side_as_its_own_track(pol):
+def test_allocator_reviews_each_side_as_its_own_track(staked_pol):
+    pol = staked_pol
     from src.bankroll import allocator as A
     from src.bankroll.evidence import track_evidence
     b = _bets()
@@ -83,7 +103,8 @@ def test_allocator_reviews_each_side_as_its_own_track(pol):
     assert A.validate(p) == []
 
 
-def test_reductions_only_moves_only_the_losing_side(pol):
+def test_reductions_only_moves_only_the_losing_side(staked_pol):
+    pol = staked_pol
     from src.bankroll import allocator as A
     p, _, _ = A.propose(pol, _bets(), "2026-11-10")
     rec = A.reduce_only(pol, p)
@@ -92,6 +113,28 @@ def test_reductions_only_moves_only_the_losing_side(pol):
     assert float(under["base_fraction"]) < float(pol["tracks"]["new_format|OU25_UNDER"]["base_fraction"])
     for k, t in rec["tracks"].items():                                              # nothing ever increases
         assert float(t.get("base_fraction", 0)) <= float(pol["tracks"][k].get("base_fraction", 0)) + 1e-12
+
+
+def test_live_paper_under_side_is_never_staked_or_raised(pol):
+    """Owner 2026-11-02: NF O/U Unders are paper-only. On the live policy the losing UNDER side is
+    reviewed as its own track and stays KEEP_PAPER at 0 (a PAPER track never gets money automatically);
+    the OVER side keeps its stake; reductions-only raises nothing."""
+    from src.bankroll import allocator as A
+    if pol["tracks"]["new_format|OU25_UNDER"].get("state") != "PAPER":
+        pytest.skip("NF O/U Under is not PAPER in this v9 policy")
+    b = _bets()
+    p, dec, _ = A.propose(pol, b, "2026-11-10")
+    d = {x["track"]: x for x in dec}
+    assert d["new_format|OU25_UNDER"]["decision"] in ("KEEP_PAPER", "PAPER_PROMOTION_REVIEW")
+    assert d["new_format|OU25_UNDER"]["decision"] == "KEEP_PAPER"                    # losing evidence
+    assert float(p["tracks"]["new_format|OU25_UNDER"]["base_fraction"]) == 0.0
+    assert d["new_format|OU25_OVER"]["decision"] not in ("REDUCE", "STOP")
+    rec = A.reduce_only(pol, p)
+    assert float(rec["tracks"]["new_format|OU25_UNDER"]["base_fraction"]) == 0.0
+    assert rec["tracks"]["new_format|OU25_OVER"] == pol["tracks"]["new_format|OU25_OVER"]
+    for k, t in rec["tracks"].items():
+        assert float(t.get("base_fraction", 0)) <= float(pol["tracks"][k].get("base_fraction", 0)) + 1e-12
+    assert A.validate(p) == []
 
 
 def test_simulator_routes_ou25_by_side(pol):
