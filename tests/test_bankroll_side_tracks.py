@@ -36,7 +36,8 @@ def pol():
     """v9's policy with per-cell staking OFF, so the TRACK routing by side is what is exercised (with cell staking
     on - v9 clean rebuild 2026-11-11 - only owner cells stake and these synthetic leagues have none)."""
     import copy
-    p = copy.deepcopy(R.load_policy(cfg.V9_LOCAL / "config" / "bankroll_policy.json"))
+    from tests.v9_policy_before import before_2026_11_17   # v9 owner 2026-11-17: every track at 0 now
+    p = before_2026_11_17(R.load_policy(cfg.V9_LOCAL / "config" / "bankroll_policy.json"))
     if isinstance(p.get("cell_staking"), dict):
         p["cell_staking"]["enabled"] = False
     return p

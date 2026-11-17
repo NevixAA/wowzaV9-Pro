@@ -31,7 +31,8 @@ def pol(R):
     """v9's policy with per-cell staking OFF: these tests exercise the reader's TRACK rules (caps, throttle,
     bounds, positions). With cell staking on (v9 clean rebuild, 2026-11-11) only owner cells stake, which
     tests/test_bankroll_cells.py-style checks cover on the v9 side."""
-    p = copy.deepcopy(R.load_policy(cfg.V9_LOCAL / "config" / "bankroll_policy.json"))
+    from tests.v9_policy_before import before_2026_11_17   # v9 owner 2026-11-17: every track at 0 now
+    p = before_2026_11_17(R.load_policy(cfg.V9_LOCAL / "config" / "bankroll_policy.json"))
     if isinstance(p.get("cell_staking"), dict):
         p["cell_staking"]["enabled"] = False
     return p
