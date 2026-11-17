@@ -215,27 +215,23 @@ def _readable_row(lid: int, country: str, name: str) -> dict:
 def test_scout_gate_refuses_a_league_v9_already_has():
     from src.scout import promotion as P
     extra = {"current_season_settled": 100, "odds_coverage": {m: 1.0 for m in P.KEY_MARKETS}}
-    ok, gate = P.candidate_gate(_readable_row(62, "France", "Ligue 2"), extra, {62, "Ligue 2"})
-    assert not ok and gate["checks"]["not already a Wowza league"] is False
-    ok, gate = P.candidate_gate(_readable_row(62, "France", "Ligue 2"), extra, set())   # registry unread
-    assert gate["checks"]["not already a Wowza league"] is False
-    ok, gate = P.candidate_gate(_readable_row(333, "Ukraine", "Premier League"), extra,
-                                {39, "Premier League"})   # same bare name, different league
-    assert gate["checks"]["not already a Wowza league"] is True
+    # by API-Football id only (main's scout Data Truth R1, merged at go-live); an unread registry blocks
+    key = "not already a Wowza league (by API-Football id)"
+    ok, gate = P.candidate_gate(_readable_row(62, "France", "Ligue 2"), extra, {62})
+    assert not ok and gate["checks"][key] is False
+    ok, gate = P.candidate_gate(_readable_row(62, "France", "Ligue 2"), extra, None)     # registry unread
+    assert not ok and gate["checks"][key] is False
+    ok, gate = P.candidate_gate(_readable_row(333, "Ukraine", "Premier League"), extra, {39})   # same bare name
+    assert gate["checks"][key] is True
 
 
-def test_scout_wowza_leagues_raises_when_registry_unreadable(monkeypatch):
-    from src.data import v9_config
+def test_scout_v9_league_ids_fail_closed_when_registry_unreadable(monkeypatch, tmp_path):
+    """An unreadable v9 registry is never 'nothing is ours': main's v9_league_ids (merged at go-live) returns None
+    and the gate blocks (tests/test_scout_data_truth.py covers the implausibly small registry too)."""
+    from config import pro_config as cfg
     from src.scout import promotion as P
-
-    class _Reg:
-        @staticmethod
-        def leagues():
-            return []
-    monkeypatch.setattr(v9_config, "league_ids", lambda: {})
-    monkeypatch.setattr(v9_config, "league_registry", lambda: _Reg)
-    with pytest.raises(RuntimeError):
-        P.wowza_leagues()
+    monkeypatch.setattr(cfg, "V9_LOCAL", tmp_path)                       # no config/leagues.json there
+    assert P.v9_league_ids() is None
 
 
 # ── registry season_type comes from v9's season rule, not from the model format ─────────────────

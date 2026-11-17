@@ -270,6 +270,10 @@ def _scorelines() -> pd.DataFrame:
     if not parts:
         return pd.DataFrame(columns=sorted(need) + ["fixture_key"])
     res = pd.concat(parts, ignore_index=True)
+    # Go-live merge 2026-11-17 (data-truth-100 round 3 rule): a full-time score stored before its own kickoff
+    # is a provider error and never settles anything - the same guard as bet_builder's scorelines.
+    from src.data import result_guard as rg
+    res = rg.drop_unplayed(res, "prediction_ledger scorelines")
     if "fixture_key" not in res.columns:
         from src.data import entities as ent
         res = ent.add_fixture_key(res)

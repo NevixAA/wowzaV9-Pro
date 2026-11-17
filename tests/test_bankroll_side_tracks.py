@@ -129,8 +129,7 @@ def test_allocator_reviews_each_side_as_its_own_track(pol):
     assert A.validate(p) == []
 
 
-def test_reductions_only_moves_only_the_losing_side(staked_pol):
-    pol = staked_pol
+def test_reductions_only_moves_only_the_losing_side(pol):
     from src.bankroll import allocator as A
     for cur in (pol, _both_sides_real(pol)):
         p, _, _ = A.propose(cur, _bets(), "2026-11-10")
