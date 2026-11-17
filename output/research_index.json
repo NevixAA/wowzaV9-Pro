@@ -1,37 +1,20 @@
 {
- "generated_at": "2026-11-16 20:27 UTC",
+ "generated_at": "2026-11-17 16:17 UTC",
  "items": [
-  {
-   "id": "league_promotion",
-   "title": "Weekly league promotion",
-   "area": "leagues",
-   "status": "199 leagues monitored \u00b7 candidates 0 \u00b7 promoted 0",
-   "date": "2026-11-16T20:26:31Z",
-   "key": {
-    "new_candidates": 0,
-    "promoted": 0,
-    "failed": 0,
-    "blocked": 0,
-    "still_collecting": 199,
-    "awaiting_confirmation": 0
-   },
-   "report": "output/scout/WEEKLY_PROMOTION_REVIEW.md",
-   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/scout/WEEKLY_PROMOTION_REVIEW.md"
-  },
   {
    "id": "props_calibration",
    "title": "Props calibration monitor (daily)",
    "area": "players",
    "status": "Live props model vs reality (30 days): assists predicted 21% / happened 21%, cards predicted 18% / happened 20%, goals predicted 26% / happened 27%, sot predicted 32% / happened 40%, sot2 predicted 25% / happened 28%",
-   "date": "2026-11-16 18:30 UTC",
+   "date": "2026-11-17 16:13 UTC",
    "key": {
-    "assists": "CALIBRATED \u00b7 gap +0.5% [-0.0184, 0.0299] \u00b7 n 717",
-    "cards": "UNDER_PREDICTS \u00b7 gap +1.9% [0.009, 0.03] \u00b7 n 4949",
-    "goals": "CALIBRATED \u00b7 gap +1.0% [-0.0056, 0.0277] \u00b7 n 2441",
+    "assists": "CALIBRATED \u00b7 gap +0.3% [-0.0218, 0.0281] \u00b7 n 664",
+    "cards": "UNDER_PREDICTS \u00b7 gap +2.3% [0.0126, 0.0329] \u00b7 n 4482",
+    "goals": "CALIBRATED \u00b7 gap +0.7% [-0.0092, 0.024] \u00b7 n 2259",
     "goals2": "INSUFFICIENT \u00b7 gap -15.1% [None, None] \u00b7 n 1",
-    "sot": "UNDER_PREDICTS \u00b7 gap +7.8% [0.0659, 0.0892] \u00b7 n 8366",
-    "sot2": "UNDER_PREDICTS \u00b7 gap +2.9% [0.0097, 0.0476] \u00b7 n 973",
-    "sot3": "INSUFFICIENT \u00b7 gap +3.4% [None, None] \u00b7 n 23"
+    "sot": "UNDER_PREDICTS \u00b7 gap +7.4% [0.0635, 0.0855] \u00b7 n 7605",
+    "sot2": "UNDER_PREDICTS \u00b7 gap +2.2% [0.0034, 0.0395] \u00b7 n 925",
+    "sot3": "INSUFFICIENT \u00b7 gap +1.4% [None, None] \u00b7 n 21"
    },
    "report": "output/studies/PROPS_CALIBRATION.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/PROPS_CALIBRATION.md"
@@ -41,7 +24,7 @@
    "title": "Top picks \u2014 weekly table",
    "area": "tips",
    "status": "Top picks 2026-W47: live to date BEST_BETS 48%/-9%, SAFEST 55%/-2%, VALUE 46%/-4%",
-   "date": "2026-11-16 18:30 UTC",
+   "date": "2026-11-17 16:13 UTC",
    "key": {
     "BEST_BETS (backtest)": "56% hit \u00b7 +9% ROI \u00b7 4% 0/5 days \u00b7 278 picks",
     "CURRENT (backtest)": "45% hit \u00b7 -4% ROI \u00b7 10% 0/5 days \u00b7 285 picks",
@@ -60,7 +43,7 @@
    "title": "Best leagues \u2014 results by league",
    "area": "tips",
    "status": "Best leagues (season): proven none \u00b7 losing League One",
-   "date": "2026-11-16 18:30 UTC",
+   "date": "2026-11-17 16:13 UTC",
    "key": {
     "Brazil Serie A": "PROMISING \u00b7 154 tips \u00b7 59% hit @ 2.01 \u00b7 ROI +17% (shrunk +12%)",
     "Argentina Primera Division": "PROMISING \u00b7 376 tips \u00b7 55% hit @ 2.18 \u00b7 ROI +10% (shrunk +8%)",
@@ -89,7 +72,7 @@
    "title": "Calibration shadow in v9 (pre-registered)",
    "area": "models",
    "status": "Live shadow of log-odds calibration in v9: WAITING_FOR_SHADOW_ROWS",
-   "date": "2026-11-16 18:30 UTC",
+   "date": "2026-11-17 16:13 UTC",
    "key": {},
    "report": "output/studies/CALIBRATION_SHADOW.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/CALIBRATION_SHADOW.md"
@@ -98,8 +81,8 @@
    "id": "props_segments",
    "title": "Props segments: attacking D / M (pre-registered)",
    "area": "players",
-   "status": "323 qualifying props since 2026-10-14; 0 EDGE cells",
-   "date": "2026-11-16 18:30 UTC",
+   "status": "324 qualifying props since 2026-10-14; 0 EDGE cells",
+   "date": "2026-11-17 16:13 UTC",
    "key": {
     "ATT_DEF|goals": "COLLECTING (0/150)",
     "ATT_DEF|sot": "COLLECTING (3/150)",
@@ -107,12 +90,44 @@
     "ATT_MID|goals": "COLLECTING (61/150)",
     "ATT_MID|sot": "COLLECTING (23/150)",
     "ATT_MID|assists": "COLLECTING (4/150)",
-    "CONTROL|goals": "COLLECTING (190/150)",
+    "CONTROL|goals": "COLLECTING (191/150)",
     "CONTROL|sot": "COLLECTING (41/150)",
     "CONTROL|assists": "COLLECTING (1/150)"
    },
    "report": "output/studies/PROPS_SEGMENTS.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/PROPS_SEGMENTS.md"
+  },
+  {
+   "id": "league_promotion",
+   "title": "Weekly league promotion",
+   "area": "leagues",
+   "status": "199 leagues monitored \u00b7 candidates 0 \u00b7 promoted 0",
+   "date": "2026-11-16T20:26:31Z",
+   "key": {
+    "new_candidates": 0,
+    "promoted": 0,
+    "failed": 0,
+    "blocked": 0,
+    "still_collecting": 199,
+    "awaiting_confirmation": 0
+   },
+   "report": "output/scout/WEEKLY_PROMOTION_REVIEW.md",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/scout/WEEKLY_PROMOTION_REVIEW.md"
+  },
+  {
+   "id": "learned_tiers",
+   "title": "Learned per-league tiers (challenger)",
+   "area": "tips",
+   "status": "Learned per-league tiers (challenger): weekly retrain; re-ranks inside leagues, never switches one off (owner: league-off needs >= 600 tips); swap only on prospective rows from 2026-10-21",
+   "date": "2026-11-16 20:40 UTC",
+   "key": {
+    "new_format|btts": "today's tiers 10.0% (n 131) vs learned, leagues protected 2.4% (n 313)",
+    "new_format|ou25": "today's tiers 1.9% (n 210) vs learned, leagues protected -0.7% (n 291)",
+    "standard|btts": "today's tiers 6.1% (n 55) vs learned, leagues protected -5.1% (n 285)",
+    "standard|ou25": "today's tiers -11.9% (n 128) vs learned, leagues protected -2.5% (n 192)"
+   },
+   "report": "output/studies/learned_tiers/learned_tiers.json",
+   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/learned_tiers/learned_tiers.json"
   },
   {
    "id": "price_trader",
@@ -192,21 +207,6 @@
    },
    "report": "output/deep_analytics/2026-11-15/WOWZA_Deep_Analytics_2026-11-15.md",
    "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/deep_analytics/2026-11-15/WOWZA_Deep_Analytics_2026-11-15.md"
-  },
-  {
-   "id": "learned_tiers",
-   "title": "Learned per-league tiers (challenger)",
-   "area": "tips",
-   "status": "Learned per-league tiers (challenger): weekly retrain; re-ranks inside leagues, never switches one off (owner: league-off needs >= 600 tips); swap only on prospective rows from 2026-10-21",
-   "date": "2026-11-09 21:02 UTC",
-   "key": {
-    "new_format|btts": "today's tiers 10.0% (n 131) vs learned, leagues protected 2.7% (n 312)",
-    "new_format|ou25": "today's tiers 1.9% (n 210) vs learned, leagues protected -0.7% (n 291)",
-    "standard|btts": "today's tiers 6.1% (n 55) vs learned, leagues protected -5.7% (n 283)",
-    "standard|ou25": "today's tiers -11.9% (n 128) vs learned, leagues protected -2.5% (n 192)"
-   },
-   "report": "output/studies/learned_tiers/learned_tiers.json",
-   "report_url": "https://github.com/NevixAA/wowzaV9-Pro/blob/main/output/studies/learned_tiers/learned_tiers.json"
   },
   {
    "id": "bankroll",
