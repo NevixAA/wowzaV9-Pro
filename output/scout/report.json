@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-11-17T03:15:37Z",
+ "generated_at": "2026-11-17T13:56:01Z",
  "status_rule": "COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a GENUINE close (<= 60 min before the actual kickoff; Pinnacle, else median of >= 3 books)",
  "data_truth": "src/scout/truth.py: 90-minute results, genuine close, >48h reschedules void, model rows matched on league + team ids, frozen before the actual kickoff",
  "totals": {
-  "results": 245875,
-  "odds_rows": 623791,
-  "fixtures_priced": 6709,
-  "fixtures_frozen": 6645
+  "results": 245878,
+  "odds_rows": 624693,
+  "fixtures_priced": 6741,
+  "fixtures_frozen": 6677
  },
  "cells": [
   {
@@ -3685,6 +3685,32 @@
    }
   },
   {
+   "league_id": 685,
+   "country": "Czech-Republic",
+   "league": "3. liga - CFL B",
+   "priority": 2,
+   "market": "ou25",
+   "n": 34,
+   "status": "COLLECTING",
+   "rate": 0.6765,
+   "n_base_rate": 34,
+   "brier_base_rate": 0.2267,
+   "brier_market_close": 0.2172,
+   "brier_market_close_on_base_rows": 0.2172,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0419,
+   "n_model": 34,
+   "brier_model": 0.2223,
+   "residual": {
+    "coef": -0.1957,
+    "se": 1.3564,
+    "z": -0.14
+   },
+   "paper_bets": 5,
+   "paper_roi": -0.252,
+   "paper_first_side_share": 0.2
+  },
+  {
    "league_id": 348,
    "country": "Czech-Republic",
    "league": "3. liga - CFL A",
@@ -3738,26 +3764,23 @@
    "country": "Czech-Republic",
    "league": "3. liga - CFL B",
    "priority": 2,
-   "market": "ou25",
+   "market": "ou35",
    "n": 33,
    "status": "COLLECTING",
-   "rate": 0.6667,
+   "rate": 0.4545,
    "n_base_rate": 33,
-   "brier_base_rate": 0.2285,
-   "brier_market_close": 0.2216,
-   "brier_market_close_on_base_rows": 0.2216,
+   "brier_base_rate": 0.255,
+   "brier_market_close": 0.2404,
+   "brier_market_close_on_base_rows": 0.2404,
    "reference": "pinnacle",
-   "market_skill_vs_base": 0.0302,
+   "market_skill_vs_base": 0.0573,
    "n_model": 33,
-   "brier_model": 0.227,
+   "brier_model": 0.2505,
    "residual": {
-    "coef": -0.1384,
-    "se": 1.3559,
-    "z": -0.1
-   },
-   "paper_bets": 5,
-   "paper_roi": -0.252,
-   "paper_first_side_share": 0.2
+    "coef": -0.6254,
+    "se": 1.2555,
+    "z": -0.5
+   }
   },
   {
    "league_id": 131,
@@ -3930,29 +3953,6 @@
     "coef": 0.9824,
     "se": 2.2357,
     "z": 0.44
-   }
-  },
-  {
-   "league_id": 685,
-   "country": "Czech-Republic",
-   "league": "3. liga - CFL B",
-   "priority": 2,
-   "market": "ou35",
-   "n": 32,
-   "status": "COLLECTING",
-   "rate": 0.4375,
-   "n_base_rate": 32,
-   "brier_base_rate": 0.2508,
-   "brier_market_close": 0.2413,
-   "brier_market_close_on_base_rows": 0.2413,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.0379,
-   "n_model": 32,
-   "brier_model": 0.2521,
-   "residual": {
-    "coef": -0.6136,
-    "se": 1.25,
-    "z": -0.49
    }
   },
   {
@@ -4902,6 +4902,22 @@
    "market_skill_vs_base": 0.0466
   },
   {
+   "league_id": 685,
+   "country": "Czech-Republic",
+   "league": "3. liga - CFL B",
+   "priority": 2,
+   "market": "btts",
+   "n": 28,
+   "status": "COLLECTING",
+   "rate": 0.5714,
+   "n_base_rate": 28,
+   "brier_base_rate": 0.2457,
+   "brier_market_close": 0.2461,
+   "brier_market_close_on_base_rows": 0.2461,
+   "reference": "median",
+   "market_skill_vs_base": -0.0016
+  },
+  {
    "league_id": 946,
    "country": "Croatia",
    "league": "Second NL",
@@ -5352,22 +5368,6 @@
    "paper_bets": 3,
    "paper_roi": 0.7067,
    "paper_first_side_share": 0.333
-  },
-  {
-   "league_id": 685,
-   "country": "Czech-Republic",
-   "league": "3. liga - CFL B",
-   "priority": 2,
-   "market": "btts",
-   "n": 27,
-   "status": "COLLECTING",
-   "rate": 0.5556,
-   "n_base_rate": 27,
-   "brier_base_rate": 0.2472,
-   "brier_market_close": 0.2495,
-   "brier_market_close_on_base_rows": 0.2495,
-   "reference": "median",
-   "market_skill_vs_base": -0.0093
   },
   {
    "league_id": 44,
@@ -6551,6 +6551,22 @@
    "paper_first_side_share": 0.0
   },
   {
+   "league_id": 685,
+   "country": "Czech-Republic",
+   "league": "3. liga - CFL B",
+   "priority": 2,
+   "market": "ou15",
+   "n": 23,
+   "status": "COLLECTING",
+   "rate": 0.8696,
+   "n_base_rate": 23,
+   "brier_base_rate": 0.1172,
+   "brier_market_close": 0.1125,
+   "brier_market_close_on_base_rows": 0.1125,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0401
+  },
+  {
    "league_id": 780,
    "country": "Poland",
    "league": "III Liga - Group 1",
@@ -6778,22 +6794,6 @@
    "brier_market_close_on_base_rows": 0.2032,
    "reference": "pinnacle",
    "market_skill_vs_base": -0.0005
-  },
-  {
-   "league_id": 685,
-   "country": "Czech-Republic",
-   "league": "3. liga - CFL B",
-   "priority": 2,
-   "market": "ou15",
-   "n": 22,
-   "status": "COLLECTING",
-   "rate": 0.8636,
-   "n_base_rate": 22,
-   "brier_base_rate": 0.1209,
-   "brier_market_close": 0.117,
-   "brier_market_close_on_base_rows": 0.117,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.0323
   },
   {
    "league_id": 783,
@@ -13879,10 +13879,10 @@
  "excluded": {
   "aet_pen_missing_90": 4,
   "odds_league_mismatch": 0,
-  "rescheduled_void": 48,
-  "settled_priced": 6246,
-  "settled_genuine_close": 3721,
-  "settled_stale_or_thin_close": 2525,
+  "rescheduled_void": 49,
+  "settled_priced": 6248,
+  "settled_genuine_close": 3722,
+  "settled_stale_or_thin_close": 2526,
   "model_identity_mismatch": 3,
   "model_frozen_after_actual_kickoff": 0,
   "model_not_eligible": 45
