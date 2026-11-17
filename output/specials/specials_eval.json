@@ -14,9 +14,146 @@
     "bootstrap": 2000,
     "family_alpha": 0.05
   },
-  "logged": 45,
-  "settled": 0,
-  "specials": {},
-  "status": "INSUFFICIENT",
-  "generated_at": "2026-11-16T17:39:37Z"
+  "logged": 53,
+  "settled": 29,
+  "specials": {
+    "ge5": {
+      "quantile": 0.9,
+      "candidates": 3,
+      "events": 0,
+      "hit_rate": 0.0,
+      "mean_base": 0.10070566666666665,
+      "lift": 0.0,
+      "mean_p": 0.287615,
+      "hit_minus_base": -0.10070566666666665,
+      "hit_minus_base_ci95": [
+        -0.10070566666666668,
+        -0.10070566666666668
+      ],
+      "p_one_sided": 1.0,
+      "leagues": 3,
+      "verdict": "INSUFFICIENT"
+    },
+    "ge6": {
+      "quantile": 0.9,
+      "candidates": 3,
+      "events": 0,
+      "hit_rate": 0.0,
+      "mean_base": 0.03838333333333333,
+      "lift": 0.0,
+      "mean_p": 0.15381666666666668,
+      "hit_minus_base": -0.03838333333333333,
+      "hit_minus_base_ci95": [
+        -0.03838333333333333,
+        -0.03838333333333333
+      ],
+      "p_one_sided": 1.0,
+      "leagues": 3,
+      "verdict": "INSUFFICIENT"
+    },
+    "ge7": {
+      "quantile": 0.9,
+      "candidates": 3,
+      "events": 0,
+      "hit_rate": 0.0,
+      "mean_base": 0.012636666666666666,
+      "lift": 0.0,
+      "mean_p": 0.073351,
+      "hit_minus_base": -0.012636666666666666,
+      "hit_minus_base_ci95": [
+        -0.012636666666666666,
+        -0.012636666666666666
+      ],
+      "p_one_sided": 1.0,
+      "leagues": 3,
+      "verdict": "INSUFFICIENT"
+    },
+    "team_ge4": {
+      "quantile": 0.9,
+      "candidates": 2,
+      "events": 0,
+      "hit_rate": 0.0,
+      "mean_base": 0.07252900000000001,
+      "lift": 0.0,
+      "mean_p": 0.2568355,
+      "hit_minus_base": -0.07252900000000001,
+      "hit_minus_base_ci95": [
+        -0.07252900000000001,
+        -0.07252900000000001
+      ],
+      "p_one_sided": 1.0,
+      "leagues": 2,
+      "verdict": "INSUFFICIENT"
+    },
+    "margin_ge4": {
+      "quantile": 0.9,
+      "candidates": 3,
+      "events": 0,
+      "hit_rate": 0.0,
+      "mean_base": 0.029408666666666666,
+      "lift": 0.0,
+      "mean_p": 0.09083533333333334,
+      "hit_minus_base": -0.029408666666666666,
+      "hit_minus_base_ci95": [
+        -0.029408666666666666,
+        -0.029408666666666666
+      ],
+      "p_one_sided": 1.0,
+      "leagues": 2,
+      "verdict": "INSUFFICIENT"
+    },
+    "nil_nil": {
+      "quantile": 0.9,
+      "candidates": 2,
+      "events": 0,
+      "hit_rate": 0.0,
+      "mean_base": 0.08186,
+      "lift": 0.0,
+      "mean_p": 0.20319199999999998,
+      "hit_minus_base": -0.08186,
+      "hit_minus_base_ci95": [
+        -0.08186,
+        -0.08186
+      ],
+      "p_one_sided": 1.0,
+      "leagues": 1,
+      "verdict": "INSUFFICIENT"
+    },
+    "tot_le1": {
+      "quantile": 0.9,
+      "candidates": 2,
+      "events": 1,
+      "hit_rate": 0.5,
+      "mean_base": 0.281803,
+      "lift": 1.7742891310596407,
+      "mean_p": 0.5145379999999999,
+      "hit_minus_base": 0.21819699999999997,
+      "hit_minus_base_ci95": [
+        0.21819699999999997,
+        0.21819699999999997
+      ],
+      "p_one_sided": 0.0004997501249375312,
+      "leagues": 1,
+      "verdict": "INSUFFICIENT"
+    },
+    "cs_unusual": {
+      "quantile": 0.9,
+      "candidates": 2,
+      "events": 0,
+      "hit_rate": 0.0,
+      "mean_base": 0.00031279646250694616,
+      "lift": 0.0,
+      "mean_p": 0.007640851191190777,
+      "hit_minus_base": -0.00031279646250694616,
+      "hit_minus_base_ci95": [
+        -0.00031279646250694616,
+        -0.00031279646250694616
+      ],
+      "p_one_sided": 1.0,
+      "leagues": 2,
+      "verdict": "INSUFFICIENT"
+    }
+  },
+  "status": "OK",
+  "generated_at": "2026-11-17T17:12:30Z"
 }
