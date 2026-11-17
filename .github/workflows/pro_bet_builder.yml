@@ -63,6 +63,21 @@ jobs:
 
       - run: pip install -r requirements.txt
 
+      # PREDICTION LEDGER (owner rule 2026-11-17, src/prediction_ledger_pro.py) - learning only, OFF unless
+      # the repo variable PREDICTION_LEDGER_ENABLED is 'true'. v9 read-only, two files: the league registry
+      # (slugs, seasons) and the current board (the OddsAPI event id that joins Pro rows to v9's ledger).
+      - name: Check out v9 registry + board for the prediction ledger (read-only)
+        if: vars.PREDICTION_LEDGER_ENABLED == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9pl
+          fetch-depth: 1
+          sparse-checkout: |
+            config/leagues.json
+            output/predictions.csv
+          sparse-checkout-cone-mode: false
+
       # The gates are pure functions over a row, so they are worth proving before a run that can
       # send messages. A vocabulary mismatch between the two builders once suppressed 6,318 of
       # 6,360 candidates silently, and the suite is what now covers that.
@@ -80,6 +95,9 @@ jobs:
           DAYS="${{ github.event.inputs.days }}"
           [ -n "$DAYS" ] || DAYS=3
           python -m src.pipelines.bet_builder --mode generate --days "$DAYS" | tee build.txt
+        env:
+          PREDICTION_LEDGER_ENABLED: ${{ vars.PREDICTION_LEDGER_ENABLED }}
+          PREDICTION_LEDGER_V9_DIR: ${{ github.workspace }}/_v9pl
 
       # PREFLIGHT: are the credentials even present in THIS repository?
       #
@@ -105,6 +123,18 @@ jobs:
         run: |
           set -o pipefail
           python -m src.pipelines.bet_builder --mode settle | tee -a build.txt
+
+      # Prediction ledger settled view + registry + contract check (learning only; flag-gated). The
+      # validator is the same contract v9 gates as Data truth 12; a violation turns this run red.
+      - name: Prediction ledger - settle, registry, validate (learning only)
+        if: always() && vars.PREDICTION_LEDGER_ENABLED == 'true'
+        env:
+          PREDICTION_LEDGER_ENABLED: ${{ vars.PREDICTION_LEDGER_ENABLED }}
+          PREDICTION_LEDGER_V9_DIR: ${{ github.workspace }}/_v9pl
+        run: |
+          python -m src.prediction_ledger_pro settle || echo "::warning::prediction ledger settlement failed (learning only)"
+          python -m src.prediction_ledger_pro registry || echo "::warning::prediction ledger registry failed (learning only)"
+          python -m src.prediction_ledger_pro validate
 
       - name: Publish to the job summary
         if: always()
@@ -135,6 +165,8 @@ jobs:
           # `git add -A data` matches pro_collect.yml. It is safe here for the same reason: the
           # store is run-partitioned, so two workflows can never target the same file.
           git add -A data 2>/dev/null || true
+          # Prediction ledger (learning only; written only when PREDICTION_LEDGER_ENABLED is 'true').
+          git add -f output/prediction_ledger/ output/prediction_ledger_settled/ 2>/dev/null || true
           for f in output/bet_builder_candidates.csv \
                    output/bet_builder_settled.csv \
                    output/combo_import_health.json \

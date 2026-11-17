@@ -56,6 +56,8 @@ from src.combo import player_dependency as pdep
 from src.combo import score_model as sm
 from src.combo import settle as cs
 from src.combo import v9_direction as v9gate
+# Prediction ledger (owner rule 2026-11-17): learning-only recorder; returns None unless the flag is on.
+from src.prediction_ledger_pro import recorder as _pl_recorder
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "output"
@@ -194,6 +196,11 @@ def generate(days: int = DEFAULT_DAYS, *, now: dt.datetime | None = None) -> pd.
         if not fit.get("ok"):
             no_fit += 1
             continue
+        # PREDICTION LEDGER (owner rule 2026-11-17, src/prediction_ledger_pro.py): this fixture's full grid
+        # (1X2, correct score, extreme goals) - learning only; None (no-op) unless the flag is 'true'.
+        _pl = _pl_recorder(now)
+        if _pl is not None:
+            _pl.grid(f, k, fit, targets)
 
         fp = props[props["fixture_key"] == k] if not props.empty else None
         # QUOTA PER LEG COUNT, kept deliberately tight. The module default of 40 gives 120 rows
@@ -216,12 +223,18 @@ def generate(days: int = DEFAULT_DAYS, *, now: dt.datetime | None = None) -> pd.
         cand["calc_version"] = CALC_VERSION
         out.append(cand)
 
+    # Prediction ledger: every board fixture the loop could not grid, with the reason; then append.
+    if _pl_recorder(now) is not None:
+        _pl_recorder(now).board_done(fx, probs)
     if not out:
         print(f"[builder] no candidates built "
               f"(no model probs {no_probs}, inconsistent {bad_mono}, unfittable {no_fit})")
         return pd.DataFrame()
 
     d = pd.concat(out, ignore_index=True)
+    # Prediction ledger: every candidate's model probability BEFORE the v9-direction gate (learning only).
+    if _pl_recorder(now) is not None:
+        _pl_recorder(now).combos(d, fx)
 
     # Never offer a combo that points the opposite way to v9's live O/U tip on the same fixture.
     # Applied HERE, on the assembled board, rather than per fixture inside the loop: one read of
