@@ -1,0 +1,874 @@
+{
+ "schema_version": "pl/1.0",
+ "generated_at": "2026-11-17T17:17:55Z",
+ "layout": "output/prediction_ledger/<repo>/<model_id>/<market>/<league_slug>/<season>.csv",
+ "key": [
+  "model_id",
+  "model_version",
+  "market",
+  "line",
+  "selection",
+  "fixture_ref",
+  "player_id",
+  "snapshot"
+ ],
+ "snapshots": [
+  {
+   "label": "first_sight",
+   "max_minutes_to_kickoff": null
+  },
+  {
+   "label": "final",
+   "max_minutes_to_kickoff": 120
+  }
+ ],
+ "models": [
+  {
+   "repo": "pro",
+   "model_id": "pro_bb_dc",
+   "market": "1x2",
+   "status": "active",
+   "family": "team",
+   "selections": [
+    "H",
+    "D",
+    "A"
+   ],
+   "lines": [],
+   "model_versions": [
+    "pro_bb_dc_1.0.0_eb6eb915"
+   ],
+   "first_prediction": "2026-11-17T17:16:49Z",
+   "last_prediction": "2026-11-17T17:16:49Z",
+   "rows": 42,
+   "predicted": 42,
+   "settled": 0,
+   "leagues": {
+    "brazil_serie_a": {
+     "rows": 27,
+     "predicted": 27,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    },
+    "japan_j_league": {
+     "rows": 9,
+     "predicted": 9,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2027"
+     ]
+    },
+    "usa_mls": {
+     "rows": 6,
+     "predicted": 6,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    }
+   }
+  },
+  {
+   "repo": "pro",
+   "model_id": "pro_bb_dc",
+   "market": "correct_score",
+   "status": "active",
+   "family": "specials",
+   "selections": [
+    "0-0",
+    "0-1",
+    "0-2",
+    "0-3",
+    "0-4",
+    "0-5",
+    "0-6",
+    "1-0",
+    "1-1",
+    "1-2",
+    "1-3",
+    "1-4",
+    "1-5",
+    "1-6",
+    "2-0",
+    "2-1",
+    "2-2",
+    "2-3",
+    "2-4",
+    "2-5",
+    "2-6",
+    "3-0",
+    "3-1",
+    "3-2",
+    "3-3",
+    "3-4",
+    "3-5",
+    "3-6",
+    "4-0",
+    "4-1",
+    "4-2",
+    "4-3",
+    "4-4",
+    "4-5",
+    "4-6",
+    "5-0",
+    "5-1",
+    "5-2",
+    "5-3",
+    "5-4",
+    "5-5",
+    "5-6",
+    "6-0",
+    "6-1",
+    "6-2",
+    "6-3",
+    "6-4",
+    "6-5",
+    "6-6",
+    "other"
+   ],
+   "lines": [],
+   "model_versions": [
+    "pro_bb_dc_1.0.0_eb6eb915"
+   ],
+   "first_prediction": "2026-11-17T17:16:49Z",
+   "last_prediction": "2026-11-17T17:16:49Z",
+   "rows": 700,
+   "predicted": 700,
+   "settled": 0,
+   "leagues": {
+    "brazil_serie_a": {
+     "rows": 450,
+     "predicted": 450,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    },
+    "japan_j_league": {
+     "rows": 150,
+     "predicted": 150,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2027"
+     ]
+    },
+    "usa_mls": {
+     "rows": 100,
+     "predicted": 100,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    }
+   }
+  },
+  {
+   "repo": "pro",
+   "model_id": "pro_bb_dc",
+   "market": "goals_exact_0",
+   "status": "active",
+   "family": "specials",
+   "selections": [
+    "YES"
+   ],
+   "lines": [],
+   "model_versions": [
+    "pro_bb_dc_1.0.0_eb6eb915"
+   ],
+   "first_prediction": "2026-11-17T17:16:49Z",
+   "last_prediction": "2026-11-17T17:16:49Z",
+   "rows": 14,
+   "predicted": 14,
+   "settled": 0,
+   "leagues": {
+    "brazil_serie_a": {
+     "rows": 9,
+     "predicted": 9,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    },
+    "japan_j_league": {
+     "rows": 3,
+     "predicted": 3,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2027"
+     ]
+    },
+    "usa_mls": {
+     "rows": 2,
+     "predicted": 2,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    }
+   }
+  },
+  {
+   "repo": "pro",
+   "model_id": "pro_bb_dc",
+   "market": "goals_le1",
+   "status": "active",
+   "family": "specials",
+   "selections": [
+    "YES"
+   ],
+   "lines": [],
+   "model_versions": [
+    "pro_bb_dc_1.0.0_eb6eb915"
+   ],
+   "first_prediction": "2026-11-17T17:16:49Z",
+   "last_prediction": "2026-11-17T17:16:49Z",
+   "rows": 14,
+   "predicted": 14,
+   "settled": 0,
+   "leagues": {
+    "brazil_serie_a": {
+     "rows": 9,
+     "predicted": 9,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    },
+    "japan_j_league": {
+     "rows": 3,
+     "predicted": 3,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2027"
+     ]
+    },
+    "usa_mls": {
+     "rows": 2,
+     "predicted": 2,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    }
+   }
+  },
+  {
+   "repo": "pro",
+   "model_id": "pro_bb_dc",
+   "market": "goals_ge5",
+   "status": "active",
+   "family": "specials",
+   "selections": [
+    "YES"
+   ],
+   "lines": [],
+   "model_versions": [
+    "pro_bb_dc_1.0.0_eb6eb915"
+   ],
+   "first_prediction": "2026-11-17T17:16:49Z",
+   "last_prediction": "2026-11-17T17:16:49Z",
+   "rows": 14,
+   "predicted": 14,
+   "settled": 0,
+   "leagues": {
+    "brazil_serie_a": {
+     "rows": 9,
+     "predicted": 9,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    },
+    "japan_j_league": {
+     "rows": 3,
+     "predicted": 3,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2027"
+     ]
+    },
+    "usa_mls": {
+     "rows": 2,
+     "predicted": 2,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    }
+   }
+  },
+  {
+   "repo": "pro",
+   "model_id": "pro_bb_dc",
+   "market": "goals_ge6",
+   "status": "active",
+   "family": "specials",
+   "selections": [
+    "YES"
+   ],
+   "lines": [],
+   "model_versions": [
+    "pro_bb_dc_1.0.0_eb6eb915"
+   ],
+   "first_prediction": "2026-11-17T17:16:49Z",
+   "last_prediction": "2026-11-17T17:16:49Z",
+   "rows": 14,
+   "predicted": 14,
+   "settled": 0,
+   "leagues": {
+    "brazil_serie_a": {
+     "rows": 9,
+     "predicted": 9,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    },
+    "japan_j_league": {
+     "rows": 3,
+     "predicted": 3,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2027"
+     ]
+    },
+    "usa_mls": {
+     "rows": 2,
+     "predicted": 2,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    }
+   }
+  },
+  {
+   "repo": "pro",
+   "model_id": "pro_bb_dc",
+   "market": "goals_ge7",
+   "status": "active",
+   "family": "specials",
+   "selections": [
+    "YES"
+   ],
+   "lines": [],
+   "model_versions": [
+    "pro_bb_dc_1.0.0_eb6eb915"
+   ],
+   "first_prediction": "2026-11-17T17:16:49Z",
+   "last_prediction": "2026-11-17T17:16:49Z",
+   "rows": 14,
+   "predicted": 14,
+   "settled": 0,
+   "leagues": {
+    "brazil_serie_a": {
+     "rows": 9,
+     "predicted": 9,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    },
+    "japan_j_league": {
+     "rows": 3,
+     "predicted": 3,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2027"
+     ]
+    },
+    "usa_mls": {
+     "rows": 2,
+     "predicted": 2,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    }
+   }
+  },
+  {
+   "repo": "pro",
+   "model_id": "pro_bb_dc",
+   "market": "team_ge4",
+   "status": "active",
+   "family": "specials",
+   "selections": [
+    "HOME",
+    "AWAY"
+   ],
+   "lines": [],
+   "model_versions": [
+    "pro_bb_dc_1.0.0_eb6eb915"
+   ],
+   "first_prediction": "2026-11-17T17:16:49Z",
+   "last_prediction": "2026-11-17T17:16:49Z",
+   "rows": 28,
+   "predicted": 28,
+   "settled": 0,
+   "leagues": {
+    "brazil_serie_a": {
+     "rows": 18,
+     "predicted": 18,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    },
+    "japan_j_league": {
+     "rows": 6,
+     "predicted": 6,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2027"
+     ]
+    },
+    "usa_mls": {
+     "rows": 4,
+     "predicted": 4,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    }
+   }
+  },
+  {
+   "repo": "pro",
+   "model_id": "pro_bb_combo",
+   "market": "combo",
+   "status": "active",
+   "family": "combo",
+   "selections": "per row (the combo's canonical leg string)",
+   "lines": [],
+   "model_versions": [
+    "pro_bb_combo_1.0.0_f0aa828e"
+   ],
+   "first_prediction": "2026-11-17T17:16:49Z",
+   "last_prediction": "2026-11-17T17:16:49Z",
+   "rows": 366,
+   "predicted": 366,
+   "settled": 0,
+   "leagues": {
+    "brazil_serie_a": {
+     "rows": 229,
+     "predicted": 229,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    },
+    "japan_j_league": {
+     "rows": 65,
+     "predicted": 65,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2027"
+     ]
+    },
+    "usa_mls": {
+     "rows": 72,
+     "predicted": 72,
+     "settled": 0,
+     "first": "2026-11-17T17:16:49Z",
+     "last": "2026-11-17T17:16:49Z",
+     "seasons": [
+      "2026"
+     ]
+    }
+   }
+  }
+ ],
+ "leagues": [
+  {
+   "league_slug": "championship",
+   "league": "Championship",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "league_one",
+   "league": "League One",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "league_two",
+   "league": "League Two",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "bundesliga_2",
+   "league": "Bundesliga 2",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "ligue_2",
+   "league": "Ligue 2",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "la_liga_2",
+   "league": "La Liga 2",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "serie_b",
+   "league": "Serie B",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "greek_super_league",
+   "league": "Greek Super League",
+   "production_state": "TRAINING_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "training data only - no production model serves it"
+  },
+  {
+   "league_slug": "denmark_superliga",
+   "league": "Denmark Superliga",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "austrian_bundesliga",
+   "league": "Austrian Bundesliga",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "romanian_superliga",
+   "league": "Romanian Superliga",
+   "production_state": "ENABLED_PROVIDER_UNSUPPORTED",
+   "scope": "tracked_not_on_board",
+   "not_scored_reason": "tracked, but the OddsAPI board has no events for it (ENABLED_PROVIDER_UNSUPPORTED): v9 builds no board row, so no team model scores it; props rows appear where the props pipeline serves it"
+  },
+  {
+   "league_slug": "sweden_allsvenskan",
+   "league": "Sweden Allsvenskan",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "norway_eliteserien",
+   "league": "Norway Eliteserien",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "finland_veikkausliiga",
+   "league": "Finland Veikkausliiga",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "ireland_premier_division",
+   "league": "Ireland Premier Division",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "argentina_primera_division",
+   "league": "Argentina Primera Division",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "brazil_serie_a",
+   "league": "Brazil Serie A",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "japan_j_league",
+   "league": "Japan J-League",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "mexico_liga_mx",
+   "league": "Mexico Liga MX",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "china_super_league",
+   "league": "China Super League",
+   "production_state": "ENABLED",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "usa_mls",
+   "league": "USA MLS",
+   "production_state": "PAPER",
+   "scope": "tracked",
+   "not_scored_reason": ""
+  },
+  {
+   "league_slug": "saudi_pro_league",
+   "league": "Saudi Pro League",
+   "production_state": "TRAINING_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "training data only - no production model serves it"
+  },
+  {
+   "league_slug": "k_league_1",
+   "league": "K-League 1",
+   "production_state": "TRAINING_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "training data only - no production model serves it"
+  },
+  {
+   "league_slug": "world_cup_2026",
+   "league": "World Cup 2026",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "champions_league",
+   "league": "Champions League",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "europa_league",
+   "league": "Europa League",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "conference_league",
+   "league": "Conference League",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "premier_league",
+   "league": "Premier League",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "la_liga",
+   "league": "La Liga",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "serie_a",
+   "league": "Serie A",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "bundesliga",
+   "league": "Bundesliga",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "ligue_1",
+   "league": "Ligue 1",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "dutch_eredivisie",
+   "league": "Dutch Eredivisie",
+   "production_state": "TRAINING_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "training data only - no production model serves it"
+  },
+  {
+   "league_slug": "portuguese_primeira_liga",
+   "league": "Portuguese Primeira Liga",
+   "production_state": "TRAINING_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "training data only - no production model serves it"
+  },
+  {
+   "league_slug": "belgian_first_division_a",
+   "league": "Belgian First Division A",
+   "production_state": "TRAINING_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "training data only - no production model serves it"
+  },
+  {
+   "league_slug": "scottish_premiership",
+   "league": "Scottish Premiership",
+   "production_state": "TRAINING_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "training data only - no production model serves it"
+  },
+  {
+   "league_slug": "turkish_super_lig",
+   "league": "Turkish Super Lig",
+   "production_state": "TRAINING_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "training data only - no production model serves it"
+  },
+  {
+   "league_slug": "swiss_super_league",
+   "league": "Swiss Super League",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "czech_liga",
+   "league": "Czech Liga",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "croatia_hnl",
+   "league": "Croatia HNL",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "serbia_super_liga",
+   "league": "Serbia Super Liga",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "ukraine_premier_league",
+   "league": "Ukraine Premier League",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "poland_ekstraklasa",
+   "league": "Poland Ekstraklasa",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "cyprus_first_division",
+   "league": "Cyprus First Division",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "scottish_championship",
+   "league": "Scottish Championship",
+   "production_state": "TRAINING_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "training data only - no production model serves it"
+  },
+  {
+   "league_slug": "national_league",
+   "league": "National League",
+   "production_state": "TRAINING_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "training data only - no production model serves it"
+  },
+  {
+   "league_slug": "scottish_league_one",
+   "league": "Scottish League One",
+   "production_state": "TRAINING_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "training data only - no production model serves it"
+  },
+  {
+   "league_slug": "scottish_league_two",
+   "league": "Scottish League Two",
+   "production_state": "TRAINING_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "training data only - no production model serves it"
+  }
+ ]
+}
