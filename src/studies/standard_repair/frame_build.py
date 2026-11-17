@@ -295,7 +295,8 @@ def main() -> int:
     else:
         feat = build_features(raw)
     feat["track"] = np.where(feat["league"].isin(config.STANDARD_FORMAT_LEAGUES), "standard",
-                             np.where(feat["league"].isin(config.NEW_FORMAT_LEAGUES), "new_format", "other"))
+                             np.where(feat["league"].isin(config.NEW_FORMAT_LEAGUES), "new_format", None))
+    # A league on neither track has NO track (None), not a placeholder 'other' (Data Truth).
     feat["covid_excluded"] = feat["season"].astype(str).isin(set(map(str, config.COVID_SEASONS))) \
         if config.EXCLUDE_COVID_SEASONS else False
     feat["v9_train_eligible"] = (~feat["covid_excluded"]) & feat["over25"].notna() & feat["home_scored_last5"].notna()

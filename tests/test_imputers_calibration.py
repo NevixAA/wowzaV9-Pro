@@ -59,6 +59,9 @@ def main() -> int:
     check("the imputed row is flagged degraded", bool(degraded.loc[2]), str(degraded.tolist()))
     check("rows with the feature present are not flagged", not bool(degraded.loc[0]))
     check("degraded count reported", rep.degraded_rows == 1, str(rep.degraded_rows))
+    check("every imputed row is traceable (Data Truth)",
+          rep.imputed_mask is not None and bool(rep.imputed_mask.loc[2])
+          and not bool(rep.imputed_mask.loc[0]) and rep.imputed_rows >= 1, str(rep.imputed_rows))
     check("which required feature was missing is recorded",
           rep.missing_required.get("form") == 1, str(rep.missing_required))
     check("the row is RETAINED, not dropped", len(out) == len(serve),

@@ -21,7 +21,6 @@ from config import pro_config as cfg
 EXCHANGES = ("matchbook", "betfair_ex_uk", "betfair_ex_eu", "betfair_ex_au", "smarkets")
 OPP = {"OVER": "UNDER", "UNDER": "OVER", "YES": "NO", "NO": "YES"}
 SIDE_MKT = {"btts": ("BTTS", "YES"), "over15": ("OU15", "OVER"), "over35": ("OU35", "OVER")}
-PAPER = {"USA MLS"}
 
 
 def load_snapshots() -> pd.DataFrame:
@@ -47,7 +46,14 @@ def load_trades() -> pd.DataFrame:
     cols = ["source", "generated_at", "match_date", "league", "home_team", "away_team", "model_type",
             "signal_tier", "odds", "edge_pct", "result", "market", "side"]
     t = pd.concat([m.reindex(columns=cols), s.reindex(columns=cols)], ignore_index=True)
-    t = t[t["source"].fillna("live").astype(str).eq("live") & ~t["league"].isin(PAPER) & t["market"].notna()]
+    # A blank source is UNKNOWN, not live (was fillna("live")): excluded and counted. Paper leagues
+    # come from v9's registry and are matched on canonical names (was a typed {"USA MLS"}).
+    from src.data import v9_config
+    no_src = t["source"].isna() | t["source"].astype(str).str.strip().eq("")
+    if no_src.any():
+        print(f"[price_trader] excluded {int(no_src.sum())} ledger rows with no source")
+    t = t[~no_src & t["source"].astype(str).eq("live") & t["market"].notna()]
+    t = v9_config.drop_paper_leagues(t)
     t["signal_ts"] = pd.to_datetime(t["generated_at"], utc=True, errors="coerce")
     t["match"] = t["home_team"].astype(str) + " vs " + t["away_team"].astype(str)
     t["match_date"] = t["match_date"].astype(str).str[:10]

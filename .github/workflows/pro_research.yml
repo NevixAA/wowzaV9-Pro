@@ -53,7 +53,12 @@ jobs:
         with:
           repository: NevixAA/wowza-betting
           path: _v9
-          fetch-depth: 1
+          # FULL HISTORY, BLOBLESS (Data Truth round 5). ml_learning_health dates each model by
+          # `git log -1 -- <file>`; on a depth-1 clone that returns the single fetched commit for
+          # every file, so all seven models were dated "today" (age 0.0d). fetch-depth 0 gives the
+          # real history; filter blob:none keeps it cheap (old blobs are never downloaded).
+          fetch-depth: 0
+          filter: blob:none
 
       - uses: actions/setup-python@v5
         id: setup_python

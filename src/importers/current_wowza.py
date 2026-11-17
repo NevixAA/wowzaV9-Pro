@@ -29,6 +29,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from config import pro_config as cfg
 from src import quality as q
 from src.data import entities as ent
+from src.data import fixture_key_v2 as fk2
+from src.data import observation_time as ot
 from src.data import watermarks as wm
 from src.data.v9_source import fetch_csv, num, v9_model_version
 
@@ -36,6 +38,16 @@ from src.data.v9_source import fetch_csv, num, v9_model_version
 # read and write re-imports a little rather than skipping data permanently.
 _PENDING_MARKS: dict[str, str] = {}
 
+
+
+# The side each v9 side-ledger market is bet on; used only when the row has no side of its own.
+SIDE_MARKET_SIDE = {"BTTS": "YES", "OVER15": "OVER", "OVER35": "OVER"}
+
+
+def _blank_to_na(v) -> pd.Series:
+    """Strings with blanks as NaN - a blank tier/result/side is MISSING, never a stand-in value."""
+    v = v if isinstance(v, pd.Series) else pd.Series(v)
+    return v.astype(object).where(v.notna() & v.astype(str).str.strip().ne(""))
 
 def commit_watermarks() -> dict[str, str]:
     """Call once the rows are safely stored. Returns what was advanced."""
@@ -71,6 +83,11 @@ _NON_FEATURE = {
 } | {c for m in _MARKETS.values() for c in m if c}
 
 
+def _KM(d: pd.DataFrame) -> list:
+    """The fixture_key v2 bookkeeping columns present on a keyed frame (entities.KEY_META)."""
+    return [c for c in ent.KEY_META if c in d.columns]
+
+
 def _base(df: pd.DataFrame) -> pd.DataFrame:
     """Identity columns shared by every table derived from predictions.csv."""
     out = df.rename(columns={"date": "match_date"}).copy()
@@ -102,16 +119,21 @@ def from_predictions() -> list[tuple[str, pd.DataFrame]]:
               f"({_mv['n_model_files']} files, {_mv['model_bytes']/1024/1024:.1f} MB)")
 
     # fixtures — the board, every fixture evaluated
-    out.append(("fixtures", d[[
-        "fixture_key", "league", "match_date", "home_team", "away_team",
-    ] + [c for c in ("kickoff_utc", "model_type") if c in d.columns]].drop_duplicates("fixture_key")))
+    # Keyless rows (league outside the registry, unparseable date) are kept one per club pair: a
+    # drop_duplicates on a null key would collapse them all into one.
+    _fx = d[["fixture_key", "league", "match_date", "home_team", "away_team",
+             *[c for c in ent.KEY_META if c in d.columns]]
+            + [c for c in ("kickoff_utc", "model_type") if c in d.columns]]
+    out.append(("fixtures", _fx.drop_duplicates(
+        ["fixture_key"] if _fx["fixture_key"].notna().all()
+        else ["fixture_key", "old_fixture_key"])))
 
     # model_snapshots — long by market. One row per fixture per market per capture.
     ms = []
     for market, (pcol, _o, _u) in _MARKETS.items():
         if pcol not in d.columns:
             continue
-        blk = d[["fixture_key", "league", "match_date", "model_type"]].copy()
+        blk = d[["fixture_key", *_KM(d), "league", "match_date", "model_type"]].copy()
         blk["market"] = market
         blk["model_prob"] = num(d[pcol])
         blk["model_id"] = "v9_baseline"
@@ -149,7 +171,7 @@ def from_predictions() -> list[tuple[str, pd.DataFrame]]:
         for side, col in (("OVER", ocol), ("UNDER", ucol)):
             if not col or col not in d.columns:
                 continue
-            blk = d[["fixture_key", "league", "match_date"]].copy()
+            blk = d[["fixture_key", *_KM(d), "league", "match_date"]].copy()
             blk["market"] = market
             blk["side"] = side
             blk["odds"] = num(d[col])
@@ -161,6 +183,11 @@ def from_predictions() -> list[tuple[str, pd.DataFrame]]:
             # An Over with no Under cannot be honestly de-vigged (v11's rule).
             if ucol is None or ucol not in d.columns:
                 blk["quality_flags"] = "MISSING_OPPOSITE_SIDE"
+            # The price existed when v9 PRODUCED the board, not when Pro read it (observation_time).
+            _ot = ot.provider_observed_at(
+                d["generated_at"] if "generated_at" in d.columns else pd.Series(None, index=d.index),
+                "v9_generated_at")
+            blk["observed_at"], blk["observed_at_source"] = _ot["observed_at"], _ot["observed_at_source"]
             mk.append(blk[blk["odds"].notna()])
     if mk:
         out.append(("market_snapshots", pd.concat(mk, ignore_index=True)))
@@ -170,7 +197,7 @@ def from_predictions() -> list[tuple[str, pd.DataFrame]]:
     fcols = [c for c in d.columns if c not in _NON_FEATURE
              and c not in ("fixture_key", "entity_unresolved")]
     if fcols:
-        fs = d[["fixture_key", "league", "match_date"] + fcols].copy()
+        fs = d[["fixture_key", *_KM(d), "league", "match_date"] + fcols].copy()
         for c in fcols:
             fs[c] = num(fs[c]) if fs[c].dtype == object else fs[c]
         # v9 forces AVOID when rolling form is missing; record it as a feature-health fact.
@@ -180,11 +207,13 @@ def from_predictions() -> list[tuple[str, pd.DataFrame]]:
         out.append(("feature_snapshots", fs))
 
     # signals — every evaluated fixture, whatever the tier (section 5)
-    sg = d[["fixture_key", "league", "match_date"]].copy()
+    sg = d[["fixture_key", *_KM(d), "league", "match_date"]].copy()
     sg["market"] = "OU25"
     sg["side"] = d.get("best_side", "")
     sg["bet"] = d.get("bet", "")
-    sg["signal_tier"] = d.get("signal_tier", "").fillna("").replace("", "AVOID")
+    # A blank tier stays blank and is FLAGGED (it used to be recorded as AVOID, a decision v9
+    # never made). v9 writes AVOID itself when it declines a fixture.
+    sg["signal_tier"] = _blank_to_na(d.get("signal_tier", pd.Series(index=d.index, dtype=object)))
     sg["model_edge"] = num(d.get("best_edge", pd.Series(index=d.index, dtype=object)))
     sg["stake"] = num(d.get("bet_stake", pd.Series(index=d.index, dtype=object)))
     sg["drift_signal"] = d.get("drift_signal", "")
@@ -195,6 +224,7 @@ def from_predictions() -> list[tuple[str, pd.DataFrame]]:
     sg["residual_band"] = sg["model_edge"].map(lambda v: cfg.band_label(v, cfg.RESIDUAL_BANDS))
     sg["quality_flags"] = d["entity_unresolved"].map(
         lambda u: "ENTITY_UNRESOLVED" if u else "")
+    sg["quality_flags"] = q.add_flag(sg["quality_flags"], sg["signal_tier"].isna(), "TIER_MISSING")
     out.append(("signals", sg))
     return out
 
@@ -246,6 +276,9 @@ def from_odds_histories() -> list[tuple[str, pd.DataFrame]]:
             "captured_at": raw.get("snapshot_ts", ""),
         })
         blk = ent.add_fixture_key(blk)
+        # Provider time (v9's capture stamp), not ingest time; date-only stamps stay ingest-labelled.
+        _ot = ot.provider_observed_at(blk["captured_at"], "v9_snapshot_ts")
+        blk["observed_at"], blk["observed_at_source"] = _ot["observed_at"], _ot["observed_at_source"]
         blk["odds_band"] = blk["odds"].map(lambda v: cfg.band_label(v, cfg.ODDS_BANDS))
         # Flags ACCUMULATE via quality.add_flag. The two lines here were previously bare
         # assignments, so a row that was both entity-unresolved AND market-invalid reported only
@@ -307,7 +340,10 @@ def from_book_odds() -> list[tuple[str, pd.DataFrame]]:
         "match_date": raw["match_date"].astype(str).str[:10],
         "home_team": home,
         "away_team": away,
-        "kickoff_utc": raw.get("kickoff_utc", ""),
+        # v9 writes two kickoff formats into this column ('...Z' and '+00:00'); parsed with the
+        # explicit list in fixture_key_v2 and stored as one ('YYYY-MM-DDTHH:MM:SSZ'). A value
+        # matching no format is None, never a guessed time.
+        "kickoff_utc": raw.get("kickoff_utc", pd.Series(index=raw.index, dtype=object)).map(fk2.to_utc_iso),
         "market": raw.get("market", ""),
         "side": raw.get("side", ""),
         # The whole reason for the table: the REAL book name, as the provider gave it.
@@ -321,11 +357,15 @@ def from_book_odds() -> list[tuple[str, pd.DataFrame]]:
 
     # Minutes to kickoff, so the horizon question can be asked of this table directly rather
     # than by re-joining fixtures every time.
-    _ko = pd.to_datetime(blk["kickoff_utc"], errors="coerce", utc=True)
-    _ts = pd.to_datetime(blk["snapshot_ts"], errors="coerce", utc=True)
+    _fmt = "%Y-%m-%dT%H:%M:%SZ"
+    _ko = pd.to_datetime(blk["kickoff_utc"], format=_fmt, utc=True)
+    _ts = pd.to_datetime(blk["snapshot_ts"].map(fk2.to_utc_iso), format=_fmt, utc=True)
     blk["minutes_to_kickoff"] = ((_ko - _ts).dt.total_seconds() / 60.0).round(1)
     # A post-kickoff quote is NOT a pre-match price and must never be used as a close.
     blk["is_post_kickoff"] = blk["minutes_to_kickoff"] < 0
+    # Provider time (v9's capture stamp), not the moment Pro ingested the file (observation_time).
+    _ot = ot.provider_observed_at(blk["snapshot_ts"], "v9_snapshot_ts")
+    blk["observed_at"], blk["observed_at_source"] = _ot["observed_at"], _ot["observed_at_source"]
 
     blk["quality_flags"] = ""
     blk["quality_flags"] = q.add_flag(blk["quality_flags"], blk["odds"].isna(),
@@ -349,7 +389,7 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
         d = ent.add_fixture_key(main.assign(
             match_date=main["match_date"].astype(str).str[:10]))
         s = pd.DataFrame({
-            "fixture_key": d["fixture_key"],
+            "fixture_key": d["fixture_key"], **ent.key_meta(d),
             "league": d.get("league", ""),
             "match_date": d["match_date"],
             "market": "OU25",
@@ -368,7 +408,7 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
             "closing_odds": num(d.get("closing_odds", pd.Series(dtype=object))),
             "clv_pct": num(d.get("clv_pct", pd.Series(dtype=object))),
             "signal_tier": d.get("signal_tier", ""),
-            "result": d.get("result", "").fillna("").replace("", "PENDING"),
+            "result": _blank_to_na(d.get("result", pd.Series(index=d.index, dtype=object))),
             "pnl": num(d.get("pnl", pd.Series(dtype=object))),
             "model_type": d.get("model_type", ""),
             "notes": d.get("notes", ""),
@@ -382,8 +422,19 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
                                      1.0 - _p_taken, _p_taken)
         # A result we cannot verify is flagged, not assumed correct (section 16).
         s["quality_flags"] = ""
-        s.loc[~s["result"].isin(["WIN", "LOSS", "VOID", "PENDING"]),
-              "quality_flags"] = "SETTLEMENT_UNCERTAIN"
+        # A blank result is RESULT_MISSING (it used to be written as PENDING); any other value
+        # that is not a known outcome is SETTLEMENT_UNCERTAIN.
+        s["quality_flags"] = q.add_flag(s["quality_flags"], s["result"].isna(), "RESULT_MISSING")
+        s["quality_flags"] = q.add_flag(
+            s["quality_flags"],
+            s["result"].notna() & ~s["result"].isin(["WIN", "LOSS", "VOID", "PENDING"]),
+            "SETTLEMENT_UNCERTAIN")
+        # v9's first-half closes recorded as full-match closes (v9 corrections list, when the
+        # checkout carries it): flagged so no CLV consumer averages them; clv_pct stays as v9 wrote it.
+        from src.data import v9_corrections as v9c
+        s["quality_flags"] = q.add_flag(s["quality_flags"],
+                                        v9c.first_half_contaminated_mask(d).to_numpy(),
+                                        "CLV_FIRST_HALF_CONTAMINATED")
         out.append(("settlements", s))
 
     side = fetch_csv("output/side_bets_ledger.csv", required=False)
@@ -391,8 +442,16 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
         d = ent.add_fixture_key(side.assign(
             match_date=side["match_date"].astype(str).str[:10]))
         _mkt = d.get("market", "").astype(str).str.upper()
+        # The row's own side when v9 wrote one, else the side its market is bet on (BTTS YES,
+        # Over 1.5 / 3.5 OVER). An unknown market keeps a blank side and is flagged - it used to
+        # become "OVER" whatever the market was.
+        _own = _blank_to_na(d.get("side", pd.Series(index=d.index, dtype=object))).str.upper()
+        _side = _own.where(_own.notna(), _mkt.map(SIDE_MARKET_SIDE))
+        _res = _blank_to_na(d.get("result", pd.Series(index=d.index, dtype=object)))
+        _flags = q.add_flag(pd.Series("", index=d.index), _side.isna(), "SIDE_UNKNOWN")
+        _flags = q.add_flag(_flags, _res.isna(), "RESULT_MISSING")
         out.append(("settlements", pd.DataFrame({
-            "fixture_key": d["fixture_key"],
+            "fixture_key": d["fixture_key"], **ent.key_meta(d),
             "league": d.get("league", ""),
             "match_date": d["match_date"],
             "market": _mkt,
@@ -400,7 +459,7 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
             # was being recorded as OVER, which is not a side that market has. v9's ledger
             # leaves the column blank for side markets because each path only ever produces one
             # side, so the value has to be reconstructed here rather than copied.
-            "side": _mkt.map({"BTTS": "YES"}).fillna("OVER"),
+            "side": _side,
             # THE COLUMN THAT WAS MISSING, AND WHAT IT COST.
             #
             # This frame omitted edge_pct entirely while the main-market frame above carries it.
@@ -425,11 +484,11 @@ def from_ledgers() -> list[tuple[str, pd.DataFrame]]:
             "closing_odds": num(d.get("closing_odds", pd.Series(dtype=object))),
             "clv_pct": num(d.get("clv_pct", pd.Series(dtype=object))),
             "signal_tier": d.get("signal_tier", ""),
-            "result": d.get("result", "").fillna("").replace("", "PENDING"),
+            "result": _res,
             "pnl": num(d.get("pnl", pd.Series(dtype=object))),
             "model_type": d.get("model_type", ""),
             "notes": d.get("notes", ""),
-            "quality_flags": "",
+            "quality_flags": _flags,
         })))
     return out
 
@@ -442,7 +501,7 @@ def from_player_props() -> list[tuple[str, pd.DataFrame]]:
         return []
     d = ent.add_fixture_key(raw.assign(match_date=raw["match_date"].astype(str).str[:10]))
     p = pd.DataFrame({
-        "fixture_key": d["fixture_key"],
+        "fixture_key": d["fixture_key"], **ent.key_meta(d),
         "league": d.get("league", ""),
         "match_date": d["match_date"],
         "player_name": d.get("player_name", ""),
@@ -451,8 +510,8 @@ def from_player_props() -> list[tuple[str, pd.DataFrame]]:
         "market": d.get("market", ""),
         "model_prob": num(d.get("model_prob", pd.Series(dtype=object))),
         "market_odds": num(d.get("market_odds", pd.Series(dtype=object))),
-        "signal_tier": d.get("tier", "").fillna("").replace("", "AVOID"),
-        "result": d.get("result", "").fillna("").replace("", "PENDING"),
+        "signal_tier": _blank_to_na(d.get("tier", pd.Series(index=d.index, dtype=object))),
+        "result": _blank_to_na(d.get("result", pd.Series(index=d.index, dtype=object))),
         "pnl": num(d.get("pnl", pd.Series(dtype=object))),
         "deployment_mode": "PAPER",   # invariant 2: props are paper-only, permanently
     })
@@ -460,22 +519,67 @@ def from_player_props() -> list[tuple[str, pd.DataFrame]]:
     # two under AVOID, which is why AVOID counts there are uninterpretable.
     p["never_priced"] = p["market_odds"].isna() | (p["market_odds"] <= 1.0)
     p["quality_flags"] = p["never_priced"].map(lambda x: "MISSING_OPPOSITE_SIDE" if x else "")
+    p["quality_flags"] = q.add_flag(p["quality_flags"], p["signal_tier"].isna(), "TIER_MISSING")
+    p["quality_flags"] = q.add_flag(p["quality_flags"], p["result"].isna(), "RESULT_MISSING")
     p["odds_band"] = p["market_odds"].map(lambda v: cfg.band_label(v, cfg.ODDS_BANDS))
     return [("player_props", p)]
 
 
 # ── clv + live scanner ───────────────────────────────────────────────────────
 
+def clv_identity(raw: pd.DataFrame) -> pd.DataFrame:
+    """(league, match_date, home_team, away_team) per clv_records row: the date v9 wrote into
+    bet_id ('PLAYER|<match_date>|...'), the clubs from `match`, the league from v9's player_ledger
+    row for the same date, match, player and market. NaN where not found (never guessed). Shared by
+    the importer and the fixture_key v2 migration, which recovers pre-2026-11-01 clv rows."""
+    home, away = ent.split_match(raw["match"])
+    bid = raw.get("bet_id", pd.Series(index=raw.index, dtype=object)).astype(str).str.split("|")
+    mdate = bid.str[1].where(bid.str[1].str.match(r"^\d{4}-\d{2}-\d{2}$", na=False))
+    league = pd.Series(pd.NA, index=raw.index, dtype=object)
+    led = fetch_csv("output/player_ledger.csv", required=False)
+    need = {"match_date", "league", "home_team", "away_team", "player_name", "market"}
+    if not led.empty and need <= set(led.columns):
+        k = ["match_date", "home_team", "away_team", "player_name", "market"]
+        lk = led.assign(match_date=led["match_date"].astype(str).str[:10])[k + ["league"]]
+        lk = lk.drop_duplicates(k + ["league"])
+        lk = lk[~lk.duplicated(k, keep=False)]                # ambiguous league -> no match
+        j = pd.DataFrame({"match_date": mdate, "home_team": home, "away_team": away,
+                          "player_name": raw.get("player", ""), "market": raw.get("market", "")},
+                         index=raw.index).reset_index().merge(lk, on=k, how="left").set_index("index")
+        league = j["league"].reindex(raw.index)
+    return pd.DataFrame({"league": league, "match_date": mdate, "home_team": home,
+                         "away_team": away}, index=raw.index)
+
+
 def from_clv() -> list[tuple[str, pd.DataFrame]]:
+    """v9's CLV records. clv_records.csv has no league or match_date column (Data Truth
+    2026-11-01: the key used to be built from an EMPTY league and date, so every meeting of two
+    clubs in any season hashed to one fixture). The match date is the one v9 recorded in bet_id
+    ('PLAYER|<match_date>|<player>|<market>'); the league comes from v9's player_ledger row for
+    the same date, match, player and market (one v9 source, same strings). Where either is not
+    found the row keeps NaN, no fixture_key, and a LEAGUE_MISSING / DATE_MISSING flag."""
     raw = fetch_csv("output/clv_records.csv", required=False)
     if raw.empty or "match" not in raw.columns:
         return []
-    home, away = ent.split_match(raw["match"])
-    d = ent.add_fixture_key(pd.DataFrame({
-        "league": "", "match_date": "", "home_team": home, "away_team": away}))
+    ident = clv_identity(raw)
+    home, away = ident["home_team"], ident["away_team"]
+    mdate, league = ident["match_date"], ident["league"]
+    known = mdate.notna() & league.notna()
+    # Every row goes through the key: one without a league or date gets fixture_key None and a
+    # LEAGUE_UNKNOWN / DATE_UNPARSEABLE status, never a key built from blanks.
+    kd = ent.add_fixture_key(pd.DataFrame({"league": league, "match_date": mdate,
+                                           "home_team": home, "away_team": away},
+                                          index=raw.index))
+    keys = kd["fixture_key"]
+    flags = q.add_flag(pd.Series("", index=raw.index), mdate.isna(), "DATE_MISSING")
+    flags = q.add_flag(flags, league.isna(), "LEAGUE_MISSING")
+    if (~known).any():
+        print(f"[import] clv: {int((~known).sum())} of {len(raw)} row(s) without a league or "
+              f"date - stored with no fixture_key")
     return [("clv", pd.DataFrame({
-        "fixture_key": d["fixture_key"],
-        "match_date": "",
+        "fixture_key": keys, **ent.key_meta(kd),
+        "league": league,
+        "match_date": mdate,
         "market": raw.get("market", ""),
         "player": raw.get("player", ""),
         "side": raw.get("side", ""),
@@ -486,7 +590,7 @@ def from_clv() -> list[tuple[str, pd.DataFrame]]:
         "clv_pct": num(raw.get("clv_pct", pd.Series(dtype=object))),
         "result": raw.get("result", ""),
         "ts_bet": raw.get("ts_bet", ""),
-        "quality_flags": "",
+        "quality_flags": flags,
     }))]
 
 
@@ -502,7 +606,7 @@ def from_live_signals() -> list[tuple[str, pd.DataFrame]]:
     })
     d = ent.add_fixture_key(d)
     return [("live_signals", pd.DataFrame({
-        "fixture_key": d["fixture_key"],
+        "fixture_key": d["fixture_key"], **ent.key_meta(d),
         "league": d["league"],
         "match_date": d["match_date"],
         "score": raw.get("score", ""),
@@ -511,9 +615,11 @@ def from_live_signals() -> list[tuple[str, pd.DataFrame]]:
         "bet": raw.get("bet", ""),
         "live_p_over": num(raw.get("live_p_over", pd.Series(dtype=object))),
         "pre_p_over": num(raw.get("pre_p_over", pd.Series(dtype=object))),
-        "result": raw.get("result", "").fillna("").replace("", "PENDING"),
+        "result": _blank_to_na(raw.get("result", pd.Series(index=raw.index, dtype=object))),
         "deployment_mode": "RESEARCH",
-        "quality_flags": "",
+        "quality_flags": q.add_flag(pd.Series("", index=raw.index),
+                                    _blank_to_na(raw.get("result", pd.Series(index=raw.index, dtype=object))).isna(),
+                                    "RESULT_MISSING"),
     }))]
 
 
