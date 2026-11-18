@@ -99,8 +99,10 @@ def load_lifecycle() -> dict:
 
 
 def save_lifecycle(lc: dict) -> None:
-    LIFECYCLE_FILE.parent.mkdir(parents=True, exist_ok=True)
-    LIFECYCLE_FILE.write_text(json.dumps(lc, indent=1, sort_keys=True), encoding="utf-8")
+    """Append-only history per league (src/registry_guard.LEAGUE_LIFECYCLE): a league never
+    disappears and its history is only ever appended to."""
+    from src import registry_guard as rgd
+    rgd.write_json(LIFECYCLE_FILE, lc, spec=rgd.LEAGUE_LIFECYCLE, indent=1, sort_keys=True)
 
 
 def transition(lc: dict, lid, new: str, reason: str, week: str) -> str:
@@ -152,7 +154,13 @@ def candidate_gate(row: dict, extra: dict, v9_ids: set[int] | None) -> tuple[boo
 def _store():
     """The RAW scout tables (Data Truth R2: checks run on what is stored, not on a cleaned copy)."""
     from src.data import season_store as store
-    return store.read("scout_results"), store.read("scout_odds"), store.read("scout_model")
+    from src.data import result_guard as rg
+    res, odds, mdl = store.read("scout_results"), store.read("scout_odds"), store.read("scout_model")
+    if not res.empty:
+        # A score observed before its own kickoff is a provider error and never counts (result_guard).
+        res = rg.drop_unplayed(res, "scout_results", kickoff_col="kickoff_ts", kickoff_unit="s")
+        res = res.sort_values("ingested_at").drop_duplicates("fixture_id", keep="last")
+    return res, odds, mdl
 
 
 def _aux():

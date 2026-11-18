@@ -89,8 +89,14 @@ def prepare(fixtures: pd.DataFrame, models: dict) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def fit(prepared: pd.DataFrame, *, home_adv: float = 0.25, rho: float = -0.05) -> dict:
-    """Fit one strength offset per league on finished cross-league results."""
+def fit(prepared: pd.DataFrame) -> dict:
+    """Fit one strength offset per league, plus the home advantage and Dixon-Coles rho, on
+    finished cross-league results.
+
+    Data Truth 2026-11-01: home_adv and rho are FITTED here (they were typed 0.25 / -0.05), and a
+    tie involving a league below the anchor threshold is left out of the fit (it used to enter
+    with that league's strength set to 0, i.e. 'league average', a value nothing measured).
+    """
     d = prepared.dropna(subset=["home_goals", "away_goals"])
     if len(d) < MIN_ANCHORS:
         return {"ok": False, "reason": f"only {len(d)} cross-league results (need {MIN_ANCHORS})",
@@ -102,9 +108,15 @@ def fit(prepared: pd.DataFrame, *, home_adv: float = 0.25, rho: float = -0.05) -
         return {"ok": False, "reason": "fewer than two leagues with enough anchors",
                 "strength": {}, "n": len(d)}
     idx = {lg: i for i, lg in enumerate(leagues)}
-    # Leagues below the threshold sit at 0 (league-average) rather than being fitted on noise.
-    hi = d["home_league"].map(lambda x: idx.get(x, -1)).to_numpy()
-    ai = d["away_league"].map(lambda x: idx.get(x, -1)).to_numpy()
+    both = d["home_league"].isin(idx) & d["away_league"].isin(idx)
+    dropped = int((~both).sum())
+    d = d[both]
+    if len(d) < MIN_ANCHORS:
+        return {"ok": False, "reason": f"only {len(d)} results between fitted leagues "
+                                       f"(need {MIN_ANCHORS}; {dropped} involve a thin league)",
+                "strength": {}, "n": len(d)}
+    hi = d["home_league"].map(idx).to_numpy()
+    ai = d["away_league"].map(idx).to_numpy()
     ah, dh = d["att_h"].to_numpy(), d["def_h"].to_numpy()
     aa, da = d["att_a"].to_numpy(), d["def_a"].to_numpy()
     hg = d["home_goals"].to_numpy().astype(int)
@@ -112,37 +124,44 @@ def fit(prepared: pd.DataFrame, *, home_adv: float = 0.25, rho: float = -0.05) -
     n = len(leagues)
 
     def strengths(p):
-        s = np.concatenate([p, [-np.sum(p)]])       # mean pinned to 0 — only differences identify
-        return s
-
-    def sel(s, i):
-        return np.where(i >= 0, s[np.clip(i, 0, n - 1)], 0.0)
+        return np.concatenate([p[: n - 1], [-np.sum(p[: n - 1])]])   # mean pinned to 0
 
     def nll(p):
         s = strengths(p)
-        diff = sel(s, hi) - sel(s, ai)
+        home_adv, rho = p[n - 1], p[n]
+        diff = s[hi] - s[ai]
         lh = np.clip(np.exp(ah - da + home_adv + diff), 1e-6, 30)
         la = np.clip(np.exp(aa - dh - diff), 1e-6, 30)
         ll = (-lh + hg * np.log(lh) - dc._LOGFACT[np.clip(hg, 0, dc.MAX_GOALS)]
               - la + ag * np.log(la) - dc._LOGFACT[np.clip(ag, 0, dc.MAX_GOALS)])
-        ll = ll + np.log(dc._tau(hg, ag, lh, la, rho))
+        tau = dc._tau(hg, ag, lh, la, rho)
+        if np.any(tau <= 0):
+            return 1e12                                  # rho outside the valid region
+        ll = ll + np.log(tau)
         return -float(np.sum(ll))
 
-    res = minimize(nll, np.zeros(n - 1), method="L-BFGS-B",
-                   bounds=[(-2, 2)] * (n - 1), options={"maxiter": 500})
+    # Bounds are the estimator's search region (rho: Dixon-Coles validity), not values.
+    res = minimize(nll, np.zeros(n + 1), method="L-BFGS-B",
+                   bounds=[(-2, 2)] * (n - 1) + [(-1.5, 1.5), (-0.3, 0.3)],
+                   options={"maxiter": 500})
     s = strengths(res.x)
     return {"ok": True, "strength": {lg: float(s[i]) for lg, i in idx.items()},
-            "home_adv": home_adv, "rho": rho, "n": len(d),
+            "home_adv": float(res.x[n - 1]), "rho": float(res.x[n]), "n": len(d),
+            "dropped_thin_league_ties": dropped,
             "leagues": len(leagues), "converged": bool(res.success),
             "calc_version": CALC_VERSION}
 
 
 def predict(row: pd.Series, cal: dict) -> dict | None:
-    """P(HOME/DRAW/AWAY) and the goal markets for one cross-league tie."""
+    """P(HOME/DRAW/AWAY) and the goal markets for one cross-league tie. None when either league
+    has no fitted strength (it used to be treated as strength 0)."""
     if not cal.get("ok"):
         return None
     s = cal["strength"]
-    diff = float(s.get(row.get("home_league"), 0.0)) - float(s.get(row.get("away_league"), 0.0))
+    hl, al = row.get("home_league"), row.get("away_league")
+    if hl not in s or al not in s:
+        return None
+    diff = float(s[hl]) - float(s[al])
     lh = float(np.exp(row["att_h"] - row["def_a"] + cal["home_adv"] + diff))
     la = float(np.exp(row["att_a"] - row["def_h"] - diff))
     m = dc._matrix(np.clip(lh, 1e-6, 15), np.clip(la, 1e-6, 15), cal["rho"])
@@ -172,7 +191,10 @@ def evaluate(prepared: pd.DataFrame, *, test_frac: float = 0.3) -> dict:
     cal = fit(tr)
     if not cal.get("ok"):
         return {"ok": False, "reason": cal.get("reason")}
-    null = {"ok": True, "strength": {}, "home_adv": cal["home_adv"], "rho": cal["rho"]}
+    # The NULL HYPOTHESIS model: the same fitted leagues, each at offset 0 (by definition of the
+    # null, not a stand-in value), so both models score exactly the same ties.
+    null = {"ok": True, "strength": {lg: 0.0 for lg in cal["strength"]},
+            "home_adv": cal["home_adv"], "rho": cal["rho"]}
 
     P, N, Y = [], [], []
     for _, r in te.iterrows():

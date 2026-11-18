@@ -5,6 +5,18 @@ Forward PAPER record for the 1X2 model.
     python -m src.pipelines.paper_1x2 --mode settle   # grade what has finished
     python -m src.pipelines.paper_1x2 --mode all
 
+THE MODEL (owner 2026-11-09, reports/P5_1X2_REVIEW.md): since calc_version 2.0.0 the opinion is
+src.models.onex2_clean - a multinomial logistic on v9's REPAIRED history, refit MONTHLY by
+src.pipelines.train_1x2_clean - and, where a real pre-kickoff price exists, the blend of that model
+with the de-vigged price (pb_*, logged BESIDE p_*). The stale Dixon-Coles output/model_1x2.json
+(cutoff 2026-04-27, 31% coverage) is no longer served; rows logged under it keep calc_version 1.0.0.
+No clean model on disk, a v9 feature code different from the model's, or a scikit-learn version
+change = nothing is logged, and the reason is printed. Nothing falls back to the stale model.
+
+NOTHING IS SENT (owner 2026-11-09). The "top 3% by edge" slice measured -13.6% on 3,013 clean
+holdout bets (P5). notify() still re-prices and records its reasons, but selects nothing until a
+rule is PROVEN (NOTIFY_RULE). Every fixture is still logged.
+
 WHY A FORWARD RECORD AND NOT ANOTHER BACKTEST
 
 The offline evaluation says this model loses to the closing line (log-loss 1.0693 vs 1.0305 on
@@ -35,7 +47,10 @@ would make the data unable to answer the question.
 
 WHAT IS STORED, AND WHY EACH FIELD
 
-    model p_home/p_draw/p_away  the opinion, at a stated time before kickoff
+    model p_home/p_draw/p_away  the opinion, at a stated time before kickoff (mnlogit_clean)
+    blend pb_home/pb_draw/pb_away  model + de-vigged pre-kickoff price, where a price exists
+    research_cell/_pick/_odds   paper research cells (config/onex2_research_cells.json), e.g.
+                                LEAGUE_WIDE Eredivisie draws: every match, no model filter
     market m_* and raw odds     what was actually available at that moment -- ROI needs the
                                 price with the vig in it, not the de-vigged probability
     hours_to_kickoff            so "was it early or late" is answerable, not assumed
@@ -48,6 +63,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+from collections import Counter
 import os
 import glob
 import hashlib
@@ -58,21 +74,18 @@ import numpy as np
 import pandas as pd
 
 from src.combo import dixon_coles as dc
+from src.data import v9_config
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "output"
-MODEL_FILE = OUT / "model_1x2.json"
 PAPER_FILE = OUT / "paper_1x2.csv"
 
-CALC_VERSION = "1.0.0"
 HORIZON_DAYS = 3
 
-# TOP SLICE SENT AS TIPS. Set by the owner, against the backtest, and that disagreement is the
-# point of sending them: the 505-fixture sample said this slice is the worst available (12 picks,
-# 1 winner, -73% ROI, and monotonically worse the harder it selects), but that sample is small,
-# name-biased, and backward-looking. A forward record is the only thing that can settle it, and
-# the picks are marked PAPER so settling it costs nothing but patience.
-TOP_PCT = float(os.getenv("PAPER_1X2_TOP_PCT", "3"))
+# WHAT IS SENT: nothing until a selection rule is PROVEN under the owner's strict rule (>= 150 bets,
+# ROI CI above zero after correction). The former "top 3% by edge" slice was stopped by the owner on
+# 2026-11-09: on clean data that family lost -13.6% over 3,013 holdout bets (P5).
+NOTIFY_RULE = None
 # Never more than this many in one run, however large the board — the same anti-spam floor the
 # combo notifier uses, for the same reason.
 MAX_TIPS_PER_RUN = 3
@@ -107,7 +120,8 @@ def _market_snapshots() -> pd.DataFrame:
     for f in sorted(glob.glob(str(v9 / "output" / "sharp_history" / "*.json"))):
         try:
             d = json.loads(Path(f).read_text(encoding="utf-8"))
-        except Exception:                                        # noqa: BLE001
+        except Exception as e:                                   # noqa: BLE001
+            print(f"[paper1x2] skipped unreadable {Path(f).name}: {type(e).__name__}")
             continue
         for v in (d.values() if isinstance(d, dict) else d):
             for s in (v if isinstance(v, list) else [v]):
@@ -135,23 +149,85 @@ def _market_snapshots() -> pd.DataFrame:
     return m
 
 
-def _models() -> dict:
-    if not MODEL_FILE.exists():
-        print(f"[paper1x2] {MODEL_FILE.name} not found — run train_1x2 first")
-        return {}
-    try:
-        return (json.loads(MODEL_FILE.read_text(encoding="utf-8")) or {}).get("leagues", {}) or {}
-    except Exception as e:                                       # noqa: BLE001
-        print(f"[paper1x2] could not read the model: {type(e).__name__}: {e}")
-        return {}
+def _one_fixture(frame: pd.DataFrame, league, day: str, home, away, *, date_col: str,
+                 result_names: bool = False) -> pd.Series | None:
+    """The single row of `frame` for this fixture, or None.
+
+    Same CANONICAL league (v9 registry), same UTC kickoff date, and both clubs placed by v9's
+    league-scoped resolver on the SAME row (resolve_result for result sources). Replaces raw
+    home==/away== joins with no league and no date, which let any earlier meeting of the same
+    pair supply the price, the close or the score (Data Truth 2026-11-01). Ambiguous -> None.
+    """
+    lg = v9_config.canonical_league(league)
+    if lg is None or frame is None or frame.empty or not day:
+        return None
+    f = frame[(frame["_lg"] == lg) & (frame[date_col] == day)]
+    if f.empty:
+        return None
+    tn = v9_config.team_names()
+    fn = tn.resolve_result if result_names else tn.resolve
+    h = fn(str(home), sorted(f["home_team"].astype(str).unique()))
+    a = fn(str(away), sorted(f["away_team"].astype(str).unique()))
+    if h is None or a is None:
+        return None
+    hit = f[(f["home_team"].astype(str) == h) & (f["away_team"].astype(str) == a)]
+    return hit.iloc[-1] if len(hit) else None
+
+
+def _utc_day(v) -> str:
+    t = pd.to_datetime(v, errors="coerce", utc=True)
+    return "" if pd.isna(t) else t.strftime("%Y-%m-%d")
+
+
+# MAX PRICE AGE (Data Truth round 3). The price a tip is sent at must be a price that existed when
+# it was sent. Measured at origin/data-truth-100: all 51 sent tips carried a price 12.4h-85.5h old
+# at notify time (median 16.1h) - the price logged when the fixture was FIRST seen, re-used days
+# later, from a sharp tracker that snapshots about once a night. A tip whose freshest price is
+# older than this is not sent (reason STALE_PRICE) rather than sent at a price nobody could take.
+MAX_PRICE_AGE_HOURS = float(os.getenv("PAPER_1X2_MAX_PRICE_AGE_H", "12"))
+
+
+def _latest_prices() -> pd.DataFrame:
+    """Newest h2h snapshot per FIXTURE (canonical league + kickoff date + clubs), with `_lg` and
+    `_day` for `_one_fixture`. One definition shared by logging and by notify-time re-pricing."""
+    mkt = _market_snapshots()
+    if mkt.empty:
+        return pd.DataFrame()
+    mk = mkt.dropna(subset=["snapshot_at"]).sort_values("snapshot_at")
+    mk = mk.assign(_lg=mk["league"].map(v9_config.canonical_league),
+                   _day=mk["kickoff"].map(_utc_day))
+    return mk.drop_duplicates(subset=["_lg", "_day", "home_team", "away_team"], keep="last")
+
+
+def price_age_hours(price_at, now: dt.datetime) -> float | None:
+    """Hours between a snapshot time (v9 sharp_history `at`, UTC) and `now`; None when unknown."""
+    t = pd.to_datetime(price_at, errors="coerce", utc=True)
+    if pd.isna(t):
+        return None
+    return (pd.Timestamp(now) - t).total_seconds() / 3600.0
+
+
+def _research_cells() -> list[dict]:
+    from src.models import onex2_clean as C
+    if not C.CELLS_CONFIG.exists():
+        return []
+    return json.loads(C.CELLS_CONFIG.read_text(encoding="utf-8")).get("cells", [])
 
 
 def log_picks(now: dt.datetime | None = None) -> pd.DataFrame:
-    """One row per upcoming fixture the model can price, with the price available right now."""
+    """One row per upcoming fixture the clean model can price, with the price available right now."""
+    import tempfile
     from src.data import season_store as store
+    from src.models import onex2_clean as C
     now = now or dt.datetime.now(dt.timezone.utc)
-    models = _models()
-    if not models:
+    art = C.load()
+    if art is None:
+        print(f"[paper1x2] no clean 1X2 model ({C.MODEL_FILE.name}) - nothing logged. The monthly "
+              f"train_1x2_clean job builds it (off until PRO_1X2_CLEAN_ENABLED at go-live).")
+        return pd.DataFrame()
+    v9 = _v9_root()
+    if v9 is None:
+        print("[paper1x2] no v9 checkout - the clean model reads v9's repaired history; nothing logged")
         return pd.DataFrame()
 
     fx = store.read("fixtures")
@@ -160,61 +236,88 @@ def log_picks(now: dt.datetime | None = None) -> pd.DataFrame:
         return pd.DataFrame()
     fx = fx.copy()
     fx["_ko"] = pd.to_datetime(fx.get("kickoff_utc"), errors="coerce", utc=True)
-    fx = fx.dropna(subset=["_ko"]).drop_duplicates("fixture_key", keep="last")
+    # fixture_key v2 is None when the league is not a registry league or the date is unparseable;
+    # such a row has no identity to log under (and no league model), so it is skipped, counted.
+    nokey = fx["fixture_key"].isna()
+    if nokey.any():
+        print(f"[paper1x2] {int(nokey.sum())} fixture row(s) without a fixture_key "
+              f"(league not in the registry / date unparseable) - skipped")
+    fx = fx[~nokey].dropna(subset=["_ko"]).drop_duplicates("fixture_key", keep="last")
     fx = fx[(fx["_ko"] > now) & (fx["_ko"] <= now + dt.timedelta(days=HORIZON_DAYS))]
     print(f"[paper1x2] {len(fx)} upcoming fixture(s) within {HORIZON_DAYS}d")
     if fx.empty:
         return pd.DataFrame()
+    fx["_lg"] = fx["league"].map(v9_config.canonical_league)
+    nolg = fx["_lg"].isna()
+    if nolg.any():
+        print(f"[paper1x2] {int(nolg.sum())} fixture(s) in a league outside v9's registry - skipped")
+    fx = fx[~nolg]
 
-    mkt = _market_snapshots()
-    latest = pd.DataFrame()
-    if not mkt.empty:
-        mk = mkt.dropna(subset=["snapshot_at"]).sort_values("snapshot_at")
-        latest = mk.drop_duplicates(subset=["league", "home_team", "away_team"], keep="last")
+    with tempfile.TemporaryDirectory(prefix="paper1x2_") as tmp:
+        src = Path(tmp) / "fixtures.csv"
+        fx[["fixture_key", "_lg", "kickoff_utc", "home_team", "away_team"]].rename(
+            columns={"_lg": "league"}).to_csv(src, index=False)
+        try:
+            C.run_bridge("upcoming", str(v9), str(src), tmp)
+        except Exception as e:                                       # noqa: BLE001
+            print(f"[paper1x2] v9 bridge failed - nothing logged: {type(e).__name__}: {e}")
+            return pd.DataFrame()
+        probs, info = C.serve(art, tmp)
+    print(f"[paper1x2] clean model {art['name']} {art['calc_version']} (as of {art['asof']}): {info}")
+    if probs.empty:
+        return pd.DataFrame()
 
+    latest = _latest_prices()
+    cells = {c["league"]: c for c in _research_cells()}
+    by_key = fx.set_index("fixture_key")
     stamp = now.strftime("%Y-%m-%dT%H:%M:%SZ")
-    rows, no_model, no_rating = [], 0, 0
-    for _, f in fx.iterrows():
-        m = models.get(f.get("league"))
-        if not m:
-            no_model += 1
-            continue
-        pr = dc.predict(m, str(f.get("home_team")), str(f.get("away_team")))
-        if not pr:
-            no_rating += 1                      # team unseen in training — no honest rating
-            continue
+    rows = []
+    for _, pr in probs.iterrows():
+        f = by_key.loc[pr["fixture_key"]]
         r = {
-            "row_id": _row_id(str(f.get("fixture_key", "")), str(f.get("match_date", "")),
+            "row_id": _row_id(str(pr["fixture_key"]), str(f.get("match_date", "")),
                               str(f.get("home_team")), str(f.get("away_team"))),
-            "logged_at": stamp, "fixture_key": f.get("fixture_key"), "league": f.get("league"),
+            "logged_at": stamp, "fixture_key": pr["fixture_key"], "league": f.get("league"),
             "match_date": f.get("match_date"),
             "kickoff_utc": f["_ko"].strftime("%Y-%m-%dT%H:%M:%SZ"),
             "home_team": f.get("home_team"), "away_team": f.get("away_team"),
+            "model_home_team": pr["home_team"], "model_away_team": pr["away_team"],
             "hours_to_kickoff": round((f["_ko"] - now).total_seconds() / 3600.0, 2),
-            "p_home": round(pr["p_home"], 4), "p_draw": round(pr["p_draw"], 4),
-            "p_away": round(pr["p_away"], 4),
-            "calc_version": CALC_VERSION,
+            "p_home": round(float(pr["p_home"]), 4), "p_draw": round(float(pr["p_draw"]), 4),
+            "p_away": round(float(pr["p_away"]), 4),
+            "calc_version": art["calc_version"], "model": art["name"], "model_asof": art["asof"],
+            "model_v9_commit": art.get("v9_commit"),
         }
-        # The price as it stands now. Absent for most fixtures — the sharp tracker covers 19
-        # leagues — and that is recorded as missing rather than guessed, because a row with no
+        # The price as it stands now. Absent for most fixtures - the sharp tracker covers 19
+        # leagues - and that is recorded as missing rather than guessed, because a row with no
         # price can still measure calibration, just not ROI.
         if len(latest):
-            hit = latest[(latest["home_team"] == f.get("home_team"))
-                         & (latest["away_team"] == f.get("away_team"))]
-            if len(hit):
-                h = hit.iloc[-1]
+            h = _one_fixture(latest, f.get("league"), f["_ko"].strftime("%Y-%m-%d"),
+                             f.get("home_team"), f.get("away_team"), date_col="_day")
+            if h is not None:
                 r.update({"o_home": h["o_home"], "o_draw": h["o_draw"], "o_away": h["o_away"],
                           "m_home": round(float(h["m_home"]), 4),
                           "m_draw": round(float(h["m_draw"]), 4),
                           "m_away": round(float(h["m_away"]), 4),
                           "overround": round(float(h["overround"]), 4),
                           "price_at": str(h["snapshot_at"])[:19]})
+                pb = C.blend_row(art, [pr["p_home"], pr["p_draw"], pr["p_away"]],
+                                 [h["o_home"], h["o_draw"], h["o_away"]])
+                if pb is not None:
+                    r.update({"pb_home": round(pb[0], 4), "pb_draw": round(pb[1], 4),
+                              "pb_away": round(pb[2], 4),
+                              "blend_price_class": "SHARP_LATEST_PRE_KICKOFF"})
+        cell = cells.get(f["_lg"])
+        if cell is not None:
+            r.update({"research_cell": cell["id"], "research_pick": cell["outcome"].upper()})
+            o = r.get(f"o_{cell['outcome']}")
+            if o is not None:
+                r.update({"research_odds": o, "research_price_at": r.get("price_at")})
         rows.append(r)
 
     d = pd.DataFrame(rows)
     priced = int(d["o_home"].notna().sum()) if "o_home" in d.columns else 0
-    print(f"[paper1x2] logged {len(d)} pick(s), {priced} with a market price "
-          f"(skipped: no league model {no_model}, unrated team {no_rating})")
+    print(f"[paper1x2] logged {len(d)} pick(s), {priced} with a market price")
     return d
 
 
@@ -256,26 +359,38 @@ def settle(d: pd.DataFrame | None = None, now: dt.datetime | None = None) -> pd.
         print("[paper1x2] no scoreline source — cannot settle")
         return d
     r = pd.concat(res, ignore_index=True)
-    r["_k"] = (pd.to_datetime(r["match_date"], errors="coerce").dt.strftime("%Y-%m-%d")
-               + "|" + r["home_team"].astype(str) + "|" + r["away_team"].astype(str))
+    # KICKOFF GUARD (result_guard): a full-time score stored before its own kickoff is a provider
+    # error (API-Football marked return fixtures FT with the first leg's score) and never settles.
+    from src.data import result_guard as rg
+    r = rg.drop_unplayed(r, "paper_1x2 results", now=pd.Timestamp(now))
+    r["_d"] = pd.to_datetime(r["match_date"], errors="coerce").dt.strftime("%Y-%m-%d")
+    r["_lg"] = (r["league"].map(v9_config.canonical_league) if "league" in r.columns
+                else pd.Series(None, index=r.index, dtype="object"))
+    if "kickoff_utc" not in r.columns:
+        r["kickoff_utc"] = pd.NA
     by_key = {}
     if "fixture_key" in r.columns:
         by_key = {str(k): v for k, v in
-                  r.dropna(subset=["fixture_key"]).drop_duplicates("fixture_key")
-                   .set_index("fixture_key")[["home_goals", "away_goals"]].iterrows()}
-    by_name = r.drop_duplicates("_k").set_index("_k")[["home_goals", "away_goals"]]
+                  r.dropna(subset=["fixture_key"]).drop_duplicates("fixture_key", keep="last")
+                   .set_index("fixture_key")[["home_goals", "away_goals", "kickoff_utc"]].iterrows()}
 
     mkt = _market_snapshots()
     closing = pd.DataFrame()
     if not mkt.empty:
         mk = mkt.dropna(subset=["snapshot_at", "kickoff"])
         mk = mk[mk["snapshot_at"] <= mk["kickoff"]].sort_values("snapshot_at")
-        closing = mk.drop_duplicates(subset=["home_team", "away_team"], keep="last")
+        mk = mk.assign(_lg=mk["league"].map(v9_config.canonical_league),
+                       _day=mk["kickoff"].map(_utc_day))
+        # Last pre-kickoff snapshot per FIXTURE (was per club pair across all dates and leagues).
+        closing = mk.drop_duplicates(subset=["_lg", "_day", "home_team", "away_team"], keep="last")
 
     out = d.copy()
     for c in ("result", "settled_at", "c_home", "c_draw", "c_away"):
         if c not in out.columns:
             out[c] = pd.NA
+    # Why a row was settled the way it was, or deliberately not settled (rescheduled > 48h = VOID).
+    # A new column beside the record: `result` keeps its meaning (0/1/2 or empty).
+    _as_object(out, "settle_note")
     # AN ALL-EMPTY COLUMN READ BACK FROM CSV IS float64, NOT object, and pandas 3 refuses to
     # widen a float64 column in place: `out.at[i, "settled_at"] = "2026-09-06T11:45:40Z"` raises
     # TypeError("Invalid value ... for dtype 'float64'"). The `if c not in out.columns` guard
@@ -289,28 +404,45 @@ def settle(d: pd.DataFrame | None = None, now: dt.datetime | None = None) -> pd.
 
     graded = 0
     for i, row in out.iterrows():
-        if pd.notna(row.get("result")):
-            continue                                   # already graded — never re-decide
+        note = row.get("settle_note")
+        if pd.notna(row.get("result")) or (pd.notna(note) and str(note) == rg.VOID_RESCHEDULED):
+            continue                                   # already graded / voided — never re-decide
         fk = str(row.get("fixture_key") or "")
         rec = by_key.get(fk)
         if rec is None:
-            k = f'{str(row.get("match_date"))[:10]}|{row.get("home_team")}|{row.get("away_team")}'
-            if k in by_name.index:
-                rec = by_name.loc[k]
+            # Same day first; then the days around it, because a rescheduled match is stored under
+            # its ACTUAL date (and a new fixture_key). Which of them may settle the tip is decided
+            # by the owner's 48h rule below, on kickoff times - never by the search window.
+            day0 = pd.to_datetime(str(row.get("match_date"))[:10], errors="coerce")
+            for off in (0, -1, 1, -2, 2, -3, 3):
+                if pd.isna(day0):
+                    break
+                rec = _one_fixture(r, row.get("league"),
+                                   (day0 + pd.Timedelta(days=off)).strftime("%Y-%m-%d"),
+                                   row.get("home_team"), row.get("away_team"), date_col="_d",
+                                   result_names=True)
+                if rec is not None:
+                    break
         if rec is None:
             continue
         hg, ag = rec["home_goals"], rec["away_goals"]
         if pd.isna(hg) or pd.isna(ag):
             continue
+        verdict = rg.reschedule_verdict(row.get("kickoff_utc"), rec.get("kickoff_utc"))
+        if verdict == rg.VOID_RESCHEDULED:
+            out.at[i, "settle_note"] = verdict         # owner rule: not played within 48h -> VOID
+            out.at[i, "settled_at"] = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+            continue
+        out.at[i, "settle_note"] = verdict
         out.at[i, "result"] = 0 if hg > ag else (1 if hg == ag else 2)
         out.at[i, "settled_at"] = now.strftime("%Y-%m-%dT%H:%M:%SZ")
         if len(closing):
-            h = closing[(closing["home_team"] == row["home_team"])
-                        & (closing["away_team"] == row["away_team"])]
-            if len(h):
-                out.at[i, "c_home"] = float(h.iloc[-1]["o_home"])
-                out.at[i, "c_draw"] = float(h.iloc[-1]["o_draw"])
-                out.at[i, "c_away"] = float(h.iloc[-1]["o_away"])
+            h = _one_fixture(closing, row.get("league"), _utc_day(row.get("kickoff_utc")),
+                             row.get("home_team"), row.get("away_team"), date_col="_day")
+            if h is not None:                  # not uniquely matched -> the close stays NaN
+                out.at[i, "c_home"] = float(h["o_home"])
+                out.at[i, "c_draw"] = float(h["o_draw"])
+                out.at[i, "c_away"] = float(h["o_away"])
         graded += 1
     print(f"[paper1x2] graded {graded} newly-finished pick(s)")
     return out
@@ -335,7 +467,7 @@ def format_tip(row: pd.Series, pick: str, ev: float, odds: float) -> str:
     """One Telegram message. Says what it is and what the evidence says, every time."""
     side = {"HOME": row["home_team"], "AWAY": row["away_team"], "DRAW": "Draw"}[pick]
     return "\n".join([
-        "🎯 *1X2 tip* (top %.0f%% by edge)" % TOP_PCT,
+        "🎯 *1X2 tip* (PAPER)",
         "",
         f"*{row['home_team']} vs {row['away_team']}*",
         f"_{row['league']} · {str(row['kickoff_utc'])[:16]}_",
@@ -345,47 +477,70 @@ def format_tip(row: pd.Series, pick: str, ev: float, odds: float) -> str:
         "  (home/draw/away)",
         f"Edge at that price: *{ev:+.1%}*",
         "",
-        "⚠️ _PAPER. This model LOSES to the closing line in backtest "
-        "(1.0693 vs 1.0305 log-loss), and this top slice measured -73% ROI on 12 picks. "
-        "Sent forward to test that finding, not because it is beaten._",
+        "⚠️ _PAPER. No 1X2 model beats the pre-kickoff market on clean data (P5 review); "
+        "this is a research record, never a stake._",
     ])
 
 
-def notify(d: pd.DataFrame, *, dry_run: bool = True) -> dict:
-    """Send the top TOP_PCT of unsent, unstarted picks. Records what was sent, in the record."""
+def notify(d: pd.DataFrame, *, dry_run: bool = True, now: dt.datetime | None = None,
+           latest: pd.DataFrame | None = None) -> dict:
+    """Send the picks NOTIFY_RULE selects (none until a rule is PROVEN). Records what was sent.
+
+    Each pick is RE-PRICED at notify time from the newest snapshot of the same fixture (league +
+    kickoff date + resolved clubs, `_one_fixture`), and skipped as STALE_PRICE when that snapshot is
+    older than MAX_PRICE_AGE_HOURS. The logged price (o_*, price_at) is never overwritten: the price
+    the tip went out at is recorded beside it in notified_odds / notified_price_at."""
     from src.combo import notify as cn
     import config.pro_config as cfg
     out = {"considered": 0, "eligible": 0, "sent": 0, "dry_run": dry_run,
-           "top_pct": TOP_PCT, "reasons": {}}
+           "rule": None if NOTIFY_RULE is None else getattr(NOTIFY_RULE, "__name__", "rule"),
+           "max_price_age_h": MAX_PRICE_AGE_HOURS, "reasons": Counter()}
     if d is None or d.empty:
         return out
     # THE SAME float64 TRAP AS settle(), and it had never fired only because no send had ever
     # succeeded. `notified_at` and `notified_pick` take strings; `notified_odds`/`notified_ev`
     # are numeric but are created here so a first send cannot assign into a column that does not
     # exist yet. All four are absent from the record written before this fix.
-    _as_object(d, "notified_at", "notified_pick")
+    _as_object(d, "notified_at", "notified_pick", "notified_price_at")
     for c in ("notified_odds", "notified_ev"):
         if c not in d.columns:
             d[c] = pd.NA
-    now = dt.datetime.now(dt.timezone.utc)
+    now = now or dt.datetime.now(dt.timezone.utc)
     live = d[pd.to_datetime(d["kickoff_utc"], errors="coerce", utc=True) > now]
     live = live[live["notified_at"].isna()]
     # Paper leagues are recorded and settled but never sent (owner, 2026-10-07; mirrors v9).
     if "league" in live.columns:
-        live = live[~live["league"].astype(str).str.strip().isin(cfg.PAPER_LEAGUES)]
+        live = v9_config.drop_paper_leagues(live)   # registry PAPER_LEAGUES, canonical names
     out["considered"] = len(live)
-    scored = []
+    latest = _latest_prices() if latest is None else latest
+    scored, price_at = [], {}
     for i, r in live.iterrows():
-        e = _edge(r)
-        if e is None:
-            out["reasons"]["NO_PRICE"] = out["reasons"].get("NO_PRICE", 0) + 1
+        h = None
+        if latest is not None and len(latest):
+            h = _one_fixture(latest, r.get("league"), _utc_day(r.get("kickoff_utc")),
+                             r.get("home_team"), r.get("away_team"), date_col="_day")
+        if h is None:
+            out["reasons"]["NO_PRICE"] += 1
             continue
+        age = price_age_hours(h["snapshot_at"], now)
+        if age is None or age > MAX_PRICE_AGE_HOURS:
+            out["reasons"]["STALE_PRICE"] += 1
+            continue
+        priced = r.copy()
+        priced["o_home"], priced["o_draw"], priced["o_away"] = h["o_home"], h["o_draw"], h["o_away"]
+        e = _edge(priced)
+        if e is None:
+            out["reasons"]["NO_PRICE"] += 1
+            continue
+        price_at[i] = str(h["snapshot_at"])[:19]
         scored.append((i, *e))
     if not scored:
         return out
-    scored.sort(key=lambda x: -x[2])
-    n = max(1, int(round(len(scored) * TOP_PCT / 100.0)))
-    chosen = scored[:n]
+    if NOTIFY_RULE is None:
+        # owner 2026-11-09: no 1X2 selection rule is PROVEN, so nothing is selected or sent
+        out["reasons"]["NO_PROVEN_RULE"] = len(scored)
+        return out
+    chosen = NOTIFY_RULE(scored)
     out["eligible"] = len(chosen)
     # DELIVERY (owner 2026-10-20): the picks now ride in v9's morning album, like Bet Builder, so the
     # separate Telegram message is off by default. The pick is still SELECTED and RECORDED here exactly
@@ -405,6 +560,7 @@ def notify(d: pd.DataFrame, *, dry_run: bool = True) -> dict:
         d.at[i, "notified_pick"] = pick
         d.at[i, "notified_odds"] = odds
         d.at[i, "notified_ev"] = round(ev, 4)
+        d.at[i, "notified_price_at"] = price_at.get(i)
         out["sent"] += 1
     return out
 

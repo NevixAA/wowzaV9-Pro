@@ -57,6 +57,19 @@ def _quarter_kelly(edge: float, odds: float) -> float:
     return 0.0 if edge <= 0 or odds <= 1 else 0.25 * edge / (odds - 1)
 
 
+def _gt(x, thr) -> bool:
+    """x > thr; a MISSING x fails the condition (no stand-in number decides a gate)."""
+    return x is not None and x > thr
+
+
+def _ge(x, thr) -> bool:
+    return x is not None and x >= thr
+
+
+def _lt(x, thr) -> bool:
+    return x is not None and x < thr
+
+
 def decide_track(name: str, t: dict, ev: dict | None, as_of, dd_warning: bool) -> tuple[dict, dict]:
     t = dict(t)
     base, state = float(t.get("base_fraction", 0.0)), t.get("state", "UNSUPPORTED")
@@ -72,9 +85,9 @@ def decide_track(name: str, t: dict, ev: dict | None, as_of, dd_warning: bool) -
     h = ev["horizons"]
     r30, r60 = h["LAST_30D"], h["LAST_60D"]
     if state == "PAPER":
-        strong = (ev["n"] >= 150 and ev["matchdays"] >= 40 and ev["shrunk_roi"] > 0.01
-                  and (ev["roi_lo90"] or -1) > 0 and (ev["half1_roi"] or -1) > 0
-                  and (ev["half2_roi"] or -1) > 0 and (ev["clv_median"] or -1) >= 0)
+        strong = (ev["n"] >= 150 and ev["matchdays"] >= 40 and _gt(ev["shrunk_roi"], 0.01)
+                  and _gt(ev["roi_lo90"], 0) and _gt(ev["half1_roi"], 0)
+                  and _gt(ev["half2_roi"], 0) and _ge(ev["clv_median"], 0))
         rec.update(decision="PAPER_PROMOTION_REVIEW" if strong else "KEEP_PAPER",
                    proposed_fraction=0.0, proposed_state="PAPER")
         rec["reasons"].append("evidence meets the paper-promotion bar - owner decision" if strong
@@ -84,10 +97,16 @@ def decide_track(name: str, t: dict, ev: dict | None, as_of, dd_warning: bool) -
     # ── stop ────────────────────────────────────────────────────────────────────
     stale = (pd.Timestamp(as_of) - pd.Timestamp(ev["last_bet"])).days > 21
     stop = []
-    if ev["n"] >= 60 and ev["shrunk_roi"] < -0.02:
+    # A risk rule whose input is MISSING cannot be decided either way. It is recorded and the track
+    # goes to REVIEW (no increase, no automatic change) instead of reading the gap as a neutral 0.
+    missing = []
+    if ev["n"] >= 60 and _lt(ev["shrunk_roi"], -0.02):
         stop.append(f"shrunk ROI {ev['shrunk_roi']:+.1%} on n={ev['n']}")
-    if r60["n"] >= 40 and (r60["roi"] or 0) < -0.15 and (ev["clv_recent_median"] or 0) < 0:
-        stop.append(f"60-day ROI {r60['roi']:+.1%} with negative recent CLV")
+    if r60["n"] >= 40 and _lt(r60["roi"], -0.15):
+        if ev["clv_recent_median"] is None:
+            missing.append(f"60-day ROI {r60['roi']:+.1%} but no recent CLV to confirm a STOP")
+        elif ev["clv_recent_median"] < 0:
+            stop.append(f"60-day ROI {r60['roi']:+.1%} with negative recent CLV")
     if stop:
         t.update(base_fraction=0.0, state="STOPPED")
         rec.update(decision="STOP", proposed_fraction=0.0, proposed_state="STOPPED", reasons=stop)
@@ -95,13 +114,19 @@ def decide_track(name: str, t: dict, ev: dict | None, as_of, dd_warning: bool) -
 
     # ── reduce ──────────────────────────────────────────────────────────────────
     red = []
-    if r60["n"] >= 25 and (r60["roi"] or 0) < 0 and (r30["roi"] or 0) < 0:
-        red.append(f"30-day {r30['roi']:+.1%} and 60-day {r60['roi']:+.1%} ROI both negative")
+    if r60["n"] >= 25 and _lt(r60["roi"], 0):
+        if r30["roi"] is None:
+            missing.append(f"60-day ROI {r60['roi']:+.1%} negative but no bets in the last 30 days")
+        elif r30["roi"] < 0:
+            red.append(f"30-day {r30['roi']:+.1%} and 60-day {r60['roi']:+.1%} ROI both negative")
     if ev["clv_n"] >= 30 and ev["clv_recent_median"] is not None and ev["clv_recent_median"] < -0.02:
         red.append(f"recent median CLV {ev['clv_recent_median']:+.1%}")
-    if (ev["top_league_share"] or 0) > 0.75 and (ev["ex_top_league_roi"] if ev["ex_top_league_roi"] is not None else 0) < 0:
-        red.append(f"{ev['top_league_share']:.0%} of bets in {ev['top_league']} and the rest negative "
-                   f"({ev['ex_top_league_roi']:+.1%})")
+    if _gt(ev["top_league_share"], 0.75):
+        if ev["ex_top_league_roi"] is None:
+            missing.append(f"{ev['top_league_share']:.0%} of bets in {ev['top_league']}, no other league to compare")
+        elif ev["ex_top_league_roi"] < 0:
+            red.append(f"{ev['top_league_share']:.0%} of bets in {ev['top_league']} and the rest negative "
+                       f"({ev['ex_top_league_roi']:+.1%})")
     # price cap: tighten when the top populated odds band loses heavily
     cap = float(t.get("max_odds", HARD_BOUNDS["max_odds"]))
     bands = [(k, v) for k, v in ev["odds_bands"].items() if v["n"] >= 25]
@@ -119,20 +144,27 @@ def decide_track(name: str, t: dict, ev: dict | None, as_of, dd_warning: bool) -
                    reasons=rec["reasons"] + red)
         return t, rec
 
+    if missing:
+        rec.update(decision="REVIEW", proposed_fraction=base, proposed_state=state,
+                   reasons=rec["reasons"] + [f"input missing: {m}" for m in missing])
+        return t, rec
+
     # ── increase ────────────────────────────────────────────────────────────────
+    # Every condition needs its input: a missing value (e.g. no bets in the last 30 days) FAILS it.
     need = {
         "n >= 100": ev["n"] >= 100, "matchdays >= 30": ev["matchdays"] >= 30,
-        ">= 2 months": ev["months"] >= 2, "shrunk ROI >= +1%": ev["shrunk_roi"] >= 0.01,
-        "90% lower bound > 0": (ev["roi_lo90"] or -1) > 0,
-        "both halves positive": (ev["half1_roi"] or -1) > 0 and (ev["half2_roi"] or -1) > 0,
-        "last 30d not below -5%": (r30["roi"] if r30["roi"] is not None else 0) >= -0.05,
-        "median CLV >= 0 on 30+": ev["clv_n"] >= 30 and (ev["clv_median"] or -1) >= 0,
-        "not one-league": (ev["top_league_share"] or 1) <= 0.60 or (ev["ex_top_league_roi"] or -1) > 0,
+        ">= 2 months": ev["months"] >= 2, "shrunk ROI >= +1%": _ge(ev["shrunk_roi"], 0.01),
+        "90% lower bound > 0": _gt(ev["roi_lo90"], 0),
+        "both halves positive": _gt(ev["half1_roi"], 0) and _gt(ev["half2_roi"], 0),
+        "last 30d not below -5%": _ge(r30["roi"], -0.05),
+        "median CLV >= 0 on 30+": ev["clv_n"] >= 30 and _ge(ev["clv_median"], 0),
+        "not one-league": (ev["top_league_share"] is not None and ev["top_league_share"] <= 0.60)
+                          or _gt(ev["ex_top_league_roi"], 0),
         "no portfolio drawdown warning": not dd_warning,
     }
-    target = _quarter_kelly(ev["shrunk_roi"], ev["mean_odds"])
     nb = _up(base)
-    need["quarter-Kelly supports the next band"] = target >= nb - 1e-9
+    need["quarter-Kelly supports the next band"] = (
+        ev["shrunk_roi"] is not None and _quarter_kelly(ev["shrunk_roi"], ev["mean_odds"]) >= nb - 1e-9)
     if all(need.values()) and nb > base and not stale:
         t.update(base_fraction=nb, state=band_state(nb))
         rec.update(decision="INCREASE_ONE_STEP", proposed_fraction=nb, proposed_state=t["state"],
@@ -209,14 +241,16 @@ def propose(prev: dict, bets: pd.DataFrame, as_of, v11: pd.DataFrame | None = No
         rec["delta"] = round(rec["proposed_fraction"] - rec["previous_fraction"], 4)
         pol["tracks"][name] = nt
         # one-position-per-fixture ranking key: shrunk edge first, then depth of evidence, then CLV
-        if nt.get("state") in REAL and e:
+        if nt.get("state") in REAL and e and e.get("shrunk_roi") is not None:
             nt["evidence_score"] = round(100 * e["shrunk_roi"] + math.log10(max(e["n"], 1))
                                          + (1.0 if (e.get("clv_median") or -1) > 0 else 0.0), 3)
         decisions.append(rec)
     conv = convergence_leagues(bets, as_of, v11) if v11 is not None else []
     real_leagues = set(bets.loc[bets["track"].isin([k for k, v in pol["tracks"].items()
                                                     if v.get("state") in REAL]), "league"])
-    pol["convergence"] = {"multiplier": prev.get("convergence", {}).get("multiplier", 1.15),
+    # The multiplier is CARRIED from the previous (configured) policy; absent there it stays None and
+    # validate() rejects the proposal, rather than a typed 1.15 being slipped in.
+    pol["convergence"] = {"multiplier": (prev.get("convergence") or {}).get("multiplier"),
                           "leagues": sorted(r["league"] for r in conv if r["qualifies"] and r["league"] in real_leagues)}
     pol["policy_version"] = f"adaptive-{pd.Timestamp(as_of):%Y-%m}"
     pol["evidence_cutoff"] = (pd.Timestamp(as_of) - pd.Timedelta(days=1)).strftime("%Y-%m-%d")
@@ -256,11 +290,16 @@ def validate(policy: dict) -> list[str]:
             if not tlo <= float(m) <= thi:
                 v.append(f"{track} {k} multiplier outside {tlo}-{thi}")
     lo, hi = HARD_BOUNDS["convergence"]
-    if not lo <= policy["convergence"]["multiplier"] <= hi: v.append("convergence multiplier outside 1.00-1.20")
+    cm = (policy.get("convergence") or {}).get("multiplier")
+    if cm is None: v.append("convergence multiplier missing")
+    elif not lo <= cm <= hi: v.append("convergence multiplier outside 1.00-1.20")
     for k, t in policy["tracks"].items():
         if float(t.get("base_fraction", 0)) > MAX_AUTO_BASE + 1e-12: v.append(f"{k} base > 1.50%")
         if float(t.get("max_odds", 0)) > HARD_BOUNDS["max_odds"] + 1e-12: v.append(f"{k} max odds > 2.75")
         if k == "player_props" and float(t.get("base_fraction", 0)) > 0: v.append("player props in the real path")
         if "OVER35" in k and float(t.get("base_fraction", 0)) > 0: v.append(f"{k} is BLOCKED")
-    if "USA MLS" not in policy.get("paper_leagues", []): v.append("USA MLS must stay PAPER")
+    # Every league the registry marks paper must stay paper in the policy (was a typed 'USA MLS').
+    from src.data import v9_config
+    for lg in sorted(v9_config.paper_leagues() - set(policy.get("paper_leagues", []))):
+        v.append(f"{lg} must stay PAPER")
     return v

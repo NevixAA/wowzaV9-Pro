@@ -42,8 +42,9 @@ TEST_FRAC = 0.25
 
 
 def _load(extra: str) -> pd.DataFrame:
+    from src.data import result_guard as rg
     from src.data import season_store as store
-    d = store.read("team_match_stats")
+    d = rg.drop_unplayed(store.read("team_match_stats"), "team_match_stats")
     parts = [d] if not d.empty else []
     for f in glob.glob(extra, recursive=True) if extra else []:
         try:

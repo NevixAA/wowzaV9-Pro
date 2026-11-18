@@ -4,15 +4,16 @@ WHY THIS EXISTS. The Prediction Lab grouped every rolling feature by the RAW tea
 club stored under two source spellings (Hull / Hull City, Sp Gijon / Sporting Gijon, ...) was two
 "teams": the match was counted twice and each copy's rolling history held only half of the club's
 games. v9 already repaired this for the Standard OU2.5 recipe (`src/identity_repair.py`, serving
-recipe `v9_repaired`) with an EVIDENCE-BACKED, LEAGUE-SCOPED alias map (identity/1.0, 142 aliases,
-18 leagues, each pair proven by >= 2 same-day same-score duplicate dates; ambiguous pairs refused).
+recipe `v9_repaired`) with an EVIDENCE-BACKED, LEAGUE-SCOPED alias map (identity/1.1, 143 aliases,
+18 leagues, each pair proven by >= 2 same-day same-score duplicate dates, plus the owner-accepted
+Bray Wanderers -> Bray pair on one such date; ambiguous pairs refused).
 
 WHAT THIS MODULE IS. A faithful port of v9's two identity stages, in v9's order:
 
-  STAGE 1 -- v9 ``data_loader._canonicalise_clubs`` (verbatim port): within ONE league, spellings
-     that normalise to the same affix-free key (``BK Hacken`` / ``Hacken``, ``FC St. Pauli`` /
+  STAGE 1 -- v9 ``data_loader._canonicalise_clubs`` (port): within ONE league, spellings with the
+     same v9 ``team_names.identity_key`` (``BK Hacken`` / ``Hacken``, ``FC St. Pauli`` /
      ``St Pauli``) are one club; the most recently seen spelling wins; score conflicts dropped;
-     richest row kept. The identity/1.0 alias map is expressed in the vocabulary this stage
+     richest row kept. The identity alias map is expressed in the vocabulary this stage
      produces, so it MUST run first.
 
   STAGE 2 -- v9 ``identity_repair.canonicalise_and_dedupe(frame, frozen_map, derive=False)``:
@@ -23,7 +24,7 @@ WHAT THIS MODULE IS. A faithful port of v9's two identity stages, in v9's order:
   3. dedupe on (date, league, home, away) keeping the most complete row.
 
 The map is a byte-identical copy of v9 ``config/standard_ou25_identity_aliases.json`` stored at
-``registry/identity/club_aliases_identity_1.0.json``; its map hash is pinned below and checked on
+``registry/identity/club_aliases_identity_1.1.json``; its map hash is pinned below and checked on
 load, so a silently edited map fails closed instead of changing research results.
 
 WHY NOT ``src/data/club_resolver``. That module answers a DIFFERENT question: mapping OddsAPI-style
@@ -37,8 +38,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import re
-import unicodedata
 from collections import defaultdict
 from pathlib import Path
 
@@ -47,29 +46,29 @@ import pandas as pd
 
 from config import pro_config as cfg
 
-ALIAS_SOURCE_VERSION = "identity/1.0"
-ALIAS_MAP_PATH = cfg.REGISTRY_DIR / "identity" / "club_aliases_identity_1.0.json"
+ALIAS_SOURCE_VERSION = "identity/1.1"
+ALIAS_MAP_PATH = cfg.REGISTRY_DIR / "identity" / "club_aliases_identity_1.1.json"
 # sha256 of json.dumps(map, sort_keys=True, ensure_ascii=False) -- identical to v9's file.
-ALIAS_MAP_SHA256 = "57167e968b5f7abcf26db6170da6ef6639f43f1158de756d721f5dad8a472e42"
-IDENTITY_VERSION = "pro-identity-1.0+identity/1.0"
+# identity/1.1 (v9 data-truth-100, 2026-11-02) = identity/1.0 + the owner-accepted Ireland Premier
+# Division pair Bray Wanderers -> Bray (v9 identity_repair IDENTITY_VERSION v9r-identity-1.1).
+# The 1.0 file stays in registry/identity/ unchanged (frozen) for anything that cites it.
+ALIAS_MAP_SHA256 = "2441d47f5a1bf3bacac6b625548996fb82c438f22ca8e29ade7ff440e0e6ecf3"
+IDENTITY_VERSION = "pro-identity-1.1+identity/1.1"
 
 
-# ---- STAGE 1: verbatim port of v9 src/data_loader.py (_AFFIX_RE, _norm_club, _canonicalise_clubs).
+# ---- STAGE 1: port of v9 src/data_loader.py::_canonicalise_clubs.
 # tests/test_lab_identity.py extracts v9's source and proves identical output.
-_AFFIX_RE = re.compile(
-    r"^(1\.?\s*)?(fc|cf|sc|ac|as|ss|ssc|us|usc|rc|cd|ud|sv|tsv|vfl|vfb|fk|nk|bk|if|ik|afc|cfc)\b"
-    r"|\b(fc|cf|sc|ac|afc|cfc|sk|sv|bk|if|ik|kv|vv)$")
-
-
-def _norm_club(s: str) -> str:
-    t = unicodedata.normalize("NFKD", str(s)).encode("ascii", "ignore").decode().lower().strip()
-    t = re.sub(r"[^a-z0-9 ]+", " ", t)
-    t = re.sub(r"\s+", " ", t).strip()
-    prev = None
-    while prev != t:
-        prev = t
-        t = _AFFIX_RE.sub("", t).strip()
-    return re.sub(r"\s+", " ", t).strip()
+# Since v9 2026-11-02 the club key is v9's src/team_names.identity_key (the resolver's token rule:
+# same identity tokens once club-form words and bare numbers are removed, reserve sides apart), no
+# longer the affix-stripping _norm_club. Loaded from the v9 checkout (src/data/v9_config), never
+# copied, so the two cannot drift; without a v9 checkout this raises FileNotFoundError rather than
+# keying clubs some other way.
+def _identity_key(t: str) -> str:
+    """v9 _canonicalise_clubs._key: identity_key, or the raw spelling when it carries no identity
+    token (such a name is never merged with anything)."""
+    from src.data import v9_config
+    k = v9_config.team_names().identity_key(t)
+    return k if k is not None else f"raw|{t}"
 
 
 def unify_affix_spellings(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
@@ -81,7 +80,7 @@ def unify_affix_spellings(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
         d[c] = d[c].astype(str).str.strip()
     long = pd.concat([d[["league", "home_team", "date"]].rename(columns={"home_team": "t"}),
                       d[["league", "away_team", "date"]].rename(columns={"away_team": "t"})])
-    long["k"] = long["t"].map(_norm_club)
+    long["k"] = long["t"].map(_identity_key)
     long["date"] = pd.to_datetime(long["date"], errors="coerce")
     agg = (long.groupby(["league", "k", "t"])
                .agg(last=("date", "max"), n=("t", "size")).reset_index()
@@ -90,7 +89,7 @@ def unify_affix_spellings(df: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     mapping = {(lg, k): t for lg, k, t in zip(winner["league"], winner["k"], winner["t"])}
     n_multi = int((agg.groupby(["league", "k"])["t"].transform("size") > 1).sum())
     for c in ("home_team", "away_team"):
-        keys = list(zip(d["league"].astype(str), d[c].map(_norm_club)))
+        keys = list(zip(d["league"].astype(str), d[c].map(_identity_key)))
         d[c] = [mapping.get(kk, orig) for kk, orig in zip(keys, d[c])]
     key = (d["date"].astype(str).str.slice(0, 10) + "|" + d["league"].astype(str) + "|"
            + d["home_team"] + "|" + d["away_team"])
@@ -147,8 +146,8 @@ def load_alias_map(path: Path | str | None = None, *, verify_hash: bool = True) 
     amap = {str(lg): {str(k): str(v) for k, v in (m or {}).items()}
             for lg, m in (d.get("map") or {}).items()}
     if verify_hash and map_sha256(amap) != ALIAS_MAP_SHA256:
-        raise IdentityMapError("alias map hash differs from the pinned identity/1.0 hash; a new "
-                               "map needs a new IDENTITY_VERSION, not a silent edit")
+        raise IdentityMapError(f"alias map hash differs from the pinned {ALIAS_SOURCE_VERSION} hash; "
+                               "a new map needs a new IDENTITY_VERSION, not a silent edit")
     validate_alias_map(amap)
     return amap
 
