@@ -1,14 +1,14 @@
-# League scout — 2026-11-19T20:49 UTC
+# League scout — 2026-11-19T22:29 UTC
 
-Results stored: 245,980 · fixtures priced: 7,151 · model frozen: 7,081
+Results stored: 245,985 · fixtures priced: 7,151 · model frozen: 7,081
 
 COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a GENUINE close (<= 60 min before the actual kickoff; Pinnacle, else median of >= 3 books)
 
-Left out by the Data Truth rules: aet_pen_missing_90 4, odds_league_mismatch 0, rescheduled_void 55, settled_priced 6,327, settled_genuine_close 3,756, settled_stale_or_thin_close 2,571, model_identity_mismatch 4, model_frozen_after_actual_kickoff 0, model_not_eligible 46
+Left out by the Data Truth rules: aet_pen_missing_90 4, odds_league_mismatch 0, rescheduled_void 55, settled_priced 6,332, settled_genuine_close 3,756, settled_stale_or_thin_close 2,576, model_identity_mismatch 4, model_frozen_after_actual_kickoff 0, model_not_eligible 46
 
 ## Coverage and staleness (Data Truth R15)
 
-Since 2026-10-08: 8,903 finished watched fixtures, 6,336 with any odds, 3,728 with a genuine close. Stale in-season leagues: 2. No odds offered by the API: 0. Unexplained missing results: 36.
+Since 2026-10-08: 8,908 finished watched fixtures, 6,341 with any odds, 3,728 with a genuine close. Stale in-season leagues: 2. No odds offered by the API: 0. Unexplained missing results: 36.
 
 | League | finished | odds coverage | genuine-close coverage | last price | flags |
 |---|---|---|---|---|---|
