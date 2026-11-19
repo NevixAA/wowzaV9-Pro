@@ -118,3 +118,69 @@ def test_combos_are_recorded_and_settle_on_the_builder_record(v9dir, tmp_path):
     assert fn(r1x2)["y"] == 1 and fn(dict(r1x2, selection="D"))["y"] == 0
     cs = dict(row.to_dict(), model_id="pro_bb_dc", market="correct_score", selection="2-1")
     assert fn(cs)["y"] == 1
+
+
+# ── ledger-only leagues (owner 2026-11-19): grids from v9's ledger-only board, no combo, no album ───
+
+LO_LEAGUES = {"leagues": [{"id": "scottish_premiership", "name": "Scottish Premiership", "aliases": [],
+                           "production_state": "TRAINING_ONLY",
+                           "season_rule": {"type": "start_year", "start_month": 7}}]}
+
+
+@pytest.fixture
+def v9lo(tmp_path, monkeypatch):
+    d = tmp_path / "v9lo"
+    (d / "config").mkdir(parents=True)
+    (d / "output" / "ledger_only").mkdir(parents=True)
+    (d / "config" / "leagues.json").write_text(json.dumps(LO_LEAGUES), encoding="utf-8")
+    pd.DataFrame([
+        {"fixture_id": "9001", "league": "Scottish Premiership", "league_state": "TRAINING_ONLY",
+         "kickoff_utc": "2026-11-21T15:00:00Z", "home_team": "Hearts", "away_team": "St Mirren",
+         "af_home_name": "Heart Of Midlothian", "af_away_name": "ST Mirren", "p_over15": 0.78,
+         "p_over25": 0.55, "p_over35": 0.30, "p_btts": 0.52, "not_scored_reason": ""},
+        {"fixture_id": "9002", "league": "Scottish Premiership", "league_state": "TRAINING_ONLY",
+         "kickoff_utc": "2026-11-21T17:30:00Z", "home_team": "X", "away_team": "Y",
+         "af_home_name": "X FC", "af_away_name": "Y FC", "p_over15": None, "p_over25": None,
+         "p_over35": None, "p_btts": None, "not_scored_reason": "home team: identity not proven"},
+    ]).to_csv(d / "output" / "ledger_only" / "board.csv", index=False)
+    monkeypatch.setenv("PREDICTION_LEDGER_V9_DIR", str(d))
+    monkeypatch.setenv(PL.FLAG_ENV, "true")
+    return d
+
+
+def test_ledger_only_grids_record_every_board_fixture(v9lo, tmp_path):
+    before = {f: (Path(PP.ROOT) / "output" / f).read_bytes() if (Path(PP.ROOT) / "output" / f).exists() else b""
+              for f in ("bet_builder_candidates.csv", "bet_builder_daily.csv")}
+    st = PP.ledger_only_grids(now=NOW, root=tmp_path / "L")
+    assert st["refused"] == 0 and st["written"] > 0
+    parts = PL.partitions(tmp_path / "L")
+    d = pd.concat([PL.read_partition(p) for p in parts])
+    assert set(d["model_id"]) == {PP.GRID_MODEL}
+    assert set(d["fixture_ref"]) == {"af:9001", "af:9002"}
+    assert d["payload_version"].str.endswith("ledger_only:TRAINING_ONLY").all()
+    a = d[d["fixture_ref"] == "af:9001"]
+    assert (a["scored"].astype(str) == "1").all() and set(a["home_team"]) == {"Heart Of Midlothian"}
+    one = a[a["market"] == "1x2"]["probability"].astype(float).sum()
+    assert abs(one - 1.0) < 1e-4
+    b = d[d["fixture_ref"] == "af:9002"]
+    assert (b["scored"].astype(str) == "0").all() and b["not_scored_reason"].str.contains("identity not proven").all()
+    assert PL.validate(tmp_path / "L", slugs=PL.LeagueSlugs(PL.load_leagues(v9lo / "config" / "leagues.json"))) == []
+    # learning only: no combo / album file is written
+    after = {f: (Path(PP.ROOT) / "output" / f).read_bytes() if (Path(PP.ROOT) / "output" / f).exists() else b""
+             for f in before}
+    assert after == before
+    assert not [p for p in parts if PL.parse_partition(tmp_path / "L", p)["model_id"] == PP.COMBO_MODEL]
+    # idempotent
+    assert PP.ledger_only_grids(now=NOW, root=tmp_path / "L")["written"] == 0
+
+
+def test_ledger_only_grids_need_their_own_flag(v9lo, monkeypatch, capsys):
+    monkeypatch.delenv(PP.LEDGER_ONLY_FLAG, raising=False)
+    monkeypatch.setattr(PP, "ledger_only_grids", lambda **k: pytest.fail("must not run with the flag off"))
+    assert PP.main(["ledger-only"]) == 0
+    assert "nothing written" in capsys.readouterr().out
+
+
+def test_bet_builder_never_reads_the_ledger_only_board():
+    src = (Path(PP.ROOT) / "src" / "pipelines" / "bet_builder.py").read_text(encoding="utf-8")
+    assert "ledger_only" not in src
