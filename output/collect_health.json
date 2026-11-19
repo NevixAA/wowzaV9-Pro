@@ -1,13 +1,29 @@
 {
-  "checked_at": "2026-11-19T14:14:56Z",
-  "watermarks_advanced": {},
+  "checked_at": "2026-11-19T14:47:19Z",
+  "watermarks_advanced": {
+    "output/standard_odds_history.csv": "2026-11-19T07:38:45",
+    "output/newformat_odds_dense.csv": "2026-11-19T07:38:45",
+    "output/newformat_odds_history.csv": "2026-11-18T21:34:16Z",
+    "output/standard_sidemarket_odds_history.csv": "2026-11-19T01:18:52Z",
+    "output/book_odds_snapshots.csv": "2026-11-19T07:38:35Z"
+  },
   "season": "season_2026_27",
-  "run_id": "gh44541273287-1",
+  "run_id": "gh44547144772-1",
   "v9_sha": "99b7bfbe1c18",
-  "pro_git_sha": "803d397784bf",
+  "pro_git_sha": "9c7b755cc5f1",
   "dry_run": false,
-  "total_rows": 60519,
+  "total_rows": 60993,
   "per_importer": {
+    "predictions": {
+      "rows": 2020,
+      "tables": {
+        "fixtures": 176,
+        "model_snapshots": 900,
+        "market_snapshots": 592,
+        "feature_snapshots": 176,
+        "signals": 176
+      }
+    },
     "odds_histories": {
       "rows": 468,
       "tables": {
@@ -45,55 +61,51 @@
       }
     },
     "movement_observations": {
-      "rows": 1546,
-      "tables": {
-        "movement_observations": 1546
-      }
+      "rows": 0,
+      "tables": {}
     }
   },
-  "failures": [
-    "predictions: AttributeError: 'DataFrame' object has no attribute 'dtype'"
-  ],
+  "failures": [],
   "store": {
     "fixtures": {
-      "rows": 86400,
-      "partitions": 562,
-      "runs": 562,
+      "rows": 86576,
+      "partitions": 563,
+      "runs": 563,
       "first_dt": "2026-08-17",
       "last_dt": "2026-11-19"
     },
     "model_snapshots": {
-      "rows": 420302,
-      "partitions": 562,
-      "runs": 562,
+      "rows": 421202,
+      "partitions": 563,
+      "runs": 563,
       "first_dt": "2026-08-17",
-      "last_dt": "2026-11-18"
+      "last_dt": "2026-11-19"
     },
     "market_snapshots": {
-      "rows": 448501,
-      "partitions": 656,
-      "runs": 656,
+      "rows": 449561,
+      "partitions": 658,
+      "runs": 658,
       "first_dt": "2026-08-17",
       "last_dt": "2026-11-19"
     },
     "feature_snapshots": {
-      "rows": 86400,
-      "partitions": 562,
-      "runs": 562,
+      "rows": 86576,
+      "partitions": 563,
+      "runs": 563,
       "first_dt": "2026-08-17",
       "last_dt": "2026-11-19"
     },
     "signals": {
-      "rows": 86400,
-      "partitions": 562,
-      "runs": 562,
+      "rows": 86576,
+      "partitions": 563,
+      "runs": 563,
       "first_dt": "2026-08-17",
       "last_dt": "2026-11-19"
     },
     "settlements": {
-      "rows": 491540,
-      "partitions": 194,
-      "runs": 194,
+      "rows": 494254,
+      "partitions": 196,
+      "runs": 196,
       "first_dt": "2026-08-17",
       "last_dt": "2026-11-19"
     },
@@ -105,23 +117,23 @@
       "last_dt": "2026-05-21"
     },
     "clv": {
-      "rows": 405058,
-      "partitions": 96,
-      "runs": 96,
+      "rows": 416549,
+      "partitions": 97,
+      "runs": 97,
       "first_dt": "2026-08-17",
       "last_dt": "2026-11-19"
     },
     "player_props": {
-      "rows": 1646717,
-      "partitions": 96,
-      "runs": 96,
+      "rows": 1689540,
+      "partitions": 97,
+      "runs": 97,
       "first_dt": "2026-08-17",
       "last_dt": "2026-11-19"
     },
     "live_signals": {
-      "rows": 15850,
-      "partitions": 96,
-      "runs": 96,
+      "rows": 16309,
+      "partitions": 97,
+      "runs": 97,
       "first_dt": "2026-08-17",
       "last_dt": "2026-11-19"
     },
@@ -161,9 +173,9 @@
       "last_dt": "2026-11-19"
     },
     "book_odds_snapshots": {
-      "rows": 439108,
-      "partitions": 311,
-      "runs": 311,
+      "rows": 440126,
+      "partitions": 312,
+      "runs": 312,
       "first_dt": "2026-09-09",
       "last_dt": "2026-11-19"
     },
@@ -189,11 +201,11 @@
       "last_dt": "2026-09-03"
     },
     "combo_settlements": {
-      "rows": 54553,
-      "partitions": 128,
-      "runs": 128,
+      "rows": 61921,
+      "partitions": 129,
+      "runs": 129,
       "first_dt": "2026-09-03",
-      "last_dt": "2026-11-18"
+      "last_dt": "2026-11-19"
     },
     "combo_price_snapshots": {
       "rows": 0,
