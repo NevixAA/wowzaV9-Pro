@@ -48,6 +48,10 @@ UNDER_LEGS = {"U25", "U15"}
 # notify and the daily selection hold rows carrying it (Data Truth 2026-11-01).
 GATE_UNAVAILABLE = "GATE_UNAVAILABLE"
 
+# v9's signal tiers that ARE a published tip (go-live board, 2026-11-19). Everything else -
+# AVOID, blank, or a retired SNIPER/MARKSMAN/VALUABLE label - is not a tip.
+TIP_TIERS = frozenset({"QUALIFIED"})
+
 
 def directions() -> pd.DataFrame | None:
     """v9's live O/U tips as rows (league, date, home_team, away_team, bet), or None when
@@ -66,7 +70,18 @@ def directions() -> pd.DataFrame | None:
               f"{GATE_UNAVAILABLE}")
         return None
     b = b.assign(bet=b["bet"].astype(str).str.strip().str.upper())
-    return b[b["bet"].isin(["OVER", "UNDER"])][sorted(need)].reset_index(drop=True)
+    is_tip = b["bet"].isin(["OVER", "UNDER"])
+    if "signal_tier" in b.columns:
+        # v9 go-live board (2026-11-19): the tier IS the publish decision. QUALIFIED = a tip,
+        # AVOID = no tip; SNIPER/MARKSMAN/VALUABLE are retired and are never a tip on the new
+        # board. A row with a direction but a non-tip tier is reported, not gated on.
+        tier = b["signal_tier"].astype(str).str.strip().str.upper()
+        off = is_tip & ~tier.isin(TIP_TIERS)
+        if off.any():
+            print(f"[v9gate] {int(off.sum())} bets.csv row(s) carry a direction but tier "
+                  f"{sorted(tier[off].unique())} - not a published tip, not gated on")
+        is_tip &= tier.isin(TIP_TIERS)
+    return b[is_tip][sorted(need)].reset_index(drop=True)
 
 
 def _direction_of(dirs: pd.DataFrame, league, date, home, away, tn) -> str | None:

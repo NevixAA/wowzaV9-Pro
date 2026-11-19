@@ -286,10 +286,22 @@ def main() -> int:
     nt.send = lambda text, **k: (_sent.append(text) or (True, "sent"))
     nt.STATE_FILE = _pl.Path(_tf.mkdtemp()) / "s.json"
     try:
+        # A fixture that has NOT kicked off. run() drops started matches (drop_started, Data
+        # Truth round 3), and `four` above is dated 2026-01-01 with no kickoff: on that date the
+        # kickoff guard - correctly - removed all ten before the per-match cap was reached, so
+        # this proof measured the wrong gate (0 sent, Bet Builder run 44541280311).
+        _ko = (pd.Timestamp.now(tz="UTC") + pd.Timedelta(days=2)).floor("h")
         many = pd.concat([
             four.to_frame().T.assign(combo_id=f"same{i}", fixture_key="FX1",
-                                     leg2_p=0.59 - i * 0.01)
+                                     leg2_p=0.59 - i * 0.01,
+                                     match_date=_ko.strftime("%Y-%m-%d"),
+                                     kickoff_utc=_ko.isoformat())
             for i in range(10)], ignore_index=True)
+        stale = many.assign(match_date="2026-01-01", kickoff_utc=None,
+                            combo_id=lambda x: "stale" + x["combo_id"])
+        res_stale = nt.run(stale, dry_run=False)
+        check("a started (past-dated) fixture sends nothing", res_stale["sent"] == 0,
+              str(res_stale["sent"]))
         res = nt.run(many, dry_run=False)
         check("ten combos on ONE fixture send exactly one tip", res["sent"] == 1, str(res["sent"]))
         check("...and the rest are attributed to the per-match cap",
