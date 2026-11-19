@@ -186,8 +186,9 @@ def settle(r: pd.DataFrame, v9: str) -> pd.DataFrame:
     fs = sorted(glob.glob(str(cfg.BASE_DIR / "data" / "season_2026_27" / "team_match_stats" / "**" / "*.parquet"), recursive=True))
     if not fs or not len(r):
         return r
-    res = pd.concat([pd.read_parquet(f, columns=["league", "match_date", "home_team", "away_team", "home_goals", "away_goals"])
-                     for f in fs], ignore_index=True).dropna(subset=["home_goals", "away_goals"])
+    # Kickoff guard (result_guard): a score stored before its own kickoff never settles a row.
+    from src.data import result_guard as rg
+    res = rg.played_team_results(["league", "match_date", "home_team", "away_team", "home_goals", "away_goals"])
     res["md"] = pd.to_datetime(res["match_date"]).dt.normalize()
     r = r.copy()
     todo = r["result"].isna() | ~r["result"].isin(["WIN", "LOSS"])

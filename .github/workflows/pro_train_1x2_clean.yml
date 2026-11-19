@@ -1,0 +1,76 @@
+name: Pro 1X2 clean retrain (monthly, paper)
+
+# Owner 2026-11-09 (reports/P5_1X2_REVIEW.md): the served 1X2 opinion is a multinomial logistic on
+# v9's REPAIRED history, refit MONTHLY, plus a blend with the pre-kickoff price; the 1X2 research
+# cells (LEAGUE_WIDE Eredivisie draws) are re-scored in the same run. PAPER only: nothing here
+# stakes or sends anything.
+#
+# OFF UNTIL GO-LIVE: the job runs only when the repository variable PRO_1X2_CLEAN_ENABLED is 'true'.
+# It reads v9's DEFAULT branch, which must carry the repaired loader (data-truth-100 merged) - the
+# trained model records v9's feature fingerprint and the paper record refuses to serve under a
+# different one.
+#
+# Commits output/model_1x2_clean.pkl, output/model_1x2_clean.json, output/onex2_research_cells.json.
+
+on:
+  schedule:
+    # 2nd of each month, 04:23 UTC: the month's results are in, off the hour and clear of other crons
+    - cron: '23 4 2 * *'
+  workflow_dispatch:
+
+concurrency:
+  group: pro-train-1x2-clean
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  train:
+    if: vars.PRO_1X2_CLEAN_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check out v9 (read-only, committed repaired history)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Pro first, then v9: v9's scikit-learn pin is the one the model is trained and served under.
+      - run: pip install -r requirements.txt && pip install -r _v9/requirements.txt
+
+      - name: Train on v9's repaired history (network blocked inside the v9 bridge)
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
+        run: |
+          set -o pipefail
+          python -m src.pipelines.train_1x2_clean 2>&1 | tee train.txt
+
+      - name: Publish the summary
+        if: always()
+        run: |
+          { echo "## 1X2 clean retrain"; echo '```'; tail -n 30 train.txt 2>/dev/null; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit the model and the research-cell evidence
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -f output/model_1x2_clean.pkl output/model_1x2_clean.json output/onex2_research_cells.json
+          git diff --staged --quiet && { echo "no change"; exit 0; }
+          git commit -m "pro: 1x2 clean retrain $(date -u '+%Y-%m-%d')"
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin main && git push && exit 0
+            echo "push race - retry $i"; sleep $((RANDOM % 5 + 3))
+          done
+          echo "::error title=push failed::the retrained 1X2 model was not persisted"
+          exit 1

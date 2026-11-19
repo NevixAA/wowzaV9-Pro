@@ -37,7 +37,18 @@ V9_LOCAL = Path(os.getenv("V9_LOCAL") or (BASE_DIR.parent / "v9"))
 # unauthenticated raw endpoint rate-limits.
 V11_REPO = os.getenv("V11_REPO", "NevixAA/wowza_v11")
 V11_RAW_BASE = f"https://raw.githubusercontent.com/{V11_REPO}/main"
-V11_LOCAL = Path(os.getenv("V11_LOCAL") or (BASE_DIR.parent / "wowza-v11"))
+def _sibling_checkout(*names: str) -> Path:
+    """First existing sibling folder among `names`, else the first name (the repo's own spelling).
+    The v11 repository is `wowza_v11`; older laptops cloned it as `wowza-v11`. Hardcoding one
+    spelling made every reader of V11_LOCAL (and the contract validator) report v11 unreadable on
+    a clone named the other way (Data Truth round 3)."""
+    for n in names:
+        if (BASE_DIR.parent / n).exists():
+            return BASE_DIR.parent / n
+    return BASE_DIR.parent / names[0]
+
+
+V11_LOCAL = Path(os.getenv("V11_LOCAL") or _sibling_checkout("wowza_v11", "wowza-v11"))
 
 
 # ── season derivation ─────────────────────────────────────────────────────────
@@ -262,8 +273,16 @@ DEFAULT_DEPLOYMENT_MODE = "RESEARCH"
 # Anything beyond combo tips needs its own decision, not this flag.
 PRO_MAY_NOTIFY = True
 
-# PAPER LEAGUES — mirrors v9's config.PAPER_LEAGUES (owner, 2026-10-07: USA MLS is paper only, not
-# sent, not counted in any KPI). v9 enforced it; Pro's 1X2 and Bet Builder senders did not, and
-# kept sending MLS tips (6 of the first 26 1X2 tips). tests/test_tip_scoreboard.py checks this set
-# against v9's when a v9 checkout is present, so the two cannot drift silently.
-PAPER_LEAGUES: frozenset = frozenset({"USA MLS"})
+# PAPER LEAGUES are NOT typed here any more (Data Truth 2026-11-01). They come from v9's league
+# registry (config/leagues.json `paper`) through src/data/v9_config.paper_leagues(), and senders
+# drop them with v9_config.drop_paper_leagues(), which matches canonical names so an alias
+# spelling of a paper league cannot slip through. A missing v9 checkout fails loudly.
+# `cfg.PAPER_LEAGUES` stays readable for frozen modules (src/analytics/longshot_plan.py is
+# hash-registered and cannot be edited): it is resolved lazily from the same registry.
+
+
+def __getattr__(name):
+    if name == "PAPER_LEAGUES":
+        from src.data import v9_config
+        return v9_config.paper_leagues()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

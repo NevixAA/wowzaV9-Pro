@@ -1,0 +1,5439 @@
+{
+  "rule": {
+    "version": "SPC-1",
+    "refit": "calendar month, expanding window (all earlier matches, Dixon-Coles time decay)",
+    "min_league_matches": 300,
+    "min_team_matches": 8,
+    "half_life_days": 180.0,
+    "candidate_quantile": 0.9,
+    "sensitivity_quantiles": [
+      0.95
+    ],
+    "min_prior_preds": 200,
+    "min_candidate_events": 30,
+    "bootstrap": 2000,
+    "family_alpha": 0.05
+  },
+  "rows": 56861,
+  "leagues": 32,
+  "date_min": "2019-09-01",
+  "date_max": "2026-10-30",
+  "skill": {
+    "ge5": {
+      "n": 56861,
+      "events": 7814,
+      "rate": 0.13742283814917078,
+      "mean_p": 0.13868080942217204,
+      "mean_base": 0.1312103993539751,
+      "brier_model": 0.11838589715976705,
+      "brier_base": 0.11759846134741857,
+      "brier_skill": -0.0066959703666715775,
+      "brier_diff": 0.0007874358123484792,
+      "brier_diff_ci95": [
+        0.0003159413574974723,
+        0.0012513584001841167
+      ],
+      "logloss_diff": 0.0029948680552564144
+    },
+    "ge6": {
+      "n": 56861,
+      "events": 3160,
+      "rate": 0.05557411934366262,
+      "mean_p": 0.061798409746418585,
+      "mean_base": 0.05172501174590395,
+      "brier_model": 0.05266285268826522,
+      "brier_base": 0.05224202839191302,
+      "brier_skill": -0.008055282486262305,
+      "brier_diff": 0.00042082429635219895,
+      "brier_diff_ci95": [
+        0.00018309342991517784,
+        0.0006428396672588158
+      ],
+      "logloss_diff": 0.0009345418112609643
+    },
+    "ge7": {
+      "n": 56861,
+      "events": 1147,
+      "rate": 0.02017199838201931,
+      "mean_p": 0.024945055408744633,
+      "mean_base": 0.01939491243384345,
+      "brier_model": 0.019949352285222124,
+      "brier_base": 0.01970988857426717,
+      "brier_skill": -0.012149419823082708,
+      "brier_diff": 0.0002394637109549572,
+      "brier_diff_ci95": [
+        0.00014652266013472122,
+        0.00032991002089136366
+      ],
+      "logloss_diff": 0.0008261244290815395
+    },
+    "team_ge4": {
+      "n": 56861,
+      "events": 5915,
+      "rate": 0.10402560630308999,
+      "mean_p": 0.11480190445296871,
+      "mean_base": 0.10076858070206167,
+      "brier_model": 0.09235168215069242,
+      "brier_base": 0.09255252302898179,
+      "brier_skill": 0.0021700205647173787,
+      "brier_diff": -0.00020084087828933756,
+      "brier_diff_ci95": [
+        -0.0006640953545116285,
+        0.0002682835601500151
+      ],
+      "logloss_diff": -0.0023142089613352786
+    },
+    "margin_ge4": {
+      "n": 56861,
+      "events": 2882,
+      "rate": 0.050685003781150526,
+      "mean_p": 0.05575708753939207,
+      "mean_base": 0.048879425617286414,
+      "brier_model": 0.04749653724392438,
+      "brier_base": 0.047940512094360184,
+      "brier_skill": 0.009260953440838104,
+      "brier_diff": -0.000443974850435801,
+      "brier_diff_ci95": [
+        -0.0007261363484247374,
+        -0.00017567137638483223
+      ],
+      "logloss_diff": -0.004407790721998077
+    },
+    "nil_nil": {
+      "n": 56861,
+      "events": 4267,
+      "rate": 0.07504264786057227,
+      "mean_p": 0.08578070503495484,
+      "mean_base": 0.07751709791144511,
+      "brier_model": 0.069921657938163,
+      "brier_base": 0.06923514578690534,
+      "brier_skill": -0.009915659791785991,
+      "brier_diff": 0.0006865121512576589,
+      "brier_diff_ci95": [
+        0.0004883277571989443,
+        0.0008796756541269032
+      ],
+      "logloss_diff": 0.002571182967136404
+    },
+    "tot_le1": {
+      "n": 56861,
+      "events": 14493,
+      "rate": 0.2548847188758552,
+      "mean_p": 0.27071748215291136,
+      "mean_base": 0.26390774917004206,
+      "brier_model": 0.19027279018189378,
+      "brier_base": 0.18839344934840407,
+      "brier_skill": -0.00997561666814728,
+      "brier_diff": 0.001879340833489716,
+      "brier_diff_ci95": [
+        0.001205098027146306,
+        0.002541915157048763
+      ],
+      "logloss_diff": 0.004319589629440214
+    }
+  },
+  "candidates": {
+    "ge5@0.9": {
+      "quantile": 0.9,
+      "candidates": 5506,
+      "events": 1082,
+      "hit_rate": 0.1965128950236106,
+      "mean_base": 0.13129626660568647,
+      "lift": 1.4967135022489633,
+      "mean_p": 0.28348995952021816,
+      "hit_minus_base": 0.06521662841792412,
+      "hit_minus_base_ci95": [
+        0.05415065291712391,
+        0.07601914096627836
+      ],
+      "p_one_sided": 0.0004997501249375312,
+      "leagues": 32,
+      "verdict": "SKILL_SHOWN",
+      "p_holm": 0.0079960019990005
+    },
+    "ge6@0.9": {
+      "quantile": 0.9,
+      "candidates": 5507,
+      "events": 496,
+      "hit_rate": 0.0900671872162702,
+      "mean_base": 0.05130951391062787,
+      "lift": 1.755370112707584,
+      "mean_p": 0.15213921232470087,
+      "hit_minus_base": 0.03875767330564232,
+      "hit_minus_base_ci95": [
+        0.031098466673164005,
+        0.046247918104750665
+      ],
+      "p_one_sided": 0.0004997501249375312,
+      "leagues": 32,
+      "verdict": "SKILL_SHOWN",
+      "p_holm": 0.0079960019990005
+    },
+    "ge7@0.9": {
+      "quantile": 0.9,
+      "candidates": 5507,
+      "events": 177,
+      "hit_rate": 0.03214091156709642,
+      "mean_base": 0.019096053044038823,
+      "lift": 1.6831180502574998,
+      "mean_p": 0.07325137373548736,
+      "hit_minus_base": 0.013044858523057602,
+      "hit_minus_base_ci95": [
+        0.00854877499477464,
+        0.017339336824987242
+      ],
+      "p_one_sided": 0.0004997501249375312,
+      "leagues": 32,
+      "verdict": "SKILL_SHOWN",
+      "p_holm": 0.0079960019990005
+    },
+    "team_ge4@0.9": {
+      "quantile": 0.9,
+      "candidates": 5394,
+      "events": 966,
+      "hit_rate": 0.17908787541713014,
+      "mean_base": 0.10007504667011864,
+      "lift": 1.78953576716746,
+      "mean_p": 0.2582623698861557,
+      "hit_minus_base": 0.07901282874701152,
+      "hit_minus_base_ci95": [
+        0.06904860193448527,
+        0.0898411775398939
+      ],
+      "p_one_sided": 0.0004997501249375312,
+      "leagues": 32,
+      "verdict": "SKILL_SHOWN",
+      "p_holm": 0.0079960019990005
+    },
+    "margin_ge4@0.9": {
+      "quantile": 0.9,
+      "candidates": 5264,
+      "events": 569,
+      "hit_rate": 0.10809270516717326,
+      "mean_base": 0.04834116381401426,
+      "lift": 2.236038536081683,
+      "mean_p": 0.15215434179208237,
+      "hit_minus_base": 0.059751541353158986,
+      "hit_minus_base_ci95": [
+        0.05175079578990209,
+        0.06794852189001727
+      ],
+      "p_one_sided": 0.0004997501249375312,
+      "leagues": 32,
+      "verdict": "SKILL_SHOWN",
+      "p_holm": 0.0079960019990005
+    },
+    "nil_nil@0.9": {
+      "quantile": 0.9,
+      "candidates": 4567,
+      "events": 448,
+      "hit_rate": 0.09809502955988614,
+      "mean_base": 0.07847264783064074,
+      "lift": 1.2500537737887258,
+      "mean_p": 0.16721538491390028,
+      "hit_minus_base": 0.0196223817292454,
+      "hit_minus_base_ci95": [
+        0.011262524107502902,
+        0.02822343099936182
+      ],
+      "p_one_sided": 0.0004997501249375312,
+      "leagues": 32,
+      "verdict": "SKILL_SHOWN",
+      "p_holm": 0.0079960019990005
+    },
+    "tot_le1@0.9": {
+      "quantile": 0.9,
+      "candidates": 4277,
+      "events": 1365,
+      "hit_rate": 0.3191489361702128,
+      "mean_base": 0.2648858995731241,
+      "lift": 1.2048543795065578,
+      "mean_p": 0.4469386982299585,
+      "hit_minus_base": 0.05426303659708871,
+      "hit_minus_base_ci95": [
+        0.0398908645182153,
+        0.06790775322709416
+      ],
+      "p_one_sided": 0.0004997501249375312,
+      "leagues": 32,
+      "verdict": "SKILL_SHOWN",
+      "p_holm": 0.0079960019990005
+    },
+    "cs_unusual@0.9": {
+      "quantile": 0.9,
+      "candidates": 6459,
+      "events": 67,
+      "hit_rate": 0.010373122774423286,
+      "mean_base": 0.0010897356425284362,
+      "lift": 9.518935023869886,
+      "mean_p": 0.013666994556040804,
+      "hit_minus_base": 0.00928338713189485,
+      "hit_minus_base_ci95": [
+        0.006942151849057636,
+        0.012016923732285068
+      ],
+      "p_one_sided": 0.0004997501249375312,
+      "leagues": 32,
+      "verdict": "SKILL_SHOWN",
+      "p_holm": 0.0079960019990005
+    },
+    "ge5@0.95": {
+      "quantile": 0.95,
+      "candidates": 2881,
+      "events": 596,
+      "hit_rate": 0.206872613675807,
+      "mean_base": 0.13062225458239413,
+      "lift": 1.5837470753907066,
+      "mean_p": 0.3181754913494209,
+      "hit_minus_base": 0.0762503590934129,
+      "hit_minus_base_ci95": [
+        0.061854343612238245,
+        0.0910157093512299
+      ],
+      "p_one_sided": 0.0004997501249375312,
+      "leagues": 32,
+      "verdict": "SKILL_SHOWN",
+      "p_holm": 0.0079960019990005
+    },
+    "ge6@0.95": {
+      "quantile": 0.95,
+      "candidates": 2879,
+      "events": 265,
+      "hit_rate": 0.09204584925321292,
+      "mean_base": 0.050879813815493044,
+      "lift": 1.8090838458450629,
+      "mean_p": 0.1777150770682101,
+      "hit_minus_base": 0.04116603543771988,
+      "hit_minus_base_ci95": [
+        0.030146922623803692,
+        0.05235937180468795
+      ],
+      "p_one_sided": 0.0004997501249375312,
+      "leagues": 32,
+      "verdict": "SKILL_SHOWN",
+      "p_holm": 0.0079960019990005
+    },
+    "ge7@0.95": {
+      "quantile": 0.95,
+      "candidates": 2880,
+      "events": 100,
+      "hit_rate": 0.034722222222222224,
+      "mean_base": 0.01886398338167129,
+      "lift": 1.8406622567298903,
+      "mean_p": 0.08919389313581097,
+      "hit_minus_base": 0.015858238840550935,
+      "hit_minus_base_ci95": [
+        0.00933140191779929,
+        0.022173855188378663
+      ],
+      "p_one_sided": 0.0004997501249375312,
+      "leagues": 32,
+      "verdict": "SKILL_SHOWN",
+      "p_holm": 0.0079960019990005
+    },
+    "team_ge4@0.95": {
+      "quantile": 0.95,
+      "candidates": 2822,
+      "events": 564,
+      "hit_rate": 0.1998582565556343,
+      "mean_base": 0.09949542017051534,
+      "lift": 2.008718152183458,
+      "mean_p": 0.2969456659154976,
+      "hit_minus_base": 0.10036283638511896,
+      "hit_minus_base_ci95": [
+        0.08590854234014203,
+        0.1151765668104148
+      ],
+      "p_one_sided": 0.0004997501249375312,
+      "leagues": 32,
+      "verdict": "SKILL_SHOWN",
+      "p_holm": 0.0079960019990005
+    },
+    "margin_ge4@0.95": {
+      "quantile": 0.95,
+      "candidates": 2662,
+      "events": 349,
+      "hit_rate": 0.1311044327573253,
+      "mean_base": 0.04828573596991446,
+      "lift": 2.7151793407273104,
+      "mean_p": 0.1867249848491671,
+      "hit_minus_base": 0.08281869678741087,
+      "hit_minus_base_ci95": [
+        0.06957808781720112,
+        0.0964380738478817
+      ],
+      "p_one_sided": 0.0004997501249375312,
+      "leagues": 32,
+      "verdict": "SKILL_SHOWN",
+      "p_holm": 0.0079960019990005
+    },
+    "nil_nil@0.95": {
+      "quantile": 0.95,
+      "candidates": 2374,
+      "events": 242,
+      "hit_rate": 0.10193765796124685,
+      "mean_base": 0.07815513069331453,
+      "lift": 1.3042989891636978,
+      "mean_p": 0.1864523192279606,
+      "hit_minus_base": 0.023782527267932303,
+      "hit_minus_base_ci95": [
+        0.012060394893171752,
+        0.03589195297233577
+      ],
+      "p_one_sided": 0.0004997501249375312,
+      "leagues": 32,
+      "verdict": "SKILL_SHOWN",
+      "p_holm": 0.0079960019990005
+    },
+    "tot_le1@0.95": {
+      "quantile": 0.95,
+      "candidates": 2182,
+      "events": 715,
+      "hit_rate": 0.32768102658111825,
+      "mean_base": 0.2642354886094144,
+      "lift": 1.240109828946888,
+      "mean_p": 0.4806562150515687,
+      "hit_minus_base": 0.06344553797170382,
+      "hit_minus_base_ci95": [
+        0.044258776976735324,
+        0.08392749492537689
+      ],
+      "p_one_sided": 0.0004997501249375312,
+      "leagues": 32,
+      "verdict": "SKILL_SHOWN",
+      "p_holm": 0.0079960019990005
+    },
+    "cs_unusual@0.95": {
+      "quantile": 0.95,
+      "candidates": 3624,
+      "events": 38,
+      "hit_rate": 0.010485651214128035,
+      "mean_base": 0.0010259484998507125,
+      "lift": 10.220445973315249,
+      "mean_p": 0.016046661709763783,
+      "hit_minus_base": 0.009459702714277323,
+      "hit_minus_base_ci95": [
+        0.006122974305764546,
+        0.012764765019093705
+      ],
+      "p_one_sided": 0.0004997501249375312,
+      "leagues": 32,
+      "verdict": "SKILL_SHOWN",
+      "p_holm": 0.0079960019990005
+    }
+  },
+  "per_league": {
+    "Argentina Primera Division": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 102,
+        "events": 9,
+        "hit_rate": 0.08823529411764706,
+        "mean_base": 0.10737757588089125,
+        "lift": 0.8217292427566274,
+        "mean_p": 0.24518972138078013,
+        "hit_minus_base": -0.019142281763244177,
+        "hit_minus_base_ci95": [
+          -0.06810921552146497,
+          0.040318180886566676
+        ],
+        "p_one_sided": 0.7566216891554223,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0016335475843941452
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 102,
+        "events": 4,
+        "hit_rate": 0.0392156862745098,
+        "mean_base": 0.04367994165710123,
+        "lift": 0.8977962146186692,
+        "mean_p": 0.1235071818100166,
+        "hit_minus_base": -0.00446425538259142,
+        "hit_minus_base_ci95": [
+          -0.03457696824588938,
+          0.033834959155595215
+        ],
+        "p_one_sided": 0.6371814092953523,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0006365815709533693
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 102,
+        "events": 0,
+        "hit_rate": 0.0,
+        "mean_base": 0.01333149506047878,
+        "lift": 0.0,
+        "mean_p": 0.05519351274389393,
+        "hit_minus_base": -0.01333149506047878,
+        "hit_minus_base_ci95": [
+          -0.013749849665609926,
+          -0.012878215932187022
+        ],
+        "p_one_sided": 1.0,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00016192976241065986
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 140,
+        "events": 10,
+        "hit_rate": 0.07142857142857142,
+        "mean_base": 0.07926082853815544,
+        "lift": 0.9011837593167016,
+        "mean_p": 0.2066976737843777,
+        "hit_minus_base": -0.00783225710958401,
+        "hit_minus_base_ci95": [
+          -0.04607831647285805,
+          0.03851171757511624
+        ],
+        "p_one_sided": 0.6511744127936032,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0011096198555625317
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 177,
+        "events": 7,
+        "hit_rate": 0.03954802259887006,
+        "mean_base": 0.033960244578479286,
+        "lift": 1.1645388038203872,
+        "mean_p": 0.1142463665953384,
+        "hit_minus_base": 0.005587778020390775,
+        "hit_minus_base_ci95": [
+          -0.01839916428106123,
+          0.034738651845089334
+        ],
+        "p_one_sided": 0.3713143428285857,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00039589474743416836
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 483,
+        "events": 74,
+        "hit_rate": 0.15320910973084886,
+        "mean_base": 0.11220930050603868,
+        "lift": 1.3653869067885662,
+        "mean_p": 0.21409733822722665,
+        "hit_minus_base": 0.040999809224810176,
+        "hit_minus_base_ci95": [
+          0.009497344485980904,
+          0.06978925255574116
+        ],
+        "p_one_sided": 0.005497251374312844,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0008012629036796785
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 389,
+        "events": 158,
+        "hit_rate": 0.40616966580976865,
+        "mean_base": 0.3425950492198653,
+        "lift": 1.1855678204768905,
+        "mean_p": 0.5231518139523699,
+        "hit_minus_base": 0.06357461658990339,
+        "hit_minus_base_ci95": [
+          0.015002396871337507,
+          0.11345343194590428
+        ],
+        "p_one_sided": 0.0069965017491254375,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0032424553871362176
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 260,
+        "events": 2,
+        "hit_rate": 0.007692307692307693,
+        "mean_base": 0.0007559918744906287,
+        "lift": 10.175119537482605,
+        "mean_p": 0.008498126015369829,
+        "hit_minus_base": 0.006936315817817065,
+        "hit_minus_base_ci95": [
+          -0.0007906299295190851,
+          0.018594988925365832
+        ],
+        "p_one_sided": 0.13793103448275862,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -2.7026387165424373e-05
+      }
+    },
+    "Austrian Bundesliga": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 31,
+        "events": 7,
+        "hit_rate": 0.22580645161290322,
+        "mean_base": 0.18605520079975588,
+        "lift": 1.2136529946073913,
+        "mean_p": 0.3251639926138232,
+        "hit_minus_base": 0.03975125081314731,
+        "hit_minus_base_ci95": [
+          -0.09230079998838733,
+          0.20258411532516382
+        ],
+        "p_one_sided": 0.28535732133933034,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0020986188970834293
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 31,
+        "events": 5,
+        "hit_rate": 0.16129032258064516,
+        "mean_base": 0.08948375040751946,
+        "lift": 1.8024537622318038,
+        "mean_p": 0.1801519932261457,
+        "hit_minus_base": 0.07180657217312571,
+        "hit_minus_base_ci95": [
+          -0.056273419477959094,
+          0.23279345996418152
+        ],
+        "p_one_sided": 0.09495252373813093,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0003916085419794338
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 31,
+        "events": 3,
+        "hit_rate": 0.0967741935483871,
+        "mean_base": 0.027071128813980504,
+        "lift": 3.5748119043491613,
+        "mean_p": 0.08881345196446187,
+        "hit_minus_base": 0.0697030647344066,
+        "hit_minus_base_ci95": [
+          -0.02736529136564136,
+          0.19902931943741828
+        ],
+        "p_one_sided": 0.04397801099450275,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0002065165939124839
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 49,
+        "events": 16,
+        "hit_rate": 0.32653061224489793,
+        "mean_base": 0.16025996767760325,
+        "lift": 2.0375057912265597,
+        "mean_p": 0.3081783254579247,
+        "hit_minus_base": 0.1662706445672947,
+        "hit_minus_base_ci95": [
+          0.041231261042741545,
+          0.2989652606170142
+        ],
+        "p_one_sided": 0.004997501249375313,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.00444537695961661
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 60,
+        "events": 15,
+        "hit_rate": 0.25,
+        "mean_base": 0.09156462168527717,
+        "lift": 2.730312159856801,
+        "mean_p": 0.19834332514640865,
+        "hit_minus_base": 0.15843537831472285,
+        "hit_minus_base_ci95": [
+          0.05419055006548549,
+          0.27517055175229654
+        ],
+        "p_one_sided": 0.0024987506246876563,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0027353303109291594
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 133,
+        "events": 9,
+        "hit_rate": 0.06766917293233082,
+        "mean_base": 0.06050290909536012,
+        "lift": 1.1184449466004316,
+        "mean_p": 0.1355112808756522,
+        "hit_minus_base": 0.007166263836970688,
+        "hit_minus_base_ci95": [
+          -0.030938644711200444,
+          0.05460995300316
+        ],
+        "p_one_sided": 0.39280359820089955,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0005699755883769087
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 136,
+        "events": 41,
+        "hit_rate": 0.3014705882352941,
+        "mean_base": 0.19446718670941404,
+        "lift": 1.5502388517903112,
+        "mean_p": 0.3584625030616625,
+        "hit_minus_base": 0.10700340152588005,
+        "hit_minus_base_ci95": [
+          0.030944573050120345,
+          0.18189787160634108
+        ],
+        "p_one_sided": 0.0029985007496251873,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0014738480363294488
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 62,
+        "events": 0,
+        "hit_rate": 0.0,
+        "mean_base": 0.003235650323442033,
+        "lift": 0.0,
+        "mean_p": 0.02409614998183745,
+        "hit_minus_base": -0.003235650323442033,
+        "hit_minus_base_ci95": [
+          -0.0035654708624546423,
+          -0.002885443591633356
+        ],
+        "p_one_sided": 1.0,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00011655769209874458
+      }
+    },
+    "Belgian First Division A": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 101,
+        "events": 25,
+        "hit_rate": 0.24752475247524752,
+        "mean_base": 0.1628290821826905,
+        "lift": 1.5201507565923047,
+        "mean_p": 0.35815997011511785,
+        "hit_minus_base": 0.08469567029255702,
+        "hit_minus_base_ci95": [
+          0.0053746034981493485,
+          0.17381236472858888
+        ],
+        "p_one_sided": 0.01999000499750125,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0003898430321476621
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 101,
+        "events": 11,
+        "hit_rate": 0.10891089108910891,
+        "mean_base": 0.06470202164601022,
+        "lift": 1.683268749854044,
+        "mean_p": 0.20630240655669152,
+        "hit_minus_base": 0.044208869443098694,
+        "hit_minus_base_ci95": [
+          -0.015096501624509026,
+          0.10864080155380283
+        ],
+        "p_one_sided": 0.06696651674162919,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0009656610852452193
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 101,
+        "events": 6,
+        "hit_rate": 0.0594059405940594,
+        "mean_base": 0.025115849457937177,
+        "lift": 2.3652769815151835,
+        "mean_p": 0.10616216401889121,
+        "hit_minus_base": 0.034290091136122226,
+        "hit_minus_base_ci95": [
+          -0.005591250012500358,
+          0.08398369612787006
+        ],
+        "p_one_sided": 0.05247376311844078,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0002832765949904622
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 127,
+        "events": 29,
+        "hit_rate": 0.2283464566929134,
+        "mean_base": 0.1266717428703305,
+        "lift": 1.8026629421738027,
+        "mean_p": 0.3234564484287336,
+        "hit_minus_base": 0.10167471382258288,
+        "hit_minus_base_ci95": [
+          0.03257842264171973,
+          0.17246151244515867
+        ],
+        "p_one_sided": 0.0014992503748125937,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0006201910965153234
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 168,
+        "events": 17,
+        "hit_rate": 0.10119047619047619,
+        "mean_base": 0.062097978714709325,
+        "lift": 1.6295293065071523,
+        "mean_p": 0.18426128530856242,
+        "hit_minus_base": 0.039092497475766874,
+        "hit_minus_base_ci95": [
+          -0.002649214286221009,
+          0.08364204261819451
+        ],
+        "p_one_sided": 0.038980509745127435,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00021857265142844487
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 268,
+        "events": 21,
+        "hit_rate": 0.07835820895522388,
+        "mean_base": 0.05125828548855007,
+        "lift": 1.52869352161081,
+        "mean_p": 0.12306021725759413,
+        "hit_minus_base": 0.02709992346667381,
+        "hit_minus_base_ci95": [
+          -0.001906727963212713,
+          0.058683925870254026
+        ],
+        "p_one_sided": 0.0384807596201899,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0002516895932181305
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 185,
+        "events": 53,
+        "hit_rate": 0.2864864864864865,
+        "mean_base": 0.20642059504866436,
+        "lift": 1.38787743741823,
+        "mean_p": 0.37801109470300265,
+        "hit_minus_base": 0.08006589143782217,
+        "hit_minus_base_ci95": [
+          0.009383268554221462,
+          0.15124457722990886
+        ],
+        "p_one_sided": 0.009995002498750625,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 7.832694675058178e-05
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 173,
+        "events": 1,
+        "hit_rate": 0.005780346820809248,
+        "mean_base": 0.0014398128962749876,
+        "lift": 4.014651372941494,
+        "mean_p": 0.017034215912282824,
+        "hit_minus_base": 0.004340533924534262,
+        "hit_minus_base_ci95": [
+          -0.0015172856894186855,
+          0.016500607868744962
+        ],
+        "p_one_sided": 0.3823088455772114,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -6.9561773132237e-06
+      }
+    },
+    "Brazil Serie A": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 224,
+        "events": 29,
+        "hit_rate": 0.12946428571428573,
+        "mean_base": 0.08610779483437632,
+        "lift": 1.5035141239338816,
+        "mean_p": 0.23146307674716912,
+        "hit_minus_base": 0.0433564908799094,
+        "hit_minus_base_ci95": [
+          0.0014065862875945478,
+          0.0886580162379768
+        ],
+        "p_one_sided": 0.019490254872563718,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.001086470698042715
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 224,
+        "events": 12,
+        "hit_rate": 0.05357142857142857,
+        "mean_base": 0.03656600626805158,
+        "lift": 1.4650609688877878,
+        "mean_p": 0.11578663698271564,
+        "hit_minus_base": 0.017005422303376986,
+        "hit_minus_base_ci95": [
+          -0.00986574504847234,
+          0.048733532053970366
+        ],
+        "p_one_sided": 0.13043478260869565,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0001703631799041703
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 224,
+        "events": 4,
+        "hit_rate": 0.017857142857142856,
+        "mean_base": 0.014198643336996187,
+        "lift": 1.2576654285423194,
+        "mean_p": 0.05204571878816576,
+        "hit_minus_base": 0.0036584995201466718,
+        "hit_minus_base_ci95": [
+          -0.00991635159946341,
+          0.022366582577522394
+        ],
+        "p_one_sided": 0.4287856071964018,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00020025077965821314
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 255,
+        "events": 34,
+        "hit_rate": 0.13333333333333333,
+        "mean_base": 0.07034967081902707,
+        "lift": 1.8952943458162057,
+        "mean_p": 0.206109540020163,
+        "hit_minus_base": 0.06298366251430625,
+        "hit_minus_base_ci95": [
+          0.02207103505702335,
+          0.10339553515390533
+        ],
+        "p_one_sided": 0.001999000499750125,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.000870765425382799
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 261,
+        "events": 18,
+        "hit_rate": 0.06896551724137931,
+        "mean_base": 0.030998998591967555,
+        "lift": 2.224765972254653,
+        "mean_p": 0.1188142068457438,
+        "hit_minus_base": 0.03796651864941175,
+        "hit_minus_base_ci95": [
+          0.01020608474650389,
+          0.07001379555301543
+        ],
+        "p_one_sided": 0.004997501249375313,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00010801410330468008
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 151,
+        "events": 13,
+        "hit_rate": 0.08609271523178808,
+        "mean_base": 0.09098398772022538,
+        "lift": 0.9462402933637301,
+        "mean_p": 0.20503659037409078,
+        "hit_minus_base": -0.004891272488437293,
+        "hit_minus_base_ci95": [
+          -0.04886321420554227,
+          0.044432604123434666
+        ],
+        "p_one_sided": 0.6091954022988506,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0009258346531145996
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 167,
+        "events": 62,
+        "hit_rate": 0.3712574850299401,
+        "mean_base": 0.3119367242024788,
+        "lift": 1.1901692113332447,
+        "mean_p": 0.5018522465418959,
+        "hit_minus_base": 0.05932076082746129,
+        "hit_minus_base_ci95": [
+          -0.013148959261231294,
+          0.13306783517274404
+        ],
+        "p_one_sided": 0.054972513743128434,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0015393972634484031
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 231,
+        "events": 3,
+        "hit_rate": 0.012987012987012988,
+        "mean_base": 0.000926731024274552,
+        "lift": 14.013788949365608,
+        "mean_p": 0.01685459878458872,
+        "hit_minus_base": 0.012060281962738433,
+        "hit_minus_base_ci95": [
+          -0.0009238104335082837,
+          0.02924772248346823
+        ],
+        "p_one_sided": 0.047976011994003,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -1.5906448139006525e-05
+      }
+    },
+    "Bundesliga 2": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 157,
+        "events": 22,
+        "hit_rate": 0.14012738853503184,
+        "mean_base": 0.17058886631132422,
+        "lift": 0.8214333770135955,
+        "mean_p": 0.3525797359230229,
+        "hit_minus_base": -0.030461477776292423,
+        "hit_minus_base_ci95": [
+          -0.08311567460963724,
+          0.02572942482918892
+        ],
+        "p_one_sided": 0.8615692153923038,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.006088550869954519
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 157,
+        "events": 12,
+        "hit_rate": 0.07643312101910828,
+        "mean_base": 0.0678729657580531,
+        "lift": 1.1261202478107348,
+        "mean_p": 0.20379717287716845,
+        "hit_minus_base": 0.008560155261055179,
+        "hit_minus_base_ci95": [
+          -0.030251659733920397,
+          0.050755159346116734
+        ],
+        "p_one_sided": 0.3538230884557721,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.002120034949744858
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 157,
+        "events": 7,
+        "hit_rate": 0.044585987261146494,
+        "mean_base": 0.031085932870619105,
+        "lift": 1.434281784198504,
+        "mean_p": 0.1063937527748369,
+        "hit_minus_base": 0.013500054390527396,
+        "hit_minus_base_ci95": [
+          -0.017610685925588326,
+          0.04840432248343581
+        ],
+        "p_one_sided": 0.19090454772613694,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.000836593278516257
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 149,
+        "events": 20,
+        "hit_rate": 0.1342281879194631,
+        "mean_base": 0.11986477441590211,
+        "lift": 1.1198301467095193,
+        "mean_p": 0.2857599829941271,
+        "hit_minus_base": 0.01436341350356099,
+        "hit_minus_base_ci95": [
+          -0.03841481991454526,
+          0.0730069842176557
+        ],
+        "p_one_sided": 0.3053473263368316,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.002761458135824799
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 121,
+        "events": 6,
+        "hit_rate": 0.049586776859504134,
+        "mean_base": 0.05211125679340306,
+        "lift": 0.9515559575945881,
+        "mean_p": 0.1441085210900278,
+        "hit_minus_base": -0.0025244799338989244,
+        "hit_minus_base_ci95": [
+          -0.03598260051264039,
+          0.038524199293670285
+        ],
+        "p_one_sided": 0.5867066466766616,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0003081040471233275
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 77,
+        "events": 6,
+        "hit_rate": 0.07792207792207792,
+        "mean_base": 0.0572774112656957,
+        "lift": 1.3604329560324704,
+        "mean_p": 0.13180545711263697,
+        "hit_minus_base": 0.02064466665638222,
+        "hit_minus_base_ci95": [
+          -0.03310761281290746,
+          0.08759972678719233
+        ],
+        "p_one_sided": 0.2798600699650175,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0003753486190424091
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 111,
+        "events": 25,
+        "hit_rate": 0.22522522522522523,
+        "mean_base": 0.1893639898594463,
+        "lift": 1.1893772696297569,
+        "mean_p": 0.3500951875406208,
+        "hit_minus_base": 0.035861235365778996,
+        "hit_minus_base_ci95": [
+          -0.0400530606276225,
+          0.12038857942111111
+        ],
+        "p_one_sided": 0.1904047976011994,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0032482082176030023
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 159,
+        "events": 2,
+        "hit_rate": 0.012578616352201259,
+        "mean_base": 0.0013226961874245496,
+        "lift": 9.509830353932868,
+        "mean_p": 0.013558500099616315,
+        "hit_minus_base": 0.011255920164776707,
+        "hit_minus_base_ci95": [
+          -0.0013712570892699578,
+          0.030903924642780595
+        ],
+        "p_one_sided": 0.12993503248375812,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -5.500036960735168e-05
+      }
+    },
+    "Championship": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 331,
+        "events": 53,
+        "hit_rate": 0.16012084592145015,
+        "mean_base": 0.10235141560104634,
+        "lift": 1.5644223871370981,
+        "mean_p": 0.23694677650045792,
+        "hit_minus_base": 0.05776943032040382,
+        "hit_minus_base_ci95": [
+          0.021898682012972636,
+          0.09669498941473546
+        ],
+        "p_one_sided": 0.0009995002498750624,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0009289447437338753
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 331,
+        "events": 26,
+        "hit_rate": 0.07854984894259819,
+        "mean_base": 0.03179219186536091,
+        "lift": 2.4707276955063278,
+        "mean_p": 0.11848253235670288,
+        "hit_minus_base": 0.04675765707723729,
+        "hit_minus_base_ci95": [
+          0.019426455439853652,
+          0.07605792506300385
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0003366200257544184
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 331,
+        "events": 9,
+        "hit_rate": 0.027190332326283987,
+        "mean_base": 0.012919839351174816,
+        "lift": 2.1045410540504546,
+        "mean_p": 0.05274708875691482,
+        "hit_minus_base": 0.014270492975109171,
+        "hit_minus_base_ci95": [
+          -0.0016731048061572188,
+          0.033874413390887224
+        ],
+        "p_one_sided": 0.05347326336831584,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00010631971887539325
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 317,
+        "events": 44,
+        "hit_rate": 0.138801261829653,
+        "mean_base": 0.07608665752024699,
+        "lift": 1.8242523243016344,
+        "mean_p": 0.20865978571180333,
+        "hit_minus_base": 0.06271460430940601,
+        "hit_minus_base_ci95": [
+          0.02694470427158117,
+          0.0992338835324019
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0008241234586723711
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 293,
+        "events": 31,
+        "hit_rate": 0.10580204778156997,
+        "mean_base": 0.04112983102068326,
+        "lift": 2.5723919879068924,
+        "mean_p": 0.11777877325066081,
+        "hit_minus_base": 0.06467221676088672,
+        "hit_minus_base_ci95": [
+          0.03073727020622879,
+          0.09954177203938187
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.0003946238727391576
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 129,
+        "events": 12,
+        "hit_rate": 0.09302325581395349,
+        "mean_base": 0.08444403677733894,
+        "lift": 1.1015965053783032,
+        "mean_p": 0.17924596911677507,
+        "hit_minus_base": 0.008579219036614546,
+        "hit_minus_base_ci95": [
+          -0.036524961956108805,
+          0.05625882046621152
+        ],
+        "p_one_sided": 0.3773113443278361,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0013104961754631663
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 142,
+        "events": 43,
+        "hit_rate": 0.3028169014084507,
+        "mean_base": 0.29240517821707507,
+        "lift": 1.0356071778716798,
+        "mean_p": 0.47649840883708244,
+        "hit_minus_base": 0.010411723191375578,
+        "hit_minus_base_ci95": [
+          -0.06500091941109579,
+          0.08110389103706504
+        ],
+        "p_one_sided": 0.39430284857571213,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.004640557718391892
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 261,
+        "events": 3,
+        "hit_rate": 0.011494252873563218,
+        "mean_base": 0.001093359061450681,
+        "lift": 10.512788779847414,
+        "mean_p": 0.01663348329108797,
+        "hit_minus_base": 0.010400893812112537,
+        "hit_minus_base_ci95": [
+          -0.0011018911464010196,
+          0.025245597366168496
+        ],
+        "p_one_sided": 0.05647176411794103,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -2.0599511460811963e-05
+      }
+    },
+    "China Super League": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 174,
+        "events": 50,
+        "hit_rate": 0.28735632183908044,
+        "mean_base": 0.169276077003435,
+        "lift": 1.6975601450951001,
+        "mean_p": 0.35353931955295415,
+        "hit_minus_base": 0.11808024483564547,
+        "hit_minus_base_ci95": [
+          0.05341601310573717,
+          0.18414588281560365
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.0016450141511300293
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 174,
+        "events": 27,
+        "hit_rate": 0.15517241379310345,
+        "mean_base": 0.0752677182307605,
+        "lift": 2.0616064554709377,
+        "mean_p": 0.20394084458050554,
+        "hit_minus_base": 0.07990469556234293,
+        "hit_minus_base_ci95": [
+          0.02828691246775037,
+          0.13292093147856146
+        ],
+        "p_one_sided": 0.0009995002498750624,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0016207117136537751
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 174,
+        "events": 11,
+        "hit_rate": 0.06321839080459771,
+        "mean_base": 0.027289864421728247,
+        "lift": 2.3165520292678,
+        "mean_p": 0.10558107680043376,
+        "hit_minus_base": 0.03592852638286945,
+        "hit_minus_base_ci95": [
+          0.0014932274880669941,
+          0.07218007187591362
+        ],
+        "p_one_sided": 0.01699150424787606,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00025159399282356586
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 152,
+        "events": 55,
+        "hit_rate": 0.3618421052631579,
+        "mean_base": 0.13516263944105922,
+        "lift": 2.677086706500338,
+        "mean_p": 0.3555604797778483,
+        "hit_minus_base": 0.2266794658220987,
+        "hit_minus_base_ci95": [
+          0.14829789615460057,
+          0.305475186418728
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.006866933845628484
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 127,
+        "events": 37,
+        "hit_rate": 0.29133858267716534,
+        "mean_base": 0.06494622128600179,
+        "lift": 4.485843470310706,
+        "mean_p": 0.2504380263596707,
+        "hit_minus_base": 0.22639236139116356,
+        "hit_minus_base_ci95": [
+          0.1450078971077817,
+          0.3067232230098955
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.005211376145043559
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 99,
+        "events": 7,
+        "hit_rate": 0.0707070707070707,
+        "mean_base": 0.06682510874857145,
+        "lift": 1.0580913676190948,
+        "mean_p": 0.1681051020817874,
+        "hit_minus_base": 0.003881961958499269,
+        "hit_minus_base_ci95": [
+          -0.04502772190528002,
+          0.05799969758731347
+        ],
+        "p_one_sided": 0.46526736631684157,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.001132630744047576
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 108,
+        "events": 26,
+        "hit_rate": 0.24074074074074073,
+        "mean_base": 0.22173319565804034,
+        "lift": 1.0857225956911478,
+        "mean_p": 0.42382063345609666,
+        "hit_minus_base": 0.019007545082700413,
+        "hit_minus_base_ci95": [
+          -0.05485763865029757,
+          0.0934622760991319
+        ],
+        "p_one_sided": 0.30634682658670664,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0028167949055358473
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 116,
+        "events": 3,
+        "hit_rate": 0.02586206896551724,
+        "mean_base": 0.0013424047145229655,
+        "lift": 19.26547835069809,
+        "mean_p": 0.02007494832660345,
+        "hit_minus_base": 0.02451966425099427,
+        "hit_minus_base_ci95": [
+          -0.0012963239464121063,
+          0.056521893688124374
+        ],
+        "p_one_sided": 0.03948025987006497,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0003113561844396286
+      }
+    },
+    "Denmark Superliga": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 165,
+        "events": 29,
+        "hit_rate": 0.17575757575757575,
+        "mean_base": 0.147872070020423,
+        "lift": 1.1885785850789903,
+        "mean_p": 0.27656395227020947,
+        "hit_minus_base": 0.027885505737152757,
+        "hit_minus_base_ci95": [
+          -0.024731673114911572,
+          0.08305212109392938
+        ],
+        "p_one_sided": 0.15642178910544727,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0023775752179235133
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 166,
+        "events": 13,
+        "hit_rate": 0.0783132530120482,
+        "mean_base": 0.06016184269464199,
+        "lift": 1.301709680162818,
+        "mean_p": 0.1446017658827468,
+        "hit_minus_base": 0.01815141031740621,
+        "hit_minus_base_ci95": [
+          -0.018290462128795586,
+          0.061156279375097364
+        ],
+        "p_one_sided": 0.17841079460269865,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0007995779492739135
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 166,
+        "events": 1,
+        "hit_rate": 0.006024096385542169,
+        "mean_base": 0.012772329652124326,
+        "lift": 0.47165212217492575,
+        "mean_p": 0.0672113798710127,
+        "hit_minus_base": -0.006748233266582154,
+        "hit_minus_base_ci95": [
+          -0.01287184793817476,
+          0.006379264888531296
+        ],
+        "p_one_sided": 0.912543728135932,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0006699885890194459
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 148,
+        "events": 19,
+        "hit_rate": 0.12837837837837837,
+        "mean_base": 0.10121813124263603,
+        "lift": 1.2683338133425412,
+        "mean_p": 0.23510566352928128,
+        "hit_minus_base": 0.027160247135742364,
+        "hit_minus_base_ci95": [
+          -0.025825629766243474,
+          0.08245104511185862
+        ],
+        "p_one_sided": 0.1729135432283858,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0015495369729712758
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 142,
+        "events": 11,
+        "hit_rate": 0.07746478873239436,
+        "mean_base": 0.04234398786445599,
+        "lift": 1.8294164682920466,
+        "mean_p": 0.12134130492408352,
+        "hit_minus_base": 0.03512080086793837,
+        "hit_minus_base_ci95": [
+          -0.005925430944037264,
+          0.08165331319968112
+        ],
+        "p_one_sided": 0.049475262368815595,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -1.3547092628186077e-05
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 78,
+        "events": 4,
+        "hit_rate": 0.05128205128205128,
+        "mean_base": 0.06118455432711931,
+        "lift": 0.8381535478361919,
+        "mean_p": 0.1350290163384585,
+        "hit_minus_base": -0.009902503045068047,
+        "hit_minus_base_ci95": [
+          -0.04874222066229954,
+          0.044194569463456373
+        ],
+        "p_one_sided": 0.6291854072963519,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0010741891872773745
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 94,
+        "events": 21,
+        "hit_rate": 0.22340425531914893,
+        "mean_base": 0.20885871238315432,
+        "lift": 1.0696429790743447,
+        "mean_p": 0.3713835829358212,
+        "hit_minus_base": 0.014545542935994643,
+        "hit_minus_base_ci95": [
+          -0.06986193410917423,
+          0.1038706969401894
+        ],
+        "p_one_sided": 0.4017991004497751,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00409867890568254
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 153,
+        "events": 3,
+        "hit_rate": 0.0196078431372549,
+        "mean_base": 0.0014032147800497135,
+        "lift": 13.97351525655982,
+        "mean_p": 0.01777213546062272,
+        "hit_minus_base": 0.01820462835720519,
+        "hit_minus_base_ci95": [
+          -0.0013790160842632037,
+          0.041033734663655286
+        ],
+        "p_one_sided": 0.044977511244377814,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -1.977749649344077e-05
+      }
+    },
+    "Dutch Eredivisie": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 171,
+        "events": 57,
+        "hit_rate": 0.3333333333333333,
+        "mean_base": 0.1878564179088593,
+        "lift": 1.7744048196162978,
+        "mean_p": 0.4104923179937557,
+        "hit_minus_base": 0.14547691542447405,
+        "hit_minus_base_ci95": [
+          0.07829615816842408,
+          0.21566500388468646
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.0002940635198604449
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 171,
+        "events": 30,
+        "hit_rate": 0.17543859649122806,
+        "mean_base": 0.08237499807893178,
+        "lift": 2.1297553940228644,
+        "mean_p": 0.2498505934791782,
+        "hit_minus_base": 0.09306359841229629,
+        "hit_minus_base_ci95": [
+          0.03858570461949432,
+          0.14758036588048531
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0007906618621605247
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 171,
+        "events": 9,
+        "hit_rate": 0.05263157894736842,
+        "mean_base": 0.032375767118092307,
+        "lift": 1.625647316877218,
+        "mean_p": 0.13657455999178497,
+        "hit_minus_base": 0.02025581182927611,
+        "hit_minus_base_ci95": [
+          -0.009191136287805624,
+          0.055367519759533766
+        ],
+        "p_one_sided": 0.09795102448775612,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0007847537293275558
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 167,
+        "events": 55,
+        "hit_rate": 0.32934131736526945,
+        "mean_base": 0.17416679707181673,
+        "lift": 1.890953516412588,
+        "mean_p": 0.42968586556380417,
+        "hit_minus_base": 0.15517452029345277,
+        "hit_minus_base_ci95": [
+          0.08208308788282274,
+          0.22623014270181904
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.0034862172215693334
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 156,
+        "events": 36,
+        "hit_rate": 0.23076923076923078,
+        "mean_base": 0.09177360945124549,
+        "lift": 2.51454892260532,
+        "mean_p": 0.3079432911697679,
+        "hit_minus_base": 0.13899562131798526,
+        "hit_minus_base_ci95": [
+          0.0752407206444907,
+          0.20352799739817434
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.0024367692916011457
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 93,
+        "events": 6,
+        "hit_rate": 0.06451612903225806,
+        "mean_base": 0.058808075566448306,
+        "lift": 1.0970624087054188,
+        "mean_p": 0.12574692943496205,
+        "hit_minus_base": 0.005708053465809743,
+        "hit_minus_base_ci95": [
+          -0.03784400915642747,
+          0.06257613646296296
+        ],
+        "p_one_sided": 0.431784107946027,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -2.9464281980595897e-05
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 102,
+        "events": 29,
+        "hit_rate": 0.28431372549019607,
+        "mean_base": 0.1999047197834324,
+        "lift": 1.4222461870745648,
+        "mean_p": 0.3609249724731059,
+        "hit_minus_base": 0.08440900570676371,
+        "hit_minus_base_ci95": [
+          0.003940914810094868,
+          0.17510731005522118
+        ],
+        "p_one_sided": 0.020989505247376312,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.000279817794821886
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 196,
+        "events": 5,
+        "hit_rate": 0.025510204081632654,
+        "mean_base": 0.0013146719299182673,
+        "lift": 19.404235764901905,
+        "mean_p": 0.021875937575572737,
+        "hit_minus_base": 0.024195532151714383,
+        "hit_minus_base_ci95": [
+          0.003937399423693453,
+          0.04766756199526098
+        ],
+        "p_one_sided": 0.0074962518740629685,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.00019596771475175208
+      }
+    },
+    "Finland Veikkausliiga": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 139,
+        "events": 33,
+        "hit_rate": 0.23741007194244604,
+        "mean_base": 0.1504166181061011,
+        "lift": 1.578350018313677,
+        "mean_p": 0.2952392417276441,
+        "hit_minus_base": 0.08699345383634492,
+        "hit_minus_base_ci95": [
+          0.014523100403163701,
+          0.16218830268236625
+        ],
+        "p_one_sided": 0.0079960019990005,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0018854922688419514
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 139,
+        "events": 10,
+        "hit_rate": 0.07194244604316546,
+        "mean_base": 0.047877420542289356,
+        "lift": 1.5026383048272172,
+        "mean_p": 0.1586233499757331,
+        "hit_minus_base": 0.024065025500876108,
+        "hit_minus_base_ci95": [
+          -0.014491288578681042,
+          0.07019682380156025
+        ],
+        "p_one_sided": 0.1294352823588206,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.002092720631011569
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 139,
+        "events": 3,
+        "hit_rate": 0.02158273381294964,
+        "mean_base": 0.014292313155834284,
+        "lift": 1.5100938229959875,
+        "mean_p": 0.07587843611294716,
+        "hit_minus_base": 0.007290420657115361,
+        "hit_minus_base_ci95": [
+          -0.014341324206757421,
+          0.03691999906612334
+        ],
+        "p_one_sided": 0.2913543228385807,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0005600283865887714
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 114,
+        "events": 14,
+        "hit_rate": 0.12280701754385964,
+        "mean_base": 0.09909745766202165,
+        "lift": 1.2392549762749818,
+        "mean_p": 0.25860138041275105,
+        "hit_minus_base": 0.023709559881837986,
+        "hit_minus_base_ci95": [
+          -0.032177697571432205,
+          0.08677718728267288
+        ],
+        "p_one_sided": 0.22188905547226387,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0034551366229085075
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 84,
+        "events": 8,
+        "hit_rate": 0.09523809523809523,
+        "mean_base": 0.05327724394123929,
+        "lift": 1.7875942558728364,
+        "mean_p": 0.14513993314750173,
+        "hit_minus_base": 0.041960851296855936,
+        "hit_minus_base_ci95": [
+          -0.016898914880896898,
+          0.11410688465022634
+        ],
+        "p_one_sided": 0.08095952023988005,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0003315171384966961
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 68,
+        "events": 6,
+        "hit_rate": 0.08823529411764706,
+        "mean_base": 0.07001355989905887,
+        "lift": 1.2602600731181093,
+        "mean_p": 0.14205152323626577,
+        "hit_minus_base": 0.018221734218588213,
+        "hit_minus_base_ci95": [
+          -0.04060638376900232,
+          0.09189091557159175
+        ],
+        "p_one_sided": 0.3028485757121439,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0005987221750619631
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 55,
+        "events": 20,
+        "hit_rate": 0.36363636363636365,
+        "mean_base": 0.24927593803541423,
+        "lift": 1.4587704152363972,
+        "mean_p": 0.4103917323661963,
+        "hit_minus_base": 0.11436042560094932,
+        "hit_minus_base_ci95": [
+          -0.022988252111936475,
+          0.25147000205189607
+        ],
+        "p_one_sided": 0.05647176411794103,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0013513016191599343
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 80,
+        "events": 3,
+        "hit_rate": 0.0375,
+        "mean_base": 0.0011287091507485767,
+        "lift": 33.22379372500829,
+        "mean_p": 0.013856181603482764,
+        "hit_minus_base": 0.03637129084925143,
+        "hit_minus_base_ci95": [
+          -0.0010729131941396026,
+          0.08412443914699969
+        ],
+        "p_one_sided": 0.038980509745127435,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.00011287496731527355
+      }
+    },
+    "Greek Super League": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 144,
+        "events": 29,
+        "hit_rate": 0.2013888888888889,
+        "mean_base": 0.10166961694982166,
+        "lift": 1.9808168352624265,
+        "mean_p": 0.2451261835217984,
+        "hit_minus_base": 0.09971927193906722,
+        "hit_minus_base_ci95": [
+          0.03838620541549749,
+          0.16055339238778693
+        ],
+        "p_one_sided": 0.0014992503748125937,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00017441673898887106
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 144,
+        "events": 10,
+        "hit_rate": 0.06944444444444445,
+        "mean_base": 0.030324471698863265,
+        "lift": 2.290046307617871,
+        "mean_p": 0.12378751558129962,
+        "hit_minus_base": 0.03911997274558118,
+        "hit_minus_base_ci95": [
+          -0.0017071144181859113,
+          0.08017297129866394
+        ],
+        "p_one_sided": 0.03248375812093953,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0010270137143369702
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 144,
+        "events": 4,
+        "hit_rate": 0.027777777777777776,
+        "mean_base": 0.004588523232293179,
+        "lift": 6.05375114639998,
+        "mean_p": 0.05554860823761537,
+        "hit_minus_base": 0.023189254545484594,
+        "hit_minus_base_ci95": [
+          0.0020819214381075373,
+          0.05181918740092196
+        ],
+        "p_one_sided": 0.019490254872563718,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0003217687682467274
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 147,
+        "events": 31,
+        "hit_rate": 0.2108843537414966,
+        "mean_base": 0.08277147352892869,
+        "lift": 2.5477902561175543,
+        "mean_p": 0.27081701129337243,
+        "hit_minus_base": 0.1281128802125679,
+        "hit_minus_base_ci95": [
+          0.06670196598017523,
+          0.19410308373270116
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.0007965650042479741
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 135,
+        "events": 19,
+        "hit_rate": 0.14074074074074075,
+        "mean_base": 0.0480126620663966,
+        "lift": 2.931325502137555,
+        "mean_p": 0.19778180780207869,
+        "hit_minus_base": 0.09272807867434414,
+        "hit_minus_base_ci95": [
+          0.03862257808303143,
+          0.15017943577868348
+        ],
+        "p_one_sided": 0.0009995002498750624,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.00027370710417782965
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 65,
+        "events": 8,
+        "hit_rate": 0.12307692307692308,
+        "mean_base": 0.1154140817871112,
+        "lift": 1.066394335692472,
+        "mean_p": 0.21423348494112932,
+        "hit_minus_base": 0.007662841289811882,
+        "hit_minus_base_ci95": [
+          -0.06831612718595464,
+          0.08902500489283927
+        ],
+        "p_one_sided": 0.4607696151924038,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -4.171069697044823e-05
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 46,
+        "events": 14,
+        "hit_rate": 0.30434782608695654,
+        "mean_base": 0.3128278537184968,
+        "lift": 0.972892351078267,
+        "mean_p": 0.5256917075482737,
+        "hit_minus_base": -0.008480027631540345,
+        "hit_minus_base_ci95": [
+          -0.1372837715556035,
+          0.12352529970332123
+        ],
+        "p_one_sided": 0.5632183908045977,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.001442248162364577
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 174,
+        "events": 4,
+        "hit_rate": 0.022988505747126436,
+        "mean_base": 0.0013872253732962313,
+        "lift": 16.571572427703437,
+        "mean_p": 0.01661977853849049,
+        "hit_minus_base": 0.021601280373830207,
+        "hit_minus_base_ci95": [
+          0.004129163912472276,
+          0.04549520058160885
+        ],
+        "p_one_sided": 0.013493253373313344,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 7.5839903555177984e-06
+      }
+    },
+    "Ireland Premier Division": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 100,
+        "events": 18,
+        "hit_rate": 0.18,
+        "mean_base": 0.09466260070598155,
+        "lift": 1.9014901202542827,
+        "mean_p": 0.21513307443721602,
+        "hit_minus_base": 0.08533739929401846,
+        "hit_minus_base_ci95": [
+          0.017769138021214024,
+          0.1603701368382117
+        ],
+        "p_one_sided": 0.005497251374312844,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0002622672070488829
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 100,
+        "events": 9,
+        "hit_rate": 0.09,
+        "mean_base": 0.032109236660175004,
+        "lift": 2.8029317841624914,
+        "mean_p": 0.10351450072412886,
+        "hit_minus_base": 0.05789076333982499,
+        "hit_minus_base_ci95": [
+          0.0066708421171984104,
+          0.11504543878363338
+        ],
+        "p_one_sided": 0.019490254872563718,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00030441419259263024
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 100,
+        "events": 2,
+        "hit_rate": 0.02,
+        "mean_base": 0.012384671913487202,
+        "lift": 1.6148994611814886,
+        "mean_p": 0.044067975099455564,
+        "hit_minus_base": 0.0076153280865128015,
+        "hit_minus_base_ci95": [
+          -0.01247496588738593,
+          0.037800414131765755
+        ],
+        "p_one_sided": 0.4027986006996502,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 5.923855558290343e-05
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 81,
+        "events": 18,
+        "hit_rate": 0.2222222222222222,
+        "mean_base": 0.08497600997707407,
+        "lift": 2.6151171640346047,
+        "mean_p": 0.21696218913875273,
+        "hit_minus_base": 0.13724621224514816,
+        "hit_minus_base_ci95": [
+          0.05614170725751801,
+          0.23611169070124113
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0017346832401801287
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 69,
+        "events": 11,
+        "hit_rate": 0.15942028985507245,
+        "mean_base": 0.050672438198141406,
+        "lift": 3.1460947119161866,
+        "mean_p": 0.1458925329458859,
+        "hit_minus_base": 0.10874785165693106,
+        "hit_minus_base_ci95": [
+          0.022830817447965557,
+          0.19941708128776928
+        ],
+        "p_one_sided": 0.0029985007496251873,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.00126994448175639
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 99,
+        "events": 11,
+        "hit_rate": 0.1111111111111111,
+        "mean_base": 0.0821084844664481,
+        "lift": 1.353223261068889,
+        "mean_p": 0.17975988169561216,
+        "hit_minus_base": 0.029002626644663024,
+        "hit_minus_base_ci95": [
+          -0.03271399123170125,
+          0.10100846373684831
+        ],
+        "p_one_sided": 0.20789605197401298,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0006067482941246548
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 75,
+        "events": 23,
+        "hit_rate": 0.30666666666666664,
+        "mean_base": 0.29594033295850686,
+        "lift": 1.0362449200517176,
+        "mean_p": 0.48672394927031226,
+        "hit_minus_base": 0.010726333708159827,
+        "hit_minus_base_ci95": [
+          -0.0909444500103316,
+          0.11763133927740123
+        ],
+        "p_one_sided": 0.408295852073963,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.005196726180469345
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 73,
+        "events": 3,
+        "hit_rate": 0.0410958904109589,
+        "mean_base": 0.0015614669861079467,
+        "lift": 26.318769962209036,
+        "mean_p": 0.016651391396379767,
+        "hit_minus_base": 0.03953442342485096,
+        "hit_minus_base_ci95": [
+          -0.0015736598231191506,
+          0.09181121538333169
+        ],
+        "p_one_sided": 0.05547226386806597,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -8.976335485198542e-05
+      }
+    },
+    "Japan J-League": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 105,
+        "events": 16,
+        "hit_rate": 0.1523809523809524,
+        "mean_base": 0.1277443230951155,
+        "lift": 1.1928588972794747,
+        "mean_p": 0.3213924346375985,
+        "hit_minus_base": 0.024636629285836896,
+        "hit_minus_base_ci95": [
+          -0.0391213985044807,
+          0.09661517729601843
+        ],
+        "p_one_sided": 0.22988505747126436,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.000758304004111036
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 105,
+        "events": 5,
+        "hit_rate": 0.047619047619047616,
+        "mean_base": 0.05374037630449809,
+        "lift": 0.886094420873303,
+        "mean_p": 0.17817435160888392,
+        "hit_minus_base": -0.006121328685450478,
+        "hit_minus_base_ci95": [
+          -0.043902323428213444,
+          0.035865953281166034
+        ],
+        "p_one_sided": 0.6191904047976012,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0006829766524658965
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 105,
+        "events": 2,
+        "hit_rate": 0.01904761904761905,
+        "mean_base": 0.02219260984658035,
+        "lift": 0.8582865728410076,
+        "mean_p": 0.08813300549047239,
+        "hit_minus_base": -0.0031449907989613024,
+        "hit_minus_base_ci95": [
+          -0.022395090250368205,
+          0.02736152947195641
+        ],
+        "p_one_sided": 0.672663668165917,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -8.094225002112056e-05
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 99,
+        "events": 14,
+        "hit_rate": 0.1414141414141414,
+        "mean_base": 0.09811581688512941,
+        "lift": 1.4412981097604698,
+        "mean_p": 0.28934917413681654,
+        "hit_minus_base": 0.04329832452901201,
+        "hit_minus_base_ci95": [
+          -0.021123267429900394,
+          0.11266531361254929
+        ],
+        "p_one_sided": 0.095952023988006,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0006483898773207211
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 124,
+        "events": 10,
+        "hit_rate": 0.08064516129032258,
+        "mean_base": 0.05136494239531911,
+        "lift": 1.5700428644435076,
+        "mean_p": 0.15183170483560796,
+        "hit_minus_base": 0.029280218895003464,
+        "hit_minus_base_ci95": [
+          -0.013859348340303897,
+          0.08020437085329273
+        ],
+        "p_one_sided": 0.11544227886056972,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.000252389909677675
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 236,
+        "events": 33,
+        "hit_rate": 0.13983050847457626,
+        "mean_base": 0.07627895397779094,
+        "lift": 1.8331466437687218,
+        "mean_p": 0.17397058226840853,
+        "hit_minus_base": 0.06355155449678535,
+        "hit_minus_base_ci95": [
+          0.018152668578169058,
+          0.11102215463802069
+        ],
+        "p_one_sided": 0.0029985007496251873,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.0004007649192300307
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 245,
+        "events": 97,
+        "hit_rate": 0.39591836734693875,
+        "mean_base": 0.27752265172358415,
+        "lift": 1.4266164036991047,
+        "mean_p": 0.47205018920474856,
+        "hit_minus_base": 0.11839571562335456,
+        "hit_minus_base_ci95": [
+          0.060483880302012044,
+          0.18176492841037067
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.0029683994076171497
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 201,
+        "events": 1,
+        "hit_rate": 0.004975124378109453,
+        "mean_base": 0.0008922341643360177,
+        "lift": 5.576029899966718,
+        "mean_p": 0.012354969988416637,
+        "hit_minus_base": 0.004082890213773435,
+        "hit_minus_base_ci95": [
+          -0.000960507509686476,
+          0.014726315901046623
+        ],
+        "p_one_sided": 0.3808095952023988,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -7.364612023039377e-07
+      }
+    },
+    "K-League 1": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 88,
+        "events": 11,
+        "hit_rate": 0.125,
+        "mean_base": 0.12003728106057436,
+        "lift": 1.0413431468588605,
+        "mean_p": 0.23954069178923534,
+        "hit_minus_base": 0.00496271893942564,
+        "hit_minus_base_ci95": [
+          -0.061987398604611055,
+          0.07814950581445654
+        ],
+        "p_one_sided": 0.45377311344327836,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0016412422899757058
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 88,
+        "events": 8,
+        "hit_rate": 0.09090909090909091,
+        "mean_base": 0.046519535310813126,
+        "lift": 1.9542132203534663,
+        "mean_p": 0.11978004449409015,
+        "hit_minus_base": 0.04438955559827778,
+        "hit_minus_base_ci95": [
+          -0.012013944310054191,
+          0.10913906927861086
+        ],
+        "p_one_sided": 0.07646176911544228,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -5.712132475046423e-05
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 88,
+        "events": 5,
+        "hit_rate": 0.056818181818181816,
+        "mean_base": 0.01946686470431343,
+        "lift": 2.918712524138114,
+        "mean_p": 0.05316611936540754,
+        "hit_minus_base": 0.03735131711386839,
+        "hit_minus_base_ci95": [
+          -0.008107981239665617,
+          0.08891480120202579
+        ],
+        "p_one_sided": 0.037481259370314844,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0001245871816281622
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 78,
+        "events": 8,
+        "hit_rate": 0.10256410256410256,
+        "mean_base": 0.08490075971723982,
+        "lift": 1.2080469351003469,
+        "mean_p": 0.19155276335891963,
+        "hit_minus_base": 0.017663342846862762,
+        "hit_minus_base_ci95": [
+          -0.04665467524271981,
+          0.09465119491383081
+        ],
+        "p_one_sided": 0.3103448275862069,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0008873793487677257
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 79,
+        "events": 2,
+        "hit_rate": 0.02531645569620253,
+        "mean_base": 0.030524644330722862,
+        "lift": 0.8293775816651098,
+        "mean_p": 0.0852618156227847,
+        "hit_minus_base": -0.005208188634520336,
+        "hit_minus_base_ci95": [
+          -0.030622088931324697,
+          0.03501494270207007
+        ],
+        "p_one_sided": 0.672663668165917,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00019592964922905668
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 90,
+        "events": 5,
+        "hit_rate": 0.05555555555555555,
+        "mean_base": 0.08562600981157661,
+        "lift": 0.6488163547245483,
+        "mean_p": 0.14711359480385922,
+        "hit_minus_base": -0.03007045425602105,
+        "hit_minus_base_ci95": [
+          -0.07373648385245724,
+          0.021771184731076955
+        ],
+        "p_one_sided": 0.8825587206396801,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0006525764373028918
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 89,
+        "events": 21,
+        "hit_rate": 0.23595505617977527,
+        "mean_base": 0.291261471454908,
+        "lift": 0.810114207695009,
+        "mean_p": 0.4142684414702986,
+        "hit_minus_base": -0.0553064152751327,
+        "hit_minus_base_ci95": [
+          -0.13944683292434581,
+          0.03830678366176565
+        ],
+        "p_one_sided": 0.8980509745127436,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0046794028472756264
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 113,
+        "events": 1,
+        "hit_rate": 0.008849557522123894,
+        "mean_base": 0.001904226013030249,
+        "lift": 4.647325192266091,
+        "mean_p": 0.014011001161081952,
+        "hit_minus_base": 0.006945331509093642,
+        "hit_minus_base_ci95": [
+          -0.002070512253656056,
+          0.024981921371648827
+        ],
+        "p_one_sided": 0.37831084457771114,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 2.0363789929564805e-05
+      }
+    },
+    "La Liga 2": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 358,
+        "events": 61,
+        "hit_rate": 0.17039106145251395,
+        "mean_base": 0.07524360500775397,
+        "lift": 2.2645254893748765,
+        "mean_p": 0.20464830237138298,
+        "hit_minus_base": 0.09514745644476,
+        "hit_minus_base_ci95": [
+          0.058206433174132086,
+          0.136835298749892
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.0008905083292398922
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 358,
+        "events": 24,
+        "hit_rate": 0.0670391061452514,
+        "mean_base": 0.02242176282676481,
+        "lift": 2.989912375008577,
+        "mean_p": 0.09778677577635067,
+        "hit_minus_base": 0.04461734331848657,
+        "hit_minus_base_ci95": [
+          0.02054172950368612,
+          0.07003354962321877
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -6.941193816388317e-05
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 358,
+        "events": 7,
+        "hit_rate": 0.019553072625698324,
+        "mean_base": 0.005160153138498028,
+        "lift": 3.789242702860881,
+        "mean_p": 0.0415457905971433,
+        "hit_minus_base": 0.014392919487200295,
+        "hit_minus_base_ci95": [
+          0.0006421007823873573,
+          0.029192249138384783
+        ],
+        "p_one_sided": 0.0079960019990005,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00010878260604886078
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 310,
+        "events": 36,
+        "hit_rate": 0.11612903225806452,
+        "mean_base": 0.05179914210958543,
+        "lift": 2.2419103392172754,
+        "mean_p": 0.17022036311643154,
+        "hit_minus_base": 0.06432989014847906,
+        "hit_minus_base_ci95": [
+          0.03193430105938446,
+          0.09985106164852747
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -1.4462556392575274e-05
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 264,
+        "events": 12,
+        "hit_rate": 0.045454545454545456,
+        "mean_base": 0.024719085862670215,
+        "lift": 1.83884411046078,
+        "mean_p": 0.0851768345593547,
+        "hit_minus_base": 0.020735459591875238,
+        "hit_minus_base_ci95": [
+          -0.0019345199024591545,
+          0.04635114706939709
+        ],
+        "p_one_sided": 0.04097951024487756,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00021739774640875921
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 146,
+        "events": 20,
+        "hit_rate": 0.136986301369863,
+        "mean_base": 0.11129614504705707,
+        "lift": 1.2308270094345486,
+        "mean_p": 0.24454726193174017,
+        "hit_minus_base": 0.025690156322805954,
+        "hit_minus_base_ci95": [
+          -0.029016747176185992,
+          0.08710703080817638
+        ],
+        "p_one_sided": 0.20239880059970014,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.002101304519991478
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 149,
+        "events": 52,
+        "hit_rate": 0.348993288590604,
+        "mean_base": 0.3471815374371763,
+        "lift": 1.0052184547795995,
+        "mean_p": 0.5583698984920829,
+        "hit_minus_base": 0.001811751153427689,
+        "hit_minus_base_ci95": [
+          -0.07151773280866904,
+          0.07651174701909498
+        ],
+        "p_one_sided": 0.5087456271864068,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.002746180013708703
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 392,
+        "events": 2,
+        "hit_rate": 0.00510204081632653,
+        "mean_base": 0.0008782759252840082,
+        "lift": 5.809154810518895,
+        "mean_p": 0.009175817519008948,
+        "hit_minus_base": 0.004223764891042522,
+        "hit_minus_base_ci95": [
+          -0.0009047584435311134,
+          0.012272820902827143
+        ],
+        "p_one_sided": 0.13543228385807096,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -2.3309869084992906e-05
+      }
+    },
+    "League One": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 242,
+        "events": 37,
+        "hit_rate": 0.15289256198347106,
+        "mean_base": 0.1325748325328,
+        "lift": 1.1532548000439247,
+        "mean_p": 0.2651849608295237,
+        "hit_minus_base": 0.020317729450671073,
+        "hit_minus_base_ci95": [
+          -0.020831912276539133,
+          0.06811193273200146
+        ],
+        "p_one_sided": 0.18640679660169915,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.001498814829260516
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 242,
+        "events": 13,
+        "hit_rate": 0.05371900826446281,
+        "mean_base": 0.05347764858477281,
+        "lift": 1.0045132814564088,
+        "mean_p": 0.13691132705566558,
+        "hit_minus_base": 0.00024135967969000238,
+        "hit_minus_base_ci95": [
+          -0.027600801712279546,
+          0.03022084141235227
+        ],
+        "p_one_sided": 0.5217391304347826,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0008629939307814641
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 242,
+        "events": 6,
+        "hit_rate": 0.024793388429752067,
+        "mean_base": 0.01778678625919128,
+        "lift": 1.3939217612704007,
+        "mean_p": 0.0627443230659453,
+        "hit_minus_base": 0.007006602170560784,
+        "hit_minus_base_ci95": [
+          -0.009720940265364983,
+          0.02801680922475654
+        ],
+        "p_one_sided": 0.2798600699650175,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00015036534771151368
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 258,
+        "events": 36,
+        "hit_rate": 0.13953488372093023,
+        "mean_base": 0.10185937138502775,
+        "lift": 1.3698777228212935,
+        "mean_p": 0.2209385889391196,
+        "hit_minus_base": 0.03767551233590249,
+        "hit_minus_base_ci95": [
+          -0.004966823996247869,
+          0.0795163181568211
+        ],
+        "p_one_sided": 0.038980509745127435,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0007622332590913962
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 276,
+        "events": 26,
+        "hit_rate": 0.09420289855072464,
+        "mean_base": 0.04785776184543258,
+        "lift": 1.968393316322943,
+        "mean_p": 0.11677363006333354,
+        "hit_minus_base": 0.04634513670529207,
+        "hit_minus_base_ci95": [
+          0.012935936769519735,
+          0.08266311601249256
+        ],
+        "p_one_sided": 0.001999000499750125,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 2.7442400080251672e-05
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 312,
+        "events": 32,
+        "hit_rate": 0.10256410256410256,
+        "mean_base": 0.06976263262230534,
+        "lift": 1.4701868136110097,
+        "mean_p": 0.14750911314008142,
+        "hit_minus_base": 0.03280146994179722,
+        "hit_minus_base_ci95": [
+          0.0025795660199581898,
+          0.06525934341247538
+        ],
+        "p_one_sided": 0.01699150424787606,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.00030230191056425967
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 259,
+        "events": 87,
+        "hit_rate": 0.3359073359073359,
+        "mean_base": 0.26237255047172425,
+        "lift": 1.2802685925162605,
+        "mean_p": 0.4375309292980937,
+        "hit_minus_base": 0.07353478543561169,
+        "hit_minus_base_ci95": [
+          0.01982513390436502,
+          0.1310644089615609
+        ],
+        "p_one_sided": 0.004997501249375313,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0003063528814441203
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 360,
+        "events": 4,
+        "hit_rate": 0.011111111111111112,
+        "mean_base": 0.0007992105424005426,
+        "lift": 13.902608288596028,
+        "mean_p": 0.00739654930825564,
+        "hit_minus_base": 0.010311900568710567,
+        "hit_minus_base_ci95": [
+          0.0018633515135033486,
+          0.02185904741741618
+        ],
+        "p_one_sided": 0.014492753623188406,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -2.374491764332268e-05
+      }
+    },
+    "League Two": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 342,
+        "events": 48,
+        "hit_rate": 0.14035087719298245,
+        "mean_base": 0.10870811991494779,
+        "lift": 1.291079979147755,
+        "mean_p": 0.2519534075024096,
+        "hit_minus_base": 0.03164275727803466,
+        "hit_minus_base_ci95": [
+          -0.005544141409168337,
+          0.06860635958084918
+        ],
+        "p_one_sided": 0.04697651174412794,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0019953587614476038
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 342,
+        "events": 28,
+        "hit_rate": 0.08187134502923976,
+        "mean_base": 0.04238887070388263,
+        "lift": 1.9314349184051445,
+        "mean_p": 0.13018203183107485,
+        "hit_minus_base": 0.03948247432535714,
+        "hit_minus_base_ci95": [
+          0.011188551818033418,
+          0.0700456630536002
+        ],
+        "p_one_sided": 0.0034982508745627187,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0005436929474870235
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 342,
+        "events": 9,
+        "hit_rate": 0.02631578947368421,
+        "mean_base": 0.018244206045473967,
+        "lift": 1.4424190018514205,
+        "mean_p": 0.06066941241270815,
+        "hit_minus_base": 0.008071583428210242,
+        "hit_minus_base_ci95": [
+          -0.006855988803934702,
+          0.02600953471885616
+        ],
+        "p_one_sided": 0.1744127936031984,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00030462703373140766
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 333,
+        "events": 38,
+        "hit_rate": 0.11411411411411411,
+        "mean_base": 0.07618326088044186,
+        "lift": 1.4978895993071102,
+        "mean_p": 0.20082956173593228,
+        "hit_minus_base": 0.03793085323367226,
+        "hit_minus_base_ci95": [
+          0.006864418028563874,
+          0.07160867825807453
+        ],
+        "p_one_sided": 0.005997001499250375,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0009690432686299055
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 340,
+        "events": 18,
+        "hit_rate": 0.052941176470588235,
+        "mean_base": 0.030124830100675314,
+        "lift": 1.7573933626733198,
+        "mean_p": 0.09086156498083683,
+        "hit_minus_base": 0.022816346369912918,
+        "hit_minus_base_ci95": [
+          0.000972274619613877,
+          0.04707794330699201
+        ],
+        "p_one_sided": 0.02148925537231384,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00019007294610284026
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 176,
+        "events": 10,
+        "hit_rate": 0.056818181818181816,
+        "mean_base": 0.09366153505000317,
+        "lift": 0.6066330408512762,
+        "mean_p": 0.19443010858864704,
+        "hit_minus_base": -0.03684335323182134,
+        "hit_minus_base_ci95": [
+          -0.0711102994398077,
+          0.0011344549754497414
+        ],
+        "p_one_sided": 0.9720139930034982,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0015875871933854681
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 183,
+        "events": 56,
+        "hit_rate": 0.30601092896174864,
+        "mean_base": 0.29693035440091564,
+        "lift": 1.0305814963887876,
+        "mean_p": 0.49070696784546114,
+        "hit_minus_base": 0.009080574560832971,
+        "hit_minus_base_ci95": [
+          -0.05878828014060306,
+          0.08307275015531003
+        ],
+        "p_one_sided": 0.40379810094952523,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.003256548354274576
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 255,
+        "events": 1,
+        "hit_rate": 0.00392156862745098,
+        "mean_base": 0.0008359607848892103,
+        "lift": 4.6910916137898795,
+        "mean_p": 0.010081001981357272,
+        "hit_minus_base": 0.003085607842561769,
+        "hit_minus_base_ci95": [
+          -0.0008939701432071613,
+          0.011802119083584908
+        ],
+        "p_one_sided": 0.3548225887056472,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -5.049157387879439e-06
+      }
+    },
+    "Ligue 2": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 182,
+        "events": 32,
+        "hit_rate": 0.17582417582417584,
+        "mean_base": 0.09642028541850174,
+        "lift": 1.8235185164722356,
+        "mean_p": 0.22522897953180757,
+        "hit_minus_base": 0.07940389040567408,
+        "hit_minus_base_ci95": [
+          0.026028848998743647,
+          0.13599093954439598
+        ],
+        "p_one_sided": 0.0009995002498750624,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0009042414594132023
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 182,
+        "events": 13,
+        "hit_rate": 0.07142857142857142,
+        "mean_base": 0.03696734009667588,
+        "lift": 1.9322074902271458,
+        "mean_p": 0.11042883938780299,
+        "hit_minus_base": 0.034461231331895555,
+        "hit_minus_base_ci95": [
+          0.001258548653743842,
+          0.07288751500114969
+        ],
+        "p_one_sided": 0.019490254872563718,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0004431882207298536
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 182,
+        "events": 1,
+        "hit_rate": 0.005494505494505495,
+        "mean_base": 0.01031856864326276,
+        "lift": 0.5324871776758484,
+        "mean_p": 0.04805449373291192,
+        "hit_minus_base": -0.004824063148757264,
+        "hit_minus_base_ci95": [
+          -0.010467099811683953,
+          0.006816253356329892
+        ],
+        "p_one_sided": 0.7421289355322339,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00026170390115914547
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 170,
+        "events": 21,
+        "hit_rate": 0.12352941176470589,
+        "mean_base": 0.07385069619869955,
+        "lift": 1.6726912286966515,
+        "mean_p": 0.19276735042151513,
+        "hit_minus_base": 0.04967871556600633,
+        "hit_minus_base_ci95": [
+          -0.0032938082057690013,
+          0.10204647474766507
+        ],
+        "p_one_sided": 0.037481259370314844,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.00015640476847280567
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 150,
+        "events": 12,
+        "hit_rate": 0.08,
+        "mean_base": 0.03116503484840779,
+        "lift": 2.566979321189085,
+        "mean_p": 0.10378561495489087,
+        "hit_minus_base": 0.048834965151592205,
+        "hit_minus_base_ci95": [
+          0.00978869369758689,
+          0.09521725231624172
+        ],
+        "p_one_sided": 0.00399800099950025,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0005325248794050268
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 89,
+        "events": 12,
+        "hit_rate": 0.1348314606741573,
+        "mean_base": 0.10160651039684947,
+        "lift": 1.3269962736397454,
+        "mean_p": 0.21681278267839477,
+        "hit_minus_base": 0.03322495027730784,
+        "hit_minus_base_ci95": [
+          -0.03394855424365955,
+          0.10715900208530593
+        ],
+        "p_one_sided": 0.17341329335332334,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0014177697681286153
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 126,
+        "events": 38,
+        "hit_rate": 0.30158730158730157,
+        "mean_base": 0.3231489291061421,
+        "lift": 0.9332765001620712,
+        "mean_p": 0.5161494628667579,
+        "hit_minus_base": -0.021561627518840696,
+        "hit_minus_base_ci95": [
+          -0.10174891362543144,
+          0.05917159995880429
+        ],
+        "p_one_sided": 0.7191404297851074,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0055463111933546656
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 232,
+        "events": 0,
+        "hit_rate": 0.0,
+        "mean_base": 0.0009515374769161468,
+        "lift": 0.0,
+        "mean_p": 0.011803025225423574,
+        "hit_minus_base": -0.0009515374769161468,
+        "hit_minus_base_ci95": [
+          -0.0010314243124891894,
+          -0.0008751471564765361
+        ],
+        "p_one_sided": 1.0,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 2.554748493324968e-05
+      }
+    },
+    "Mexico Liga MX": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 251,
+        "events": 56,
+        "hit_rate": 0.22310756972111553,
+        "mean_base": 0.13639469821938205,
+        "lift": 1.6357495755609315,
+        "mean_p": 0.26643891460737923,
+        "hit_minus_base": 0.0867128715017335,
+        "hit_minus_base_ci95": [
+          0.03512229901861652,
+          0.13946454473748118
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.000513745655975662
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 251,
+        "events": 18,
+        "hit_rate": 0.07171314741035857,
+        "mean_base": 0.04706268309495224,
+        "lift": 1.52377940853207,
+        "mean_p": 0.137899342215922,
+        "hit_minus_base": 0.02465046431540632,
+        "hit_minus_base_ci95": [
+          -0.0038692420226811007,
+          0.05759263482328493
+        ],
+        "p_one_sided": 0.04547726136931534,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0009850674746935768
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 251,
+        "events": 8,
+        "hit_rate": 0.03187250996015936,
+        "mean_base": 0.017526044073766574,
+        "lift": 1.8185798133343132,
+        "mean_p": 0.06337129702395568,
+        "hit_minus_base": 0.01434646588639279,
+        "hit_minus_base_ci95": [
+          -0.0053868817704873255,
+          0.036733493263874185
+        ],
+        "p_one_sided": 0.08845577211394302,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00010293248756539491
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 256,
+        "events": 40,
+        "hit_rate": 0.15625,
+        "mean_base": 0.08888963198153152,
+        "lift": 1.7577978051755672,
+        "mean_p": 0.23327943370617973,
+        "hit_minus_base": 0.06736036801846851,
+        "hit_minus_base_ci95": [
+          0.025419778916260245,
+          0.11203554536264385
+        ],
+        "p_one_sided": 0.0009995002498750624,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.00020534628712116297
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 250,
+        "events": 21,
+        "hit_rate": 0.084,
+        "mean_base": 0.03799978524066286,
+        "lift": 2.210538808785508,
+        "mean_p": 0.12852367720580313,
+        "hit_minus_base": 0.04600021475933715,
+        "hit_minus_base_ci95": [
+          0.016216417093794636,
+          0.08288791804194225
+        ],
+        "p_one_sided": 0.0014992503748125937,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0001349948363460763
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 114,
+        "events": 12,
+        "hit_rate": 0.10526315789473684,
+        "mean_base": 0.06829430630566373,
+        "lift": 1.5413167449657108,
+        "mean_p": 0.15657887512939242,
+        "hit_minus_base": 0.036968851589073114,
+        "hit_minus_base_ci95": [
+          -0.016909737179101693,
+          0.10260684522251118
+        ],
+        "p_one_sided": 0.10444777611194403,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00029608305132862905
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 89,
+        "events": 36,
+        "hit_rate": 0.4044943820224719,
+        "mean_base": 0.25045805941582605,
+        "lift": 1.615018430494605,
+        "mean_p": 0.43208561360872944,
+        "hit_minus_base": 0.15403632260664585,
+        "hit_minus_base_ci95": [
+          0.04486422844885214,
+          0.2616370471800839
+        ],
+        "p_one_sided": 0.001999000499750125,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -3.4679574494394085e-05
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 311,
+        "events": 0,
+        "hit_rate": 0.0,
+        "mean_base": 0.0007579852079408682,
+        "lift": 0.0,
+        "mean_p": 0.010955805727428377,
+        "hit_minus_base": -0.0007579852079408682,
+        "hit_minus_base_ci95": [
+          -0.0008135281406226964,
+          -0.0007071690393323223
+        ],
+        "p_one_sided": 1.0,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 2.7901691696751927e-06
+      }
+    },
+    "National League": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 286,
+        "events": 60,
+        "hit_rate": 0.2097902097902098,
+        "mean_base": 0.16626457239383552,
+        "lift": 1.2617853988357417,
+        "mean_p": 0.3327444402687679,
+        "hit_minus_base": 0.043525637396374245,
+        "hit_minus_base_ci95": [
+          -0.004348732729234741,
+          0.0915552792155707
+        ],
+        "p_one_sided": 0.04047976011994003,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0008357741525444487
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 286,
+        "events": 30,
+        "hit_rate": 0.1048951048951049,
+        "mean_base": 0.06276883143590245,
+        "lift": 1.6711336262842564,
+        "mean_p": 0.18744897046330647,
+        "hit_minus_base": 0.042126273459202446,
+        "hit_minus_base_ci95": [
+          0.005482416522523929,
+          0.07939097468791659
+        ],
+        "p_one_sided": 0.012993503248375811,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0005215031174850857
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 286,
+        "events": 11,
+        "hit_rate": 0.038461538461538464,
+        "mean_base": 0.02426056391493381,
+        "lift": 1.5853522035348533,
+        "mean_p": 0.09463734865885087,
+        "hit_minus_base": 0.014200974546604654,
+        "hit_minus_base_ci95": [
+          -0.006215097558195334,
+          0.03562661199315219
+        ],
+        "p_one_sided": 0.09695152423788106,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0005081670348387736
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 231,
+        "events": 48,
+        "hit_rate": 0.2077922077922078,
+        "mean_base": 0.12505313212219907,
+        "lift": 1.6616313743278177,
+        "mean_p": 0.30741312551927447,
+        "hit_minus_base": 0.0827390756700087,
+        "hit_minus_base_ci95": [
+          0.03708906246150472,
+          0.1334986194992361
+        ],
+        "p_one_sided": 0.0009995002498750624,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.000970000164569278
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 187,
+        "events": 25,
+        "hit_rate": 0.13368983957219252,
+        "mean_base": 0.05821627925455343,
+        "lift": 2.296433940541397,
+        "mean_p": 0.18744671013317668,
+        "hit_minus_base": 0.07547356031763909,
+        "hit_minus_base_ci95": [
+          0.031646126184119466,
+          0.12215486022910363
+        ],
+        "p_one_sided": 0.0009995002498750624,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0005292256510818874
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 280,
+        "events": 26,
+        "hit_rate": 0.09285714285714286,
+        "mean_base": 0.07028794267630477,
+        "lift": 1.321096326361058,
+        "mean_p": 0.1505370002134764,
+        "hit_minus_base": 0.022569200180838092,
+        "hit_minus_base_ci95": [
+          -0.009521937896502002,
+          0.056447841427596575
+        ],
+        "p_one_sided": 0.08745627186406797,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0005846393625055029
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 188,
+        "events": 63,
+        "hit_rate": 0.3351063829787234,
+        "mean_base": 0.25291277519227723,
+        "lift": 1.324987963632752,
+        "mean_p": 0.43938377497000647,
+        "hit_minus_base": 0.0821936077864461,
+        "hit_minus_base_ci95": [
+          0.018397152635685993,
+          0.1538285078420805
+        ],
+        "p_one_sided": 0.006496751624187906,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.00011576659863725542
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 279,
+        "events": 2,
+        "hit_rate": 0.007168458781362007,
+        "mean_base": 0.0007970909373881503,
+        "lift": 8.993275980343087,
+        "mean_p": 0.010901793309015329,
+        "hit_minus_base": 0.006371367843973857,
+        "hit_minus_base_ci95": [
+          -0.0008132157933325799,
+          0.017489106653322293
+        ],
+        "p_one_sided": 0.12593703148425786,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -3.741544139273112e-05
+      }
+    },
+    "Norway Eliteserien": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 90,
+        "events": 29,
+        "hit_rate": 0.32222222222222224,
+        "mean_base": 0.2031551601922181,
+        "lift": 1.586089282287229,
+        "mean_p": 0.4202456220166033,
+        "hit_minus_base": 0.11906706203000414,
+        "hit_minus_base_ci95": [
+          0.020053623357920547,
+          0.21600308604568658
+        ],
+        "p_one_sided": 0.009495252373813094,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0004982748963434641
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 90,
+        "events": 14,
+        "hit_rate": 0.15555555555555556,
+        "mean_base": 0.08430447918106869,
+        "lift": 1.845163591147443,
+        "mean_p": 0.2574251497767096,
+        "hit_minus_base": 0.07125107637448685,
+        "hit_minus_base_ci95": [
+          -0.007473754209102972,
+          0.15735994396742592
+        ],
+        "p_one_sided": 0.04097951024487756,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.000781404117137767
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 90,
+        "events": 6,
+        "hit_rate": 0.06666666666666667,
+        "mean_base": 0.03350724870380205,
+        "lift": 1.9896192389887875,
+        "mean_p": 0.14143354699229424,
+        "hit_minus_base": 0.033159417962864625,
+        "hit_minus_base_ci95": [
+          -0.01100694460199212,
+          0.08592420722688564
+        ],
+        "p_one_sided": 0.07596201899050475,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0002534167286518698
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 80,
+        "events": 24,
+        "hit_rate": 0.3,
+        "mean_base": 0.15717160915735123,
+        "lift": 1.9087416716568522,
+        "mean_p": 0.4141167988893718,
+        "hit_minus_base": 0.1428283908426488,
+        "hit_minus_base_ci95": [
+          0.03526016710931708,
+          0.24768542470311744
+        ],
+        "p_one_sided": 0.0034982508745627187,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.00091195633641108
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 98,
+        "events": 18,
+        "hit_rate": 0.1836734693877551,
+        "mean_base": 0.08284467076144486,
+        "lift": 2.217082495464935,
+        "mean_p": 0.25513407386471815,
+        "hit_minus_base": 0.10082879862631022,
+        "hit_minus_base_ci95": [
+          0.02382584220215462,
+          0.17999147618601355
+        ],
+        "p_one_sided": 0.004497751124437781,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.00025282460105707056
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 51,
+        "events": 5,
+        "hit_rate": 0.09803921568627451,
+        "mean_base": 0.05934691396897076,
+        "lift": 1.6519682175476527,
+        "mean_p": 0.13194673119470515,
+        "hit_minus_base": 0.038692301717303756,
+        "hit_minus_base_ci95": [
+          -0.03899752032586327,
+          0.12442411648829509
+        ],
+        "p_one_sided": 0.18440779610194902,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.00013409188952616337
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 107,
+        "events": 30,
+        "hit_rate": 0.2803738317757009,
+        "mean_base": 0.18875458669611264,
+        "lift": 1.4853881788159755,
+        "mean_p": 0.3663926067479982,
+        "hit_minus_base": 0.09161924507958828,
+        "hit_minus_base_ci95": [
+          0.0018946930539450837,
+          0.18519302364581047
+        ],
+        "p_one_sided": 0.02348825587206397,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0021940632340897398
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 148,
+        "events": 0,
+        "hit_rate": 0.0,
+        "mean_base": 0.001387393058005654,
+        "lift": 0.0,
+        "mean_p": 0.016417089547161534,
+        "hit_minus_base": -0.001387393058005654,
+        "hit_minus_base_ci95": [
+          -0.0015993884870278757,
+          -0.001183982306406792
+        ],
+        "p_one_sided": 1.0,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 7.801398661797852e-05
+      }
+    },
+    "Portuguese Primeira Liga": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 210,
+        "events": 37,
+        "hit_rate": 0.1761904761904762,
+        "mean_base": 0.11299254294979179,
+        "lift": 1.5593106552948932,
+        "mean_p": 0.28284889527572005,
+        "hit_minus_base": 0.0631979332406844,
+        "hit_minus_base_ci95": [
+          0.013625268182021083,
+          0.11718061718268005
+        ],
+        "p_one_sided": 0.008995502248875561,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0007575527598555776
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 210,
+        "events": 17,
+        "hit_rate": 0.08095238095238096,
+        "mean_base": 0.0426586175157483,
+        "lift": 1.897679429543063,
+        "mean_p": 0.150191008454383,
+        "hit_minus_base": 0.03829376343663265,
+        "hit_minus_base_ci95": [
+          0.004830261572534385,
+          0.07754359443958173
+        ],
+        "p_one_sided": 0.010494752623688156,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0004002253591426497
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 210,
+        "events": 7,
+        "hit_rate": 0.03333333333333333,
+        "mean_base": 0.015247829221358462,
+        "lift": 2.186103533127294,
+        "mean_p": 0.0710887319995457,
+        "hit_minus_base": 0.018085504111974876,
+        "hit_minus_base_ci95": [
+          -0.00552515923407276,
+          0.04279772911581785
+        ],
+        "p_one_sided": 0.0814592703648176,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00016499914914454964
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 208,
+        "events": 48,
+        "hit_rate": 0.23076923076923078,
+        "mean_base": 0.09485555550865123,
+        "lift": 2.432848867225111,
+        "mean_p": 0.31797368157329137,
+        "hit_minus_base": 0.13591367526057954,
+        "hit_minus_base_ci95": [
+          0.0803437012541088,
+          0.193422072929687
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.0011932276603001018
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 221,
+        "events": 33,
+        "hit_rate": 0.1493212669683258,
+        "mean_base": 0.0595683616257969,
+        "lift": 2.5067210662322488,
+        "mean_p": 0.2242992232218196,
+        "hit_minus_base": 0.08975290534252887,
+        "hit_minus_base_ci95": [
+          0.03976058473469586,
+          0.14217765443763886
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.0007525531478704704
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 114,
+        "events": 7,
+        "hit_rate": 0.06140350877192982,
+        "mean_base": 0.07134741791926018,
+        "lift": 0.8606269233375297,
+        "mean_p": 0.16208844642009557,
+        "hit_minus_base": -0.009943909147330362,
+        "hit_minus_base_ci95": [
+          -0.05332827711636696,
+          0.034491051881534944
+        ],
+        "p_one_sided": 0.6936531734132934,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0005047105644133742
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 127,
+        "events": 41,
+        "hit_rate": 0.3228346456692913,
+        "mean_base": 0.2825120544223669,
+        "lift": 1.142728745962254,
+        "mean_p": 0.4640488316211949,
+        "hit_minus_base": 0.040322591246924534,
+        "hit_minus_base_ci95": [
+          -0.03661899222609861,
+          0.12784515148463696
+        ],
+        "p_one_sided": 0.15292353823088456,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.0005702235596923983
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 174,
+        "events": 4,
+        "hit_rate": 0.022988505747126436,
+        "mean_base": 0.0012439457013036768,
+        "lift": 18.480312864969974,
+        "mean_p": 0.021124237918553238,
+        "hit_minus_base": 0.021744560045822762,
+        "hit_minus_base_ci95": [
+          0.004378997811240339,
+          0.045411045515400116
+        ],
+        "p_one_sided": 0.01249375312343828,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0001283276971267388
+      }
+    },
+    "Romanian Superliga": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 188,
+        "events": 34,
+        "hit_rate": 0.18085106382978725,
+        "mean_base": 0.11012332243401776,
+        "lift": 1.6422594218236304,
+        "mean_p": 0.2180899342341251,
+        "hit_minus_base": 0.07072774139576947,
+        "hit_minus_base_ci95": [
+          0.015872039901200334,
+          0.12533035565610937
+        ],
+        "p_one_sided": 0.004497751124437781,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 7.268773645659149e-05
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 188,
+        "events": 11,
+        "hit_rate": 0.05851063829787234,
+        "mean_base": 0.0328723831539236,
+        "lift": 1.7799329614740327,
+        "mean_p": 0.10645910022039741,
+        "hit_minus_base": 0.02563825514394874,
+        "hit_minus_base_ci95": [
+          -0.006303843897915975,
+          0.06134707011845385
+        ],
+        "p_one_sided": 0.07946026986506746,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0005513534694630216
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 188,
+        "events": 2,
+        "hit_rate": 0.010638297872340425,
+        "mean_base": 0.014280445428220948,
+        "lift": 0.7449556056085668,
+        "mean_p": 0.0462861022076447,
+        "hit_minus_base": -0.003642147555880521,
+        "hit_minus_base_ci95": [
+          -0.014422129095578527,
+          0.012762871190009639
+        ],
+        "p_one_sided": 0.6741629185407296,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00029714492367455
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 192,
+        "events": 30,
+        "hit_rate": 0.15625,
+        "mean_base": 0.08516361214653596,
+        "lift": 1.8347037668053572,
+        "mean_p": 0.1992687916528347,
+        "hit_minus_base": 0.07108638785346402,
+        "hit_minus_base_ci95": [
+          0.023890956933482584,
+          0.12343035696308284
+        ],
+        "p_one_sided": 0.0034982508745627187,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.000814938732122062
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 180,
+        "events": 22,
+        "hit_rate": 0.12222222222222222,
+        "mean_base": 0.044060091932050266,
+        "lift": 2.7739892692623984,
+        "mean_p": 0.11951518656398706,
+        "hit_minus_base": 0.07816213029017197,
+        "hit_minus_base_ci95": [
+          0.03338862713089663,
+          0.13064917594626765
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0005215207722037989
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 134,
+        "events": 19,
+        "hit_rate": 0.1417910447761194,
+        "mean_base": 0.09727620361402112,
+        "lift": 1.45761285400001,
+        "mean_p": 0.20487443519638318,
+        "hit_minus_base": 0.04451484116209828,
+        "hit_minus_base_ci95": [
+          -0.013466514586177081,
+          0.10557986080197564
+        ],
+        "p_one_sided": 0.06796601699150424,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0007846155313980811
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 130,
+        "events": 59,
+        "hit_rate": 0.45384615384615384,
+        "mean_base": 0.32540463439210093,
+        "lift": 1.394713245845434,
+        "mean_p": 0.5285600094951758,
+        "hit_minus_base": 0.1284415194540529,
+        "hit_minus_base_ci95": [
+          0.03588445903327767,
+          0.22008144769941976
+        ],
+        "p_one_sided": 0.005497251374312844,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0012789046461280057
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 358,
+        "events": 2,
+        "hit_rate": 0.00558659217877095,
+        "mean_base": 0.000877754129871096,
+        "lift": 6.364643570052332,
+        "mean_p": 0.010215920112548247,
+        "hit_minus_base": 0.004708838048899854,
+        "hit_minus_base_ci95": [
+          -0.000894874225477235,
+          0.013358418326022655
+        ],
+        "p_one_sided": 0.1329335332333833,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 5.492134353208173e-06
+      }
+    },
+    "Saudi Pro League": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 162,
+        "events": 43,
+        "hit_rate": 0.2654320987654321,
+        "mean_base": 0.1639470932651988,
+        "lift": 1.6190107032643295,
+        "mean_p": 0.3444169217738885,
+        "hit_minus_base": 0.10148500550023332,
+        "hit_minus_base_ci95": [
+          0.03226523905057003,
+          0.17082350781057778
+        ],
+        "p_one_sided": 0.001999000499750125,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.00012513531764142663
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 162,
+        "events": 23,
+        "hit_rate": 0.1419753086419753,
+        "mean_base": 0.06985112154884422,
+        "lift": 2.032541575480608,
+        "mean_p": 0.19582202508643357,
+        "hit_minus_base": 0.07212418709313108,
+        "hit_minus_base_ci95": [
+          0.025240359041893454,
+          0.12641989223048253
+        ],
+        "p_one_sided": 0.0014992503748125937,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0003449386284872364
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 162,
+        "events": 10,
+        "hit_rate": 0.06172839506172839,
+        "mean_base": 0.028551043013626324,
+        "lift": 2.16203642831079,
+        "mean_p": 0.09946373228312418,
+        "hit_minus_base": 0.03317735204810207,
+        "hit_minus_base_ci95": [
+          0.0012578680618448742,
+          0.0714082357128985
+        ],
+        "p_one_sided": 0.025487256371814093,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.00021057877977631996
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 214,
+        "events": 55,
+        "hit_rate": 0.2570093457943925,
+        "mean_base": 0.13192716971325397,
+        "lift": 1.9481153605660368,
+        "mean_p": 0.32130654576073864,
+        "hit_minus_base": 0.12508217608113856,
+        "hit_minus_base_ci95": [
+          0.06723057371209824,
+          0.18565682673833428
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.003910251804795981
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 214,
+        "events": 31,
+        "hit_rate": 0.14485981308411214,
+        "mean_base": 0.0557725367538392,
+        "lift": 2.5973323344332275,
+        "mean_p": 0.2066166226917183,
+        "hit_minus_base": 0.08908727633027295,
+        "hit_minus_base_ci95": [
+          0.04477872438579577,
+          0.13549832974301051
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.002316912505832199
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 122,
+        "events": 12,
+        "hit_rate": 0.09836065573770492,
+        "mean_base": 0.05318687383124483,
+        "lift": 1.8493407988179702,
+        "mean_p": 0.16781815528626315,
+        "hit_minus_base": 0.0451737819064601,
+        "hit_minus_base_ci95": [
+          -0.004384843327078948,
+          0.0975678996634026
+        ],
+        "p_one_sided": 0.03498250874562719,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0005901671126134417
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 142,
+        "events": 45,
+        "hit_rate": 0.31690140845070425,
+        "mean_base": 0.2206883251916514,
+        "lift": 1.4359681608689492,
+        "mean_p": 0.4483050809759351,
+        "hit_minus_base": 0.09621308325905284,
+        "hit_minus_base_ci95": [
+          0.016516564718929726,
+          0.1779539505711868
+        ],
+        "p_one_sided": 0.012993503248375811,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0032578589021821387
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 227,
+        "events": 2,
+        "hit_rate": 0.00881057268722467,
+        "mean_base": 0.0012725887490323384,
+        "lift": 6.923346363013288,
+        "mean_p": 0.024302426435887807,
+        "hit_minus_base": 0.007537983938192332,
+        "hit_minus_base_ci95": [
+          -0.0013030862133427382,
+          0.02100532378933049
+        ],
+        "p_one_sided": 0.12143928035982009,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -1.2886218511032227e-05
+      }
+    },
+    "Scottish Championship": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 44,
+        "events": 4,
+        "hit_rate": 0.09090909090909091,
+        "mean_base": 0.1397141492031585,
+        "lift": 0.6506792005504031,
+        "mean_p": 0.2847847232158289,
+        "hit_minus_base": -0.04880505829406757,
+        "hit_minus_base_ci95": [
+          -0.11787673946853143,
+          0.04657547843907804
+        ],
+        "p_one_sided": 0.881559220389805,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.001854192701693796
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 44,
+        "events": 1,
+        "hit_rate": 0.022727272727272728,
+        "mean_base": 0.057816597408589354,
+        "lift": 0.3930925330430517,
+        "mean_p": 0.15087459645606424,
+        "hit_minus_base": -0.03508932468131664,
+        "hit_minus_base_ci95": [
+          -0.05815413011094189,
+          0.01356482237602277
+        ],
+        "p_one_sided": 0.9195402298850575,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0012159586813501031
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 44,
+        "events": 1,
+        "hit_rate": 0.022727272727272728,
+        "mean_base": 0.02567415943011564,
+        "lift": 0.8852197396816727,
+        "mean_p": 0.07106231980792878,
+        "hit_minus_base": -0.002946886702842916,
+        "hit_minus_base_ci95": [
+          -0.026064381398764724,
+          0.044457982874248486
+        ],
+        "p_one_sided": 0.7416291854072964,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.000190007080947862
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 54,
+        "events": 7,
+        "hit_rate": 0.12962962962962962,
+        "mean_base": 0.1075925111069969,
+        "lift": 1.2048201895828754,
+        "mean_p": 0.25858830405284444,
+        "hit_minus_base": 0.022037118522632734,
+        "hit_minus_base_ci95": [
+          -0.05431835507043794,
+          0.10819034909666496
+        ],
+        "p_one_sided": 0.3183408295852074,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00113805548506941
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 73,
+        "events": 7,
+        "hit_rate": 0.0958904109589041,
+        "mean_base": 0.06223748612080915,
+        "lift": 1.5407179328029297,
+        "mean_p": 0.14589748651934586,
+        "hit_minus_base": 0.033652924838094955,
+        "hit_minus_base_ci95": [
+          -0.03287927983301161,
+          0.10175039387233886
+        ],
+        "p_one_sided": 0.1619190404797601,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.000996269983389927
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 67,
+        "events": 9,
+        "hit_rate": 0.13432835820895522,
+        "mean_base": 0.08933344885010684,
+        "lift": 1.5036737071950017,
+        "mean_p": 0.16066531891085037,
+        "hit_minus_base": 0.044994909358848374,
+        "hit_minus_base_ci95": [
+          -0.031243392502708613,
+          0.13376174939475607
+        ],
+        "p_one_sided": 0.13943028485757122,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0010774341024436481
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 56,
+        "events": 12,
+        "hit_rate": 0.21428571428571427,
+        "mean_base": 0.2634529617240228,
+        "lift": 0.8133737153055309,
+        "mean_p": 0.4186844446426277,
+        "hit_minus_base": -0.049167247438308574,
+        "hit_minus_base_ci95": [
+          -0.1503270509240679,
+          0.06402925741088182
+        ],
+        "p_one_sided": 0.815592203898051,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.009888279153506334
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 67,
+        "events": 2,
+        "hit_rate": 0.029850746268656716,
+        "mean_base": 0.002581491746794197,
+        "lift": 11.563370793544705,
+        "mean_p": 0.02230934032946851,
+        "hit_minus_base": 0.027269254521862518,
+        "hit_minus_base_ci95": [
+          -0.002811748395917044,
+          0.07560138682634672
+        ],
+        "p_one_sided": 0.127936031984008,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 5.559309615948982e-05
+      }
+    },
+    "Scottish League One": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 46,
+        "events": 10,
+        "hit_rate": 0.21739130434782608,
+        "mean_base": 0.1584907600608952,
+        "lift": 1.3716339316203678,
+        "mean_p": 0.3578007960323978,
+        "hit_minus_base": 0.05890054428693088,
+        "hit_minus_base_ci95": [
+          -0.04988187787991761,
+          0.18283368193305718
+        ],
+        "p_one_sided": 0.16241879060469766,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.002548157946318366
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 46,
+        "events": 3,
+        "hit_rate": 0.06521739130434782,
+        "mean_base": 0.06859308411235646,
+        "lift": 0.9507866886043613,
+        "mean_p": 0.20641538638761397,
+        "hit_minus_base": -0.0033756928080086257,
+        "hit_minus_base_ci95": [
+          -0.06859999408760507,
+          0.08339885122650227
+        ],
+        "p_one_sided": 0.6496751624187906,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0008031734453941547
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 46,
+        "events": 2,
+        "hit_rate": 0.043478260869565216,
+        "mean_base": 0.028425061041094976,
+        "lift": 1.5295749341296883,
+        "mean_p": 0.10653605185312279,
+        "hit_minus_base": 0.015053199828470244,
+        "hit_minus_base_ci95": [
+          -0.028747911913416486,
+          0.08270097619986724
+        ],
+        "p_one_sided": 0.3868065967016492,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0002220182405620848
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 47,
+        "events": 8,
+        "hit_rate": 0.1702127659574468,
+        "mean_base": 0.12781446598606336,
+        "lift": 1.3317175379507236,
+        "mean_p": 0.31487337080070327,
+        "hit_minus_base": 0.04239829997138342,
+        "hit_minus_base_ci95": [
+          -0.06190422700025542,
+          0.15401135821386586
+        ],
+        "p_one_sided": 0.22938530734632684,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0033090509026758174
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 41,
+        "events": 4,
+        "hit_rate": 0.0975609756097561,
+        "mean_base": 0.0602384584006334,
+        "lift": 1.6195795543255511,
+        "mean_p": 0.18635285622984107,
+        "hit_minus_base": 0.037322517209122684,
+        "hit_minus_base_ci95": [
+          -0.03645718120058517,
+          0.12981417352727845
+        ],
+        "p_one_sided": 0.2273863068465767,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00025285925217491807
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 60,
+        "events": 2,
+        "hit_rate": 0.03333333333333333,
+        "mean_base": 0.061186751561143,
+        "lift": 0.5447802421742203,
+        "mean_p": 0.14777248549042651,
+        "hit_minus_base": -0.02785341822780966,
+        "hit_minus_base_ci95": [
+          -0.06133551599717321,
+          0.024989017117064055
+        ],
+        "p_one_sided": 0.8500749625187406,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0011780035827546277
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 77,
+        "events": 20,
+        "hit_rate": 0.2597402597402597,
+        "mean_base": 0.21894479044421258,
+        "lift": 1.1863276546259816,
+        "mean_p": 0.3961906398417622,
+        "hit_minus_base": 0.040795469296047146,
+        "hit_minus_base_ci95": [
+          -0.0621096356976961,
+          0.13779264056767135
+        ],
+        "p_one_sided": 0.22188905547226387,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.002657093440479469
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 42,
+        "events": 2,
+        "hit_rate": 0.047619047619047616,
+        "mean_base": 0.001555045805729903,
+        "lift": 30.622279706221466,
+        "mean_p": 0.025079154842580133,
+        "hit_minus_base": 0.04606400181331772,
+        "hit_minus_base_ci95": [
+          -0.0016151044715763162,
+          0.1175454883923974
+        ],
+        "p_one_sided": 0.12593703148425786,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -7.934310709022231e-05
+      }
+    },
+    "Scottish League Two": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 60,
+        "events": 9,
+        "hit_rate": 0.15,
+        "mean_base": 0.1343365663483259,
+        "lift": 1.1165984368772672,
+        "mean_p": 0.29601831851231547,
+        "hit_minus_base": 0.01566343365167413,
+        "hit_minus_base_ci95": [
+          -0.06955226633735113,
+          0.12089940145240888
+        ],
+        "p_one_sided": 0.3708145927036482,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0026335938438221008
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 60,
+        "events": 3,
+        "hit_rate": 0.05,
+        "mean_base": 0.055947606226371106,
+        "lift": 0.8936932850655606,
+        "mean_p": 0.15888224285819358,
+        "hit_minus_base": -0.005947606226371105,
+        "hit_minus_base_ci95": [
+          -0.055822449030150864,
+          0.06073991368204641
+        ],
+        "p_one_sided": 0.6471764117941029,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0019242175986587452
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 60,
+        "events": 2,
+        "hit_rate": 0.03333333333333333,
+        "mean_base": 0.01876978328622047,
+        "lift": 1.7759040061908684,
+        "mean_p": 0.07583913716790792,
+        "hit_minus_base": 0.014563550047112857,
+        "hit_minus_base_ci95": [
+          -0.01885156582372787,
+          0.06732900372665337
+        ],
+        "p_one_sided": 0.39780109945027486,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00019497201490233733
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 60,
+        "events": 8,
+        "hit_rate": 0.13333333333333333,
+        "mean_base": 0.11169044009185754,
+        "lift": 1.1937757002629414,
+        "mean_p": 0.23886202248766109,
+        "hit_minus_base": 0.021642893241475798,
+        "hit_minus_base_ci95": [
+          -0.05839677612451508,
+          0.11658742343512811
+        ],
+        "p_one_sided": 0.3118440779610195,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0026242364901393395
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 53,
+        "events": 3,
+        "hit_rate": 0.05660377358490566,
+        "mean_base": 0.06249760193851121,
+        "lift": 0.9056951279602017,
+        "mean_p": 0.12004732364262483,
+        "hit_minus_base": -0.005893828353605542,
+        "hit_minus_base_ci95": [
+          -0.06261883734031308,
+          0.06264926326460052
+        ],
+        "p_one_sided": 0.6351824087956022,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.001014902705105969
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 88,
+        "events": 5,
+        "hit_rate": 0.056818181818181816,
+        "mean_base": 0.06539465496904918,
+        "lift": 0.8688505481843042,
+        "mean_p": 0.12684591072677934,
+        "hit_minus_base": -0.008576473150867382,
+        "hit_minus_base_ci95": [
+          -0.05392413470576112,
+          0.04291159615103234
+        ],
+        "p_one_sided": 0.6511744127936032,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0005701275619033327
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 43,
+        "events": 10,
+        "hit_rate": 0.23255813953488372,
+        "mean_base": 0.24167033437036237,
+        "lift": 0.9622949384366137,
+        "mean_p": 0.40429088129414087,
+        "hit_minus_base": -0.009112194835478597,
+        "hit_minus_base_ci95": [
+          -0.12813630010613478,
+          0.12124979339594608
+        ],
+        "p_one_sided": 0.5707146426786607,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -4.142801384779302e-05
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 54,
+        "events": 1,
+        "hit_rate": 0.018518518518518517,
+        "mean_base": 0.0015036794415356977,
+        "lift": 12.315469645315945,
+        "mean_p": 0.01610047340705217,
+        "hit_minus_base": 0.017014839076982816,
+        "hit_minus_base_ci95": [
+          -0.0017034062835227107,
+          0.057443071277656445
+        ],
+        "p_one_sided": 0.3658170914542729,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -2.3162547116109758e-05
+      }
+    },
+    "Scottish Premiership": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 140,
+        "events": 27,
+        "hit_rate": 0.19285714285714287,
+        "mean_base": 0.12400546811791298,
+        "lift": 1.5552309570232898,
+        "mean_p": 0.2993784143065785,
+        "hit_minus_base": 0.06885167473922989,
+        "hit_minus_base_ci95": [
+          0.00676944815475894,
+          0.1355505034766849
+        ],
+        "p_one_sided": 0.015492253873063468,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0005920572243712381
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 140,
+        "events": 14,
+        "hit_rate": 0.1,
+        "mean_base": 0.047426296396650997,
+        "lift": 2.1085348761718086,
+        "mean_p": 0.16188737077545245,
+        "hit_minus_base": 0.052573703603349016,
+        "hit_minus_base_ci95": [
+          0.006902224621471044,
+          0.10570657997007796
+        ],
+        "p_one_sided": 0.01199400299850075,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0005610310108828591
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 140,
+        "events": 3,
+        "hit_rate": 0.02142857142857143,
+        "mean_base": 0.012540304181731366,
+        "lift": 1.7087760486534636,
+        "mean_p": 0.07798145917311158,
+        "hit_minus_base": 0.008888267246840064,
+        "hit_minus_base_ci95": [
+          -0.012565169165118977,
+          0.036795616159949286
+        ],
+        "p_one_sided": 0.19090454772613694,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0004509000828176132
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 118,
+        "events": 34,
+        "hit_rate": 0.288135593220339,
+        "mean_base": 0.11809002978195075,
+        "lift": 2.439965454766771,
+        "mean_p": 0.35574296645542536,
+        "hit_minus_base": 0.1700455634383882,
+        "hit_minus_base_ci95": [
+          0.09028168808911624,
+          0.25060640232958087
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.004063493111489793
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 112,
+        "events": 23,
+        "hit_rate": 0.20535714285714285,
+        "mean_base": 0.07382219552975629,
+        "lift": 2.7817804846290084,
+        "mean_p": 0.2676860785683574,
+        "hit_minus_base": 0.13153494732738658,
+        "hit_minus_base_ci95": [
+          0.058203134019278,
+          0.20819748234693233
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0021245886408204945
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 24,
+        "events": 2,
+        "hit_rate": 0.08333333333333333,
+        "mean_base": 0.08257690574293655,
+        "lift": 1.0091602801484418,
+        "mean_p": 0.17901990863984643,
+        "hit_minus_base": 0.000756427590396791,
+        "hit_minus_base_ci95": [
+          -0.08378671469436103,
+          0.1181573596469206
+        ],
+        "p_one_sided": 0.4947526236881559,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0006756098183133822
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 28,
+        "events": 11,
+        "hit_rate": 0.39285714285714285,
+        "mean_base": 0.27643757940913544,
+        "lift": 1.4211423197122675,
+        "mean_p": 0.4649179310672465,
+        "hit_minus_base": 0.11641956344800744,
+        "hit_minus_base_ci95": [
+          -0.0522630221708329,
+          0.2825723835789932
+        ],
+        "p_one_sided": 0.0864567716141929,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.002177979881541334
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 122,
+        "events": 2,
+        "hit_rate": 0.01639344262295082,
+        "mean_base": 0.0013829797174992864,
+        "lift": 11.853711529908448,
+        "mean_p": 0.02834611085233991,
+        "hit_minus_base": 0.015010462905451534,
+        "hit_minus_base_ci95": [
+          -0.0013906180512567976,
+          0.03995994532260497
+        ],
+        "p_one_sided": 0.1344327836081959,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -8.115333293151312e-07
+      }
+    },
+    "Serie B": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 156,
+        "events": 21,
+        "hit_rate": 0.1346153846153846,
+        "mean_base": 0.09561982598259874,
+        "lift": 1.4078187575857168,
+        "mean_p": 0.24442566739178476,
+        "hit_minus_base": 0.03899555863278587,
+        "hit_minus_base_ci95": [
+          -0.013893367272740634,
+          0.10060299678164143
+        ],
+        "p_one_sided": 0.07796101949025487,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.002417854291202918
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 156,
+        "events": 10,
+        "hit_rate": 0.0641025641025641,
+        "mean_base": 0.03509004873160636,
+        "lift": 1.8268017976511257,
+        "mean_p": 0.1252843452866011,
+        "hit_minus_base": 0.02901251537095775,
+        "hit_minus_base_ci95": [
+          -0.004243629301740474,
+          0.07024355137480702
+        ],
+        "p_one_sided": 0.054972513743128434,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0007782867668189744
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 156,
+        "events": 5,
+        "hit_rate": 0.03205128205128205,
+        "mean_base": 0.011605141816897948,
+        "lift": 2.7618173527714243,
+        "mean_p": 0.05798464228406084,
+        "hit_minus_base": 0.0204461402343841,
+        "hit_minus_base_ci95": [
+          -0.0049315055603749176,
+          0.05107777150966206
+        ],
+        "p_one_sided": 0.037481259370314844,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00035125404189072977
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 164,
+        "events": 14,
+        "hit_rate": 0.08536585365853659,
+        "mean_base": 0.06451203095259209,
+        "lift": 1.323254785162001,
+        "mean_p": 0.20895701937075065,
+        "hit_minus_base": 0.020853822705944512,
+        "hit_minus_base_ci95": [
+          -0.019525049412694364,
+          0.06855626895655699
+        ],
+        "p_one_sided": 0.17191404297851073,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0019155921275637706
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 166,
+        "events": 10,
+        "hit_rate": 0.060240963855421686,
+        "mean_base": 0.02867611847505365,
+        "lift": 2.1007363290058727,
+        "mean_p": 0.10991871860194327,
+        "hit_minus_base": 0.03156484538036804,
+        "hit_minus_base_ci95": [
+          -0.004108205145448809,
+          0.06882695331230165
+        ],
+        "p_one_sided": 0.031484257871064465,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 4.3576254143511585e-05
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 107,
+        "events": 11,
+        "hit_rate": 0.102803738317757,
+        "mean_base": 0.09393760695107214,
+        "lift": 1.094383193850178,
+        "mean_p": 0.18599654935091114,
+        "hit_minus_base": 0.008866131366684862,
+        "hit_minus_base_ci95": [
+          -0.04564191582990612,
+          0.06906322611414835
+        ],
+        "p_one_sided": 0.39080459770114945,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0013874222511424301
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 114,
+        "events": 32,
+        "hit_rate": 0.2807017543859649,
+        "mean_base": 0.2845449331945754,
+        "lift": 0.9864935960536592,
+        "mean_p": 0.4521612200577665,
+        "hit_minus_base": -0.003843178808610484,
+        "hit_minus_base_ci95": [
+          -0.08546262258561978,
+          0.07835717206688521
+        ],
+        "p_one_sided": 0.5497251374312844,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.005833055434325836
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 310,
+        "events": 0,
+        "hit_rate": 0.0,
+        "mean_base": 0.0007736544220637502,
+        "lift": 0.0,
+        "mean_p": 0.009114765475481486,
+        "hit_minus_base": -0.0007736544220637502,
+        "hit_minus_base_ci95": [
+          -0.000834011130931559,
+          -0.0007240562633706949
+        ],
+        "p_one_sided": 1.0,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 4.5613478603068843e-05
+      }
+    },
+    "Sweden Allsvenskan": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 151,
+        "events": 36,
+        "hit_rate": 0.23841059602649006,
+        "mean_base": 0.14315013614044952,
+        "lift": 1.6654583953212396,
+        "mean_p": 0.3228595307229389,
+        "hit_minus_base": 0.09526045988604051,
+        "hit_minus_base_ci95": [
+          0.02428629093680019,
+          0.16552978921642017
+        ],
+        "p_one_sided": 0.0024987506246876563,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.0008564007735257043
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 151,
+        "events": 18,
+        "hit_rate": 0.11920529801324503,
+        "mean_base": 0.059396922070630166,
+        "lift": 2.006927191807943,
+        "mean_p": 0.17916411382314426,
+        "hit_minus_base": 0.05980837594261487,
+        "hit_minus_base_ci95": [
+          0.006782347697041265,
+          0.11895268092503314
+        ],
+        "p_one_sided": 0.015492253873063468,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0004543028311890871
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 151,
+        "events": 9,
+        "hit_rate": 0.059602649006622516,
+        "mean_base": 0.023847875545645002,
+        "lift": 2.4992854769198467,
+        "mean_p": 0.0886827213485807,
+        "hit_minus_base": 0.03575477346097752,
+        "hit_minus_base_ci95": [
+          -0.0036094595868011938,
+          0.07923505217513394
+        ],
+        "p_one_sided": 0.031484257871064465,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -1.3547228894440656e-05
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 141,
+        "events": 36,
+        "hit_rate": 0.2553191489361702,
+        "mean_base": 0.1160462219870907,
+        "lift": 2.2001504621544044,
+        "mean_p": 0.29235979526833733,
+        "hit_minus_base": 0.13927292694907953,
+        "hit_minus_base_ci95": [
+          0.07350551309016821,
+          0.2127212908917398
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.0020841262475041204
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 137,
+        "events": 20,
+        "hit_rate": 0.145985401459854,
+        "mean_base": 0.057690062325037074,
+        "lift": 2.5305121120747582,
+        "mean_p": 0.16958319118080098,
+        "hit_minus_base": 0.08829533913481695,
+        "hit_minus_base_ci95": [
+          0.033258885837519396,
+          0.14830759068501895
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.001279380914972385
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 91,
+        "events": 9,
+        "hit_rate": 0.0989010989010989,
+        "mean_base": 0.0709966800969846,
+        "lift": 1.393038361314862,
+        "mean_p": 0.1752207138536855,
+        "hit_minus_base": 0.027904418804114324,
+        "hit_minus_base_ci95": [
+          -0.02702147874980461,
+          0.09042077199789544
+        ],
+        "p_one_sided": 0.1984007996001999,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 8.211634232897666e-05
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 133,
+        "events": 36,
+        "hit_rate": 0.2706766917293233,
+        "mean_base": 0.23219141526693002,
+        "lift": 1.1657480592818221,
+        "mean_p": 0.4427118771600046,
+        "hit_minus_base": 0.03848527646239332,
+        "hit_minus_base_ci95": [
+          -0.03932447236970921,
+          0.11891124151708125
+        ],
+        "p_one_sided": 0.17391304347826086,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0009821419875327595
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 146,
+        "events": 3,
+        "hit_rate": 0.02054794520547945,
+        "mean_base": 0.0011187734559893379,
+        "lift": 18.36649331951551,
+        "mean_p": 0.014203539100340964,
+        "hit_minus_base": 0.019429171749490118,
+        "hit_minus_base_ci95": [
+          -0.001098749806512266,
+          0.04741654452499259
+        ],
+        "p_one_sided": 0.047476261869065464,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -6.879681520375243e-05
+      }
+    },
+    "Turkish Super Lig": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 247,
+        "events": 61,
+        "hit_rate": 0.24696356275303644,
+        "mean_base": 0.1603125490763718,
+        "lift": 1.5405129802744555,
+        "mean_p": 0.2887178963782535,
+        "hit_minus_base": 0.08665101367666461,
+        "hit_minus_base_ci95": [
+          0.03372568396391236,
+          0.14333797099747358
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.0015971256881551728
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 247,
+        "events": 29,
+        "hit_rate": 0.11740890688259109,
+        "mean_base": 0.07447461992157883,
+        "lift": 1.5764955498426405,
+        "mean_p": 0.15376550779037962,
+        "hit_minus_base": 0.04293428696101226,
+        "hit_minus_base_ci95": [
+          0.0039200620608297754,
+          0.08314881523866834
+        ],
+        "p_one_sided": 0.017491254372813594,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -0.0004947199606387655
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 247,
+        "events": 7,
+        "hit_rate": 0.02834008097165992,
+        "mean_base": 0.02814141486688009,
+        "lift": 1.0070595634839115,
+        "mean_p": 0.0728532703274126,
+        "hit_minus_base": 0.00019866610477982927,
+        "hit_minus_base_ci95": [
+          -0.019838904193488802,
+          0.02268658626675368
+        ],
+        "p_one_sided": 0.5022488755622189,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0004068768274874223
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 224,
+        "events": 60,
+        "hit_rate": 0.26785714285714285,
+        "mean_base": 0.12129244408269255,
+        "lift": 2.208358029907684,
+        "mean_p": 0.27656811976222345,
+        "hit_minus_base": 0.14656469877445027,
+        "hit_minus_base_ci95": [
+          0.0877394186873826,
+          0.20478645824380443
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.0020153257746138953
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 210,
+        "events": 34,
+        "hit_rate": 0.1619047619047619,
+        "mean_base": 0.05621701348437705,
+        "lift": 2.879995785435239,
+        "mean_p": 0.17123299326587954,
+        "hit_minus_base": 0.10568774842038485,
+        "hit_minus_base_ci95": [
+          0.05804399979543115,
+          0.15786838857278312
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": -0.0008201790822622724
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 225,
+        "events": 19,
+        "hit_rate": 0.08444444444444445,
+        "mean_base": 0.07007329528403843,
+        "lift": 1.2050873888854994,
+        "mean_p": 0.14275366207335727,
+        "hit_minus_base": 0.014371149160406015,
+        "hit_minus_base_ci95": [
+          -0.01828243026534253,
+          0.05588401687599418
+        ],
+        "p_one_sided": 0.19890054972513743,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00022491571398623823
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 166,
+        "events": 47,
+        "hit_rate": 0.28313253012048195,
+        "mean_base": 0.23068972506837193,
+        "lift": 1.2273304761907666,
+        "mean_p": 0.3916748285433199,
+        "hit_minus_base": 0.05244280505211005,
+        "hit_minus_base_ci95": [
+          -0.013604153778229114,
+          0.12266479173479326
+        ],
+        "p_one_sided": 0.05847076461769116,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0011012373887570284
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 348,
+        "events": 4,
+        "hit_rate": 0.011494252873563218,
+        "mean_base": 0.0011727240668796602,
+        "lift": 9.801327693518468,
+        "mean_p": 0.01354458132176583,
+        "hit_minus_base": 0.010321528806683557,
+        "hit_minus_base_ci95": [
+          0.0016039954087025,
+          0.02262952103494125
+        ],
+        "p_one_sided": 0.014992503748125937,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -3.423972943851697e-05
+      }
+    },
+    "USA MLS": {
+      "ge5": {
+        "quantile": 0.9,
+        "candidates": 319,
+        "events": 89,
+        "hit_rate": 0.27899686520376177,
+        "mean_base": 0.17253198095911162,
+        "lift": 1.6170733312908594,
+        "mean_p": 0.33374904979933695,
+        "hit_minus_base": 0.1064648842446501,
+        "hit_minus_base_ci95": [
+          0.05988900539005711,
+          0.1576124465192909
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0007765380363537758
+      },
+      "ge6": {
+        "quantile": 0.9,
+        "candidates": 319,
+        "events": 45,
+        "hit_rate": 0.14106583072100312,
+        "mean_base": 0.0744662175318333,
+        "lift": 1.8943600923559651,
+        "mean_p": 0.18694229576758017,
+        "hit_minus_base": 0.06659961318916983,
+        "hit_minus_base_ci95": [
+          0.030273677362837866,
+          0.10466991079562005
+        ],
+        "p_one_sided": 0.0004997501249375312,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 4.598668308900214e-05
+      },
+      "ge7": {
+        "quantile": 0.9,
+        "candidates": 319,
+        "events": 15,
+        "hit_rate": 0.047021943573667714,
+        "mean_base": 0.03429106299454155,
+        "lift": 1.3712594322652718,
+        "mean_p": 0.09334382661184443,
+        "hit_minus_base": 0.012730880579126164,
+        "hit_minus_base_ci95": [
+          -0.008971589729664314,
+          0.037734079936107834
+        ],
+        "p_one_sided": 0.136431784107946,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.0003095022675811953
+      },
+      "team_ge4": {
+        "quantile": 0.9,
+        "candidates": 311,
+        "events": 56,
+        "hit_rate": 0.18006430868167203,
+        "mean_base": 0.12282520528988725,
+        "lift": 1.4660208241190502,
+        "mean_p": 0.2786736748597768,
+        "hit_minus_base": 0.05723910339178477,
+        "hit_minus_base_ci95": [
+          0.01740346793510498,
+          0.09984836699605394
+        ],
+        "p_one_sided": 0.0009995002498750624,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0008724589969210754
+      },
+      "margin_ge4": {
+        "quantile": 0.9,
+        "candidates": 296,
+        "events": 22,
+        "hit_rate": 0.07432432432432433,
+        "mean_base": 0.050746404296381505,
+        "lift": 1.4646224763086133,
+        "mean_p": 0.14382948800068587,
+        "hit_minus_base": 0.023577920027942827,
+        "hit_minus_base_ci95": [
+          -0.00483792515803347,
+          0.054413399198488165
+        ],
+        "p_one_sided": 0.05547226386806597,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 2.094068754425534e-05
+      },
+      "nil_nil": {
+        "quantile": 0.9,
+        "candidates": 298,
+        "events": 21,
+        "hit_rate": 0.07046979865771812,
+        "mean_base": 0.06389151052999695,
+        "lift": 1.1029602849134812,
+        "mean_p": 0.13103118022066682,
+        "hit_minus_base": 0.006578288127721175,
+        "hit_minus_base_ci95": [
+          -0.02211464230006943,
+          0.03736733811666642
+        ],
+        "p_one_sided": 0.31584207896051975,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": 0.00030076496425093303
+      },
+      "tot_le1": {
+        "quantile": 0.9,
+        "candidates": 216,
+        "events": 57,
+        "hit_rate": 0.2638888888888889,
+        "mean_base": 0.2154824051706795,
+        "lift": 1.2246423956511325,
+        "mean_p": 0.38442604006407843,
+        "hit_minus_base": 0.048406483718209374,
+        "hit_minus_base_ci95": [
+          -0.012623661245506075,
+          0.11436634587418204
+        ],
+        "p_one_sided": 0.06446776611694154,
+        "leagues": 1,
+        "verdict": "PER_LEAGUE_UNCORRECTED",
+        "skill_brier_diff": 0.0010552589549494202
+      },
+      "cs_unusual": {
+        "quantile": 0.9,
+        "candidates": 382,
+        "events": 2,
+        "hit_rate": 0.005235602094240838,
+        "mean_base": 0.0009578890605312163,
+        "lift": 5.46577083920066,
+        "mean_p": 0.007410678651432961,
+        "hit_minus_base": 0.004277713033709622,
+        "hit_minus_base_ci95": [
+          -0.0010044797500776976,
+          0.012320682455392034
+        ],
+        "p_one_sided": 0.1454272863568216,
+        "leagues": 1,
+        "verdict": "INSUFFICIENT",
+        "skill_brier_diff": -1.3515235017328356e-05
+      }
+    }
+  },
+  "family_size": 16,
+  "history": {
+    "rows": 70743,
+    "rows_dropped_incomplete": 1,
+    "leagues": 32,
+    "v9_sha": "bdab0d9ecad6dd38040747009962a2a5d738d966",
+    "date_min": "2019-02-15",
+    "date_max": "2026-10-30",
+    "source": "v9 src.data_loader.load_all_matches(force=True), offline (download off, network blocked), wowza-betting data-truth-100 at bdab0d9ecad6dd38040747009962a2a5d738d966, exported 2026-11-09"
+  },
+  "walk_forward": {
+    "leagues": {
+      "Argentina Primera Division": {
+        "fits": 60,
+        "predictions": 2777,
+        "unrated_team": 108
+      },
+      "Austrian Bundesliga": {
+        "fits": 56,
+        "predictions": 1081,
+        "unrated_team": 34
+      },
+      "Belgian First Division A": {
+        "fits": 61,
+        "predictions": 1695,
+        "unrated_team": 69
+      },
+      "Brazil Serie A": {
+        "fits": 61,
+        "predictions": 2518,
+        "unrated_team": 117
+      },
+      "Bundesliga 2": {
+        "fits": 55,
+        "predictions": 1464,
+        "unrated_team": 146
+      },
+      "Championship": {
+        "fits": 58,
+        "predictions": 2966,
+        "unrated_team": 188
+      },
+      "China Super League": {
+        "fits": 51,
+        "predictions": 1406,
+        "unrated_team": 125
+      },
+      "Denmark Superliga": {
+        "fits": 59,
+        "predictions": 1139,
+        "unrated_team": 29
+      },
+      "Dutch Eredivisie": {
+        "fits": 56,
+        "predictions": 1660,
+        "unrated_team": 84
+      },
+      "Finland Veikkausliiga": {
+        "fits": 45,
+        "predictions": 973,
+        "unrated_team": 49
+      },
+      "Greek Super League": {
+        "fits": 56,
+        "predictions": 1286,
+        "unrated_team": 62
+      },
+      "Ireland Premier Division": {
+        "fits": 56,
+        "predictions": 1026,
+        "unrated_team": 14
+      },
+      "Japan J-League": {
+        "fits": 69,
+        "predictions": 2186,
+        "unrated_team": 144
+      },
+      "K-League 1": {
+        "fits": 51,
+        "predictions": 1108,
+        "unrated_team": 46
+      },
+      "La Liga 2": {
+        "fits": 58,
+        "predictions": 2322,
+        "unrated_team": 238
+      },
+      "League One": {
+        "fits": 56,
+        "predictions": 2847,
+        "unrated_team": 259
+      },
+      "League Two": {
+        "fits": 57,
+        "predictions": 2921,
+        "unrated_team": 194
+      },
+      "Ligue 2": {
+        "fits": 57,
+        "predictions": 1709,
+        "unrated_team": 158
+      },
+      "Mexico Liga MX": {
+        "fits": 66,
+        "predictions": 2087,
+        "unrated_team": 15
+      },
+      "National League": {
+        "fits": 52,
+        "predictions": 2778,
+        "unrated_team": 256
+      },
+      "Norway Eliteserien": {
+        "fits": 57,
+        "predictions": 1502,
+        "unrated_team": 51
+      },
+      "Portuguese Primeira Liga": {
+        "fits": 59,
+        "predictions": 1755,
+        "unrated_team": 89
+      },
+      "Romanian Superliga": {
+        "fits": 71,
+        "predictions": 1863,
+        "unrated_team": 123
+      },
+      "Saudi Pro League": {
+        "fits": 55,
+        "predictions": 1519,
+        "unrated_team": 78
+      },
+      "Scottish Championship": {
+        "fits": 49,
+        "predictions": 804,
+        "unrated_team": 79
+      },
+      "Scottish League One": {
+        "fits": 48,
+        "predictions": 757,
+        "unrated_team": 109
+      },
+      "Scottish League Two": {
+        "fits": 48,
+        "predictions": 812,
+        "unrated_team": 53
+      },
+      "Scottish Premiership": {
+        "fits": 59,
+        "predictions": 1230,
+        "unrated_team": 22
+      },
+      "Serie B": {
+        "fits": 56,
+        "predictions": 1812,
+        "unrated_team": 241
+      },
+      "Sweden Allsvenskan": {
+        "fits": 53,
+        "predictions": 1490,
+        "unrated_team": 82
+      },
+      "Turkish Super Lig": {
+        "fits": 62,
+        "predictions": 2016,
+        "unrated_team": 140
+      },
+      "USA MLS": {
+        "fits": 71,
+        "predictions": 3352,
+        "unrated_team": 66
+      }
+    }
+  },
+  "calibration": {
+    "rule": {
+      "version": "CAL-1",
+      "form": "q = sigmoid(a_k + b_k*logit(p) + delta_k,L), delta empirical-Bayes shrunk (weight learned)",
+      "refit": "calendar month, earlier out-of-sample rows only",
+      "min_pooled_rows": 5000,
+      "min_league_rows": 200,
+      "clip": 1e-06
+    },
+    "before_after": {
+      "ge5": {
+        "n": 48940,
+        "events": 6770,
+        "actual": 0.138332652227217,
+        "mean_raw": 0.13868910774555485,
+        "mean_cal": 0.13480908380649037,
+        "mean_base": 0.13111576898704563,
+        "brier_raw": 0.11886427282890843,
+        "brier_cal": 0.11719015527777535,
+        "brier_base": 0.11817667874094412,
+        "logloss_raw": 0.4003892998975591,
+        "logloss_cal": 0.39370219988484284,
+        "logloss_base": 0.39768755269421036,
+        "brier_skill_raw": -0.00581835684747567,
+        "brier_skill_cal": 0.00834786925541664,
+        "flagged": {
+          "n": 5447,
+          "actual": 0.19717275564530934,
+          "mean_raw": 0.28297518675093053,
+          "mean_cal": 0.2033830367928351
+        }
+      },
+      "ge6": {
+        "n": 48940,
+        "events": 2747,
+        "actual": 0.05612995504699632,
+        "mean_raw": 0.06173789493943234,
+        "mean_cal": 0.05333104836243395,
+        "mean_base": 0.05158709378181771,
+        "brier_raw": 0.05308863660103921,
+        "brier_cal": 0.052377818948057826,
+        "brier_base": 0.05271943377778555,
+        "logloss_raw": 0.21444805994862076,
+        "logloss_cal": 0.2107862166771897,
+        "logloss_base": 0.21385038697545178,
+        "brier_skill_raw": -0.007003163668446666,
+        "brier_skill_cal": 0.0064798653029476405,
+        "flagged": {
+          "n": 5448,
+          "actual": 0.09049192364170337,
+          "mean_raw": 0.15175323870857604,
+          "mean_cal": 0.09043656451922867
+        }
+      },
+      "ge7": {
+        "n": 48940,
+        "events": 989,
+        "actual": 0.020208418471597874,
+        "mean_raw": 0.024879925202797845,
+        "mean_cal": 0.020075951041232727,
+        "mean_base": 0.01924837946303269,
+        "brier_raw": 0.019976913131048917,
+        "brier_cal": 0.019683214506770002,
+        "brier_base": 0.01974247313151468,
+        "logloss_raw": 0.09857974330324484,
+        "logloss_cal": 0.09613619101995001,
+        "logloss_base": 0.09752557282123471,
+        "brier_skill_raw": -0.01187490533594815,
+        "brier_skill_cal": 0.0030015806201141304,
+        "flagged": {
+          "n": 5448,
+          "actual": 0.031938325991189426,
+          "mean_raw": 0.0730094370239405,
+          "mean_cal": 0.036955620037424766
+        }
+      },
+      "team_ge4": {
+        "n": 48940,
+        "events": 5107,
+        "actual": 0.1043522680833674,
+        "mean_raw": 0.11470552005392151,
+        "mean_cal": 0.10286626167003812,
+        "mean_base": 0.10057109257805166,
+        "brier_raw": 0.09230031888487412,
+        "brier_cal": 0.09128759378068428,
+        "brier_base": 0.09270623124422735,
+        "logloss_raw": 0.32753238078660896,
+        "logloss_cal": 0.32398817834245064,
+        "logloss_base": 0.3304684041789936,
+        "brier_skill_raw": 0.004378479783995082,
+        "brier_skill_cal": 0.015302503882460461,
+        "flagged": {
+          "n": 5325,
+          "actual": 0.18028169014084508,
+          "mean_raw": 0.2579833818720043,
+          "mean_cal": 0.17862044137815866
+        }
+      },
+      "margin_ge4": {
+        "n": 48940,
+        "events": 2502,
+        "actual": 0.05112382509194933,
+        "mean_raw": 0.05567269951774737,
+        "mean_cal": 0.04961400235191076,
+        "mean_base": 0.048805839504727264,
+        "brier_raw": 0.04781490494057477,
+        "brier_cal": 0.047521769679955285,
+        "brier_base": 0.048296522758840214,
+        "logloss_raw": 0.19507497525793877,
+        "logloss_cal": 0.19374380875066904,
+        "logloss_base": 0.1995843322915049,
+        "brier_skill_raw": 0.009972101318149074,
+        "brier_skill_cal": 0.016041591291230506,
+        "flagged": {
+          "n": 5174,
+          "actual": 0.1090065713181291,
+          "mean_raw": 0.1521940753948525,
+          "mean_cal": 0.10856513560505487
+        }
+      },
+      "nil_nil": {
+        "n": 48940,
+        "events": 3634,
+        "actual": 0.07425418880261545,
+        "mean_raw": 0.08578740487877842,
+        "mean_cal": 0.07825214610063316,
+        "mean_base": 0.07791874256371104,
+        "brier_raw": 0.06926106134176774,
+        "brier_cal": 0.06838909083539295,
+        "brier_base": 0.06852820681875729,
+        "logloss_raw": 0.2658366517809199,
+        "logloss_cal": 0.26191032898008987,
+        "logloss_base": 0.2630594350552419,
+        "brier_skill_raw": -0.010694202533982677,
+        "brier_skill_cal": 0.0020300543356150946,
+        "flagged": {
+          "n": 4436,
+          "actual": 0.09670874661857529,
+          "mean_raw": 0.16781206955344405,
+          "mean_cal": 0.11037293613935484
+        }
+      },
+      "tot_le1": {
+        "n": 48940,
+        "events": 12397,
+        "actual": 0.253310175725378,
+        "mean_raw": 0.2701890670076292,
+        "mean_cal": 0.2605836023478068,
+        "mean_base": 0.26452577767111096,
+        "brier_raw": 0.18944840990266978,
+        "brier_cal": 0.18644093108409204,
+        "brier_base": 0.1875194591828205,
+        "logloss_raw": 0.566069548429159,
+        "logloss_cal": 0.5586193443574362,
+        "logloss_base": 0.561659991272214,
+        "brier_skill_raw": -0.010286669598213116,
+        "brier_skill_cal": 0.005751552950443162,
+        "flagged": {
+          "n": 4149,
+          "actual": 0.31573873222463245,
+          "mean_raw": 0.44761900830758816,
+          "mean_cal": 0.347353630618158
+        }
+      }
+    }
+  }
+}

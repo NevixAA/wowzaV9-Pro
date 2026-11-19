@@ -28,6 +28,7 @@ import pandas as pd
 
 from config import pro_config as cfg
 from src.studies import common as C
+from src.data import v9_config
 
 CUTOFF = "2026-08-10"
 STAKED = ("SNIPER", "MARKSMAN")
@@ -40,6 +41,9 @@ MIN_TEST_N, MIN_TEST_DAYS = 10, 5
 
 def _bets() -> pd.DataFrame:
     m = pd.read_csv(cfg.V9_LOCAL / "output" / "bets_ledger.csv")
+    # v9's first-half-contaminated closes are not CLV (v9 output/corrections list; ledger unchanged).
+    from src.data import v9_corrections as v9c
+    m = v9c.quarantine_first_half_clv(m, root=cfg.V9_LOCAL, label="evidence")
     m["market"] = "ou25"
     s = pd.read_csv(cfg.V9_LOCAL / "output" / "side_bets_ledger.csv")
     cols = ["generated_at", "match_date", "league", "home_team", "away_team", "market", "odds",
@@ -49,7 +53,7 @@ def _bets() -> pd.DataFrame:
           & (pd.to_datetime(d["match_date"], errors="coerce") >= CUTOFF)].copy()
     d["u"] = np.where(d["result"] == "WIN", d["odds"] - 1, -1.0)
     d["week"] = pd.to_datetime(d["match_date"]).dt.strftime("%G-%V")
-    d["paper_league"] = d["league"].astype(str).str.strip().isin(cfg.PAPER_LEAGUES)
+    d["paper_league"] = d["league"].map(v9_config.is_paper)
     return d.sort_values("generated_at")
 
 

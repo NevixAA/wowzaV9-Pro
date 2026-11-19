@@ -46,6 +46,7 @@ import time
 from pathlib import Path
 
 import pandas as pd
+from src.data import v9_config
 
 CALC_VERSION = "1.0.0"
 
@@ -372,7 +373,44 @@ DAILY_FILE = Path(__file__).resolve().parents[2] / "output" / "bet_builder_daily
 MAX_PER_DAY = 6
 
 
-def daily_selection(candidates: pd.DataFrame, max_per_day: int = MAX_PER_DAY) -> pd.DataFrame:
+def _hold_ungated(d: pd.DataFrame) -> pd.DataFrame:
+    """Rows built while v9's tips could not be read (v9_direction.GATE_UNAVAILABLE) are held:
+    the contradiction gate never ran on them, so they are neither sent nor selected."""
+    if "v9_gate" not in d.columns:
+        return d
+    held = d["v9_gate"].astype(str).eq("GATE_UNAVAILABLE")
+    if held.any():
+        print(f"[notify] held {int(held.sum())} candidate(s): v9 direction gate unavailable")
+    return d[~held]
+
+
+def drop_started(d: pd.DataFrame, now: pd.Timestamp | None = None) -> pd.DataFrame:
+    """Only combos whose match has NOT kicked off (Data Truth round 3).
+
+    The candidate file is rewritten only when a generate run builds something, so a run that builds
+    nothing leaves yesterday's candidates in place - and the daily selection re-offered them: the
+    committed bet_builder_daily.csv of 2026-11-02 14:00 listed five 2026-11-01 matches from a
+    candidate file generated 2026-11-01T16:01Z. A row is kept only when its kickoff is in the
+    future; without a kickoff it is kept only for a match date after today (UTC) - a same-day row
+    with no kickoff cannot be proven pre-match, so it is dropped (fail closed)."""
+    if d is None or d.empty:
+        return d
+    now = now if now is not None else pd.Timestamp.now(tz="UTC")
+    ko = (pd.to_datetime(d["kickoff_utc"], utc=True, errors="coerce", format="mixed")
+          if "kickoff_utc" in d.columns else pd.Series(pd.NaT, index=d.index, dtype="datetime64[ns, UTC]"))
+    md = (pd.to_datetime(d["match_date"].astype(str).str[:10], errors="coerce")
+          if "match_date" in d.columns else pd.Series(pd.NaT, index=d.index))
+    today = pd.Timestamp(now).tz_convert("UTC").tz_localize(None).normalize()
+    keep = (ko.notna() & (ko > now)) | (ko.isna() & md.notna() & (md > today))
+    gone = int((~keep).sum())
+    if gone:
+        print(f"[notify] dropped {gone} candidate(s) whose match has kicked off (or has no "
+              f"provable future kickoff)")
+    return d[keep]
+
+
+def daily_selection(candidates: pd.DataFrame, max_per_day: int = MAX_PER_DAY,
+                    now: pd.Timestamp | None = None) -> pd.DataFrame:
     """The combos for v9's morning album, per match date (owner 2026-10-18: Telegram was "spammy",
     Bet Builder moves into the one daily photo pack and Pro stops sending its own messages).
 
@@ -386,11 +424,15 @@ def daily_selection(candidates: pd.DataFrame, max_per_day: int = MAX_PER_DAY) ->
             "independence_edge", "combo_id"]
     if candidates is None or candidates.empty:
         return pd.DataFrame(columns=cols)
-    d = candidates.copy()
+    d = drop_started(_hold_ungated(candidates.copy()), now)
+    if d.empty:
+        return pd.DataFrame(columns=cols)
     if "league" in d.columns:
-        d = d[~d["league"].astype(str).str.strip().isin(cfg.PAPER_LEAGUES)]
+        d = v9_config.drop_paper_leagues(d)        # registry PAPER_LEAGUES, canonical names
     pcol = "joint_probability" if "joint_probability" in d.columns else "conservative_joint_probability"
     d = d[pd.to_numeric(d[pcol], errors="coerce").notna()]
+    if d.empty:
+        return pd.DataFrame(columns=cols)
     d["_edge"] = d.apply(independence_edge, axis=1)
     d = d.sort_values(["_edge", pcol], ascending=[False, False])
     rows, per_day, seen_fx = [], {}, set()
@@ -437,10 +479,12 @@ def run(candidates: pd.DataFrame, *, dry_run: bool = True,
     if candidates is None or candidates.empty:
         return out
 
-    d = candidates.copy()
+    d = drop_started(_hold_ungated(candidates.copy()))
+    if d.empty:
+        return out
     # Paper leagues are generated and settled but never sent (owner, 2026-10-07; mirrors v9).
     if "league" in d.columns:
-        d = d[~d["league"].astype(str).str.strip().isin(cfg.PAPER_LEAGUES)]
+        d = v9_config.drop_paper_leagues(d)        # registry PAPER_LEAGUES, canonical names
     # ---- carry state across the combo_id fix (2026-08-30) ------------------------------
     # combo_id changed shape when it became selection-aware and order-independent, so every
     # entry recorded under the old key would otherwise miss and each already-notified combo

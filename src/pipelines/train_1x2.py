@@ -62,12 +62,13 @@ def _matches(extra_history: str = "") -> pd.DataFrame:
     store is meant to be CI-written). Reading them here does NOT write them back: the store stays
     CI-owned, and the evaluation says which source it used.
     """
+    from src.data import result_guard as rg
     from src.data import season_store as store
     need = {"home_team", "away_team", "home_goals", "away_goals", "match_date", "league"}
     parts = []
     for t in ("team_match_stats", "settlements_backfill"):
         try:
-            d = store.read(t)
+            d = rg.drop_unplayed(store.read(t), t)
         except Exception:                                       # noqa: BLE001
             continue
         if not d.empty and need.issubset(d.columns):

@@ -83,6 +83,9 @@ def _gates(v9: str, env: dict) -> dict:
 
 def load_live(v9: str) -> pd.DataFrame:
     o = pd.read_csv(Path(v9) / "output" / "bets_ledger.csv", low_memory=False)
+    # v9's first-half-contaminated closes are not CLV (v9 output/corrections list; ledger unchanged).
+    from src.data import v9_corrections as v9c
+    o = v9c.quarantine_first_half_clv(o, root=Path(v9), label="valuable")
     o = _first_sight(o[o["source"] == "live"], ["match_date", "home_team", "away_team"])
     o["market"] = "over25"
     s = pd.read_csv(Path(v9) / "output" / "side_bets_ledger.csv", low_memory=False)
@@ -475,9 +478,8 @@ def snapshot_low_edge(v9: str) -> tuple[pd.DataFrame, dict]:
     s = s.dropna(subset=["p_over25", "odds_over25", "odds_under25"]).sort_values("gen")
     s = s.drop_duplicates(["league", "date", "home_team", "away_team"], keep="first")          # first VALID price
     import glob
-    fs = sorted(glob.glob(str(cfg.BASE_DIR / "data" / "season_2026_27" / "team_match_stats" / "**" / "*.parquet"), recursive=True))
-    r = pd.concat([pd.read_parquet(f, columns=["league", "match_date", "home_team", "away_team", "home_goals", "away_goals"])
-                   for f in fs], ignore_index=True).dropna(subset=["home_goals", "away_goals"])
+    from src.data import result_guard as rg          # kickoff guard: no score stored before kickoff
+    r = rg.played_team_results(["league", "match_date", "home_team", "away_team", "home_goals", "away_goals"])
     r = r.drop_duplicates(["league", "match_date", "home_team", "away_team"], keep="last")
     r["md"] = pd.to_datetime(r["match_date"]).dt.normalize()
     out = []
