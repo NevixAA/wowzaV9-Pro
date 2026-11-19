@@ -1,6 +1,6 @@
 {
  "schema_version": "pl/1.0",
- "generated_at": "2026-11-18T22:40:16Z",
+ "generated_at": "2026-11-19T14:25:09Z",
  "layout": "output/prediction_ledger/<repo>/<model_id>/<market>/<league_slug>/<season>.csv",
  "key": [
   "model_id",
@@ -2029,6 +2029,41 @@
    "production_state": "TRAINING_ONLY",
    "scope": "not_scored",
    "not_scored_reason": "training data only - no production model serves it"
+  },
+  {
+   "league_slug": "friendlies",
+   "league": "Friendlies",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "world_cup_qualification_europe",
+   "league": "World Cup - Qualification Europe",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "world_cup_qualification_concacaf",
+   "league": "World Cup - Qualification CONCACAF",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "world_cup_qualification_intercontinental_play_offs",
+   "league": "World Cup - Qualification Intercontinental Play-offs",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
+  },
+  {
+   "league_slug": "africa_cup_of_nations",
+   "league": "Africa Cup of Nations",
+   "production_state": "COLLECTION_ONLY",
+   "scope": "not_scored",
+   "not_scored_reason": "collection only - no production team model serves it (props rows appear only where the props pipeline serves the league)"
   }
  ]
 }
