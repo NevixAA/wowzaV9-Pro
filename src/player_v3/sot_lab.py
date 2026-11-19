@@ -151,22 +151,24 @@ def main() -> int:
     study = []
     probs = {}
     for target in ("sot", "sot2"):
-        y = X[f"target_{target}"].fillna(0).astype(int).to_numpy()
+        y, known = D.known_target(X, f"target_{target}")
+        trk, vak, hok = tr & known, va & known, ho & known
+        dk = days[known[ho]]                     # holdout days of the rows that are scored
         ref = None
         for name, cols in variants.items():
-            p, _ = fit_binary(X[cols], y, tr, va)
+            p, _ = fit_binary(X[cols], y, trk, vak)
             probs[(target, name)] = p
-            r = score(p[ho], y[ho], days, None if ref is None else ref)
+            r = score(p[hok], y[hok], dk, None if ref is None else ref)
             if name == "E0_BASE_V9":
-                ref = _ll(p[ho], y[ho])
+                ref = _ll(p[hok], y[hok])
             study.append({"target": target, "variant": name, "n_features": len(cols), **r})
             print(target, name, r)
-        p, _ = fit_binary(X[base], y, tr, va, model="logit")
+        p, _ = fit_binary(X[base], y, trk, vak, model="logit")
         study.append({"target": target, "variant": "E8_LOGISTIC_BASE", "n_features": len(base),
-                      **score(p[ho], y[ho], days, ref)})
-        p, _ = fit_binary(X[base], y, tr, va, calib="v9")
+                      **score(p[hok], y[hok], dk, ref)})
+        p, _ = fit_binary(X[base], y, trk, vak, calib="v9")
         study.append({"target": target, "variant": "R0_BASE_V9_WITH_V9_PLATT", "n_features": len(base),
-                      **score(p[ho], y[ho], days, ref)})
+                      **score(p[hok], y[hok], dk, ref)})
     st = pd.DataFrame(study)
     st.insert(0, "calculation_version", CALC_VERSION)
     st.to_csv(OUT / "feature_variants.csv", index=False)
@@ -192,35 +194,38 @@ def count_models(X, cols, tr, va, ho, days) -> list[dict]:
     from sklearn.linear_model import PoissonRegressor
     from sklearn.pipeline import make_pipeline
     from sklearn.preprocessing import StandardScaler
-    cnt = X["shots_on_target"].fillna(0).clip(0, 12).to_numpy(float)
-    use = _usable(X.loc[tr, cols])
+    cnt, ck = D.known_target(X, "shots_on_target")
+    cnt = np.clip(cnt, 0, 12)                       # the count model's support (0..12 shots)
+    use = _usable(X.loc[tr & ck, cols])
     hg = HistGradientBoostingRegressor(loss="poisson", **{k: v for k, v in HGB.items() if k != "random_state"},
-                                       random_state=42).fit(X.loc[tr, use], cnt[tr])
+                                       random_state=42).fit(X.loc[tr & ck, use], cnt[tr & ck])
     mu_h = np.clip(hg.predict(X[use]), 1e-4, 15)
     glm = make_pipeline(SimpleImputer(strategy="median"), StandardScaler(), PoissonRegressor(alpha=1e-4, max_iter=300))
-    mu_g = np.clip(glm.fit(X.loc[tr, use], cnt[tr]).predict(X[use]), 1e-4, 15)
+    mu_g = np.clip(glm.fit(X.loc[tr & ck, use], cnt[tr & ck]).predict(X[use]), 1e-4, 15)
     # NB dispersion: MLE of alpha on VALIDATION given the HGB mean (grid; never the holdout)
     grid = np.array([0.01, 0.05, 0.1, 0.2, 0.3, 0.5, 0.75, 1.0])
     def nb_ll(a, mu, y):
         n = 1 / a
         return nbinom.logpmf(y, n, n / (n + mu)).sum()
-    alpha = float(grid[np.argmax([nb_ll(a, mu_h[va], cnt[va]) for a in grid])])
+    alpha = float(grid[np.argmax([nb_ll(a, mu_h[va & ck], cnt[va & ck]) for a in grid])])
     out = [{"model": "HGB_POISSON_MEAN+NB", "nb_alpha_from_validation": alpha}]
     bin_probs = {}
     for t, k in LINES.items():
-        y = X[f"target_{t}"].fillna(0).astype(int).to_numpy()
-        pb, _ = fit_binary(X[cols], y, tr, va)
-        pv9, _ = fit_binary(X[cols], y, tr, va, calib="v9")
+        y, known = D.known_target(X, f"target_{t}")
+        trk, vak, hok = tr & known, va & known, ho & known
+        dk = days[known[ho]]
+        pb, _ = fit_binary(X[cols], y, trk, vak)
+        pv9, _ = fit_binary(X[cols], y, trk, vak, calib="v9")
         bin_probs[t] = pb
         n = 1 / alpha
         cand = {"BINARY_HGB": pb, "BINARY_HGB_V9_PLATT": pv9,
                 "POISSON_GLM": 1 - poisson.cdf(k - 1, mu_g),
                 "HGB_POISSON": 1 - poisson.cdf(k - 1, mu_h),
                 "HGB_MEAN_NB": 1 - nbinom.cdf(k - 1, n, n / (n + mu_h))}
-        ref = _ll(pb[ho], y[ho])
+        ref = _ll(pb[hok], y[hok])
         for name, p in cand.items():
             p = np.clip(p, 1e-4, 1 - 1e-4)
-            r = score(p[ho], y[ho], days, None if name == "BINARY_HGB" else ref)
+            r = score(p[hok], y[hok], dk, None if name == "BINARY_HGB" else ref)
             out.append({"line": f"{k}+", "model": name, **r})
             print("count", t, name, r)
     viol = ((bin_probs["sot2"] > bin_probs["sot"] + 1e-9) | (bin_probs["sot3"] > bin_probs["sot2"] + 1e-9)
@@ -234,7 +239,8 @@ def count_models(X, cols, tr, va, ho, days) -> list[dict]:
 
 
 def ablation(X, fam, base, v3, tr, va, ho, days) -> list[dict]:
-    y = X["target_sot"].fillna(0).astype(int).to_numpy()
+    y, known = D.known_target(X, "target_sot")
+    tr, va, days, ho = tr & known, va & known, days[known[ho]], ho & known
     full = base + v3
     pf, _ = fit_binary(X[full], y, tr, va)
     ref = _ll(pf[ho], y[ho])
@@ -260,7 +266,8 @@ def ablation(X, fam, base, v3, tr, va, ho, days) -> list[dict]:
 def calibration(X, cols, tr, va, ho) -> list[dict]:
     from sklearn.isotonic import IsotonicRegression
     from sklearn.linear_model import LogisticRegression
-    y = X["target_sot"].fillna(0).astype(int).to_numpy()
+    y, known = D.known_target(X, "target_sot")
+    tr, va, ho = tr & known, va & known, ho & known
     _, raw = fit_binary(X[cols], y, tr, va)
     lg = lambda p: np.log(np.clip(p, 1e-6, 1 - 1e-6) / (1 - np.clip(p, 1e-6, 1 - 1e-6)))  # noqa: E731
     out = {}

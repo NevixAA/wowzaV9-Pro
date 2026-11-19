@@ -156,13 +156,17 @@ def run() -> dict:
     # Does the raw DC probability alone beat the base rate? A clean read on the physics, with no
     # fitting at all.
     if "p_btts_dc" in te.columns:
-        p_dc = pd.to_numeric(te["p_btts_dc"], errors="coerce").fillna(y_tr.mean()).to_numpy()
-        b_dc = _brier(y_te, p_dc)
-        print(f"\n  UNFITTED Dixon-Coles P(BTTS) alone: Brier {b_dc:.5f} "
-              f"({_brier(y_te, p_const) - b_dc:+.5f} vs base rate)  "
-              f"mean {p_dc.mean():.4f} vs actual {y_te.mean():.4f}")
-        out["unfitted_dc"] = {"brier": round(b_dc, 5),
-                              "gain": round(_brier(y_te, p_const) - b_dc, 5)}
+        # Scored ONLY on rows with a real DC probability (missing rows used to get the training
+        # base rate, which flattered nothing and measured nothing); coverage is reported.
+        p_all = pd.to_numeric(te["p_btts_dc"], errors="coerce")
+        has = p_all.notna().to_numpy()
+        p_dc, y_dc, c_dc = p_all.to_numpy()[has], np.asarray(y_te)[has], np.asarray(p_const)[has]
+        b_dc = _brier(y_dc, p_dc)
+        print(f"\n  UNFITTED Dixon-Coles P(BTTS) alone ({int(has.sum())}/{len(has)} rows with a DC "
+              f"probability): Brier {b_dc:.5f} ({_brier(y_dc, c_dc) - b_dc:+.5f} vs base rate)  "
+              f"mean {p_dc.mean():.4f} vs actual {y_dc.mean():.4f}")
+        out["unfitted_dc"] = {"brier": round(b_dc, 5), "n": int(has.sum()), "coverage": round(float(has.mean()), 4),
+                              "gain": round(_brier(y_dc, c_dc) - b_dc, 5)}
 
     print(f"\n[btts_eval] n={len(te)} test rows. RESEARCH ONLY — no model artifact written, "
           f"nothing promoted to v9.")
@@ -206,12 +210,17 @@ def run_from_stats(min_season: str | None = None, quiet: bool = False) -> dict:
     from src.features import btts as bf
     from src.features import team_form as tf
 
-    stats = store.read("team_match_stats")
+    from src.data import result_guard as rg
+    stats = rg.drop_unplayed(store.read("team_match_stats"), "team_match_stats")
     if stats is None or stats.empty:
         print("[btts_eval] team_match_stats is empty")
         return {}
     if min_season:
         stats = stats[stats["season"].astype(str) >= str(min_season)]
+    # API-Football club ids by exact fixture_id from Pro's own scout/live tables, so team form
+    # keys a club by its id where the data has one (src/data/team_ids.py).
+    from src.data.team_ids import attach_team_ids
+    stats = attach_team_ids(stats)
     lam = tf.fixture_lambdas(stats)
     res = stats[["fixture_id", "home_goals", "away_goals", "match_date", "league"]].copy()
     d = lam.merge(res, on="fixture_id", how="inner", suffixes=("", "_r"))

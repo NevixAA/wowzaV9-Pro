@@ -176,6 +176,9 @@ def _ledger_dataset(*, min_quotes: int = 1) -> pd.DataFrame:
 
     # ── y: did OVER 2.5 happen ───────────────────────────────────────────────
     s = st[st["market"].astype(str).str.upper().isin(["OU25"])].copy()
+    # v9's first-half-contaminated closes are not CLV (flag or v9 list; stored rows unchanged).
+    from src.data import v9_corrections as v9c
+    s = v9c.quarantine_first_half_clv(s, label="shadow")
     s["res"] = s["result"].astype(str).str.upper()
     s = s[s["res"].isin(["WIN", "LOSS"])]
     s["side"] = s["side"].astype(str).str.upper()

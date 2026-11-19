@@ -19,6 +19,17 @@ from src.prediction_lab import data as D  # noqa: E402
 from src.prediction_lab import features as F  # noqa: E402
 
 
+# Data Truth 2026-11-01: league names, paper leagues, model types and the club resolver are read
+# from v9's league registry, so these tests need a v9 checkout (CI sets V9_LOCAL).
+def _v9_present() -> bool:
+    from config import pro_config as _cfg
+    return (_cfg.V9_LOCAL / "config.py").exists()
+
+
+needs_v9 = pytest.mark.skipif(not _v9_present(), reason="needs a v9 checkout (V9_LOCAL)")
+
+
+
 @pytest.mark.parametrize("league,when,label,api", [
     ("Championship", "2026-06-30", "2025/26", "2025"),
     ("Championship", "2026-07-01", "2026/27", "2026"),        # winter rollover
@@ -53,6 +64,7 @@ def test_aliases_resolve_to_one_canonical_league():
     assert SC.canonical_league("Austria Bundesliga") == "Austrian Bundesliga"
 
 
+@needs_v9
 def test_every_lab_league_is_in_the_calendar_with_the_same_model_type():
     cal = SC.calendar()["leagues"]
     lab = D.STANDARD_FORMAT_LEAGUES | D.NEW_FORMAT_LEAGUES

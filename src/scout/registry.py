@@ -47,6 +47,27 @@ def literal_assignments(path, names) -> dict:
 
 MIN_V9_LEAGUES = 40
 
+#: v9 season_rule.type -> this registry's season_type vocabulary.
+_RULE_TO_SEASON_TYPE = {"start_year": "split_season", "end_year": "split_season",
+                        "calendar_year": "calendar_year", "fixed": "tournament"}
+
+
+def season_type_from_rule(rule, today: str | None = None) -> str | None:
+    """season_type DERIVED from v9's registry season_rule (config/leagues.json), never from the
+    model format. Data Truth round 3: it was `calendar_year if new_format else split_season`, which
+    is wrong for every autumn-spring new-format league (Denmark, Austria, Romania, Saudi, Mexico...).
+    `eras` -> the era in force on `today`; no rule -> None (unknown stays unknown)."""
+    if not isinstance(rule, dict):
+        return None
+    if rule.get("type") == "eras" or "eras" in rule:
+        day = today or __import__("datetime").date.today().isoformat()
+        cur = None
+        for er in rule.get("eras") or []:
+            if str(er.get("from", "0000")) <= day and (er.get("until") is None or day < str(er["until"])):
+                cur = er
+        return _RULE_TO_SEASON_TYPE.get((cur or {}).get("type"))
+    return _RULE_TO_SEASON_TYPE.get(rule.get("type"))
+
 
 def _v9_tables() -> dict:
     """v9's league tables as v9 itself computes them (src/data/v9_config.load executes config.py).
@@ -87,6 +108,15 @@ def build() -> dict:
     # any tier, config.PROVIDER_UNSUPPORTED). A missing key there is a known fact, not a divergence.
     unsupported = v9.get("PROVIDER_UNSUPPORTED", {}) or {}
     leagues = sorted(std | nf | enabled | paper | af_only | set(ids) | set(odds_keys) | set(props))
+    from src.data import v9_config
+    lreg = v9_config.league_registry()
+
+    def _rule(lg):
+        e = lreg.entry(lg) if hasattr(lreg, "entry") else None
+        if e is None and lreg.canonical_name(lg):
+            e = lreg.entry(lreg.canonical_name(lg))
+        return (e or {}).get("season_rule")
+
     rows = []
     for lg in leagues:
         fmt = "standard" if lg in std else "new_format" if lg in nf else None
@@ -95,7 +125,7 @@ def build() -> dict:
         rows.append({
             "league_name": lg, "api_football_id": ids.get(lg) if lg in ids else props.get(lg),
             "odds_api_key": odds_keys.get(lg), "football_data_code": fd.get(lg),
-            "season_type": "calendar_year" if lg in nf else "split_season" if lg in std else None,
+            "season_type": season_type_from_rule(_rule(lg)),
             "standard_supported": lg in std, "new_format_supported": lg in nf,
             "side_markets_supported": bool(fmt), "player_supported": lg in props,
             "v11_supported": lg in enabled and lg not in paper and bool(fmt),

@@ -179,11 +179,16 @@ def _importance(ph: pd.DataFrame, inj: pd.DataFrame) -> pd.DataFrame:
             out.append((np.nan, np.nan))
             continue
         p = by_tp.get((r.ph_team, r.player_id))
-        pm = p[p["fixture_id"].isin(prev["fixture_id"])] if p is not None else None
-        mins = float(pm["minutes"].sum()) if pm is not None else 0.0
-        ga = float(pm["ga"].sum()) if pm is not None else 0.0
-        out.append((mins / max(1.0, prev["team_minutes"].sum()) * 11,   # ~= share of a starting slot
-                    ga / max(1.0, prev["team_goals"].sum())))
+        if p is None:
+            # Never seen in this team's history (new signing, or a name/id miss): his importance is
+            # UNKNOWN, not 0 (Data Truth 2026-11-01). The side's shares become NaN below.
+            out.append((np.nan, np.nan))
+            continue
+        pm = p[p["fixture_id"].isin(prev["fixture_id"])]
+        mins, ga = float(pm["minutes"].sum()), float(pm["ga"].sum())
+        tmin, tgoals = float(prev["team_minutes"].sum()), float(prev["team_goals"].sum())
+        out.append((mins / tmin * 11 if tmin > 0 else np.nan,     # ~= share of a starting slot
+                    ga / tgoals if tgoals > 0 else np.nan))        # no team goals -> share undefined
     inj = inj.copy()
     inj["min_share"], inj["ga_share"] = zip(*out) if out else ([], [])
     return inj
@@ -231,18 +236,32 @@ def features() -> dict:
     miss = i[i["is_missing"] == 1]
     agg = (i.groupby(["af_fixture_id", "side"])
              .agg(inj_n_missing=("is_missing", "sum"), inj_n_questionable=("is_q", "sum")).reset_index())
+    # A side's share is the sum over its absentees; one absentee of unknown importance makes the
+    # side's share unknown (a plain sum would silently count him as 0).
+    _all = lambda x: x.sum() if x.notna().all() else np.nan            # noqa: E731
     w = (miss.groupby(["af_fixture_id", "side"])
-             .agg(inj_minutes_share=("min_share", "sum"), inj_goal_share=("ga_share", "sum")).reset_index())
+             .agg(inj_minutes_share=("min_share", _all), inj_goal_share=("ga_share", _all)).reset_index())
     agg = agg.merge(w, on=["af_fixture_id", "side"], how="left")
     wide = agg.pivot(index="af_fixture_id", columns="side", values=INJ_COLS)
     wide.columns = [f"{s}_{c}" for c, s in wide.columns]
     wide = wide.reset_index()
     out = j.merge(wide, on="af_fixture_id", how="left")
-    # a covered fixture with no listed absentee is a real zero, not missing data
-    for c in [f"{s}_{x}" for s in ("home", "away") for x in INJ_COLS]:
-        if c not in out.columns:
-            out[c] = 0.0
-        out[c] = out[c].fillna(0.0)
+    # A covered fixture side with NO listed absentee is a real zero (the league-season is covered,
+    # so an empty list is an observation). A side WITH absentees keeps its NaN share when one of
+    # them could not be weighted - that is missing, not zero.
+    for sd in ("home", "away"):
+        n_miss = f"{sd}_inj_n_missing"
+        listed = out[n_miss].notna() if n_miss in out.columns else pd.Series(False, index=out.index)
+        for x in INJ_COLS:
+            c = f"{sd}_{x}"
+            if c not in out.columns:
+                out[c] = np.nan
+            out.loc[~listed, c] = 0.0                     # no absentee listed for this side
+            if x in ("inj_n_missing", "inj_n_questionable"):
+                out[c] = out[c].fillna(0.0)               # counts of a listed side are never NaN
+            elif x in ("inj_minutes_share", "inj_goal_share"):
+                none_missing = out[n_miss].fillna(0).eq(0) if n_miss in out.columns else True
+                out.loc[none_missing & out[c].isna(), c] = 0.0   # only questionable players listed
     out["total_inj_minutes_share"] = out["home_inj_minutes_share"] + out["away_inj_minutes_share"]
     out["total_inj_goal_share"] = out["home_inj_goal_share"] + out["away_inj_goal_share"]
     keep = ["league", "date", "home_team", "away_team", "af_fixture_id", "hg", "ag", "af_home", "af_away"] + \
@@ -502,6 +521,8 @@ def forward() -> dict:
     pre-kickoff lists with the same fixtures' lists after full time is the only way to know whether
     the historical lists were revised with hindsight — history alone cannot tell."""
     import requests
+
+    from src.data import v9_config
     ids = _league_ids()
     now = pd.Timestamp.now(tz="UTC")
     rows = []
@@ -509,7 +530,12 @@ def forward() -> dict:
         lid = ids.get(lg)
         if lid is None:
             continue
-        season = 2026
+        # The league's CURRENT API-Football season from v9's season resolver (was a typed 2026,
+        # wrong for every Aug-May league from next summer). Unknown -> league skipped, logged.
+        season = v9_config.api_season(lg, now.strftime("%Y-%m-%d"))
+        if season is None:
+            print(f"[injuries] {lg}: no resolvable API-Football season - skipped")
+            continue
         body = requests.get(f"{AF}/injuries", headers={"x-apisports-key": common._af_key()},
                             params={"league": lid, "season": season}, timeout=90).json()
         for x in body.get("response", []):

@@ -63,14 +63,14 @@ def team_goal_markets(matrix: np.ndarray) -> dict[str, float]:
 def team_card_rates(players: pd.DataFrame) -> pd.DataFrame:
     """Per team-match card totals, aggregated from player rows.
 
-    Returns one row per (fixture, team) with the cards actually shown. Only fixtures with a
-    plausible squad are kept -- a team-match with six player rows has not had six cards, it has
-    had incomplete collection, and treating it as a low-card match would bias every rate down.
+    Returns one row per (fixture, team) with the cards actually shown, and the fixture's league.
+    Only fixtures with a plausible squad are kept -- a team-match with six player rows has not had
+    six cards, it has had incomplete collection, and treating it as a low-card match would bias
+    every rate down. Keyed by the provider fixture_id, not by a date|home|away string.
     """
     p = players.copy()
-    p["_k"] = (pd.to_datetime(p["date"], errors="coerce").dt.strftime("%Y-%m-%d") + "|"
-               + p["home_team"].astype(str) + "|" + p["away_team"].astype(str))
-    g = p.groupby(["_k", "team"]).agg(
+    g = p.groupby(["fixture_id", "team"]).agg(
+        league=("league", "first"),
         team_cards=("yellow_cards", "sum"),
         team_reds=("red_cards", "sum"),
         team_goals=("goals", "sum"),
@@ -80,43 +80,82 @@ def team_card_rates(players: pd.DataFrame) -> pd.DataFrame:
     return g[g["squad_rows"] >= MIN_SQUAD_ROWS].copy()
 
 
+def league_cards(cards: pd.DataFrame, league: str) -> pd.DataFrame:
+    """The card rows of ONE league, matched on the canonical league name (registry), so a
+    provider alias of the league finds its rows and no other league's rows leak in."""
+    from src.data import v9_config
+    canon = v9_config.canonical_league(league)
+    if canon is None or cards is None or cards.empty:
+        return cards.iloc[0:0] if cards is not None else pd.DataFrame()
+    lg = cards["league"].map(v9_config.canonical_league)
+    return cards[lg == canon]
+
+
 def team_card_baselines(cards: pd.DataFrame) -> dict[str, float]:
-    """Unconditional P(team cards over X). The fallback when a team has no history."""
+    """P(team cards over X) within the rows given -- pass ONE league's rows (league_cards)."""
     return {f"TEAM_CARDS_O{str(l).replace('.', '')}": float((cards["team_cards"] >= k).mean())
             for l, k in ((0.5, 1), (1.5, 2), (2.5, 3), (3.5, 4))}
 
 
 def team_card_probability(cards: pd.DataFrame, team: str, line: float,
-                          *, shrink_n: float = 10.0) -> tuple[float, int, str]:
-    """P(this team goes over `line` cards), shrunk toward the league baseline.
+                          *, league: str, shrink_n: float = 10.0
+                          ) -> tuple[float | None, int, str]:
+    """P(this team goes over `line` cards), shrunk toward ITS league's baseline.
 
     A team with four matches of history has a card rate measured on four matches; taking it at
     face value would let a small sample dominate the price. Shrinkage weights the team's own
     rate against the baseline by its sample size, so a long history moves the estimate and a
     short one barely does.
+
+    Data Truth 2026-11-01: the baseline is the team's OWN league (it was pooled over every league
+    in player_history), and the team is found with v9's league-scoped resolver (it was a raw ==).
+    No league rows, or a team the resolver cannot place -> (None, 0, reason): no leg, never the
+    baseline presented as the team's probability.
     """
+    from src.data import v9_config
     k = int(line + 0.5)
-    base = float((cards["team_cards"] >= k).mean())
-    own = cards[cards["team"] == team]
+    lc = league_cards(cards, league)
+    if lc.empty:
+        return None, 0, "NO_LEAGUE_CARD_HISTORY"
+    hit = v9_config.team_names().resolve(team, sorted(lc["team"].astype(str).unique()))
+    if hit is None:
+        return None, 0, "TEAM_UNRESOLVED"
+    base = float((lc["team_cards"] >= k).mean())
+    own = lc[lc["team"].astype(str) == hit]
     n = len(own)
-    if n == 0:
-        return base, 0, "BASELINE_ONLY_NO_TEAM_HISTORY"
     rate = float((own["team_cards"] >= k).mean())
     w = n / (n + shrink_n)
     return w * rate + (1 - w) * base, n, "OK" if n >= shrink_n else "THIN_TEAM_HISTORY"
 
 
-def score_or_assist(p_goal: float, p_assist: float,
-                    overlap_rate: float = 0.0106 / 0.1574) -> float:
+def score_assist_overlap(players: pd.DataFrame, *, min_minutes: int, min_rows: int) -> dict[str, float]:
+    """{canonical league: P(goal and assist) / P(goal or assist)} measured on that league's
+    starter rows in player_history. A league with fewer than `min_rows` starter rows is absent
+    (no score-or-assist leg there), never filled with another league's or a pooled value."""
+    from src.data import v9_config
+    p = players[pd.to_numeric(players["minutes"], errors="coerce") >= min_minutes]
+    g = pd.to_numeric(p["goals"], errors="coerce") >= 1
+    a = pd.to_numeric(p["assists"], errors="coerce") >= 1
+    d = pd.DataFrame({"league": p["league"].map(v9_config.canonical_league),
+                      "u": g | a, "b": g & a}).dropna(subset=["league"])
+    out = {}
+    for lg, x in d.groupby("league"):
+        if len(x) >= min_rows and x["u"].sum() > 0:
+            out[str(lg)] = float(x["b"].sum() / x["u"].sum())
+    return out
+
+
+def score_or_assist(p_goal: float, p_assist: float, overlap_rate: float) -> float:
     """P(player scores OR assists) = P(goal) + P(assist) - P(both).
 
     NOT the sum. Measured on starter matches: 15.74% do one or the other, while the marginals
     add to 16.79% -- 1.06% of matches feature both, and counting those twice overstates the
     market by roughly that much every time.
 
-    `overlap_rate` is the share of the union that is the intersection, measured on the same
-    sample, used to scale the correction to this player's own probability level rather than
-    subtracting a flat constant that would be wrong for a defender and wrong for a striker.
+    `overlap_rate` is the share of the union that is the intersection, measured per league
+    (score_assist_overlap), used to scale the correction to this player's own probability level
+    rather than subtracting a flat constant that would be wrong for a defender and wrong for a
+    striker. It has no default: an unmeasured league gets no score-or-assist leg.
     """
     union_naive = p_goal + p_assist
     if union_naive <= 0:

@@ -101,11 +101,12 @@ def results_and_resolver(v9: str | None):
     except Exception:                                                  # noqa: BLE001
         return None, None
     fn = getattr(mod, "resolve_result", None) or mod.resolve
-    fs = sorted((cfg.BASE_DIR / "data" / "season_2026_27" / "team_match_stats").rglob("*.parquet"))
-    if not fs:
+    # Kickoff guard (result_guard): a score stored before its own kickoff never settles a row.
+    from src.data import result_guard as rg
+    r = rg.played_team_results(["league", "match_date", "home_team", "away_team", "home_goals",
+                                "away_goals"])
+    if r.empty:
         return None, fn
-    r = pd.concat([pd.read_parquet(f, columns=["league", "match_date", "home_team", "away_team", "home_goals",
-                                               "away_goals"]) for f in fs], ignore_index=True)
     r = r.dropna(subset=["home_goals", "away_goals"]).drop_duplicates(
         ["league", "match_date", "home_team", "away_team"], keep="last")
     r["md"] = pd.to_datetime(r["match_date"], errors="coerce").dt.normalize()
@@ -135,7 +136,11 @@ def settle(rows: pd.DataFrame, results: pd.DataFrame | None, resolve) -> pd.Seri
             continue
         hg, ag = float(m["home_goals"].iloc[0]), float(m["away_goals"].iloc[0])
         fam = str(r["market"])
-        y[i] = float(hg > 0 and ag > 0) if fam == "BTTS" else float(hg + ag > LINE.get(fam, 99))
+        if fam == "BTTS":
+            y[i] = float(hg > 0 and ag > 0)
+        elif fam in LINE:
+            y[i] = float(hg + ag > LINE[fam])
+        # an unknown market keeps y NaN (no sentinel line that settles it as lost)
     return y
 
 

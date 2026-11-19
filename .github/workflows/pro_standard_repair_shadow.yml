@@ -81,6 +81,9 @@ jobs:
           done
           ls _fd | wc -l
       - name: Train (V9_REPAIRED in the v9 checkout, MKT_RESID in Pro) - FAILS on any integrity failure
+        # FD_CODES (football-data codes of the standard leagues) come from v9's league registry.
+        env:
+          V9_LOCAL: ${{ github.workspace }}/_v9
         run: python -m src.studies.standard_repair.shadow train --v9-code _v9 --fd-dir _fd --work _work
       - name: Store payloads as a release (not git blobs)
         env:

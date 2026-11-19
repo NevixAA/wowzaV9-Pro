@@ -101,7 +101,11 @@ def residual(y, p_mkt, p_mod) -> dict:
 
 
 def _tables():
-    return (store.read("scout_results"), store.read("scout_odds"), store.read("scout_model"),
+    """Results without the rows observed before their own kickoff (result_guard; go-live merge)."""
+    from src.data import result_guard as rg
+    res = rg.drop_unplayed(store.read("scout_results"), "scout_results", kickoff_col="kickoff_ts",
+                           kickoff_unit="s")
+    return (res, store.read("scout_odds"), store.read("scout_model"),
             store.read("scout_results_ft90"), store.read("scout_fixture_status"))
 
 

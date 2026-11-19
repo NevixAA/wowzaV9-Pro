@@ -58,8 +58,21 @@ FIRST_LOGGED_FROM = "2026-10-26"           # v9 00d5b936 / dfcdf289: first-logge
 CLV_FIX_FROM = "2026-10-23"                 # v9 output/clv_collection_health.json measure_from
 HISTORY_SINCE = "2026-08-20"               # ledger commits scanned for first-logged reconstruction
 
-STANDARD_LEAGUES = ["Championship", "League One", "League Two", "Bundesliga 2", "La Liga 2",
-                    "Ligue 2", "Serie B"]
+
+
+def _standard_leagues() -> list:
+    from src.data import v9_config
+    return list(v9_config.enabled_standard_leagues())
+
+
+def __getattr__(name):
+    # The enabled standard leagues come from v9's registry, never a typed list (Data Truth).
+    if name == "STANDARD_LEAGUES":
+        from src.data import v9_config
+        return list(v9_config.enabled_standard_leagues())
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
 TIER_GAP = {"SNIPER": "Big gap", "MARKSMAN": "Medium gap", "VALUABLE": "Small gap"}
 TIER_SENTENCE = "These are historical raw-gap labels, not confidence levels."
 #: v9 src/market_edge.py SYNTHETIC_DEFAULT_ODDS - a side row priced exactly at the fill constant
@@ -311,6 +324,15 @@ def load_ledgers(v9: Repo, refresh=True) -> tuple[pd.DataFrame, dict]:
     audit = {}
     ou = v9.csv(V9_LEDGER)
     ou = ou[ou["source"].astype(str).eq("live")].copy()
+    # v9's first-half-contaminated closes are not CLV (v9 output/corrections list; ledger unchanged).
+    from src.data import v9_corrections as v9c
+    # Read at the same ref as the ledger (this study never reads v9's working tree).
+    try:
+        fh = v9.csv(v9c.FIRST_HALF_FILE, dtype=str, keep_default_na=False)
+    except FileNotFoundError:
+        fh = pd.DataFrame()
+    ou = v9c.quarantine_first_half_clv(ou, listing=fh, label="monthly_learning")
+    audit["clv_first_half_excluded"] = int(ou[v9c.QUARANTINE_COL].eq(v9c.FLAG).sum())
     ou["match_date"] = ou["match_date"].astype(str).str[:10]
     ou["side"] = ou["side"].astype(str).str.strip()
     k_ou = ["match_date", "home_team", "away_team", "side", "source"]
@@ -485,7 +507,7 @@ def section_betting(df: pd.DataFrame, oct_end: str) -> dict:
                     "delta_roi_ci90_lo": (c.get("delta_roi_ci90") or [None, None])[0],
                     "delta_roi_ci90_hi": (c.get("delta_roi_ci90") or [None, None])[1],
                     "category": category(c), "pattern": pattern(c),
-                    "pre_repair_standard": lg in STANDARD_LEAGUES})
+                    "pre_repair_standard": lg in _standard_leagues()})
         # track level (section 14 tracks)
         tracks = {
             "NF BTTS": (Sc[(Sc["market"] == "btts") & (Sc["track"] == "New Format")], Oc[(Oc["market"] == "btts") & (Oc["track"] == "New Format")]),
@@ -525,7 +547,7 @@ def section_std_reference(df: pd.DataFrame, oct_end: str) -> dict:
     """Owner reference, reproduced: League One wins vs bookmaker-expected (raw implied 1/odds)."""
     out = {}
     s = window(df[(df["market"] == "ou25") & (df["track"] == "Standard") & df["settled"]], SEP[0], oct_end)
-    for lg in STANDARD_LEAGUES:
+    for lg in _standard_leagues():
         x = s[s["league"] == lg]
         if x.empty:
             continue
@@ -570,7 +592,7 @@ def section_data_quality() -> dict:
     except Exception:
         pass
     per = {}
-    for lg in STANDARD_LEAGUES:
+    for lg in _standard_leagues():
         L = (dq.get("per_league") or {}).get(lg) or {}
         pc = L.get("price_coverage") or {}
         t30 = (L.get("certified_t30_close") or {}).get("OU25") or {}
@@ -701,7 +723,7 @@ def section_forecast_side() -> dict:
     v9 af_history results. Both months from the same Pro store."""
     from src.data import season_store as store
     from src.studies.common import match_frames, outcome
-    from src.market.devig import power_devig
+    from src.market.devig import fair_prob as power_devig      # gated: no placeholder/stale pairs
     fx = store.read("fixtures").drop_duplicates("fixture_key", keep="last")
     fx = fx[fx["match_date"].astype(str).between(SEP[0], "2026-10-31")]
     fx["kick"] = pd.to_datetime(fx["kickoff_utc"], utc=True, errors="coerce")
