@@ -1,14 +1,14 @@
-# League scout — 2026-11-18T22:25 UTC
+# League scout — 2026-11-19T03:54 UTC
 
-Results stored: 245,952 · fixtures priced: 6,929 · model frozen: 6,867
+Results stored: 245,955 · fixtures priced: 6,935 · model frozen: 6,873
 
 COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a GENUINE close (<= 60 min before the actual kickoff; Pinnacle, else median of >= 3 books)
 
-Left out by the Data Truth rules: aet_pen_missing_90 4, odds_league_mismatch 0, rescheduled_void 56, settled_priced 6,306, settled_genuine_close 3,755, settled_stale_or_thin_close 2,551, model_identity_mismatch 3, model_frozen_after_actual_kickoff 0, model_not_eligible 45
+Left out by the Data Truth rules: aet_pen_missing_90 4, odds_league_mismatch 0, rescheduled_void 56, settled_priced 6,308, settled_genuine_close 3,757, settled_stale_or_thin_close 2,551, model_identity_mismatch 3, model_frozen_after_actual_kickoff 0, model_not_eligible 45
 
 ## Coverage and staleness (Data Truth R15)
 
-Since 2026-10-08: 8,875 finished watched fixtures, 6,316 with any odds, 3,727 with a genuine close. Stale in-season leagues: 4. No odds offered by the API: 0. Unexplained missing results: 34.
+Since 2026-10-08: 8,878 finished watched fixtures, 6,318 with any odds, 3,729 with a genuine close. Stale in-season leagues: 4. No odds offered by the API: 0. Unexplained missing results: 36.
 
 | League | finished | odds coverage | genuine-close coverage | last price | flags |
 |---|---|---|---|---|---|
@@ -52,7 +52,7 @@ Since 2026-10-08: 8,875 finished watched fixtures, 6,316 with any odds, 3,727 wi
 | Slovakia 3. liga - West (644) | 45 | 0.156 | 0.089 | 2026-11-14T11:50:32Z | ODDS_COVERAGE_UNDER_HALF |
 | Slovakia 3. liga - East (645) | 28 | 0.214 | 0.107 | 2026-10-25T00:35:04Z | ODDS_COVERAGE_UNDER_HALF |
 | Czech-Republic 4. liga - Divizie F (686) | 48 | 0.104 | 0.021 | 2026-11-07T09:06:40Z | STALE >10d in season, ODDS_COVERAGE_UNDER_HALF |
-| Mexico Liga Premier Serie A (722) | 59 | 0.322 | 0.22 | 2026-11-14T21:51:30Z | ODDS_COVERAGE_UNDER_HALF |
+| Mexico Liga Premier Serie A (722) | 60 | 0.317 | 0.217 | 2026-11-14T21:51:30Z | ODDS_COVERAGE_UNDER_HALF |
 | Dominican-Republic Liga Mayor (759) | 20 | 0.25 | 0.2 | 2026-10-23T19:38:46Z | ODDS_COVERAGE_UNDER_HALF |
 | Norway 3. Division - Girone 1 (774) | 29 | 0.414 | 0.241 | 2026-11-01T10:59:31Z | ODDS_COVERAGE_UNDER_HALF |
 | Ivory-Coast Ligue 1 (386) | 26 | 0.154 | 0.0 | 2026-11-08T17:53:12Z | ODDS_COVERAGE_UNDER_HALF |
@@ -366,6 +366,10 @@ Since 2026-10-08: 8,875 finished watched fixtures, 6,316 with any odds, 3,727 wi
 | 2 | Paraguay Division Profesional - Clausura | ou15 | 24 | COLLECTING | +0.005 | – | -100.0% (2) |
 | 2 | Paraguay Division Profesional - Clausura | ou25 | 24 | COLLECTING | +0.055 | – | -100.0% (5) |
 | 2 | Paraguay Division Profesional - Clausura | ou35 | 24 | COLLECTING | +0.022 | – | -66.0% (4) |
+| 2 | Uruguay Segunda División | btts | 24 | COLLECTING | +0.032 | – | – |
+| 2 | Uruguay Segunda División | ou15 | 24 | COLLECTING | -0.020 | – | – |
+| 2 | Uruguay Segunda División | ou25 | 24 | COLLECTING | +0.018 | – | +75.0% (2) |
+| 2 | Uruguay Segunda División | ou35 | 24 | COLLECTING | -0.047 | – | – |
 | 2 | Czech-Republic 3. liga - CFL A | ou15 | 24 | COLLECTING | +0.132 | – | – |
 | 2 | Lithuania 1 Lyga | btts | 24 | COLLECTING | +0.060 | – | – |
 | 2 | Lithuania 1 Lyga | ou25 | 24 | COLLECTING | +0.052 | – | +84.5% (2) |
@@ -383,10 +387,6 @@ Since 2026-10-08: 8,875 finished watched fixtures, 6,316 with any odds, 3,727 wi
 | 2 | Argentina Primera C | ou15 | 23 | COLLECTING | +0.043 | – | +65.0% (4) |
 | 2 | Argentina Primera C | ou25 | 23 | COLLECTING | +0.089 | – | +3.8% (8) |
 | 2 | Argentina Torneo Federal A | ou35 | 23 | COLLECTING | +0.063 | – | -16.9% (7) |
-| 2 | Uruguay Segunda División | btts | 23 | COLLECTING | +0.019 | – | – |
-| 2 | Uruguay Segunda División | ou15 | 23 | COLLECTING | -0.025 | – | – |
-| 2 | Uruguay Segunda División | ou25 | 23 | COLLECTING | -0.008 | – | +75.0% (2) |
-| 2 | Uruguay Segunda División | ou35 | 23 | COLLECTING | -0.127 | – | – |
 | 2 | Slovakia Super Liga | btts | 23 | COLLECTING | -0.012 | – | – |
 | 2 | Slovakia Super Liga | ou15 | 23 | COLLECTING | +0.005 | – | – |
 | 2 | Slovakia Super Liga | ou25 | 23 | COLLECTING | +0.010 | – | – |
@@ -495,6 +495,10 @@ Since 2026-10-08: 8,875 finished watched fixtures, 6,316 with any odds, 3,727 wi
 | 2 | Poland III Liga - Group 3 | ou15 | 16 | COLLECTING | -0.041 | – | – |
 | 2 | Wales Premier League | btts | 15 | COLLECTING | +0.080 | – | +119.0% (2) |
 | 2 | Wales Premier League | ou35 | 15 | COLLECTING | +0.123 | – | +4.0% (3) |
+| 2 | Panama Liga Panameña de Fútbol | btts | 15 | COLLECTING | +0.060 | – | – |
+| 2 | Panama Liga Panameña de Fútbol | ou15 | 15 | COLLECTING | +0.223 | – | – |
+| 2 | Panama Liga Panameña de Fútbol | ou25 | 15 | COLLECTING | +0.205 | – | -18.2% (4) |
+| 2 | Panama Liga Panameña de Fútbol | ou35 | 15 | COLLECTING | +0.094 | – | – |
 | 2 | Italy Serie D - Girone D | ou25 | 15 | COLLECTING | -0.013 | – | – |
 | 2 | Netherlands Tweede Divisie | ou15 | 15 | COLLECTING | -0.002 | – | – |
 | 2 | Uganda Premier League | ou15 | 15 | COLLECTING | +0.018 | – | – |
@@ -503,10 +507,6 @@ Since 2026-10-08: 8,875 finished watched fixtures, 6,316 with any odds, 3,727 wi
 | 2 | Iceland Úrvalsdeild | btts | 14 | COLLECTING | +0.097 | – | – |
 | 2 | Iceland Úrvalsdeild | ou25 | 14 | COLLECTING | +0.378 | – | – |
 | 2 | Iceland Úrvalsdeild | ou35 | 14 | COLLECTING | +0.183 | – | – |
-| 2 | Panama Liga Panameña de Fútbol | btts | 14 | COLLECTING | +0.044 | – | – |
-| 2 | Panama Liga Panameña de Fútbol | ou15 | 14 | COLLECTING | +0.216 | – | – |
-| 2 | Panama Liga Panameña de Fútbol | ou25 | 14 | COLLECTING | +0.197 | – | -18.2% (4) |
-| 2 | Panama Liga Panameña de Fútbol | ou35 | 14 | COLLECTING | +0.079 | – | – |
 | 2 | Italy Serie D - Girone B | ou25 | 14 | COLLECTING | -0.021 | – | -100.0% (1) |
 | 2 | Iceland Úrvalsdeild | ou15 | 13 | COLLECTING | +0.171 | – | – |
 | 2 | Austria Regionalliga - Ost | btts | 13 | COLLECTING | +0.038 | – | – |
