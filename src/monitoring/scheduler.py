@@ -165,17 +165,26 @@ def _near_kickoff(snaps: pd.DataFrame, fx: pd.DataFrame) -> dict:
     if f.empty:
         return {"status": "NO_KICKED_OFF_FIXTURES"}
 
-    s = snaps[["fixture_key", "observed_at"]].copy()
-    s["obs"] = _utc(s["observed_at"])
-    s = s.merge(f[["fixture_key", "ko"]], on="fixture_key", how="inner")
+    # PROVIDER TIME, NEVER INGEST TIME (Data Truth round 3). observed_at was Pro's ingest time on
+    # every stored snapshot, so this coverage measured Pro's collect schedule. A row counts only by
+    # the time the price was observed at the source (observation_time.provider_time); rows that
+    # carry only an ingest time are counted and reported, never placed in a horizon.
+    from src.data import observation_time as otm
+    s = snaps.copy()
+    s["obs"] = otm.provider_time(s)
+    n_ingest_only = int(s["obs"].isna().sum())
+    s = s[["fixture_key", "obs"]].merge(f[["fixture_key", "ko"]], on="fixture_key", how="inner")
     s = s[s["obs"].notna()]
     if s.empty:
-        return {"status": "NO_JOINED_OBSERVATIONS", "kicked_off_fixtures": int(len(f))}
+        return {"status": "NO_JOINED_OBSERVATIONS", "kicked_off_fixtures": int(len(f)),
+                "time_basis": "provider observation time", "rows_with_ingest_time_only": n_ingest_only}
     s["mtk"] = (s["ko"] - s["obs"]).dt.total_seconds() / 60.0
     # Pre-kickoff only. A post-kickoff observation is never a pre-match price (section 14).
     pre = s[s["mtk"] >= 0]
 
     out = {"status": "OK", "kicked_off_fixtures": int(len(f)),
+           "time_basis": "provider observation time (snapshot_ts / generated_at), not ingest time",
+           "rows_with_ingest_time_only": n_ingest_only,
            "fixtures_with_any_prematch_obs": int(pre["fixture_key"].nunique())}
     prev = None
     for lo, name in HORIZONS:

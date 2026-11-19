@@ -663,6 +663,18 @@ def audit_clv_schema(a: Audit, now, days: int) -> None:
           round(clean / n, 4),
           "CLEAN is what to average; STRICT is what a headline or a graduation decision needs")
 
+    # CLEAN MEANS EVIDENCED (Data Truth round 3). clean_clv_pct carried 54,246 CLOSE_EQUALS_ENTRY
+    # rows forced to 0.0 and 39,643 name-only recovered closes, and this audit passed it: the
+    # "clean" mean read +0.01% against -0.64% on the evidenced rows. A clean value on any row whose
+    # verdict is not in clv_schema.CLEAN_QUALITIES is now a FAIL, not a coverage statistic.
+    leak = d["clean_clv_pct"].notna() & ~d["clv_quality"].isin(cs.CLEAN_QUALITIES)
+    a.add("clv schema", "clean_clv_pct only on evidenced closes", FAIL if leak.any() else PASS,
+          f"{int(leak.sum()):,} non-evidenced row(s) carry a clean_clv_pct "
+          f"({dict(d.loc[leak, 'clv_quality'].value_counts())})" if leak.any()
+          else "every clean_clv_pct row has an evidenced close",
+          int(leak.sum()),
+          "CLOSE_EQUALS_ENTRY / CLOSE_NOT_PROVEN_PRE_KICKOFF / first-half closes are not measurements")
+
     vc = dict(d["clv_quality"].value_counts())
     a.add("clv schema", "why rows are not strict", INFO,
           "; ".join(f"{k}={v:,}" for k, v in vc.items()), None,

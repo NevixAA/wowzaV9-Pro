@@ -51,12 +51,22 @@ jobs:
   builder:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      V9_LOCAL: ${{ github.workspace }}/_v9
 
     steps:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      # v9 read-only: league registry (canonical names, paper leagues, model types) and the
+      # league-scoped club resolver. Pro has no league or alias list of its own (Data Truth).
+      - name: Check out v9 (read-only)
+        uses: actions/checkout@v4
+        with:
+          repository: NevixAA/wowza-betting
+          path: _v9
+          fetch-depth: 1
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -168,6 +178,7 @@ jobs:
           # Prediction ledger (learning only; written only when PREDICTION_LEDGER_ENABLED is 'true').
           git add -f output/prediction_ledger/ output/prediction_ledger_settled/ 2>/dev/null || true
           for f in output/bet_builder_candidates.csv \
+                   output/bet_builder_candidates_meta.json \
                    output/bet_builder_settled.csv \
                    output/combo_import_health.json \
                    output/combo_notified.json \
@@ -178,7 +189,21 @@ jobs:
           git commit -m "pro: bet builder $(date -u '+%Y-%m-%d %H:%M')"
           for i in 1 2 3 4 5; do
             # No `-X ours`: in a rebase `ours` is UPSTREAM, so it discards this run's own rows.
-            git pull --rebase --autostash origin main && git push && exit 0
+            if git pull --rebase --autostash origin main; then git push && exit 0
+            else
+              # output/combo_import_health.json is a SNAPSHOT both pro_collect and pro_bet_builder
+              # rewrite and commit (src/combo/canonical.py, src/pipelines/bet_builder.py). When
+              # both runs overlap it is the only file they share, and the rebase stopped on it;
+              # the retries then failed on "unmerged files" without ever retrying (2026-11-19,
+              # Bet Builder run 44547152254). The newest snapshot wins - in a rebase, --theirs is
+              # THIS run's commit. Any OTHER conflict is a real one: abort and let it surface.
+              u="$(git diff --name-only --diff-filter=U)"
+              if [ "$u" = "output/combo_import_health.json" ]; then
+                git checkout --theirs -- "$u" && git add -f "$u" && GIT_EDITOR=true git rebase --continue && git push && exit 0
+              fi
+              [ -n "$u" ] && echo "::warning::rebase conflict in: $u"
+              git rebase --abort 2>/dev/null || true
+            fi
             echo "push race - retry $i"; sleep $((RANDOM % 5 + 3))
           done
           echo "::error title=push failed::Builder ran but nothing was persisted."

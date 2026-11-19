@@ -11,10 +11,9 @@ So Pro derives a deterministic `fixture_key` and, separately, tracks how confide
 the club names behind it. Resolution failures are CLASSIFIED, not hidden: a fixture whose
 entities are unresolved is flagged ENTITY_UNRESOLVED and can never become LIVE.
 
-`resolve()` from v9/src/team_names.py is the intended canonical matcher and is ported in
-phase 2. Until then `fixture_key` is derived from normalised names and is stable but
-provisional — two spellings of one club still produce two keys, which is precisely what the
-resolution-rate metric below is for.
+Since 2026-11-02 `fixture_key` is v2 (src/data/fixture_key_v2.py): canonical league from v9's
+registry and club identity from v9's `team_names.resolve`. The v1 key (normalised strings, two
+spellings of one club = two keys) is `fixture_key_v1` and lives on in `old_fixture_key`.
 """
 from __future__ import annotations
 
@@ -48,23 +47,37 @@ def club_slug(s) -> str:
     return "-".join(sorted(toks)) or norm_name(s).replace(" ", "-")
 
 
-def fixture_key(league, match_date, home, away) -> str:
-    """Stable 16-hex key. Deterministic across runs and machines, which is what lets a
-    backfilled row and a live row for the same fixture join."""
+def fixture_key_v1(league, match_date, home, away) -> str:
+    """The v1 key (normalised strings + token slug). Stored as `old_fixture_key` since the v2
+    migration; still the row key of the frozen forward-shadow registration
+    (studies/standard_repair/shadow.py), whose row ids must not move."""
     d = str(match_date or "")[:10]
     raw = f"{norm_name(league)}|{d}|{club_slug(home)}|{club_slug(away)}"
     return hashlib.sha1(raw.encode("utf-8")).hexdigest()[:16]
 
 
+def fixture_key(league, match_date, home, away) -> str | None:
+    """The CURRENT warehouse key: v2 (canonical league via v9's registry, clubs via v9's
+    resolver against the frozen vocabulary). See src/data/fixture_key_v2.py. None when the league
+    is unknown or the date unparseable - never a made-up key."""
+    from src.data import fixture_key_v2 as fk2
+    return fk2.fixture_key(league, match_date, home, away)
+
+
+# Written beside `fixture_key` by add_fixture_key and carried into every warehouse row since v2.
+KEY_META = ("old_fixture_key", "fixture_key_version", "fixture_key_status")
+
+
+def key_meta(d: pd.DataFrame) -> dict:
+    """{column: Series} of KEY_META present on `d`, for building a table frame from a keyed one."""
+    return {c: d[c] for c in KEY_META if c in d.columns}
+
+
 def add_fixture_key(df: pd.DataFrame, *, league="league", date="match_date",
                     home="home_team", away="away_team") -> pd.DataFrame:
-    out = df.copy()
-    out["fixture_key"] = [
-        fixture_key(l, d, h, a)
-        for l, d, h, a in zip(out.get(league, ""), out.get(date, ""),
-                              out.get(home, ""), out.get(away, ""))
-    ]
-    return out
+    """v2 `fixture_key` plus `old_fixture_key` (v1), `fixture_key_version`, `fixture_key_status`."""
+    from src.data import fixture_key_v2 as fk2
+    return fk2.add_keys(df, league=league, date=date, home=home, away=away)
 
 
 def split_match(series: pd.Series) -> tuple[pd.Series, pd.Series]:

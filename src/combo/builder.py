@@ -96,9 +96,13 @@ def same_match(fixtures: pd.DataFrame, *, props: pd.DataFrame | None = None,
         if not f.get("ok"):
             continue
         m = f["matrix"]
-        legs = {k: sm.prob(m, k) for k in SCORE_LEGS}
+        # Only markets the fit identifies (no side-specific input -> no HOME/AWAY; see
+        # score_model.identified_markets), so 1X2 is never read off the optimiser's seed split.
+        ok = sm.identified_markets(f["targets_used"])
+        score_legs = [k for k in SCORE_LEGS if k in ok]
+        legs = {k: sm.prob(m, k) for k in score_legs}
 
-        for a, b in itertools.combinations(SCORE_LEGS, 2):
+        for a, b in itertools.combinations(score_legs, 2):
             if ev.is_redundant(a, b):
                 continue
             pa, pb = legs[a], legs[b]
@@ -150,6 +154,8 @@ def same_match(fixtures: pd.DataFrame, *, props: pd.DataFrame | None = None,
                 if pd.isna(pp) or not (MIN_LEG_PROB <= float(pp) <= MAX_LEG_PROB):
                     continue
                 for a in ("O25", "BTTS", "HOME", "AWAY", "O15"):
+                    if a not in legs:
+                        continue
                     pa = legs[a]
                     if not (MIN_LEG_PROB <= pa <= MAX_LEG_PROB):
                         continue

@@ -1,14 +1,14 @@
 {
   "by_artifact_type": {
     "CANONICAL": 21,
-    "DERIVED_RESEARCH": 24,
+    "DERIVED_RESEARCH": 27,
     "HEALTH": 11,
     "RAW": 15,
     "REPORT": 5
   },
   "by_repo": {
     "NevixAA/wowza-betting": 15,
-    "NevixAA/wowzaV9-Pro": 42,
+    "NevixAA/wowzaV9-Pro": 45,
     "NevixAA/wowza_v11": 19
   },
   "calculation_version": "1.0.0",
@@ -839,15 +839,63 @@
       "artifact_type": "DERIVED_RESEARCH",
       "calculation_version": "1.0.0",
       "canonical_destination": null,
-      "lifecycle": "ACTIVE",
+      "lifecycle": "RETIRED",
       "no_canonical_destination_reason": null,
-      "note": "",
+      "note": "No longer served (owner 2026-11-09, P5): stale since its 2026-04-27 cutoff, 31% holdout coverage. Superseded by output/model_1x2_clean.pkl.",
       "owner": "pro/train_1x2",
       "path": "output/model_1x2.json",
       "present": true,
       "repo": "NevixAA/wowzaV9-Pro",
       "repo_checked_out": true,
       "research_status": "EARLY_RESEARCH",
+      "source_artifacts": []
+    },
+    {
+      "append_only": false,
+      "artifact_type": "DERIVED_RESEARCH",
+      "calculation_version": "1.0.0",
+      "canonical_destination": null,
+      "lifecycle": "ACTIVE",
+      "no_canonical_destination_reason": null,
+      "note": "The served 1X2 opinion (paper): multinomial logistic on v9's repaired history, refit monthly by pro_train_1x2_clean.yml (off until PRO_1X2_CLEAN_ENABLED).",
+      "owner": "pro/train_1x2_clean",
+      "path": "output/model_1x2_clean.pkl",
+      "present": false,
+      "repo": "NevixAA/wowzaV9-Pro",
+      "repo_checked_out": true,
+      "research_status": "RESEARCH",
+      "source_artifacts": []
+    },
+    {
+      "append_only": false,
+      "artifact_type": "DERIVED_RESEARCH",
+      "calculation_version": "1.0.0",
+      "canonical_destination": null,
+      "lifecycle": "ACTIVE",
+      "no_canonical_destination_reason": null,
+      "note": "",
+      "owner": "pro/train_1x2_clean",
+      "path": "output/model_1x2_clean.json",
+      "present": false,
+      "repo": "NevixAA/wowzaV9-Pro",
+      "repo_checked_out": true,
+      "research_status": "RESEARCH",
+      "source_artifacts": []
+    },
+    {
+      "append_only": false,
+      "artifact_type": "DERIVED_RESEARCH",
+      "calculation_version": "1.0.0",
+      "canonical_destination": null,
+      "lifecycle": "ACTIVE",
+      "no_canonical_destination_reason": null,
+      "note": "Monthly evidence of the 1X2 research cells (LEAGUE_WIDE Eredivisie draws), paper only.",
+      "owner": "pro/train_1x2_clean",
+      "path": "output/onex2_research_cells.json",
+      "present": false,
+      "repo": "NevixAA/wowzaV9-Pro",
+      "repo_checked_out": true,
+      "research_status": "RESEARCH",
       "source_artifacts": []
     },
     {
@@ -1237,13 +1285,16 @@
       "source_artifacts": []
     }
   ],
-  "generated_at": "2026-11-18T15:47:40Z",
+  "generated_at": "2026-11-19T15:20:25Z",
   "missing": [
-    "data/season_*/combo_price_snapshots/"
+    "data/season_*/combo_price_snapshots/",
+    "output/model_1x2_clean.json",
+    "output/model_1x2_clean.pkl",
+    "output/onex2_research_cells.json"
   ],
-  "n_checked": 57,
-  "n_entries": 76,
-  "n_missing": 1,
+  "n_checked": 60,
+  "n_entries": 79,
+  "n_missing": 4,
   "repos_checked_out": [
     "NevixAA/wowza-betting",
     "NevixAA/wowzaV9-Pro"
