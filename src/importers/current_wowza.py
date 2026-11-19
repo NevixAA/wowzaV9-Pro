@@ -194,10 +194,19 @@ def from_predictions() -> list[tuple[str, pd.DataFrame]]:
 
     # feature_snapshots — the feature state at decision time (section 8). Wide is fine;
     # parquet stores it compactly and leakage research needs the values as they were.
+    # The fixture_key v2 bookkeeping columns (entities.KEY_META) are identity, selected once
+    # through _KM(d). Leaving them in the feature list selected each of them TWICE, so `fs[c]`
+    # returned a two-column DataFrame and the dtype test below crashed every Pro Collect run
+    # from the v2 migration (2026-11-19, run 44541273287).
     fcols = [c for c in d.columns if c not in _NON_FEATURE
-             and c not in ("fixture_key", "entity_unresolved")]
+             and c not in ("fixture_key", "entity_unresolved", *ent.KEY_META)]
     if fcols:
         fs = d[["fixture_key", *_KM(d), "league", "match_date"] + fcols].copy()
+        _dup = fs.columns[fs.columns.duplicated()].tolist()
+        if _dup:
+            # Fail loudly: a duplicated name means two sources claim one column, and picking
+            # either silently could store the wrong quantity.
+            raise ValueError(f"feature_snapshots: duplicated column(s) {_dup}")
         for c in fcols:
             fs[c] = num(fs[c]) if fs[c].dtype == object else fs[c]
         # v9 forces AVOID when rolling form is missing; record it as a feature-health fact.
