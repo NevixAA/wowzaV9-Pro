@@ -3,6 +3,7 @@
 
     python -m src.prediction_ledger_pro settle     # settled view + registry (pro_bet_builder.yml)
     python -m src.prediction_ledger_pro validate   # the same contract v9 gates as Data truth 12
+    python -m src.prediction_ledger_pro ledger-only  # grids of v9's ledger-only (TRAINING_ONLY) leagues
 
 OWNER RULE (2026-11-17): every model predicts every match of the tracked leagues, for every market it
 serves, and the prediction is stored - the Pro research models included: 1X2, extreme goals (0 / 0-1 /
@@ -261,6 +262,88 @@ def recorder(now: datetime | None = None) -> Recorder | None:
     return _REC
 
 
+# ── LEDGER-ONLY LEAGUES (owner 2026-11-19) ───────────────────────────────────────────────────────
+
+#: v9's ledger-only board: the Standard models' probabilities for the TRAINING_ONLY leagues
+#: (src/ledger_all_leagues.py in v9). Never on v9's predictions.csv, so never in Pro's warehouse.
+LEDGER_ONLY_BOARD = Path("output") / "ledger_only" / "board.csv"
+LEDGER_ONLY_FLAG = "LEDGER_ALL_LEAGUES_ENABLED"
+
+
+def ledger_only_enabled() -> bool:
+    return os.getenv(LEDGER_ONLY_FLAG, "").strip().lower() == "true" and PL.enabled()
+
+
+def ledger_only_grids(board: pd.DataFrame | None = None, *, now: datetime | None = None,
+                      root: Path | None = None) -> dict:
+    """The score grid (pro_bb_dc: 1X2, correct score, extreme goals) of every fixture on v9's ledger-only
+    board -> the prediction ledger. LEARNING ONLY: it builds no combo, no candidate, no daily selection
+    and no Telegram item (these leagues never reach bet_builder_candidates.csv / bet_builder_daily.csv,
+    which are built from Pro's warehouse = v9's predictions.csv). The same fit as the builder
+    (src/combo/score_model.fit on v9's O1.5 / O2.5 / O3.5 / BTTS); a fixture it cannot grid is stored
+    unscored with the reason. fixture_ref is v9's 'af:<API-Football fixture id>' (the join with v9's
+    ledger-only rows); the teams are API-Football's names (Pro's scorelines are API-Football's).
+    Never raises."""
+    try:
+        from src.combo import score_model as sm
+        v9 = _v9_dir()
+        if board is None:
+            path = (v9 / LEDGER_ONLY_BOARD) if v9 else None
+            if path is None or not path.is_file():
+                print(f"[prediction_ledger] ledger-only board not found ({path}) - nothing recorded")
+                return {"offered": 0, "missing_board": True}
+            board = pd.read_csv(path, dtype={"fixture_id": str, "league_state": str}, low_memory=False)
+        rec = Recorder(now=now)
+        ver, sha, calc = rec.grid_ver
+        rows = []
+        for f in board.to_dict("records"):
+            ko = PL.utc_ts(f.get("kickoff_utc"))
+            fid = PL._s(f.get("fixture_id"))
+            if ko is None or not fid:
+                continue
+            lentry = rec.slugs.entry(f.get("league"))
+            idn = {"ko": ko, "lentry": lentry, "ref": PL.fixture_ref(fid), "oa": "",
+                   "league": rec.slugs.canonical(f.get("league")) or PL._s(f.get("league"))}
+            ff = {"home_team": PL._s(f.get("af_home_name")) or f.get("home_team"),
+                  "away_team": PL._s(f.get("af_away_name")) or f.get("away_team")}
+            t = {}
+            for src_c, dst in (("p_over15", "O15"), ("p_over25", "O25"), ("p_over35", "O35"), ("p_btts", "BTTS")):
+                v = pd.to_numeric(pd.Series([f.get(src_c)]), errors="coerce").iloc[0]
+                if pd.notna(v):
+                    t[dst] = float(v)
+            payload = f"{calc}|ledger_only:{PL._s(f.get('league_state')) or 'unknown'}"
+            fit, why = None, ""
+            if len(t) < 2:
+                why = ("no grid: fewer than 2 of v9's O1.5/O2.5/O3.5/BTTS probabilities on the ledger-only board"
+                       + (f" ({PL._s(f.get('not_scored_reason'))})" if PL._s(f.get("not_scored_reason")) else ""))
+            elif sm.monotonicity_violation(t):
+                why = "no grid: v9's goal probabilities are not monotone (O2.5 > O1.5 or similar)"
+            else:
+                fit = sm.fit(t)
+                if not fit.get("ok"):
+                    fit, why = None, "no grid: the Dixon-Coles fit to v9's marginals failed"
+            if fit is not None:
+                fh = _hash_values([t.get(k) for k in ("O15", "O25", "O35", "BTTS")])
+                for market, sels in grid_markets(np.asarray(fit["matrix"], dtype=float)).items():
+                    e = rec.ents.get((GRID_MODEL, market))
+                    if e is not None:
+                        rows += rec._rows(GRID_MODEL, market, sels, idn, ff, ver=ver, sha=sha, payload=payload,
+                                          fhash=fh, line=e.get("line"))
+            else:
+                for (mid, market), e in rec.ents.items():
+                    if mid == GRID_MODEL:
+                        rows += rec._rows(GRID_MODEL, market, {s: None for s in e["selections"]}, idn, ff,
+                                          ver=ver, sha=sha, payload=payload, fhash="", line=e.get("line"),
+                                          reason=why)
+        st = PL.append(rows, repo=REPO, writer="ledger_only_grid", run_id=os.getenv("GITHUB_RUN_ID", ""),
+                       root=root, now=now, slugs=rec.slugs)
+        print(f"[prediction_ledger] ledger-only grids: {st}")
+        return st
+    except Exception as ex:                                            # noqa: BLE001
+        print(f"::warning::ledger-only grids not recorded (learning only) ({type(ex).__name__}: {ex})")
+        return {"error": str(ex)}
+
+
 # ── SETTLE ───────────────────────────────────────────────────────────────────────────────────────
 
 def _scorelines() -> pd.DataFrame:
@@ -343,7 +426,7 @@ def settle(*, root: Path | None = None, settled_root: Path | None = None, now: d
 def main(argv=None) -> int:
     import argparse
     ap = argparse.ArgumentParser(description="Pro prediction ledger (learning only)")
-    ap.add_argument("cmd", choices=["settle", "registry", "validate"])
+    ap.add_argument("cmd", choices=["settle", "registry", "validate", "ledger-only"])
     ap.add_argument("--force", action="store_true")
     ap.add_argument("--root", default=None)
     a = ap.parse_args(argv)
@@ -356,6 +439,12 @@ def main(argv=None) -> int:
             print(f"PREDICTION LEDGER VIOLATION: {i}")
         print(f"prediction ledger: {len(PL.partitions(root))} partition(s), {len(issues)} violation(s)")
         return 1 if issues else 0
+    if a.cmd == "ledger-only":
+        if not (a.force or ledger_only_enabled()):
+            print(f"[prediction_ledger] {LEDGER_ONLY_FLAG} / {PL.FLAG_ENV} not both 'true' - nothing written")
+            return 0
+        ledger_only_grids(root=root)
+        return 0
     if not (a.force or PL.enabled()):
         print(f"[prediction_ledger] {PL.FLAG_ENV} is not 'true' - nothing written")
         return 0
