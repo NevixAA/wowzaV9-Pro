@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-11-19T22:29:42Z",
+ "generated_at": "2026-11-20T03:46:22Z",
  "status_rule": "COLLECTING <100, EARLY 100-299, READABLE >=300 settled fixtures with a GENUINE close (<= 60 min before the actual kickoff; Pinnacle, else median of >= 3 books)",
  "data_truth": "src/scout/truth.py: 90-minute results, genuine close, >48h reschedules void, model rows matched on league + team ids, frozen before the actual kickoff",
  "totals": {
-  "results": 245985,
-  "odds_rows": 640606,
-  "fixtures_priced": 7151,
-  "fixtures_frozen": 7081
+  "results": 245989,
+  "odds_rows": 642730,
+  "fixtures_priced": 7165,
+  "fixtures_frozen": 7087
  },
  "cells": [
   {
@@ -3956,6 +3956,78 @@
    "paper_first_side_share": 0.0
   },
   {
+   "league_id": 240,
+   "country": "Colombia",
+   "league": "Primera B",
+   "priority": 2,
+   "market": "btts",
+   "n": 32,
+   "status": "COLLECTING",
+   "rate": 0.4688,
+   "n_base_rate": 32,
+   "brier_base_rate": 0.2497,
+   "brier_market_close": 0.2507,
+   "brier_market_close_on_base_rows": 0.2507,
+   "reference": "median",
+   "market_skill_vs_base": -0.004,
+   "n_model": 30,
+   "brier_model": 0.2545,
+   "residual": {
+    "coef": -0.4161,
+    "se": 1.5978,
+    "z": -0.26
+   }
+  },
+  {
+   "league_id": 240,
+   "country": "Colombia",
+   "league": "Primera B",
+   "priority": 2,
+   "market": "ou25",
+   "n": 32,
+   "status": "COLLECTING",
+   "rate": 0.2812,
+   "n_base_rate": 32,
+   "brier_base_rate": 0.2153,
+   "brier_market_close": 0.2121,
+   "brier_market_close_on_base_rows": 0.2121,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0149,
+   "n_model": 30,
+   "brier_model": 0.1987,
+   "residual": {
+    "coef": 0.4605,
+    "se": 1.4826,
+    "z": 0.31
+   },
+   "paper_bets": 11,
+   "paper_roi": 0.3473,
+   "paper_first_side_share": 0.091
+  },
+  {
+   "league_id": 240,
+   "country": "Colombia",
+   "league": "Primera B",
+   "priority": 2,
+   "market": "ou35",
+   "n": 32,
+   "status": "COLLECTING",
+   "rate": 0.1562,
+   "n_base_rate": 32,
+   "brier_base_rate": 0.1339,
+   "brier_market_close": 0.1311,
+   "brier_market_close_on_base_rows": 0.1311,
+   "reference": "pinnacle",
+   "market_skill_vs_base": 0.0209,
+   "n_model": 30,
+   "brier_model": 0.1209,
+   "residual": {
+    "coef": -0.8984,
+    "se": 1.5219,
+    "z": -0.59
+   }
+  },
+  {
    "league_id": 374,
    "country": "Slovenia",
    "league": "2. SNL",
@@ -4184,6 +4256,22 @@
    "paper_first_side_share": 1.0
   },
   {
+   "league_id": 240,
+   "country": "Colombia",
+   "league": "Primera B",
+   "priority": 2,
+   "market": "ou15",
+   "n": 31,
+   "status": "COLLECTING",
+   "rate": 0.6452,
+   "n_base_rate": 31,
+   "brier_base_rate": 0.229,
+   "brier_market_close": 0.2291,
+   "brier_market_close_on_base_rows": 0.2291,
+   "reference": "pinnacle",
+   "market_skill_vs_base": -0.0004
+  },
+  {
    "league_id": 887,
    "country": "Egypt",
    "league": "Second League",
@@ -4214,57 +4302,6 @@
    "brier_market_close_on_base_rows": 0.2307,
    "reference": "pinnacle",
    "market_skill_vs_base": 0.0069
-  },
-  {
-   "league_id": 240,
-   "country": "Colombia",
-   "league": "Primera B",
-   "priority": 2,
-   "market": "btts",
-   "n": 30,
-   "status": "COLLECTING",
-   "rate": 0.4333,
-   "n_base_rate": 30,
-   "brier_base_rate": 0.246,
-   "brier_market_close": 0.2468,
-   "brier_market_close_on_base_rows": 0.2468,
-   "reference": "median",
-   "market_skill_vs_base": -0.0033
-  },
-  {
-   "league_id": 240,
-   "country": "Colombia",
-   "league": "Primera B",
-   "priority": 2,
-   "market": "ou25",
-   "n": 30,
-   "status": "COLLECTING",
-   "rate": 0.2667,
-   "n_base_rate": 30,
-   "brier_base_rate": 0.2122,
-   "brier_market_close": 0.2141,
-   "brier_market_close_on_base_rows": 0.2141,
-   "reference": "pinnacle",
-   "market_skill_vs_base": -0.009,
-   "paper_bets": 11,
-   "paper_roi": 0.3473,
-   "paper_first_side_share": 0.091
-  },
-  {
-   "league_id": 240,
-   "country": "Colombia",
-   "league": "Primera B",
-   "priority": 2,
-   "market": "ou35",
-   "n": 30,
-   "status": "COLLECTING",
-   "rate": 0.1667,
-   "n_base_rate": 30,
-   "brier_base_rate": 0.1401,
-   "brier_market_close": 0.1352,
-   "brier_market_close_on_base_rows": 0.1352,
-   "reference": "pinnacle",
-   "market_skill_vs_base": 0.035
   },
   {
    "league_id": 284,
@@ -4541,22 +4578,6 @@
    "brier_market_close_on_base_rows": 0.1318,
    "reference": "pinnacle",
    "market_skill_vs_base": 0.0828
-  },
-  {
-   "league_id": 240,
-   "country": "Colombia",
-   "league": "Primera B",
-   "priority": 2,
-   "market": "ou15",
-   "n": 29,
-   "status": "COLLECTING",
-   "rate": 0.6207,
-   "n_base_rate": 29,
-   "brier_base_rate": 0.2364,
-   "brier_market_close": 0.2382,
-   "brier_market_close_on_base_rows": 0.2382,
-   "reference": "pinnacle",
-   "market_skill_vs_base": -0.0076
   },
   {
    "league_id": 268,
@@ -13922,9 +13943,9 @@
   "aet_pen_missing_90": 4,
   "odds_league_mismatch": 0,
   "rescheduled_void": 55,
-  "settled_priced": 6332,
-  "settled_genuine_close": 3756,
-  "settled_stale_or_thin_close": 2576,
+  "settled_priced": 6336,
+  "settled_genuine_close": 3758,
+  "settled_stale_or_thin_close": 2578,
   "model_identity_mismatch": 4,
   "model_frozen_after_actual_kickoff": 0,
   "model_not_eligible": 46
