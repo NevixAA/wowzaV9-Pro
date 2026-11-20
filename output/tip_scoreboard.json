@@ -1,9 +1,9 @@
 {
- "generated_at": "2026-11-18T14:25:16Z",
+ "generated_at": "2026-11-20T14:16:09Z",
  "one_x_two": {
-  "sent": 64,
-  "sent_excl_paper": 58,
-  "pending": 5,
+  "sent": 65,
+  "sent_excl_paper": 59,
+  "pending": 6,
   "headline": {
    "settled": 53,
    "won": 13,
@@ -158,22 +158,27 @@
   "sent": 342,
   "found_in_settled": 324,
   "not_found": 18,
-  "ungraded": 49,
+  "ungraded": 8,
   "ungraded_reasons": {
-   "NO_SCORELINE": 49
+   "NO_SCORELINE": 8
   },
   "headline": {
-   "settled": 125,
-   "won": 6,
-   "hit_rate": 0.048,
-   "model_claimed": 0.0696,
-   "expected_wins": 8.7,
-   "z_actual_vs_claimed": -0.97
+   "settled": 137,
+   "won": 7,
+   "hit_rate": 0.0511,
+   "model_claimed": 0.0715,
+   "expected_wins": 9.8,
+   "z_actual_vs_claimed": -0.94
   },
   "with_voided_legs": {
-   "settled": 109,
-   "won": 46,
+   "settled": 130,
+   "won": 56,
    "note": "settled on the remaining legs after a leg was voided; not comparable with the claimed probability, which covers every leg"
+  },
+  "invalid_model_or_frechet": {
+   "settled": 8,
+   "won": 0,
+   "note": "side-specific leg read off the home/away-symmetric score fit, or a joint outside the Frechet bound; kept on the record, never in the headline"
   },
   "paper_leagues": {
    "settled": 41,
@@ -185,23 +190,28 @@
   },
   "by_claimed_probability": {
    "<10%": {
-    "settled": 101,
-    "won": 2,
-    "hit_rate": 0.0198,
-    "model_claimed": 0.0493,
-    "expected_wins": 5.0,
-    "z_actual_vs_claimed": -1.37
+    "settled": 112,
+    "won": 3,
+    "hit_rate": 0.0268,
+    "model_claimed": 0.0503,
+    "expected_wins": 5.6,
+    "z_actual_vs_claimed": -1.14
    },
    "10-25%": {
     "settled": 24,
     "won": 4,
     "hit_rate": 0.1667,
-    "model_claimed": 0.155,
-    "expected_wins": 3.7,
-    "z_actual_vs_claimed": 0.16
+    "model_claimed": 0.1623,
+    "expected_wins": 3.9,
+    "z_actual_vs_claimed": 0.06
    },
    "25-40%": {
-    "settled": 0
+    "settled": 1,
+    "won": 0,
+    "hit_rate": 0.0,
+    "model_claimed": 0.2632,
+    "expected_wins": 0.3,
+    "z_actual_vs_claimed": -0.6
    },
    "40-60%": {
     "settled": 0
@@ -212,28 +222,28 @@
   },
   "by_legs": {
    "2": {
-    "settled": 12,
+    "settled": 18,
     "won": 3,
-    "hit_rate": 0.25,
-    "model_claimed": 0.173,
-    "expected_wins": 2.1,
-    "z_actual_vs_claimed": 0.71
+    "hit_rate": 0.1667,
+    "model_claimed": 0.1817,
+    "expected_wins": 3.3,
+    "z_actual_vs_claimed": -0.17
    },
    "3": {
-    "settled": 24,
+    "settled": 29,
     "won": 2,
-    "hit_rate": 0.0833,
-    "model_claimed": 0.0921,
-    "expected_wins": 2.2,
-    "z_actual_vs_claimed": -0.15
+    "hit_rate": 0.069,
+    "model_claimed": 0.0904,
+    "expected_wins": 2.6,
+    "z_actual_vs_claimed": -0.4
    },
    "4": {
-    "settled": 89,
-    "won": 1,
-    "hit_rate": 0.0112,
-    "model_claimed": 0.0496,
-    "expected_wins": 4.4,
-    "z_actual_vs_claimed": -1.68
+    "settled": 90,
+    "won": 2,
+    "hit_rate": 0.0222,
+    "model_claimed": 0.0433,
+    "expected_wins": 3.9,
+    "z_actual_vs_claimed": -0.98
    }
   },
   "roi": "NOT MEASURED \u2014 no bookmaker builder price is collected (combo_price_snapshots is SOURCE_REQUIRED). Hit rate vs claimed probability is the honest measure."
