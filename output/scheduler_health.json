@@ -5,10 +5,10 @@
     "abort_at": 60000,
     "alert_at": 45000,
     "limit_day": 75000,
-    "pct_used": 0.9,
+    "pct_used": 5.4,
     "plan": "Ultra",
-    "requests_used": 659,
-    "snapshot_ts": "2026-11-20T01:29:01Z",
+    "requests_used": 4030,
+    "snapshot_ts": "2026-11-20T09:16:50Z",
     "source": "/home/runner/work/wowzaV9-Pro/wowzaV9-Pro/_v9/output/api_usage_log.csv",
     "status": "OK"
   },
@@ -21,45 +21,45 @@
   "coverage_problems": [],
   "coverage_status": "PASS",
   "fixture_horizon": {
-    "next_24h": 26,
-    "next_3h": 3,
-    "next_6h": 3,
-    "next_72h": 136
+    "next_24h": 74,
+    "next_3h": 4,
+    "next_6h": 12,
+    "next_72h": 133
   },
   "fixtures_today": 19,
   "freshness": {
     "fixtures": {
-      "age_hours": 0.02,
-      "last_observed_at": "2026-11-20T07:45:43Z",
+      "age_hours": 0.04,
+      "last_observed_at": "2026-11-20T15:24:13Z",
       "status": "OK"
     },
     "live_odds_snapshots": {
-      "age_hours": 3.79,
+      "age_hours": 11.46,
       "last_observed_at": "2026-11-20T03:59:09Z",
-      "status": "OK"
-    },
-    "live_signals": {
-      "age_hours": 16.5,
-      "last_observed_at": "2026-11-19T15:16:55Z",
       "status": "STALE"
     },
+    "live_signals": {
+      "age_hours": 0.04,
+      "last_observed_at": "2026-11-20T15:24:14Z",
+      "status": "OK"
+    },
     "market_snapshots": {
-      "age_hours": 0.72,
-      "last_observed_at": "2026-11-20T07:03:41Z",
+      "age_hours": 1.97,
+      "last_observed_at": "2026-11-20T13:28:43Z",
       "status": "OK"
     },
     "model_snapshots": {
-      "age_hours": 0.72,
-      "last_observed_at": "2026-11-20T07:03:41Z",
+      "age_hours": 1.97,
+      "last_observed_at": "2026-11-20T13:28:43Z",
       "status": "OK"
     },
     "player_props": {
-      "age_hours": 16.5,
-      "last_observed_at": "2026-11-19T15:16:54Z",
-      "status": "STALE"
+      "age_hours": 0.04,
+      "last_observed_at": "2026-11-20T15:24:13Z",
+      "status": "OK"
     }
   },
-  "generated_at": "2026-11-20T07:46:38Z",
+  "generated_at": "2026-11-20T15:26:45Z",
   "observed_cadence": {
     "live_odds_snapshots": {
       "active_median_gap_min": 242.0,
@@ -75,114 +75,114 @@
       "p90_gap_min": 1117.4
     },
     "live_signals": {
-      "active_median_gap_min": 1463.0,
-      "active_missed_windows": 875,
+      "active_median_gap_min": 1463.8,
+      "active_missed_windows": 740,
       "active_n_observations": 8,
-      "active_p90_gap_min": 1585.2,
-      "first": "2026-11-06T14:20:17Z",
-      "last": "2026-11-19T15:16:55Z",
+      "active_p90_gap_min": 1591.6,
+      "first": "2026-11-07T13:07:11Z",
+      "last": "2026-11-20T15:24:14Z",
       "max_gap_min": 1617.1,
-      "median_gap_min": 1410.6,
-      "missed_windows": 1856,
+      "median_gap_min": 1419.2,
+      "missed_windows": 1864,
       "n_observations": 16,
       "p90_gap_min": 1528.8
     },
     "market_snapshots": {
-      "active_median_gap_min": 248.1,
-      "active_missed_windows": 221,
-      "active_n_observations": 37,
-      "active_p90_gap_min": 410.7,
-      "first": "2026-11-06T12:24:37Z",
-      "last": "2026-11-20T07:03:41Z",
+      "active_median_gap_min": 32.1,
+      "active_missed_windows": 34,
+      "active_n_observations": 63,
+      "active_p90_gap_min": 142.3,
+      "first": "2026-11-06T19:40:03Z",
+      "last": "2026-11-20T13:28:43Z",
       "max_gap_min": 641.0,
-      "median_gap_min": 312.2,
-      "missed_windows": 570,
-      "n_observations": 71,
-      "p90_gap_min": 496.8
+      "median_gap_min": 147.3,
+      "missed_windows": 547,
+      "n_observations": 97,
+      "p90_gap_min": 460.6
     },
     "model_snapshots": {
-      "active_median_gap_min": 443.4,
-      "active_missed_windows": 295,
-      "active_n_observations": 21,
-      "active_p90_gap_min": 1246.2,
+      "active_median_gap_min": 438.2,
+      "active_missed_windows": 306,
+      "active_n_observations": 22,
+      "active_p90_gap_min": 1228.9,
       "first": "2026-11-06T15:53:57Z",
-      "last": "2026-11-20T07:03:41Z",
+      "last": "2026-11-20T13:28:43Z",
       "max_gap_min": 745.5,
-      "median_gap_min": 442.8,
-      "missed_windows": 585,
-      "n_observations": 46,
-      "p90_gap_min": 584.7
+      "median_gap_min": 440.6,
+      "missed_windows": 596,
+      "n_observations": 47,
+      "p90_gap_min": 584.2
     },
     "player_props": {
-      "active_median_gap_min": 1463.0,
-      "active_missed_windows": 284,
+      "active_median_gap_min": 1463.8,
+      "active_missed_windows": 240,
       "active_n_observations": 8,
-      "active_p90_gap_min": 1585.2,
-      "first": "2026-11-06T14:20:16Z",
-      "last": "2026-11-19T15:16:54Z",
+      "active_p90_gap_min": 1591.6,
+      "first": "2026-11-07T13:07:11Z",
+      "last": "2026-11-20T15:24:13Z",
       "max_gap_min": 1617.1,
-      "median_gap_min": 1410.6,
-      "missed_windows": 604,
+      "median_gap_min": 1419.2,
+      "missed_windows": 607,
       "n_observations": 16,
       "p90_gap_min": 1528.8
     }
   },
   "odds_api_budget": {
     "credits_by_league_top12": {
-      "Argentina Primera Division": 25603,
-      "Brazil Serie A": 17557,
-      "Bundesliga 2": 14087,
-      "Championship": 22516,
-      "La Liga 2": 20033,
-      "League One": 22806,
-      "League Two": 22437,
-      "Mexico Liga MX": 15167,
-      "Norway Eliteserien": 12161,
-      "Serie B": 13973,
-      "Sweden Allsvenskan": 13089,
-      "USA MLS": 32377
+      "Argentina Primera Division": 25683,
+      "Brazil Serie A": 17814,
+      "Bundesliga 2": 14298,
+      "Championship": 22753,
+      "La Liga 2": 20266,
+      "League One": 23039,
+      "League Two": 22657,
+      "Mexico Liga MX": 15247,
+      "Norway Eliteserien": 12244,
+      "Serie B": 14180,
+      "Sweden Allsvenskan": 13169,
+      "USA MLS": 32480
     },
     "credits_by_market": {
-      "BTTS": 69457,
-      "OU15": 4596,
-      "OU25": 86884,
-      "OU35": 23507,
-      "btts_no": 16487,
-      "btts_yes": 16487,
-      "h2h_away": 10089,
-      "h2h_draw": 8200,
-      "h2h_home": 9986,
-      "ht_over05": 2836,
-      "ht_over15": 2961,
-      "ht_under05": 2836,
-      "ht_under15": 2961,
-      "over15": 8336,
-      "over25": 16172,
-      "over35": 10540,
-      "under15": 7914,
-      "under25": 16295,
-      "under35": 8730
+      "BTTS": 69602,
+      "OU15": 4623,
+      "OU25": 87029,
+      "OU35": 23576,
+      "btts_no": 16724,
+      "btts_yes": 16724,
+      "h2h_away": 10402,
+      "h2h_draw": 8459,
+      "h2h_home": 10285,
+      "ht_over05": 3034,
+      "ht_over15": 3159,
+      "ht_under05": 3034,
+      "ht_under15": 3159,
+      "over15": 8628,
+      "over25": 16492,
+      "over35": 10859,
+      "under15": 8146,
+      "under25": 16609,
+      "under35": 8968
     },
-    "credits_remaining_month": 59766,
-    "credits_used_month": 40234,
-    "credits_used_today": 399,
-    "estimated_month_end_usage": 62462,
+    "credits_remaining_month": 55528,
+    "credits_used_month": 44472,
+    "credits_used_today": 1716,
+    "estimated_month_end_usage": 71357,
     "is_billed_credit_count": false,
     "is_estimate": true,
-    "mean_per_day": 3388.3,
+    "mean_per_day": 3432.4,
     "monthly_allowance": 100000,
-    "pct_of_monthly_allowance": 40.23,
-    "projected_pct_of_allowance": 62.46,
+    "pct_of_monthly_allowance": 44.47,
+    "projected_pct_of_allowance": 71.36,
     "projection": {
       "days_in_month": 30,
-      "elapsed_days": 19.324,
+      "elapsed_days": 19.644,
       "formula": "projected = used_mtd + max(used_mtd / max(1, elapsed_days), trailing_7d_used / 7) * remaining_days; counts from recorded timestamps, never file mtime",
-      "projected_month_end": 62462,
-      "rate_basis": "month_to_date",
-      "rate_per_day_mtd": 2082.1,
-      "rate_per_day_trailing": 2052.9,
-      "remaining_days": 10.676,
-      "used_month_to_date": 40234
+      "projected_month_end": 71357,
+      "rate_basis": "trailing",
+      "rate_per_day_mtd": 2263.9,
+      "rate_per_day_trailing": 2596.0,
+      "remaining_days": 10.356,
+      "used_month_to_date": 44472
     },
     "source": "ESTIMATED from stored market_snapshots \u2014 no credit meter exists",
     "status": "OK",
@@ -195,61 +195,61 @@
   },
   "odds_spend_by_horizon": {
     "T-10m": {
-      "observations": 738,
+      "observations": 756,
       "pct": 0.2
     },
     "T-1h": {
-      "observations": 1807,
+      "observations": 1827,
       "pct": 0.5
     },
     "T-24h": {
-      "observations": 39165,
-      "pct": 10.4
+      "observations": 39594,
+      "pct": 10.5
     },
     "T-30m": {
-      "observations": 1103,
+      "observations": 1120,
       "pct": 0.3
     },
     "T-3h": {
-      "observations": 7465,
+      "observations": 7493,
       "pct": 2.0
     },
     "T-6h": {
-      "observations": 10196,
+      "observations": 10356,
       "pct": 2.7
     },
     "far": {
-      "observations": 291963,
-      "pct": 77.7
+      "observations": 293888,
+      "pct": 77.6
     },
     "post_kickoff": {
       "observations": 23545,
-      "pct": 6.3
+      "pct": 6.2
     }
   },
   "pro_api_football_budget": {
     "by_collector_mtd": {
-      "scout_near": 2746,
-      "scout_sweep": 7398
+      "scout_near": 2790,
+      "scout_sweep": 7636
     },
-    "day_cap": 12624,
+    "day_cap": 12974,
     "headroom_target_pct": 80.0,
     "metered_collectors": [
       "scout_near",
       "scout_sweep"
     ],
     "monthly_allowance": 100000,
-    "projected_pct_of_allowance": 15.86,
+    "projected_pct_of_allowance": 16.33,
     "projection": {
       "days_in_month": 30,
-      "elapsed_days": 19.324,
+      "elapsed_days": 19.644,
       "formula": "projected = used_mtd + max(used_mtd / max(1, elapsed_days), trailing_7d_used / 7) * remaining_days; counts from recorded timestamps, never file mtime",
-      "projected_month_end": 15862,
+      "projected_month_end": 16326,
       "rate_basis": "trailing",
-      "rate_per_day_mtd": 524.9,
-      "rate_per_day_trailing": 535.6,
-      "remaining_days": 10.676,
-      "used_month_to_date": 10144
+      "rate_per_day_mtd": 530.8,
+      "rate_per_day_trailing": 569.7,
+      "remaining_days": 10.356,
+      "used_month_to_date": 10426
     },
     "source": "output/budget/runs ledger (recorded per-run call counts)",
     "status": "OK",
@@ -257,7 +257,7 @@
       "RED_above_pct": 110.0,
       "WARN_above_pct": 100.0
     },
-    "used_today": 97
+    "used_today": 379
   },
   "scheduler_mode": "NORMAL",
   "status": "WARN",
