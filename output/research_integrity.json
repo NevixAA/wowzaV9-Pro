@@ -1,8 +1,8 @@
 {
  "calculation_version": "research_integrity-1.0.0",
- "generated_at": "2026-11-18 16:47 UTC",
+ "generated_at": "2026-11-20 16:29 UTC",
  "summary": {
-  "PASS": 11,
+  "PASS": 12,
   "FAIL": 0,
   "WARNING": 3,
   "NOT_APPLICABLE": 0
@@ -38,6 +38,11 @@
    "detail": "rules live inside the frozen registrations above",
    "blocks": []
   },
+  "FROZEN_REGISTRY_HASH_DRIFT": {
+   "status": "PASS",
+   "detail": "21 pinned registrations intact",
+   "blocks": []
+  },
   "SYNTHETIC_ODDS_IN_ROI_TEST": {
    "status": "PASS",
    "detail": "price trader SYNTHETIC_ODDS_USED=NO",
@@ -45,7 +50,7 @@
   },
   "FALLBACK_ODDS_IN_ROI_TEST": {
    "status": "WARNING",
-   "detail": "47 settled HT ledger rows have no market entry price (settled on model fair odds); any HT ROI must exclude them",
+   "detail": "49 settled HT ledger rows have no market entry price (settled on model fair odds); any HT ROI must exclude them",
    "blocks": [
     "ht_roi"
    ]
@@ -63,15 +68,15 @@
   "FIRST_SIGHT_VIOLATION": {
    "status": "PASS",
    "detail": {
-    "RAW_ROWS": 2776,
-    "UNIQUE_FIRST_SIGHT_ROWS": 2704,
+    "RAW_ROWS": 2800,
+    "UNIQUE_FIRST_SIGHT_ROWS": 2728,
     "DUPLICATES_REMOVED": 72
    },
    "blocks": []
   },
   "LEAGUE_CONCENTRATION": {
    "status": "WARNING",
-   "detail": "top league Argentina Primera Division = 62% of positive core P/L",
+   "detail": "top league Argentina Primera Division = 61% of positive core P/L",
    "blocks": []
   },
   "MISSINGNESS_HIDDEN": {
