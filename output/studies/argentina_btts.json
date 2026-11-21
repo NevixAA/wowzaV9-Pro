@@ -1,32 +1,32 @@
 {
  "league": "Argentina Primera Division",
  "question": "is the Argentina BTTS profit the model, the league, a book, or luck?",
- "fixtures_with_bet365_btts_price": 164,
+ "fixtures_with_bet365_btts_price": 165,
  "dropped_first_half_contaminated_prices": 51,
- "unmatched_price_rows": 22,
+ "unmatched_price_rows": 24,
  "stale_results": {},
  "regime_by_period": {
   "2026 since Aug 10 (tip period)": {
-   "n": 164,
-   "btts_rate": 0.5549,
-   "bet365_fair_yes_close": 0.4322,
-   "gap_pp": 12.3,
+   "n": 165,
+   "btts_rate": 0.5576,
+   "bet365_fair_yes_close": 0.4325,
+   "gap_pp": 12.5,
    "blind_yes_open": {
-    "n": 164,
-    "units": 33.75,
-    "roi": 0.2058,
+    "n": 165,
+    "units": 34.7,
+    "roi": 0.2103,
     "roi_ci90": [
-     0.0654,
-     0.3623
+     0.0652,
+     0.3663
     ]
    },
    "blind_yes_close": {
-    "n": 164,
-    "units": 31.27,
-    "roi": 0.1907,
+    "n": 165,
+    "units": 32.22,
+    "roi": 0.1953,
     "roi_ci90": [
-     0.0519,
-     0.3336
+     0.0571,
+     0.3476
     ]
    }
   }
@@ -37,22 +37,22 @@
    "rate": 0.3804
   },
   "2026": {
-   "n": 495,
-   "rate": 0.4768
+   "n": 496,
+   "rate": 0.4778
   },
   "2026 since Aug 10": {
-   "n": 183,
-   "rate": 0.5464
+   "n": 184,
+   "rate": 0.5489
   }
  },
  "tip_period": {
   "B_blind_yes_all": {
-   "n": 164,
-   "units": 33.75,
-   "roi": 0.2058,
+   "n": 165,
+   "units": 34.7,
+   "roi": 0.2103,
    "roi_ci90": [
-    0.0616,
-    0.3597
+    0.068,
+    0.3637
    ]
   },
   "A_wowza_selected": {
@@ -60,26 +60,26 @@
    "units": 15.94,
    "roi": 0.2125,
    "roi_ci90": [
-    -0.0002,
-    0.4247
+    -0.0135,
+    0.4303
    ]
   },
   "not_selected": {
-   "n": 89,
-   "units": 17.81,
-   "roi": 0.2001,
+   "n": 90,
+   "units": 18.76,
+   "roi": 0.2084,
    "roi_ci90": [
-    0.0344,
-    0.3966
+    0.0405,
+    0.4112
    ]
   },
   "selected_btts_rate": 0.5333,
-  "not_selected_btts_rate": 0.573,
+  "not_selected_btts_rate": 0.5778,
   "note": "all three at Bet365's OPENING BTTS YES price, so the comparison is like for like",
-  "A_minus_not_selected_roi": 0.0124,
+  "A_minus_not_selected_roi": 0.0041,
   "A_minus_not_selected_ci90": [
-   -0.2208,
-   0.2088
+   -0.2222,
+   0.1958
   ]
  },
  "A_ledger_record": {
@@ -89,22 +89,22 @@
   "units": 20.75,
   "roi": 0.1976,
   "roi_ci90": [
-   0.0025,
-   0.384
+   -0.0016,
+   0.3843
   ]
  },
  "model_vs_market": {
-  "n": 124,
-  "rate": 0.5887,
-  "mean_p_model": 0.5107,
-  "mean_p_market": 0.4308,
-  "brier_model": 0.2508,
-  "brier_market": 0.2688,
-  "residual_coef_model": -1.471,
-  "residual_z": -0.83
+  "n": 125,
+  "rate": 0.592,
+  "mean_p_model": 0.5109,
+  "mean_p_market": 0.4312,
+  "brier_model": 0.2505,
+  "brier_market": 0.2689,
+  "residual_coef_model": -1.275,
+  "residual_z": -0.73
  },
  "C_market_relative": {
-  "n_fixtures": 172,
+  "n_fixtures": 173,
   "best_price_when_above_consensus": {
    "n": 1,
    "units": -1.0,
@@ -116,15 +116,15 @@
   },
   "by_book": {
    "betfred_uk": {
-    "n": 172,
+    "n": 173,
     "mean_ev_vs_others": -0.0762,
     "always_yes": {
-     "n": 172,
-     "units": 43.18,
-     "roi": 0.251,
+     "n": 173,
+     "units": 44.09,
+     "roi": 0.2549,
      "roi_ci90": [
-      0.1166,
-      0.3882
+      0.1236,
+      0.3903
      ]
     },
     "only_when_cheap": {
@@ -132,15 +132,15 @@
     }
    },
    "ladbrokes_uk": {
-    "n": 171,
-    "mean_ev_vs_others": -0.0871,
+    "n": 172,
+    "mean_ev_vs_others": -0.087,
     "always_yes": {
-     "n": 171,
-     "units": 39.68,
-     "roi": 0.232,
+     "n": 172,
+     "units": 40.59,
+     "roi": 0.236,
      "roi_ci90": [
-      0.1088,
-      0.3624
+      0.1077,
+      0.363
      ]
     },
     "only_when_cheap": {
@@ -148,15 +148,15 @@
     }
    },
    "virginbet": {
-    "n": 172,
-    "mean_ev_vs_others": -0.0967,
+    "n": 173,
+    "mean_ev_vs_others": -0.0966,
     "always_yes": {
-     "n": 172,
-     "units": 38.27,
-     "roi": 0.2225,
+     "n": 173,
+     "units": 39.19,
+     "roi": 0.2265,
      "roi_ci90": [
-      0.0924,
-      0.3592
+      0.0991,
+      0.3609
      ]
     },
     "only_when_cheap": {
@@ -170,15 +170,15 @@
     }
    },
    "livescorebet": {
-    "n": 172,
-    "mean_ev_vs_others": -0.0985,
+    "n": 173,
+    "mean_ev_vs_others": -0.0983,
     "always_yes": {
-     "n": 172,
-     "units": 37.64,
-     "roi": 0.2188,
+     "n": 173,
+     "units": 38.55,
+     "roi": 0.2228,
      "roi_ci90": [
-      0.0914,
-      0.3489
+      0.0961,
+      0.3558
      ]
     },
     "only_when_cheap": {
@@ -192,15 +192,15 @@
     }
    },
    "onexbet": {
-    "n": 171,
-    "mean_ev_vs_others": -0.1,
+    "n": 172,
+    "mean_ev_vs_others": -0.0999,
     "always_yes": {
-     "n": 171,
-     "units": 36.9,
-     "roi": 0.2158,
+     "n": 172,
+     "units": 37.79,
+     "roi": 0.2197,
      "roi_ci90": [
-      0.0841,
-      0.3529
+      0.0868,
+      0.3496
      ]
     },
     "only_when_cheap": {

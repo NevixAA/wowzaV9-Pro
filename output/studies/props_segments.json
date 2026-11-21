@@ -22,7 +22,7 @@
  ],
  "n_min": 150,
  "alpha_one_sided": 0.00833,
- "tips_in_window": 328,
+ "tips_in_window": 336,
  "cells": {
   "ATT_DEF|goals": {
    "n": 0,
@@ -46,25 +46,38 @@
    "verdict": "COLLECTING (3/150)"
   },
   "ATT_DEF|assists": {
-   "n": 0,
-   "verdict": "COLLECTING (0/150)"
+   "n": 1,
+   "won": 0,
+   "hit": 0.0,
+   "needed": 0.2564,
+   "model_said": 0.287,
+   "units": -1.0,
+   "roi": -1.0,
+   "roi_bounds": [
+    null,
+    null
+   ],
+   "clv_n": 1,
+   "clv_median": 0.0,
+   "clv_beat_share": 0.0,
+   "verdict": "COLLECTING (1/150)"
   },
   "ATT_MID|goals": {
-   "n": 63,
-   "won": 10,
-   "hit": 0.1587,
-   "needed": 0.2469,
-   "model_said": 0.3066,
-   "units": -25.3,
-   "roi": -0.4016,
+   "n": 65,
+   "won": 11,
+   "hit": 0.1692,
+   "needed": 0.2457,
+   "model_said": 0.3053,
+   "units": -23.3,
+   "roi": -0.3585,
    "roi_bounds": [
-    -0.8168,
-    0.135
+    -0.7614,
+    0.1739
    ],
-   "clv_n": 61,
+   "clv_n": 63,
    "clv_median": 0.0,
-   "clv_beat_share": 0.393,
-   "verdict": "COLLECTING (63/150)"
+   "clv_beat_share": 0.397,
+   "verdict": "COLLECTING (65/150)"
   },
   "ATT_MID|sot": {
    "n": 23,
@@ -76,7 +89,7 @@
    "roi": -0.3661,
    "roi_bounds": [
     -0.9018,
-    0.521
+    0.7021
    ],
    "clv_n": 23,
    "clv_median": 0.0,
@@ -101,21 +114,21 @@
    "verdict": "COLLECTING (4/150)"
   },
   "CONTROL|goals": {
-   "n": 193,
+   "n": 198,
    "won": 61,
-   "hit": 0.3161,
-   "needed": 0.3108,
-   "model_said": 0.415,
-   "units": 27.74,
-   "roi": 0.1437,
+   "hit": 0.3081,
+   "needed": 0.3134,
+   "model_said": 0.4182,
+   "units": 22.74,
+   "roi": 0.1148,
    "roi_bounds": [
-    -0.1387,
-    0.3955
+    -0.1915,
+    0.3655
    ],
-   "clv_n": 176,
+   "clv_n": 181,
    "clv_median": 0.0,
-   "clv_beat_share": 0.426,
-   "verdict": "COLLECTING (193/150)"
+   "clv_beat_share": 0.414,
+   "verdict": "COLLECTING (198/150)"
   },
   "CONTROL|sot": {
    "n": 41,
@@ -127,7 +140,7 @@
    "roi": 0.3676,
    "roi_bounds": [
     -0.3121,
-    0.9471
+    0.9574
    ],
    "clv_n": 33,
    "clv_median": 0.0,
@@ -152,5 +165,5 @@
    "verdict": "COLLECTING (1/150)"
   }
  },
- "generated_at": "2026-11-20 15:41 UTC"
+ "generated_at": "2026-11-21 14:51 UTC"
 }
